@@ -2,7 +2,7 @@
 name: "✨ Feature"
 about: 새로운 기능 추가
 title: ''
-labels: enhancement
+labels: bug, enhancement, wontfix
 assignees: akstjd31
 
 ---
