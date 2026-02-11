@@ -40,6 +40,10 @@ public class GameManager : MonoBehaviour
         _sm.Register(new MainState(this, _sm));
         _sm.Register(new LoadingState(_sm));
         _sm.Register(new LobbyState(this, _sm));
+        _sm.Register(new EventState(this, _sm));
+        _sm.Register(new MatchPrepState(this, _sm));
+        _sm.Register(new MatchSimState(this, _sm));
+        _sm.Register(new ResultState(this, _sm));
     }
 
 

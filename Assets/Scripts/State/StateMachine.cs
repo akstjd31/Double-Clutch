@@ -15,6 +15,7 @@ public class StateMachine
     {
         if (state == null) return;
         _states[state.GetType()] = state;
+        Debug.Log($"{state} 상태 등록 완료!");
     }
 
     public T Get<T>() where T : class, IState
@@ -32,6 +33,7 @@ public class StateMachine
         if (nextState == null) return;
         if (ReferenceEquals(CurrentState, nextState)) return;
 
+        Debug.Log($"{CurrentState} => {nextState} 상태 변경");
         CurrentState?.Exit();
         CurrentState = nextState;
         CurrentState.Enter();
@@ -44,6 +46,7 @@ public class StateMachine
 
     public void Clear()
     {
+        Debug.Log($"{CurrentState} 상태 제거");
         CurrentState?.Exit();
         CurrentState = null;
     }
