@@ -21,9 +21,4 @@ public class GameManager : MonoBehaviour
     {
         
     }
-
-    public void SetState(GameState state)
-    {
-        _state = state;
-    }
 }
