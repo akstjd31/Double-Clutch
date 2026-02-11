@@ -12,24 +12,16 @@ using UnityEngine;
 //     Result      // 결과 (보상 지급)
 // }
 
-public class GameManager : MonoBehaviour
+public class GameManager : Singleton<GameManager>
 {
-    public static GameManager Instance { get; private set; }
 
     [Header("GameState")]
     private StateMachine _sm = new StateMachine();
     
 
-    private void Awake()
+    protected override void Awake()
     {
-        if (Instance != null && Instance != this)
-        {
-            Destroy(gameObject);
-            return;
-        }
-
-        Instance = this;
-        DontDestroyOnLoad(this.gameObject);
+        base.Awake();
 
         InitRegister();
     }
