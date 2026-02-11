@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -5,7 +7,25 @@ using UnityEngine;
 /// </summary>
 public class StateMachine
 {
+    private readonly Dictionary<Type, IState> _states = new();
     public IState CurrentState { get; private set; }
+
+    // 상태 등록 (매번 new 할당하는 것을 방지)
+    public void Register(IState state)
+    {
+        if (state == null) return;
+        _states[state.GetType()] = state;
+    }
+
+    public T Get<T>() where T : class, IState
+    {
+        if (_states.TryGetValue(typeof(T), out var s)) 
+            return s as T;
+        
+        return null;
+    }
+
+    public void ChangeState<T>() where T : class, IState => ChangeState(Get<T>());
 
     public void ChangeState(IState nextState)
     {
