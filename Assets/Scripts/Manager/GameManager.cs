@@ -17,7 +17,6 @@ public class GameManager : Singleton<GameManager>
 
     [Header("GameState")]
     private StateMachine _sm = new StateMachine();
-    
 
     protected override void Awake()
     {
@@ -37,7 +36,6 @@ public class GameManager : Singleton<GameManager>
         _sm.Register(new MatchSimState(this, _sm));
         _sm.Register(new ResultState(this, _sm));
     }
-
 
     private void Start()
     {
