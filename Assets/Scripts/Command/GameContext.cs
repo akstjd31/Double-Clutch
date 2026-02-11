@@ -1,5 +1,5 @@
 /// <summary>
-/// 
+/// 커맨드가 접근할 공용 클래스
 /// </summary>
 public class GameContext
 {
