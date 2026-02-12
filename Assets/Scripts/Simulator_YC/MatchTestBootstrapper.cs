@@ -1,64 +1,71 @@
-using System.Collections.Generic;
 using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
 
-public class MatchSimState : IState
+public class MatchTestBootstrapper : MonoBehaviour
 {
-    private readonly StateMachine _sm;
-    private readonly GameManager _gm;
+    [Header("ÇÊ¼ö ¿¬°á")]
+    [SerializeField] private MatchEngine _engine;
+    [SerializeField] private MatchState _state;
 
-    // ì”¬ì— ìˆëŠ” ë§¤ë‹ˆì €ë“¤ì„ ì°¾ê¸° ìœ„í•œ ë³€ìˆ˜
-    private MatchEngine _engine;
-    private MatchState _state;
-
-    public MatchSimState(GameManager gm, StateMachine sm)
+    private IEnumerator Start()
     {
-        _sm = sm;
-        _gm = gm;
-    }
+        yield return new WaitForSeconds(0.1f);
 
-    public void Enter()
-    {
-        // ì”¬ì— ìˆëŠ” MatchEngineê³¼ MatchState ì°¾ê¸°
-        _engine = Object.FindFirstObjectByType<MatchEngine>();
-        _state = Object.FindFirstObjectByType<MatchState>();
+        Debug.LogWarning(">>> [TestBootstrapper] Å×½ºÆ®¿ë °­Á¦ °æ±â ½ÃÀÛ ·çÆ¾ °¡µ¿");
 
-        if (_engine == null || _state == null)
+        if (_engine == null) _engine = FindFirstObjectByType<MatchEngine>();
+        if (_state == null) _state = FindFirstObjectByType<MatchState>();
+
+        // ÇĞ»ı µ¥ÀÌÅÍ ¾øÀ¸¸é °­Á¦ ¿µÀÔ
+        if (StudentManager.Instance != null && StudentManager.Instance.GetAllStudents().Count == 0)
         {
-            Debug.LogError("MatchEngine ë˜ëŠ” MatchStateë¥¼ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤!");
-            return;
+            Debug.Log("[Test] ÇĞ»ı µ¥ÀÌÅÍ 5¸í °­Á¦ »ı¼º");
+            for (int i = 0; i < 5; i++) StudentManager.Instance.PickNewStudent();
         }
 
-        // íŒ€ ìƒì„± ë° ë°ì´í„° ì—°ë™ (MatchDebugSetup ë¡œì§ ì´ì‹)
-        MatchTeam homeTeam = CreateTeam(TeamSide.Home, "ìƒë¶ ê³ ë“±í•™êµ", "TC_BAL_Base");
-        MatchTeam awayTeam = CreateTeam(TeamSide.Away, "ì§„ê³µ ê³ ë“±í•™êµ", "TC_DEF_Base");
+        RunMatchLogic();
+    }
 
-        // ì´ˆê¸°í™” ë° ì‹œì‘
+    private void RunMatchLogic()
+    {
+        MatchTeam homeTeam = CreateTeam(TeamSide.Home, "»óºÏ °íµîÇĞ±³", "TC_BAL_Base");
+        MatchTeam awayTeam = CreateTeam(TeamSide.Away, "Áø°ø °íµîÇĞ±³", "TC_DEF_Base");
+
         _state.InitializeMatch(homeTeam, awayTeam);
 
-        // ê²½ê¸° ì¢…ë£Œ ì‹œ ResultStateë¡œ ë„˜ì–´ê°€ë„ë¡ ì´ë²¤íŠ¸ ì—°ê²°
-        _engine.OnMatchEnded = () =>
-        {
-            // ê²½ê¸°ê°€ ëë‚˜ë©´ 2ì´ˆ ë’¤ì— ê²°ê³¼ ìƒíƒœë¡œ ì „í™˜ (ì½”ë£¨í‹´ ì‚¬ìš©)
-            _gm.StartCoroutine(CoGoToResult());
-        };
+        // ¼±¼ö ºñÁÖ¾ó(Ä¸½¶) »ı¼º ¹× ¿¬°á!
+        SpawnAndLinkVisuals(homeTeam, Color.blue, new Vector3(-5, 0, 0)); // È¨ÆÀ: ¿ŞÂÊ
+        SpawnAndLinkVisuals(awayTeam, Color.red, new Vector3(5, 0, 0));   // ¿øÁ¤ÆÀ: ¿À¸¥ÂÊ
+
+        _engine.OnMatchEnded = () => { Debug.Log(">>> [Test] °æ±â Á¾·á!"); };
 
         _engine.StartSimulation();
     }
-
-    private System.Collections.IEnumerator CoGoToResult()
+    private void SpawnAndLinkVisuals(MatchTeam team, Color color, Vector3 startPos)
     {
-        Debug.Log("ê²½ê¸° ì¢…ë£Œ! 3ì´ˆ ë’¤ ê²°ê³¼ ì°½ìœ¼ë¡œ ì´ë™í•©ë‹ˆë‹¤...");
-        yield return new WaitForSeconds(3.0f); // ì—°ì¶œ ë³¼ ì‹œê°„ í™•ë³´
-        _sm.ChangeState<ResultState>();        // ResultStateë¡œ ì „í™˜
+        float spacing = 2.0f;
+        for (int i = 0; i < team.Roster.Count; i++)
+        {
+            MatchPlayer player = team.Roster[i];
+
+            // Ä¸½¶ »ı¼º
+            GameObject capsule = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+            capsule.name = $"Visual_{player.PlayerName}";
+
+            // À§Ä¡ ¹èÄ¡
+            Vector3 spawnPos = startPos + new Vector3(0, i * spacing - 4.0f, 0);
+            capsule.transform.position = spawnPos;
+
+            // »ö»ó º¯°æ
+            var renderer = capsule.GetComponent<MeshRenderer>();
+            renderer.material.color = color;
+
+            // µ¥ÀÌÅÍ¿Í ºñÁÖ¾ó ¿¬°á
+            player.VisualObject = capsule;
+        }
     }
 
-    public void Exit()
-    {
-        // ì´ë²¤íŠ¸ ì—°ê²° í•´ì œ ë“± ì •ë¦¬
-        if (_engine != null) _engine.OnMatchEnded = null;
-    }
-
-    public void Update() { }
     private MatchTeam CreateTeam(TeamSide side, string teamName, string tactic)
     {
         MatchTeam team = new MatchTeam(side, teamName, tactic);
@@ -78,7 +85,6 @@ public class MatchSimState : IState
         }
         else
         {
-            // ê°€ì§œ ë°ì´í„° (ì  íŒ€ í…ŒìŠ¤íŠ¸ìš©) 
             for (int i = 0; i < 5; i++)
             {
                 var stats = new Dictionary<MatchStatType, int>
@@ -108,7 +114,6 @@ public class MatchSimState : IState
         stats.Add(MatchStatType.Dribble, 50);
         stats.Add(MatchStatType.Speed, 50);
         stats.Add(MatchStatType.Stamina, 100);
-
         return new MatchPlayer(id, s.Name, pos, stats, "Student_Resource");
     }
 }
