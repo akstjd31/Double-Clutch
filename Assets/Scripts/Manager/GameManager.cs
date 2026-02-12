@@ -17,6 +17,8 @@ public class GameManager : Singleton<GameManager>
 
     [Header("GameState")]
     private StateMachine _sm = new StateMachine();
+    public string NextSceneName { get; private set; }           // 로딩 이후 전환될 씬 이름
+    public IState NextStateAfterLoading { get; private set; }   // 로딩 이후에 적용될 상태 정보를 담고 있음.
 
     [Header("Command")]
     private GameContext _ctx;
@@ -48,7 +50,7 @@ public class GameManager : Singleton<GameManager>
     private void InitRegister()
     {
         _sm.Register(new MainState(this, _sm));
-        _sm.Register(new LoadingState(_sm));
+        _sm.Register(new LoadingState(this, _sm));
         _sm.Register(new LobbyState(this, _sm));
         _sm.Register(new EventState(this, _sm));
         _sm.Register(new MatchPrepState(this, _sm));
@@ -63,4 +65,24 @@ public class GameManager : Singleton<GameManager>
 
     // 각 상태 클래스에서 필요시 사용
     public bool Execute(ICommand cmd) => _bus.Execute(_ctx, cmd);
+
+    public void Dispatch(UIAction action)
+    {
+        if (_sm.CurrentState is IUIActionHandler h)
+            h.Handle(action);
+    }
+
+    // 다음 씬, 상태 정보를 임시 저장하기 위한 메서드
+    public void SetNextFlow(string sceneName, IState nextState)
+    {
+        NextSceneName = sceneName;
+        NextStateAfterLoading = nextState;
+    }
+
+    // LoadingScene에서 호출
+    public void NotifyLoadingDone()
+    {
+        if (NextStateAfterLoading != null)
+            _sm.ChangeState(NextStateAfterLoading);
+    }
 }
