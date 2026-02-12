@@ -26,3 +26,9 @@ public enum personalityType
 {
     Principled, Guardian, Tactician, Exemplary, Kind, Loyal, Sincere, Moodmaker, Planner, Opportunist, Cunning, Believer, Bluffer, Wild, Egoist, Fighter
 }
+
+public enum effectType
+{
+//    2ptProb, 3ptProb, 
+    DunkProb, StealProb
+}
