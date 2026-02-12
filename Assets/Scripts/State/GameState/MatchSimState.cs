@@ -78,7 +78,7 @@ public class MatchSimState : IState
         }
         else
         {
-            // 가짜 데이터 (적 팀용)
+            // 가짜 데이터 (적 팀 테스트용) 
             for (int i = 0; i < 5; i++)
             {
                 var stats = new Dictionary<MatchStatType, int>
