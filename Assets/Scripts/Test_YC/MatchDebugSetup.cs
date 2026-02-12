@@ -10,8 +10,8 @@ public class MatchDebugSetup : MonoBehaviour
     private void Awake() // Start보다 먼저 실행됨
     {
         // 가짜 팀 데이터 만들기
-        MatchTeam homeTeam = CreateFakeTeam(TeamSide.Home, "Shohoku", "TC_BAL_Base");
-        MatchTeam awayTeam = CreateFakeTeam(TeamSide.Away, "Sannoh", "TC_DEF_Base");
+        MatchTeam homeTeam = CreateFakeTeam(TeamSide.Home, "상북 고등학교", "TC_BAL_Base");
+        MatchTeam awayTeam = CreateFakeTeam(TeamSide.Away, "진공 고등학교", "TC_DEF_Base");
 
         //  MatchState에 데이터 주입
         _matchState.InitializeMatch(homeTeam, awayTeam);

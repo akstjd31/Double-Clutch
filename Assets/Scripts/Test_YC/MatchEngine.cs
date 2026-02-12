@@ -33,11 +33,12 @@ public class MatchEngine : MonoBehaviour
         // 4쿼터까지 반복
         while (_matchState.CurrentQuarter <= MatchState.MAX_QUARTER)
         {
+            int targetQuarter = _matchState.CurrentQuarter;
             // 쿼터 시작 로그
             _matchState.AddLog($"--- Quarter {_matchState.CurrentQuarter} Start ---");
 
             // 한 쿼터의 시간이 다 될 때까지 루프
-            while (_matchState.RemainTime > 0)
+            while (_matchState.CurrentQuarter == targetQuarter && _matchState.RemainTime > 0)
             {
                 // 매 프레임(또는 턴마다) 시간과 점수 갱신
                 _uiManager.UpdateScoreBoard(_matchState);
