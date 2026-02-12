@@ -58,13 +58,13 @@ public class StudentFactory : MonoBehaviour
             TestNameData nameData = TestDataManager_Song.Instance.GetName(i);
             switch (nameData.nameParts)
             {
-                case NameParts.FirstName:
+                case NameParts_Test.FirstName:
                     _firstNames.Add(nameData.desc);
                     break;
-                case NameParts.MiddleName:
+                case NameParts_Test.MiddleName:
                     _middleNames.Add(nameData.desc);
                     break;
-                case NameParts.LastName:
+                case NameParts_Test.LastName:
                     _lastNames.Add(nameData.desc);
                     break;
             }

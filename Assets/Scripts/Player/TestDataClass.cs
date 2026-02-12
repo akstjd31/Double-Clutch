@@ -1,20 +1,20 @@
 
-public enum SkillCategory
+public enum SkillCategory_Test
 {
     Match, Training
 }
 
-public enum SpeciesType
+public enum SpeciesType_Test
 {
     Animal, Humanoid
 }
 
-public enum CoreType
+public enum CoreType_test
 {
     Discipline, Bond, Cold, Instinct
 }
 
-public enum PersonalityType
+public enum PersonalityType_Test
 {
     Principled, Guardian, Tactician, Exemplary,
     Kind, Loyal, Sincere, Moodmaker,
@@ -22,12 +22,12 @@ public enum PersonalityType
     Bluffer, Wild, Egoist, Fighter
 }
 
-public enum Nation
+public enum Nation_Test
 {
     Korea
 }
 
-public enum NameParts
+public enum NameParts_Test
 {
     FirstName, MiddleName, LastName
 }
@@ -71,29 +71,29 @@ public class TestMaxPotentialData
 public class TestNameData
 {
     public int id;
-    public Nation nation;
-    public NameParts nameParts;
+    public Nation_Test nation;
+    public NameParts_Test nameParts;
     public string nameKey;
     public string desc;
 
     public TestNameData(int i)
     {
         id = i;
-        nation = Nation.Korea;
+        nation = Nation_Test.Korea;
         nameKey = i.ToString() + "이름키";
         desc = i.ToString() + " ";
 
         if (i < 5)
         {
-            nameParts = NameParts.LastName;
+            nameParts = NameParts_Test.LastName;
         }
         else if (i < 10)
         {
-            nameParts = NameParts.MiddleName;
+            nameParts = NameParts_Test.MiddleName;
         }
         else
         {
-            nameParts = NameParts.FirstName;
+            nameParts = NameParts_Test.FirstName;
         }
 
 
@@ -103,7 +103,7 @@ public class TestNameData
 public class TestSpecieData
 {
     public int specieId;
-    public SpeciesType speciesType;
+    public SpeciesType_Test speciesType;
     public string speciesName;
     public string desc;
 
@@ -112,11 +112,11 @@ public class TestSpecieData
         specieId = i;
         if (i < 8)
         {
-            speciesType = SpeciesType.Humanoid;
+            speciesType = SpeciesType_Test.Humanoid;
         }
         else
         {
-            speciesType = SpeciesType.Animal;
+            speciesType = SpeciesType_Test.Animal;
         }
         speciesName = i.ToString() + "종족명";
         desc = i.ToString() + "종족설명";
@@ -126,8 +126,8 @@ public class TestSpecieData
 public class TestPersonalityData
 {
     public int personalityId;
-    public CoreType coreType;
-    public PersonalityType personalityType;
+    public CoreType_test coreType;
+    public PersonalityType_Test personalityType;
     public string personalityName;
     public string desc;
 
@@ -135,32 +135,32 @@ public class TestPersonalityData
     {
         personalityId = i;
 
-        personalityType = (PersonalityType)i;
+        personalityType = (PersonalityType_Test)i;
         switch (personalityType)
         {
-            case PersonalityType.Principled:
-            case PersonalityType.Guardian:
-            case PersonalityType.Tactician:
-            case PersonalityType.Exemplary:
-                coreType = CoreType.Discipline;
+            case PersonalityType_Test.Principled:
+            case PersonalityType_Test.Guardian:
+            case PersonalityType_Test.Tactician:
+            case PersonalityType_Test.Exemplary:
+                coreType = CoreType_test.Discipline;
                 break;
-            case PersonalityType.Kind:
-            case PersonalityType.Loyal:
-            case PersonalityType.Sincere:
-            case PersonalityType.Moodmaker:
-                coreType = CoreType.Bond;
+            case PersonalityType_Test.Kind:
+            case PersonalityType_Test.Loyal:
+            case PersonalityType_Test.Sincere:
+            case PersonalityType_Test.Moodmaker:
+                coreType = CoreType_test.Bond;
                 break;
-            case PersonalityType.Planner:
-            case PersonalityType.Opportunist:
-            case PersonalityType.Cunning:
-            case PersonalityType.Believer:
-                coreType = CoreType.Cold;
+            case PersonalityType_Test.Planner:
+            case PersonalityType_Test.Opportunist:
+            case PersonalityType_Test.Cunning:
+            case PersonalityType_Test.Believer:
+                coreType = CoreType_test.Cold;
                 break;
-            case PersonalityType.Bluffer:
-            case PersonalityType.Wild:
-            case PersonalityType.Egoist:
-            case PersonalityType.Fighter:
-                coreType = CoreType.Instinct;
+            case PersonalityType_Test.Bluffer:
+            case PersonalityType_Test.Wild:
+            case PersonalityType_Test.Egoist:
+            case PersonalityType_Test.Fighter:
+                coreType = CoreType_test.Instinct;
                 break;
         }
 
@@ -173,7 +173,7 @@ public class TestPassiveData
 {
     public int skillId;
     public string skillName;
-    public SkillCategory skillCategory;
+    public SkillCategory_Test skillCategory;
     public string triggerType;
     public int triggerValue;
     public string effectType;
@@ -188,11 +188,11 @@ public class TestPassiveData
         skillName = i.ToString() + "패시브명";
         if (i < 8)
         {
-            skillCategory = SkillCategory.Match;
+            skillCategory = SkillCategory_Test.Match;
         }
         else
         {
-            skillCategory = SkillCategory.Training;
+            skillCategory = SkillCategory_Test.Training;
         }
 
         triggerType = i.ToString() + "트리거타입";
