@@ -30,6 +30,10 @@ public class GameManager : Singleton<GameManager>
 
         InitCommandSystem();
         InitRegister();
+
+        // 로딩화면에서 시작하여 메인으로 넘어가기
+        SetNextFlow("Test_Main", _sm.Get<MainState>());
+
     }
 
     private void InitCommandSystem()
@@ -60,7 +64,7 @@ public class GameManager : Singleton<GameManager>
 
     private void Start()
     {
-        _sm.ChangeState<MainState>();
+        _sm.ChangeState<LoadingState>();
     }
 
     // 각 상태 클래스에서 필요시 사용

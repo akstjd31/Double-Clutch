@@ -10,10 +10,9 @@ public class LoadingController : MonoBehaviour
     {
         if (GameManager.Instance == null) yield break;
 
-        // 데이터 로드와 같이 모든 준비가 완료되었다면
-        // 아마 코루틴으로 바뀔듯?
         yield return new WaitForSeconds(2.0f);  // 임시
-
+        
+        // 다음 씬으로 전환 가능함을 알림
         var target = GameManager.Instance.NextSceneName;
         _op = SceneManager.LoadSceneAsync(target);
         _op.allowSceneActivation = true;
