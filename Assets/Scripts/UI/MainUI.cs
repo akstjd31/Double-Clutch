@@ -3,18 +3,34 @@ using UnityEngine.UI;
 
 public class MainUI : MonoBehaviour
 {
-    [SerializeField] private Button _gameStartBtn;
-    [SerializeField] private Button _quitBtn;
 
     private void Awake()
     {
-        if (_gameStartBtn != null)
-            _gameStartBtn.onClick.AddListener(OnClickGameStartButton);
-        
-        if (_quitBtn != null)
-            _quitBtn.onClick.AddListener(OnClickQuitButton);
     }
 
-    public void OnClickGameStartButton() => GameManager.Instance.Dispatch(UIAction.Main_Start);
+    private void Update()
+    {
+        // 모바일 터치
+        if (Input.touchCount > 0)
+        {
+            Touch touch = Input.GetTouch(0);
+
+            if (touch.phase == TouchPhase.Began)
+            {
+                OnClickGameStart();
+            }
+        }
+
+#if UNITY_EDITOR
+        // 테스트용 (PC)
+        if (Input.GetMouseButtonDown(0))
+        {
+            OnClickGameStart();
+        }
+#endif
+
+    }
+
+    public void OnClickGameStart() => GameManager.Instance.Dispatch(UIAction.Main_Start);
     public void OnClickQuitButton() => GameManager.Instance.Dispatch(UIAction.Main_Quit);
 }

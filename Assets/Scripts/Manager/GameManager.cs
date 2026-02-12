@@ -33,7 +33,6 @@ public class GameManager : Singleton<GameManager>
 
         // 로딩화면에서 시작하여 메인으로 넘어가기
         SetNextFlow("Test_Main", _sm.Get<MainState>());
-
     }
 
     private void InitCommandSystem()

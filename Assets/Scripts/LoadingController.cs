@@ -2,30 +2,23 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class LoadingController : MonoBehaviour
+public class LoadingController : Singleton<LoadingController>
 {
-    private AsyncOperation _op;
-
-    IEnumerator Start()
+    private IEnumerator Start()
     {
-        if (GameManager.Instance == null) yield break;
+        yield return new WaitForSeconds(2f);
 
-        yield return new WaitForSeconds(2.0f);  // 임시
-        
-        // 다음 씬으로 전환 가능함을 알림
         var target = GameManager.Instance.NextSceneName;
-        _op = SceneManager.LoadSceneAsync(target);
-        _op.allowSceneActivation = true;
-    }
 
-    private void Update()
-    {
-        if (_op == null) return;
+        var op = SceneManager.LoadSceneAsync(target);
+        op.allowSceneActivation = true;
 
-        if (_op.isDone)
-        {
-            GameManager.Instance.NotifyLoadingDone();
-            _op = null;
-        }
+        yield return op;      // 로드 + 활성화 완료까지 대기
+        yield return null;    // 다음 씬 첫 프레임 보장(선택이지만 추천)
+
+        GameManager.Instance.NotifyLoadingDone();
+
+        // 로딩 컨트롤러는 한 번 쓰고 제거해도 됨
+        Destroy(this.gameObject);
     }
 }
