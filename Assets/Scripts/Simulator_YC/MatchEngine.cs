@@ -15,6 +15,8 @@ public class MatchEngine : MonoBehaviour
     [SerializedDictionary("Position", "Prefab")]
     public SerializedDictionary<Position, GameObject> PlayerPrefabs;
 
+    // 경기가 완전히 끝났을 때 호출될 이벤트
+    public System.Action OnMatchEnded;
     // 시뮬레이션 속도 (로그 출력용)
     private bool _isSimulating = false;
 
@@ -104,6 +106,8 @@ public class MatchEngine : MonoBehaviour
         {
             _uiManager.ShowResultPopup(_matchState.HomeTeam.Score, _matchState.AwayTeam.Score);
         }
+        //외부(GameManager)에 경기 종료 알림
+        OnMatchEnded?.Invoke();
     }
 
     private IEnumerator SimulateActionRoutine(MatchTeam attackTeam, MatchTeam defendTeam, MatchPlayer attacker, MatchPlayer defender)
@@ -299,5 +303,6 @@ public class MatchEngine : MonoBehaviour
                 _matchState.SwitchPossession();
             }
         }
+
     }
 }

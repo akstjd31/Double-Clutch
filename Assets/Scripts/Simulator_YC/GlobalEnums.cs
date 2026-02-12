@@ -17,7 +17,7 @@ public enum TeamSide
     Away      // »ó´ë ÆÀ (AI)
 }
 
-public enum StatType
+public enum MatchStatType
 {
     TwoPoint = 0,  // 2Á¡ ½¸
     ThreePoint,    // 3Á¡ ½¸

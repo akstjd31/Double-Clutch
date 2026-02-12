@@ -9,7 +9,7 @@ public class MatchPlayer
     private int _playerId;
     private string _playerName;
     private Position _position;
-    private Dictionary<StatType, int> _stats; // 6대 스탯 + @ 관리
+    private Dictionary<MatchStatType, int> _stats; // 6대 스탯 + @ 관리
     private int _currentCondition; // 경기 중 소모되는 컨디션
 
     // 시뮬레이션 상 현재 위치 (코트 위 좌표, 나중에 연출 연동용)
@@ -34,17 +34,17 @@ public class MatchPlayer
     }
 
     // 생성자: 데이터 로드시 초기화
-    public MatchPlayer(int id, string name, Position pos, Dictionary<StatType, int> initStats, string resourceKey)
+    public MatchPlayer(int id, string name, Position pos, Dictionary<MatchStatType, int> initStats, string resourceKey)
     {
         _playerId = id;
         _playerName = name;
         _position = pos;
-        _stats = new Dictionary<StatType, int>(initStats);
+        _stats = new Dictionary<MatchStatType, int>(initStats);
         _currentCondition = MAX_STAMINA; // 기본값 100 시작
         _resourceKey = resourceKey;
     }
 
-    public int GetStat(StatType type)
+    public int GetStat(MatchStatType type)
     {
         if (_stats.ContainsKey(type))
         {

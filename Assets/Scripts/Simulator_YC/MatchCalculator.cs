@@ -12,15 +12,15 @@ public static class MatchCalculator
         float penaltyWeight = MatchDataProxy.GetBalance("DIST_PENALTY");
 
         // 슛 타입 결정 (스탯 선택)
-        StatType shootStatType;
+        MatchStatType shootStatType;
 
         if (distanceToHoop >= threePointLine)
         {
-            shootStatType = StatType.ThreePoint; // 3점슛 스탯
+            shootStatType = MatchStatType.ThreePoint; // 3점슛 스탯
         }
         else
         {
-            shootStatType = StatType.TwoPoint;  // 2점슛 스탯 (덩크 포함)
+            shootStatType = MatchStatType.TwoPoint;  // 2점슛 스탯 (덩크 포함)
         }
 
         float shooterStat = attacker.GetStat(shootStatType);
@@ -29,7 +29,7 @@ public static class MatchCalculator
         float blockerStat = 0f;
         if (defender != null)
         {
-            blockerStat = defender.GetStat(StatType.Block);
+            blockerStat = defender.GetStat(MatchStatType.Block);
         }
 
         // 거리 페널티 적용 (기획서: 거리가 멀수록 분모에 값을 더해 확률을 낮춤)
@@ -56,8 +56,8 @@ public static class MatchCalculator
         // 수비수가 없으면 무조건 성공
         if (defender == null) return true;
 
-        float passStat = passer.GetStat(StatType.Pass);
-        float stealStat = defender.GetStat(StatType.Steal);
+        float passStat = passer.GetStat(MatchStatType.Pass);
+        float stealStat = defender.GetStat(MatchStatType.Steal);
 
         // 분모가 0이 되는 것을 방지
         float denominator = passStat + stealStat;
@@ -76,11 +76,11 @@ public static class MatchCalculator
         if (defender == null) return true;
 
         // 능력치 가져오기
-        float dribbleStat = attacker.GetStat(StatType.Dribble);
+        float dribbleStat = attacker.GetStat(MatchStatType.Dribble);
 
         // 수비 스탯: 스틸과 블록의 평균, 혹은 'Speed'를 수비력으로 쓸 수도 있음 (기획 의도에 따라 조정)
         // 여기서는 수비수의 'Steal' 능력이 드리블을 막는 주 스탯이라고 가정
-        float defenseStat = defender.GetStat(StatType.Steal);
+        float defenseStat = defender.GetStat(MatchStatType.Steal);
 
         // 확률 계산 ( 현재 드리블 공식 명시되지않아서 임의로 패스 공식 차용 )
         float denominator = dribbleStat + defenseStat;
@@ -102,7 +102,7 @@ public static class MatchCalculator
         float totalWeight = 0f;
         foreach (var player in nearbyPlayers)
         {
-            totalWeight += player.GetStat(StatType.Rebound);
+            totalWeight += player.GetStat(MatchStatType.Rebound);
         }
 
         // 랜덤 값 추출 (0 ~ 총합)
@@ -112,7 +112,7 @@ public static class MatchCalculator
         float currentWeight = 0f;
         foreach (var player in nearbyPlayers)
         {
-            currentWeight += player.GetStat(StatType.Rebound);
+            currentWeight += player.GetStat(MatchStatType.Rebound);
             if (randomPoint <= currentWeight)
             {
                 return player;
