@@ -1,4 +1,4 @@
-﻿using GoogleSheetsToUnity;
+using GoogleSheetsToUnity;
 using System;
 using System.Collections.Generic;
 using UnityEngine;

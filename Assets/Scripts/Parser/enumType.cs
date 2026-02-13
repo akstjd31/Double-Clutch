@@ -36,3 +36,14 @@ public enum namePart
 { 
     FirstName,MiddleName,LastName
 }
+
+public enum effectType
+{
+//    2ptProb, 3ptProb, 
+    DunkProb, StealProb
+}    
+   
+public enum skillCategory
+{
+    Match, Training
+}
