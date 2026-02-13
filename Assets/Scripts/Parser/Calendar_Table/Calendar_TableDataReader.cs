@@ -82,7 +82,7 @@ public class Calendar_TableDataReader : DataReaderBase
                     endCutscene = val;
                     break;
 
-                case "TutorialId":
+                case "tutorialId":
                     tutorialId = val;
                     break;
 

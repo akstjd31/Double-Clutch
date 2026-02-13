@@ -15,7 +15,7 @@ public struct Calendar_TableData
     public string leagueId;
     public string startCutscene;
     public string endCutscene;
-    public string TutorialId;
+    public string tutorialId;
     public string backgroundImageId;
     public string backgroundMusicId;
 
@@ -37,7 +37,7 @@ public struct Calendar_TableData
         this.leagueId = leagueId;
         this.startCutscene = startCutscene;
         this.endCutscene = endCutscene;
-        this.TutorialId = tutorialId;
+        this.tutorialId = tutorialId;
         this.backgroundImageId = backgroundImageId;
         this.backgroundMusicId = backgroundMusicId;
     }
