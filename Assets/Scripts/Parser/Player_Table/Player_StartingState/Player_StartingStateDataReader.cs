@@ -11,7 +11,6 @@ public class Player_StartingStateDataReader : DataReaderBase
     internal void UpdateStats(List<GSTU_Cell> list, int rowIndex)
     {
         int grade = 0, startMin = 0, startMax = 0;
-        bool foundGrade = false, foundMin = false, foundMax = false;
 
         for (int i = 0; i < list.Count; i++)
         {
@@ -34,17 +33,14 @@ public class Player_StartingStateDataReader : DataReaderBase
             {
                 case "grade":
                     grade = toInt;
-                    foundGrade = true;
                     break;
 
                 case "startmin":
                     startMin = toInt;
-                    foundMin = true;
                     break;
 
                 case "startmax":
                     startMax = toInt;
-                    foundMax = true;
                     break;
             }
         }
