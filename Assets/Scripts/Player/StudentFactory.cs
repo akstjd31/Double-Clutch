@@ -9,22 +9,39 @@ using UnityEngine;
 /// </summary>
 public class StudentFactory : MonoBehaviour
 {
-    const int MAGIC_NUMBER = 16;
+    [Header("<size=18>데이터 리더 SO 모음</size>")]
+    [Header("Player_SpeciesDataReader(종족 데이터)")]
+    [SerializeField] Player_SpeciesDataReader _speciesDataReader; //종족 데이터
+    [Header("Player_PersonalityDataReader(성격 데이터)")]
+    [SerializeField] Player_PersonalityDataReader _personalityDataReader; //성격 데이터
+    [Header("Player_TraitDataReader(특성 데이터)")]
+    [SerializeField] Player_TraitDataReader _traitDataReader; //특성 데이터
+    [Header("Player_PassiveDataReader(패시브 데이터)")]
+    [SerializeField] Player_PassiveDataReader _passiveDataReader; //패시브 데이터
+    [Header("Player_NameDataReader(이름 데이터)")]
+    [SerializeField] Player_NameDataReader _nameDataReader; //이름 데이터
+    [Header("Player_VisualDataReader(외형 데이터)")]
+    [SerializeField] Player_VisualDataReader _visualDataReader; //외형 데이터
+    [Header("Player_StartingStateDataReader(능력치 시작 범위 데이터)")]
+    [SerializeField] Player_StartingStateDataReader _startingStateDataReader; //능력치 시작 범위 데이터
+    [Header("Player_MaxPotentialDataReader(능력치 성장 최대값 데이터)")]
+    [SerializeField] Player_MaxPotentialDataReader _maxPotentialDataReader; //능력치 성장 최대값 데이터
+            
     const float FIRST_GRADE_RATE = 0.6f;
     const float SECOND_GRADE_RATE = 0.2f;
     const float THIRD_GRADE_RATE = 0.2f;
 
-    List<TestStartingState> _startingStates = new List<TestStartingState>(); //스탯 최소값
-    TestMaxPotentialData _maxPotential; //스탯 최댓값
+    List<Player_StartingStateData> _startingStates = new List<Player_StartingStateData>(); //스탯 최소값
+    Player_MaxPotentialData _maxPotential; //스탯 최댓값
 
     List<string> _firstNames = new List<string>(); //성
     List<string> _middleNames = new List<string>(); //이름 중간자
     List<string> _lastNames = new List<string>(); //이름 끝자
 
-    List<TestSpecieData> _species = new List<TestSpecieData>(); //종족데이터 묶음
-    List<TestPersonalityData> _personallities = new List<TestPersonalityData>(); //성격 데이터 묶음
-    List<TestPassiveData> _passives = new List<TestPassiveData>(); //패시브 데이터 묶음
-    List<TestTraitData> _traits = new List<TestTraitData>(); //특성 데이터 묶음
+    List<Player_SpeciesData> _species = new List<Player_SpeciesData>(); //종족데이터 묶음
+    List<Player_PersonalityData> _personallities = new List<Player_PersonalityData>(); //성격 데이터 묶음
+    List<Player_PassiveData> _passives = new List<Player_PassiveData>(); //패시브 데이터 묶음
+    List<Player_TraitData> _traits = new List<Player_TraitData>(); //특성 데이터 묶음
 
 
     private void Start()
@@ -49,60 +66,25 @@ public class StudentFactory : MonoBehaviour
         return newStudent;
     }
 
-    private void InitDatas() //추후 매직넘버 부분을 각 테이블의 길이로 수정 필요
+    private void InitDatas() //NameData만 타입별로 분류
     {
-        
-        for (int i = 0; i < MAGIC_NUMBER; i++)
+        for (int i = 0; i < _nameDataReader.DataList.Count; i++)
         {
-            //이름 데이터, desc 부분 추후 namekey로 변경 및 스트링 테이블 참조 필요.
-            TestNameData nameData = TestDataManager_Song.Instance.GetName(i);
-            switch (nameData.nameParts)
+            //이름 데이터 desc 부분 추후 namekey로 변경 및 스트링 데이터 테이블 참조 필요.
+            Player_NameData nameData = _nameDataReader.DataList[i];
+            switch (nameData.namePart)
             {
-                case NameParts_Test.FirstName:
+                case namePart.FirstName:
                     _firstNames.Add(nameData.desc);
                     break;
-                case NameParts_Test.MiddleName:
+                case namePart.MiddleName:
                     _middleNames.Add(nameData.desc);
                     break;
-                case NameParts_Test.LastName:
+                case namePart.LastName:
                     _lastNames.Add(nameData.desc);
                     break;
             }
         }
-
-        // 종족 데이터
-        for (int i = 0; i < MAGIC_NUMBER; i++)
-        {
-            _species.Add(TestDataManager_Song.Instance.GetSpecie(i));
-        }
-
-        //성격 데이터
-        for (int i = 0; i < MAGIC_NUMBER; i++)
-        {
-            _personallities.Add(TestDataManager_Song.Instance.GetPersonality(i));
-        }
-
-        //패시브 데이터
-        for (int i = 0; i < MAGIC_NUMBER; i++)
-        {
-            _passives.Add(TestDataManager_Song.Instance.GetPassive(i));
-        }
-
-        //특성 데이터
-        for (int i = 0;i < MAGIC_NUMBER; i++)
-        {
-            _traits.Add(TestDataManager_Song.Instance.GetTrait(i));
-        }
-
-        //스탯 초기값 데이터
-        for (int i = 1; i < 4; i++) //여기도 매직넘버랑 같이 수정해줘야 함
-        {
-            _startingStates.Add(TestDataManager_Song.Instance.GetStartingState(i));
-        }
-
-        //스탯 최댓값 데이터
-        _maxPotential = TestDataManager_Song.Instance.GetMaxPotential(1);
-
     }
 
     
@@ -118,17 +100,17 @@ public class StudentFactory : MonoBehaviour
         return first + middle + last;
     }
 
-    private TestSpecieData GetRandomSpecie() //랜덤한 종족 반환
+    private Player_SpeciesData GetRandomSpecie() //랜덤한 종족 반환
     {
-        return _species[Random.Range(0, _species.Count)];
+        return _speciesDataReader.DataList[Random.Range(0, _speciesDataReader.DataList.Count)];
     }
-    private TestPersonalityData GetRandomPersonality() //랜덤한 성격 반환
+    private Player_PersonalityData GetRandomPersonality() //랜덤한 성격 반환
     {
-        return _personallities[Random.Range(0, _personallities.Count)];
+        return _personalityDataReader.DataList[Random.Range(0, _personalityDataReader.DataList.Count)];
     }    
-    private TestTraitData GetRandomTrait() //랜덤한 특성 반환
+    private Player_TraitData GetRandomTrait() //랜덤한 특성 반환
     {
-        return _traits[Random.Range(0, _traits.Count)];
+        return _traitDataReader.DataList[Random.Range(0, _traitDataReader.DataList.Count)];
     }
     private int GetrRandomGrade() //랜덤 학년을 가중치에 따라 반환
     {
@@ -150,7 +132,7 @@ public class StudentFactory : MonoBehaviour
 
     private void SetRandomPassive(Student student) //선수에게 랜덤 패시브를 중복없이 부여(다른 랜덤 함수와 달리 부여까지 함에 주의)
     {
-        List<TestPassiveData> availablePool = student.GetAvailablePassives(_passives); //선수에게 부여 가능한 남은 패시브 목록 받아오기
+        List<Player_PassiveData> availablePool = student.GetAvailablePassives(_passiveDataReader.DataList); //선수에게 부여 가능한 남은 패시브 목록 받아오기
         int currentPassiveCount = student.PassiveId.Count;
         int targetCount = student.Grade;
         int needCount = targetCount - currentPassiveCount;
@@ -163,7 +145,7 @@ public class StudentFactory : MonoBehaviour
             }
 
             int randomIndex = Random.Range(0, availablePool.Count);
-            TestPassiveData data = availablePool[randomIndex];
+            Player_PassiveData data = availablePool[randomIndex];
 
             student.SetPassive(data);
             availablePool.RemoveAt(randomIndex); // 이번 루프 내 중복 방지
@@ -173,16 +155,16 @@ public class StudentFactory : MonoBehaviour
     private List<Stat> GetRandomStats(int grade)
     {
         List<Stat> newStat = new List<Stat>();
-        TestStartingState stateSetting = _startingStates[grade - 1]; //해당 학년의 스탯 범위 가져오기
-        TestMaxPotentialData maxPotentialData = TestDataManager_Song.Instance.GetMaxPotential(1);
+        Player_StartingStateData stateSetting = _startingStateDataReader.DataList[grade - 1]; //해당 학년의 스탯 범위 가져오기
+        Player_MaxPotentialData maxPotentialData = _maxPotentialDataReader.DataList[0];
         foreach (StatType type in System.Enum.GetValues(typeof(StatType)))
         {            
             int currentValue = Random.Range(stateSetting.startMin, stateSetting.startMax + 1); //현재 스탯 할당
-            int limitValue = Random.Range(maxPotentialData.minPotientialValue, maxPotentialData.maxPotentialValue + 1); //스탯 최대치 할당
+            int limitValue = Random.Range(maxPotentialData.minPotentialValue, maxPotentialData.maxPotentialValue + 1); //스탯 최대치 할당
             int safetyNet = 0;
             while (limitValue <= currentValue && safetyNet < 100) //만약 시작 스탯이 최대 성장치 보다 높게 뽑히면 최대 100번까지 최대 스탯을 다시 리롤
             {
-                limitValue = Random.Range(_maxPotential.minPotientialValue, _maxPotential.maxPotentialValue + 1);
+                limitValue = Random.Range(_maxPotential.minPotentialValue, _maxPotential.maxPotentialValue + 1);
                 safetyNet++;
             }
             if (limitValue <= currentValue) //100번 돌렸는데도 보정 안되었으면 강제 보정

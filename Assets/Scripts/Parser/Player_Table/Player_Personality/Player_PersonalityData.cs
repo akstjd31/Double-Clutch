@@ -1,5 +1,23 @@
 using System;
 
+public enum coreType
+{
+    None,
+    Discipline,
+    Bond,
+    Cold,
+    Instinct
+}
+
+public enum personalityType
+{
+    None, 
+    Principled, Guardian, Tactician, Exemplary, 
+    Kind, Loyal, Sincere, Moodmaker, 
+    Planner, Opportunist, Cunning, Believer, 
+    Bluffer, Wild, Egoist, Fighter
+}
+
 [Serializable]
 public struct Player_PersonalityData
 {

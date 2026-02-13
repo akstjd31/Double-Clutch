@@ -1,5 +1,14 @@
 using System;
 
+public enum speciesType
+{
+    None,
+    Animal,
+    Human,
+    Humanoid
+}
+
+
 [Serializable]
 public struct Player_SpeciesData
 {

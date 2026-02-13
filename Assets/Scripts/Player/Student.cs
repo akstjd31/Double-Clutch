@@ -16,10 +16,10 @@ public class Student
     List<Stat> _stats = new List<Stat>(); //스탯(Stat 클래스는 직렬화 되어 있음)
 
     //게임 실행 후 id 기반으로 불러오는 데이터
-    TestSpecieData _specieData; //종족
-    TestPersonalityData _personalityData; //성격
-    List<TestPassiveData> _passive = new List<TestPassiveData>(); //패시브 스킬
-    TestTraitData _traitData; //특성1
+    Player_SpeciesData _specieData; //종족
+    Player_PersonalityData _personalityData; //성격
+    List<Player_PassiveData> _passive = new List<Player_PassiveData>(); //패시브 스킬
+    Player_TraitData _traitData; //특성1
     Dictionary<StatType, Stat> _statDict = new Dictionary<StatType, Stat>();
 
 
@@ -30,7 +30,7 @@ public class Student
     public List<int> PassiveId => _passiveId;
     public int TraitId => _traitId;    
     public int Grade => _grade;
-    public List<TestPassiveData> Passive => _passive;
+    public List<Player_PassiveData> Passive => _passive;
 
     public int GetCurrentStat(StatType type)
     {
@@ -46,12 +46,12 @@ public class Student
     {
         _specieId = specieId;
     }
-    public void SetSpecie(TestSpecieData data)
+    public void SetSpecie(Player_SpeciesData data)
     {
         _specieData = data;
         if (_specieId == -1)
         {
-            _specieId = data.specieId;
+            _specieId = data.speciesId;
         }
     }
 
@@ -59,7 +59,7 @@ public class Student
     {
         _personalityId = personalityId;
     }
-    public void SetPersonality(TestPersonalityData data)
+    public void SetPersonality(Player_PersonalityData data)
     {
         _personalityData = data;
         if (_personalityId == -1)
@@ -76,7 +76,7 @@ public class Student
         }        
     }
 
-    public void SetPassive(TestPassiveData data)
+    public void SetPassive(Player_PassiveData data)
     {
         if (!_passive.Contains(data))
         {
@@ -92,9 +92,9 @@ public class Student
         return _passiveId.Contains(skillId);
     }
 
-    public List<TestPassiveData> GetAvailablePassives(List<TestPassiveData> totalPool)
+    public List<Player_PassiveData> GetAvailablePassives(List<Player_PassiveData> totalPool)
     {
-        List<TestPassiveData> available = new List<TestPassiveData>();
+        List<Player_PassiveData> available = new List<Player_PassiveData>();
         foreach (var data in totalPool)
         {
             if (!HasPassive(data.skillId))
@@ -109,7 +109,7 @@ public class Student
     {
         _traitId = traitId;        
     }
-    public void SetTrait(TestTraitData data)
+    public void SetTrait(Player_TraitData data)
     {
         _traitData = data;
         if (_traitId  == -1)

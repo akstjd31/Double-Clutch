@@ -13,7 +13,7 @@ public class Player_NameDataReader : DataReaderBase
     internal void UpdateStats(List<GSTU_Cell> list, int rowIndex)
     {
         int ID = 0;
-        nationType nation = default;
+        nation nation = default;
         namePart namePart = default;
         string nameKey = null;
         string desc = null;
@@ -31,12 +31,12 @@ public class Player_NameDataReader : DataReaderBase
                 case "ID":
                     int.TryParse(val, out ID);
                     break;
-                case "nationType":
+                case "nation":
                     if (!string.IsNullOrEmpty(val))
                     {
                         // 숫자(enum int)도 대응
-                        if (int.TryParse(val, out var eInt)) nation = (nationType)eInt;
-                        else if (Enum.TryParse(val, true, out nationType e)) nation = e;
+                        if (int.TryParse(val, out var eInt)) nation = (nation)eInt;
+                        else if (Enum.TryParse(val, true, out nation e)) nation = e;
                     }
                     break;
                 case "namePart":
