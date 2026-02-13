@@ -58,11 +58,11 @@ public class Player_SynergyDataReader : DataReaderBase
 
         if (synergyId <= 0) return;
         
-        // var synergyData = new PlayerSynergyData
-        // (
-        //     synergyId, traitID1, traitID2, synergyName, eType, eValue
-        // );
+        var synergyData = new PlayerSynergyData
+        (
+            synergyId, traitID1, traitID2, synergyName, eType, eValue
+        );
 
-        DataList.Add(new PlayerSynergyData(synergyId, traitID1, traitID2, synergyName, eType, eValue));
+        DataList.Add(synergyData);
     }
 }
