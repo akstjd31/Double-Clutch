@@ -27,126 +27,22 @@ public enum personalityType
     Principled, Guardian, Tactician, Exemplary, Kind, Loyal, Sincere, Moodmaker, Planner, Opportunist, Cunning, Believer, Bluffer, Wild, Egoist, Fighter
 }
 
+public enum nationType
+{
+    Korea
+}
+
+public enum namePart
+{ 
+    FirstName,MiddleName,LastName
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/// <summary>
-/// 
-/// </summary>
 public enum effectType
 {
 //    2ptProb, 3ptProb, 
     DunkProb, StealProb
 }    
    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 public enum skillCategory
 {
     Match, Training

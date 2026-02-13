@@ -1,23 +1,22 @@
-using GoogleSheetsToUnity;
+﻿using GoogleSheetsToUnity;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Player_PersonalityDataReader", menuName = "Scriptable Object/Player_PersonalityDataReader", order = int.MaxValue)]
-public class Player_PersonalityDataReader : DataReaderBase
+[CreateAssetMenu(fileName = "Player_NameDataReader", menuName = "Scriptable Object/Player_NameDataReader", order = int.MaxValue)]
+public class Player_NameDataReader : DataReaderBase
 {
     [Header("스프레드시트에서 읽혀져 직렬화 된 오브젝트")]
-    [SerializeField] public List<Player_PersonalityData> DataList = new List<Player_PersonalityData>();
+    [SerializeField] public List<Player_NameData> DataList = new List<Player_NameData>();
 
     // ✅ ItemData처럼 List<GSTU_Cell> 한 줄을 받아서 파싱
     internal void UpdateStats(List<GSTU_Cell> list, int rowIndex)
     {
-        int personalityId = 0;
-        coreType core = default;
-        personalityType personality = default;
-        string personalityName = null;
+        int ID = 0;
+        nationType nation = default;
+        namePart namePart = default;
+        string nameKey = null;
         string desc = null;
-
 
         for (int i = 0; i < list.Count; i++)
         {
@@ -29,28 +28,28 @@ public class Player_PersonalityDataReader : DataReaderBase
 
             switch (col)
             {
-                case "personalityId":
-                    int.TryParse(val, out personalityId);
+                case "ID":
+                    int.TryParse(val, out ID);
                     break;
-                case "coreType":
+                case "nationType":
                     if (!string.IsNullOrEmpty(val))
                     {
                         // 숫자(enum int)도 대응
-                        if (int.TryParse(val, out var eInt)) core = (coreType)eInt;
-                        else if (Enum.TryParse(val, true, out coreType e)) core = e;
+                        if (int.TryParse(val, out var eInt)) nation = (nationType)eInt;
+                        else if (Enum.TryParse(val, true, out nationType e)) nation = e;
                     }
                     break;
-                case "personalityType":
+                case "namePart":
                     if (!string.IsNullOrEmpty(val))
                     {
                         // 숫자(enum int)도 대응
-                        if (int.TryParse(val, out var eInt)) personality = (personalityType)eInt;
-                        else if (Enum.TryParse(val, true, out personalityType e)) personality = e;
+                        if (int.TryParse(val, out var eInt)) namePart = (namePart)eInt;
+                        else if (Enum.TryParse(val, true, out namePart e)) namePart = e;
                     }
                     break;
 
-                case "personalityName":
-                    personalityName = val;
+                case "nameKey":
+                    nameKey = val;
                     break;
                 case "desc":
                     desc = val;
@@ -59,9 +58,9 @@ public class Player_PersonalityDataReader : DataReaderBase
         }
 
         // ✅ weekId가 없으면 스킵 (타입행/빈행 방지)
-        if (personalityId <= 0) return;
+        if (ID <= 0) return;
 
-        DataList.Add(new Player_PersonalityData(personalityId , core, personality, personalityName,desc
+        DataList.Add(new Player_NameData(ID, nation, namePart, nameKey, desc
         ));
     }
 
