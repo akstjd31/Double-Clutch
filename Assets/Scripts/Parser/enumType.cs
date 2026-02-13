@@ -26,3 +26,13 @@ public enum personalityType
 {
     Principled, Guardian, Tactician, Exemplary, Kind, Loyal, Sincere, Moodmaker, Planner, Opportunist, Cunning, Believer, Bluffer, Wild, Egoist, Fighter
 }
+
+public enum nationType
+{
+    Korea
+}
+
+public enum namePart
+{ 
+    FirstName,MiddleName,LastName
+}
