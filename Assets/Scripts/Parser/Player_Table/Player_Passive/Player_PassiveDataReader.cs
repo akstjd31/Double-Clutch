@@ -17,7 +17,7 @@ public class Player_PassiveDataReader : DataReaderBase
         skillCategory category = default;
         string triggerType = "";
         int triggerValue = 0;
-        //effefctType effectType = default;
+        effectType effectType = default;
         float effectValue = 0;
         int effectDuration = 0;
         int CoolTime = 0;
@@ -58,6 +58,15 @@ public class Player_PassiveDataReader : DataReaderBase
                     int.TryParse(val, out triggerValue);
                     break;
 
+                case "effectType":
+                    if (!string.IsNullOrEmpty(val))
+                    {
+                        // 숫자(enum int)도 대응
+                        if (int.TryParse(val, out var eInt)) effectType = (effectType)eInt;
+                        else if (Enum.TryParse(val, true, out effectType e)) effectType = e;
+                    }
+                    break;
+
                 case "effectValue":
                     float.TryParse(val, out effectValue);
                     break;
@@ -81,7 +90,7 @@ public class Player_PassiveDataReader : DataReaderBase
         if (skillId <= 0) return;
 
         DataList.Add(new Player_PassiveData(
-            skillId, skillName, category, triggerType, triggerValue, //effefctType,
+            skillId, skillName, category, triggerType, triggerValue, effectType,
             effectValue, effectDuration, CoolTime, passiveDesc
         ));
     }

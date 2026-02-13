@@ -1,14 +1,25 @@
 using System;
+
+public enum nation
+{
+    None, Korea
+}
+
+public enum namePart
+{
+    None, FirstName, MiddleName, LastName
+}
+
 [Serializable]
 public struct Player_NameData
 {
     public int ID;
-    public nationType nation;
+    public nation nation;
     public namePart namePart;
     public string nameKey;
     public string desc;
 
-    public Player_NameData(int ID, nationType nation, namePart namePart, string nameKey,string desc)
+    public Player_NameData(int ID, nation nation, namePart namePart, string nameKey,string desc)
     {
         this.ID = ID;
         this.nation = nation;

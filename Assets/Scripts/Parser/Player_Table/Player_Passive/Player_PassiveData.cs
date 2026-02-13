@@ -1,5 +1,14 @@
 using System;
 
+public enum skillCategory
+{
+    None, Match, Training
+}
+public enum effectType
+{
+    //    2ptProb, 3ptProb, 
+    None, Prob2pt, Prob3pt, ProbDunk, ProbSteal, GrowthShoot, GrowthSteal
+}
 
 [Serializable]
 public struct Player_PassiveData
@@ -9,7 +18,7 @@ public struct Player_PassiveData
     public skillCategory skillCategory;
     public string triggerType;
     public int triggerValue;
-    //public effectType effectType;
+    public effectType effectType;
     public float effectValue;
     public int effectDuration;
     public int CoolTime;
@@ -18,7 +27,7 @@ public struct Player_PassiveData
     public Player_PassiveData
         (
             int _skillId, string _skillName, skillCategory _skillCategory,
-            string _triggerType, int _triggerValue, float _effectValue, int _effectDuration,
+            string _triggerType, int _triggerValue, effectType _effectType, float _effectValue, int _effectDuration,
             int _CoolTime, string _passiveDesc
         )
     {
@@ -27,6 +36,7 @@ public struct Player_PassiveData
         skillCategory = _skillCategory;
         triggerType = _triggerType;
         triggerValue = _triggerValue;
+        effectType = _effectType;
         effectValue = _effectValue;
         effectDuration = _effectDuration;
         CoolTime = _CoolTime;

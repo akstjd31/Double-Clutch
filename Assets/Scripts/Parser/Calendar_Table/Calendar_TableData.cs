@@ -1,5 +1,13 @@
 ﻿using System;
 
+public enum phaseType
+{
+    None,
+    Event,
+    League,
+    Training
+}
+
 [Serializable]
 public struct Calendar_TableData
 {
