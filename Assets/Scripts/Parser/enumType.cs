@@ -9,6 +9,7 @@ public enum phaseType
 
 public enum speciesType
 {
+    None,
     Animal,
     Human,
     Humanoid
