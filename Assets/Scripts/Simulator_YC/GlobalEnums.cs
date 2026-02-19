@@ -22,10 +22,8 @@ public enum MatchStatType
     TwoPoint = 0,  // 2점 슛
     ThreePoint,    // 3점 슛
     Pass,          // 패스
-    Dribble,       // 드리블 (기획서 1.2)
+    Dribble,       // 드리블 
     Block,         // 블록
     Steal,         // 스틸
     Rebound,       // 리바운드
-    Speed,         // 이동 속도 (시뮬레이션 연산용)
-    Stamina        // 체력
 }

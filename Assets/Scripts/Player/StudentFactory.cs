@@ -106,6 +106,12 @@ public class StudentFactory : MonoBehaviour
 
     private string GetRandomName() //랜덤한 이름 조합해서 반환
     {
+        // [방어 코드 추가] 이름 데이터가 하나라도 비어있으면 터지지 않게 임시 이름 반환
+        if (_firstNames.Count == 0 || _middleNames.Count == 0 || _lastNames.Count == 0)
+        {
+            Debug.LogWarning("[데이터 누락] 이름 데이터가 없습니다! 임시 이름을 부여합니다.");
+            return "임시선수_" + Random.Range(1000, 9999);
+        }
         string first = _firstNames[Random.Range(0, _firstNames.Count)];
         string middle = _middleNames[Random.Range(0, _middleNames.Count)];
         string last = _lastNames[Random.Range(0, _lastNames.Count)];
@@ -120,7 +126,26 @@ public class StudentFactory : MonoBehaviour
 
     private Player_VisualData GetRandomVisual(int specieId) //종족에 따라 랜덤한 비주얼 반환
     {
-        return _visualDataDict[specieId][Random.Range(0, _visualDataDict[specieId].Count)];
+        // 1. 딕셔너리에 해당 종족 ID가 있으면 정상 반환
+        if (_visualDataDict.ContainsKey(specieId))
+        {
+            return _visualDataDict[specieId][Random.Range(0, _visualDataDict[specieId].Count)];
+        }
+        else
+        {
+            // 2. 데이터가 없으면 에러 로그 출력
+            Debug.LogError($"[데이터 누락] 종족 ID '{specieId}'의 비주얼 데이터가 없습니다! 임시 데이터를 사용합니다.");
+
+            // 3. 임시 방편: 딕셔너리에 있는 '다른 종족'의 비주얼이라도 가져와서 반환
+            foreach (var key in _visualDataDict.Keys)
+            {
+                if (_visualDataDict[key].Count > 0)
+                    return _visualDataDict[key][0];
+            }
+
+            // 4. 진짜 아무것도 없으면 '빈 구조체' 반환 (null 대신 이거 써야 함!)
+            return new Player_VisualData();
+        }
     }
 
     private Player_PersonalityData GetRandomPersonality() //랜덤한 성격 반환
