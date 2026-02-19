@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Events;
-using static UnityEngine.GraphicsBuffer;
 
 #if UNITY_EDITOR
 [CustomEditor(typeof(Individual_TrainingDataReader))]
