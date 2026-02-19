@@ -3,20 +3,16 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Player_VisualDataReader", menuName = "Scriptable Object/Player_VisualDataReader", order = int.MaxValue)]
-public class Player_VisualDataReader : DataReaderBase
+[CreateAssetMenu(fileName = "String_TableDataReader", menuName = "Scriptable Object/String_TableDataReader", order = int.MaxValue)]
+public class String_TableDataReader : DataReaderBase
 {
     [Header("스프레드시트에서 읽혀져 직렬화 된 오브젝트")]
-    [SerializeField] public List<Player_VisualData> DataList = new List<Player_VisualData>();
+    [SerializeField] public List<String_TableData> DataList = new List<String_TableData>();
 
     // ✅ ItemData처럼 List<GSTU_Cell> 한 줄을 받아서 파싱
     internal void UpdateStats(List<GSTU_Cell> list, int rowIndex)
     {
-        int visualId = 0;
-        int speciesId = 0;
-        string assetKey = null;
-        string desc = null;
-
+        string stringKey = null, Kr = null, En = null;
 
         for (int i = 0; i < list.Count; i++)
         {
@@ -28,25 +24,21 @@ public class Player_VisualDataReader : DataReaderBase
 
             switch (col)
             {
-                case "visualId":
-                    int.TryParse(val, out visualId);
+                case "stringKey":
+                    stringKey = val;
                     break;
-                case "species":
-                    int.TryParse(val, out speciesId);
+
+                case "Kr":
+                    Kr = val;
                     break;
-                case "assetKey":
-                    assetKey = val;
-                    break;
-                case "desc":
-                    desc = val;
+                case "En":
+                    En = val;
                     break;
             }
         }
+        DataList.Add(new String_TableData(
+            stringKey,Kr,En
 
-        // ✅ weekId가 없으면 스킵 (타입행/빈행 방지)
-        if (visualId <= 0) return;
-
-        DataList.Add(new Player_VisualData(visualId, speciesId, assetKey, desc
         ));
     }
 
