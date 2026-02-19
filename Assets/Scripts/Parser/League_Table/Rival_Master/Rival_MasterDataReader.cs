@@ -12,7 +12,7 @@ public class Rival_MasterDataReader : DataReaderBase
     // ✅ ItemData처럼 List<GSTU_Cell> 한 줄을 받아서 파싱
     internal void UpdateStats(List<GSTU_Cell> list, int rowIndex)
     {
-        string teamId = null, desc = null, teamName = null;
+        string teamId = null, desc = null, teamNameKey = null;
         teamSector teamSector = default;
         string teamArchetypeId = null;
         teamTier teamTier = default;
@@ -35,8 +35,8 @@ public class Rival_MasterDataReader : DataReaderBase
                 case "desc":
                     desc = val;
                     break;
-                case "teamName":
-                    teamName = val;
+                case "teamNameKey":
+                    teamNameKey = val;
                     break;
                 case "teamSector":
                     // "Event", "League", "Training" 같은 문자열이 들어오는 형태
@@ -86,7 +86,7 @@ public class Rival_MasterDataReader : DataReaderBase
             }
         }
         DataList.Add(new Rival_MasterData(
-            teamId,desc,teamName,teamSector,
+            teamId,desc,teamNameKey,teamSector,
             teamArchetypeId,teamTier,minAndroidCount,
             minHumanCount,minAnimalCount,minCountSum,
             weightAndroid,weightHuman,weightAnimal,weightSum

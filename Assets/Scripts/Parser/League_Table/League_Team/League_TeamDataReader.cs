@@ -12,8 +12,8 @@ public class League_TeamDataReader : DataReaderBase
     // ✅ ItemData처럼 List<GSTU_Cell> 한 줄을 받아서 파싱
     internal void UpdateStats(List<GSTU_Cell> list, int rowIndex)
     {
-        string teamSelectionRuleId = null, desc = null;
-        int weekId = 0, priorityTeamCount = 0, selectionCountTotal = 0, leagueTeamTotal = 0, selectionCountD = 0, selectionCountC = 0, selectionCountB = 0, selectionCountA = 0;
+        string teamSelectionRuleId = null, desc = null, prioritySourceLeagueId = null, candidateSectorList = null;
+        int weekId = 0, priorityTeamCount = 0, selectionCountTotal = 0, leagueTeamTotal = 0, selectionCountD = 0, selectionCountC = 0, selectionCountB = 0, selectionCountA = 0, candidateSectorMask = 0;
         int selectionCountS = 0, selectionCountSS = 0, selectionCountSSS = 0;
 
         for (int i = 0; i < list.Count; i++)
@@ -41,12 +41,20 @@ public class League_TeamDataReader : DataReaderBase
                 case "priorityTeamCount":
                     int.TryParse(val, out priorityTeamCount);
                     break;
-
-                case "selectionCountTotal":
-                    int.TryParse(val, out selectionCountTotal);
+                case "prioritySourceLeagueId":
+                    prioritySourceLeagueId = val;
+                    break;
+                case "candidateSectorList":
+                    candidateSectorList = val;
+                    break;
+                case "candidateSectorMask":
+                    int.TryParse(val, out candidateSectorMask);
                     break;
                 case "leagueTeamTotal":
                     int.TryParse(val, out leagueTeamTotal);
+                    break;
+                case "selectionCountTotal":
+                    int.TryParse(val, out selectionCountTotal);
                     break;
                 case "selectionCountD":
                     int.TryParse(val, out selectionCountD);
@@ -73,8 +81,8 @@ public class League_TeamDataReader : DataReaderBase
         }
         DataList.Add(new League_TeamData(
             teamSelectionRuleId, desc, weekId, 
-            priorityTeamCount,selectionCountTotal,
-            leagueTeamTotal,selectionCountD,selectionCountC,
+            priorityTeamCount, prioritySourceLeagueId, candidateSectorList, candidateSectorMask,
+            leagueTeamTotal, selectionCountTotal,selectionCountD,selectionCountC,
             selectionCountB,selectionCountA,selectionCountS,
             selectionCountSS,selectionCountSSS
         ));

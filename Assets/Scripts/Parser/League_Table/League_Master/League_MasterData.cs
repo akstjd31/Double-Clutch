@@ -12,9 +12,10 @@ public struct League_MasterData
 {
     public string leagueId;
     public string desc;
-    public string leagueName;
+    public string leagueNameKey;
     public leagueType leagueType;
     public int leagueTeamCount;
+    public int roundCount;
     public int outConditionValue;
     public bool isSelectionRequired;
     public string teamSelectionRuleId;
@@ -22,17 +23,18 @@ public struct League_MasterData
     public string leagueRewardId;
 
     public League_MasterData(
-        string leagueId, string desc, string leagueName, 
-        leagueType leagueType, int leagueTeamCount, 
+        string leagueId, string desc, string leagueNameKey, 
+        leagueType leagueType, int leagueTeamCount, int roundCount,
         int outConditionValue, bool isSelectionRequired, 
         string teamSelectionRuleId, string leagueLevelId, 
         string leagueRewardId)
     {
         this.leagueId = leagueId;
         this.desc = desc;
-        this.leagueName = leagueName;
+        this.leagueNameKey = leagueNameKey;
         this.leagueType = leagueType;
         this.leagueTeamCount = leagueTeamCount;
+        this.roundCount = roundCount;
         this.outConditionValue = outConditionValue;
         this.isSelectionRequired = isSelectionRequired;
         this.teamSelectionRuleId = teamSelectionRuleId;
