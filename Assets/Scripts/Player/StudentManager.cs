@@ -1,8 +1,13 @@
 using System.Collections.Generic;
 using UnityEngine;
-
-public class StudentManager : MonoBehaviour
+/// <summary>
+/// 역할: 선수 영입 및 관리
+/// </summary>
+public class StudentManager : MonoBehaviour 
 {
+    int _idCount = 0; //선수 영입 시 부여할 고유 id 카운터(저장/로드 필요)
+    int _recruitLimit = 5; //선수 영입 최대치
+    public bool CanRecruit => _recruitLimit > _myStudents.Count;
     public static StudentManager Instance { get; private set; }
     [SerializeField] StudentFactory _studentFactory; //선수 생성용 팩토리
 
@@ -11,42 +16,43 @@ public class StudentManager : MonoBehaviour
     {
         Instance = this;
     }
-    public void PickNewStudent()
+
+    private void Start()
     {
-        Student newStudent = _studentFactory.MakeRandomStudent();
+        MakeTestStudents(4);
+    }
+
+    public void MakeTestStudents(int n) //선수를 랜덤하게 n명 채워넣는 매서드(테스트용)
+    {
+        for (int i = 0; i < n; i++)
+        {
+            RecruitNewStudent(_studentFactory.MakeRandomStudent());
+        }
+    }    
+
+    public void RecruitNewStudent(Student newStudent)
+    {
+        if (!CanRecruit)
+        {
+            Debug.Log("영입 최대치로 인한 영입 불가!");
+            return;
+        }
         _myStudents.Add(newStudent);
 
-        Debug.Log($"[신규 영입] {newStudent.Name} ({newStudent.Grade}학년)이 입학했습니다.");
+        newStudent.SetStudentId(_idCount++);
 
-        // 데이터 확인을 위해 즉시 상세 정보 출력
-        PrintStudentDetails(newStudent);
+        //여기 Ui 갱신 로직 넣기
     }
 
     // 전체 학생 목록 가져오기
     public List<Student> GetAllStudents() => _myStudents;
 
-    // 특정 학생 이름으로 찾기
-    public Student FindStudentByName(string name)
+    // id로 학생 조회
+    public Student FindStudentById(int id)
     {
-        return _myStudents.Find(s => s.Name == name);
+        return _myStudents.Find(s => s.StudentId == id);
     }
 
-    // 학생 상세 정보 로그 출력 (디버그용)
-    public void PrintStudentDetails(Student s)
-    {
-        string passiveNames = string.Join(", ", s.Passive.ConvertAll(p => p.skillName));
-        string statInfo = "";
-
-        // 1번 방식(GetStatValue)을 사용한다고 가정
-        foreach (StatType type in System.Enum.GetValues(typeof(StatType)))
-        {
-            statInfo += $"{type}: {s.GetCurrentStat(type)} ";
-        }
-
-        Debug.Log($"이름: {s.Name} | 학년: {s.Grade}\n" +
-                  $"패시브: [{passiveNames}]\n" +
-                  $"스탯: {statInfo}");
-    }
 
 
 }

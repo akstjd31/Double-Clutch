@@ -21,7 +21,7 @@ public class MatchTestBootstrapper : MonoBehaviour
         if (StudentManager.Instance != null && StudentManager.Instance.GetAllStudents().Count == 0)
         {
             Debug.Log("[Test] 切积 单捞磐 5疙 碍力 积己");
-            for (int i = 0; i < 5; i++) StudentManager.Instance.PickNewStudent();
+            StudentManager.Instance.MakeTestStudents(5);
         }
 
         RunMatchLogic();
@@ -105,12 +105,12 @@ public class MatchTestBootstrapper : MonoBehaviour
     private MatchPlayer ConvertStudentToMatchPlayer(Student s, int id, Position pos)
     {
         Dictionary<MatchStatType, int> stats = new Dictionary<MatchStatType, int>();
-        stats.Add(MatchStatType.TwoPoint, s.GetCurrentStat(StatType.Shot));
-        stats.Add(MatchStatType.ThreePoint, s.GetCurrentStat(StatType.ThreePoint));
-        stats.Add(MatchStatType.Pass, s.GetCurrentStat(StatType.Assist));
-        stats.Add(MatchStatType.Steal, s.GetCurrentStat(StatType.Steal));
-        stats.Add(MatchStatType.Block, s.GetCurrentStat(StatType.Block));
-        stats.Add(MatchStatType.Rebound, s.GetCurrentStat(StatType.Rebound));
+        stats.Add(MatchStatType.TwoPoint, s.GetCurrentStat(potential.Stat2pt));
+        stats.Add(MatchStatType.ThreePoint, s.GetCurrentStat(potential.Stat3pt));
+        stats.Add(MatchStatType.Pass, s.GetCurrentStat(potential.StatPass));
+        stats.Add(MatchStatType.Steal, s.GetCurrentStat(potential.StatSteal));
+        stats.Add(MatchStatType.Block, s.GetCurrentStat(potential.StatBlock));
+        stats.Add(MatchStatType.Rebound, s.GetCurrentStat(potential.StatRebound));
         stats.Add(MatchStatType.Dribble, 50);
         stats.Add(MatchStatType.Speed, 50);
         stats.Add(MatchStatType.Stamina, 100);
