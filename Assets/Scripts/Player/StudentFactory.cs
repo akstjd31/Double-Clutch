@@ -34,15 +34,13 @@ public class StudentFactory : MonoBehaviour
     List<Player_StartingStateData> _startingStates = new List<Player_StartingStateData>(); //스탯 최소값
     Player_MaxPotentialData _maxPotential; //스탯 최댓값
 
+    //이름 데이터 타입별(namePart) 분류 묶음
     List<string> _firstNames = new List<string>(); //성
     List<string> _middleNames = new List<string>(); //이름 중간자
     List<string> _lastNames = new List<string>(); //이름 끝자
-
-    List<Player_SpeciesData> _species = new List<Player_SpeciesData>(); //종족데이터 묶음
-    List<Player_PersonalityData> _personallities = new List<Player_PersonalityData>(); //성격 데이터 묶음
-    List<Player_PassiveData> _passives = new List<Player_PassiveData>(); //패시브 데이터 묶음
-    List<Player_TraitData> _traits = new List<Player_TraitData>(); //특성 데이터 묶음
-
+    
+    //비주얼 데이터 종족별(int specie) 분류 묶음
+    Dictionary<int, List<Player_VisualData>> _visualDataDict = new Dictionary<int, List<Player_VisualData>>();
 
     private void Start()
     {
@@ -54,6 +52,7 @@ public class StudentFactory : MonoBehaviour
         Student newStudent = new Student();
         
         newStudent.SetSpecie(GetRandomSpecie()); //종족 생성
+        newStudent.SetVisual(GetRandomVisual(newStudent.SpecieId));
         newStudent.SetGrade(GetrRandomGrade()); //학년 생성
         newStudent.SetPersonality(GetRandomPersonality()); //성격 생성
         newStudent.SetTrait(GetRandomTrait()); //특성 생성
@@ -61,7 +60,7 @@ public class StudentFactory : MonoBehaviour
         SetRandomPassive(newStudent); //패시브 생성        
         newStudent.SetStat(GetRandomStats(newStudent.Grade)); //스탯 생성
 
-        newStudent.Init();
+        newStudent.Init(_speciesDataReader, _personalityDataReader, _passiveDataReader, _traitDataReader);
 
         return newStudent;
     }
@@ -85,6 +84,20 @@ public class StudentFactory : MonoBehaviour
                     break;
             }
         }
+
+        foreach (var visualData in _visualDataReader.DataList)
+        {
+            int specieId = visualData.species; // 데이터에 포함된 종족 ID
+
+            // 딕셔너리에 해당 종족 키가 없으면 리스트를 새로 만들어줌
+            if (!_visualDataDict.ContainsKey(specieId))
+            {
+                _visualDataDict[specieId] = new List<Player_VisualData>();
+            }
+
+            // 해당 종족 리스트에 추가
+            _visualDataDict[specieId].Add(visualData);
+        }
     }
 
     
@@ -104,6 +117,12 @@ public class StudentFactory : MonoBehaviour
     {
         return _speciesDataReader.DataList[Random.Range(0, _speciesDataReader.DataList.Count)];
     }
+
+    private Player_VisualData GetRandomVisual(int specieId) //종족에 따라 랜덤한 비주얼 반환
+    {
+        return _visualDataDict[specieId][Random.Range(0, _visualDataDict[specieId].Count)];
+    }
+
     private Player_PersonalityData GetRandomPersonality() //랜덤한 성격 반환
     {
         return _personalityDataReader.DataList[Random.Range(0, _personalityDataReader.DataList.Count)];
@@ -157,7 +176,7 @@ public class StudentFactory : MonoBehaviour
         List<Stat> newStat = new List<Stat>();
         Player_StartingStateData stateSetting = _startingStateDataReader.DataList[grade - 1]; //해당 학년의 스탯 범위 가져오기
         Player_MaxPotentialData maxPotentialData = _maxPotentialDataReader.DataList[0];
-        foreach (StatType type in System.Enum.GetValues(typeof(StatType)))
+        foreach (potential type in System.Enum.GetValues(typeof(potential)))
         {            
             int currentValue = Random.Range(stateSetting.startMin, stateSetting.startMax + 1); //현재 스탯 할당
             int limitValue = Random.Range(maxPotentialData.minPotentialValue, maxPotentialData.maxPotentialValue + 1); //스탯 최대치 할당
@@ -169,7 +188,7 @@ public class StudentFactory : MonoBehaviour
             }
             if (limitValue <= currentValue) //100번 돌렸는데도 보정 안되었으면 강제 보정
             {
-                limitValue = currentValue + Random.Range(5, 15);
+                limitValue = currentValue + Random.Range(5, 15); //테이블에서 큰 변동 있을 시 확인해서 반영 필요!
             }
             Stat stat = new Stat(type, currentValue, limitValue);
             newStat.Add(stat);

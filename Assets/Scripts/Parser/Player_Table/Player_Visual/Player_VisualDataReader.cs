@@ -31,7 +31,7 @@ public class Player_VisualDataReader : DataReaderBase
                 case "visualId":
                     int.TryParse(val, out visualId);
                     break;
-                case "speciesId":
+                case "species":
                     int.TryParse(val, out speciesId);
                     break;
                 case "assetKey":
