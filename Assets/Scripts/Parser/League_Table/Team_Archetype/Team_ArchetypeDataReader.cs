@@ -10,7 +10,7 @@ public class Team_ArchetypeDataReader : DataReaderBase
 
     internal void UpdateStats(List<GSTU_Cell> list)
     {
-        string teamId = null, desc = null, teamCName = null;
+        string teamId = null, desc = null, teamANK = null;
         int cPG = 0, cSG = 0, cSF = 0, cPF = 0, cC = 0;
         float w2pt = 0, w3pt = 0, wP = 0, wB = 0, wS = 0, wR = 0;
 
@@ -32,8 +32,8 @@ public class Team_ArchetypeDataReader : DataReaderBase
                     desc = val;
                     break;
 
-                case "teamColorName":
-                    teamCName = val;
+                case "teamArchetypeNameKey":
+                    teamANK = val;
                     break;
                 
                 case "countPG":
@@ -84,7 +84,7 @@ public class Team_ArchetypeDataReader : DataReaderBase
 
         var teamData = new Team_ArchetypeData
         (
-            teamId, desc, teamCName, cPG, cSG, cSF, cPF, cC, w2pt, w3pt, wP, wB, wS, wR
+            teamId, desc, teamANK, cPG, cSG, cSF, cPF, cC, w2pt, w3pt, wP, wB, wS, wR
         );
 
         DataList.Add(teamData);
