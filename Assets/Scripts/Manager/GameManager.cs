@@ -14,6 +14,9 @@ using UnityEngine;
 
 public class GameManager : Singleton<GameManager>
 {
+    [Header("Player")]
+    public string SchoolName { get; set; }
+    public string PlayerName { get; set; }
 
     [Header("GameState")]
     private StateMachine _sm = new StateMachine();
@@ -48,10 +51,6 @@ public class GameManager : Singleton<GameManager>
             // PlayerPrefs.SetInt("FIRST_RUN_DONE", 0);
             save = new PlayerSaveData();
         }
-
-        // 테스트용
-        PlayerPrefs.SetInt("FIRST_RUN_DONE", 1);
-        PlayerPrefs.Save();
 
         _ctx = new GameContext(save, SaveLoadManager.Instance, file);
 
