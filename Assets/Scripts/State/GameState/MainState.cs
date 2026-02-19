@@ -6,8 +6,6 @@ public class MainState : IState, IUIActionHandler
     private readonly GameManager _gm;
     private readonly StateMachine _sm;
 
-    private const string KEY_FIRST_RUN_DONE = "FIRST_RUN_DONE";
-
     public MainState(GameManager gm, StateMachine sm)
     {
         _gm = gm;
@@ -30,13 +28,6 @@ public class MainState : IState, IUIActionHandler
         {
             case UIAction.Main_Start:
                 // _gm.Execute() 커맨드 수행
-                
-                if (IsFirstRun())
-                {
-                    NextStep<TutorialState>("Test_Tutorial");
-                    return;
-                }
-
                 NextStep<LobbyState>("Test_Lobby");
                 break;
 
@@ -49,9 +40,6 @@ public class MainState : IState, IUIActionHandler
                 break;
         }
     }
-
-    // 처음 실행하는건지?
-    private bool IsFirstRun() => PlayerPrefs.GetInt(KEY_FIRST_RUN_DONE, 0) == 0;
 
     // 다음 스텝에 대한 정보
     public void NextStep<T>(string sceneName) where T : class, IState

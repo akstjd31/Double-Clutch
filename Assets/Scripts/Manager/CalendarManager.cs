@@ -2,17 +2,29 @@ using System;
 using System.Xml.Schema;
 using UnityEngine;
 
+[Serializable]
+public struct Calendar
+{
+    public int year;
+    public int month;
+    public int week;
+
+    public Calendar(int y = 0, int m = 0, int w = 0)
+    {
+        year = y;
+        month = m;
+        week = w;
+    }
+}
+
 public class CalendarManager : Singleton<CalendarManager>
 {
-    public event Action OnWeekChanged;
+    public event Action<Calendar> OnWeekChanged;
     [SerializeField] private Calendar_TableDataReader _calReader;
-    [SerializeField] private int _currentYear = 0;
-    [SerializeField] private int _currentMonth;
-    [SerializeField] private int _currentWeek;
+    Calendar calendar = new Calendar();
     protected override void Awake()
     {
         base.Awake();
-
     }
 
     private void Start()
@@ -20,16 +32,17 @@ public class CalendarManager : Singleton<CalendarManager>
         NextTurn();
     }
 
-    private void NextTurn()
+    public void NextTurn()
     {
         if (_calReader == null) return;
 
-        var weekId = CalendarSaveData._weekId++;
+        // 임시 테스트용
+        var weekId = 0;//CalendarSaveData._weekId++;
 
         // 만약 전체 일정이 끝나게 된다면
         if (weekId >= _calReader.DataList.Count)
         {
-            _currentYear++;
+            calendar.year++;
             weekId = 1;
         }
 
@@ -78,9 +91,9 @@ public class CalendarManager : Singleton<CalendarManager>
 
         CalendarSaveData._weekId = weekId;
 
-        _currentMonth = data.month;
-        _currentWeek = data.weekNo;
-        OnWeekChanged?.Invoke();
+        calendar.month = data.month;
+        calendar.week = data.weekNo;
+        OnWeekChanged?.Invoke(this.calendar);
     }
 
     public bool HasExistStartCutscene(int weekId) => _calReader.DataList[weekId].startCutscene.Equals("Yes");
@@ -101,6 +114,8 @@ public class CalendarManager : Singleton<CalendarManager>
                 break;
         }
     }
+
+    public Calendar GetCalendar() => this.calendar;
 }
 
 public static class CalendarSaveData

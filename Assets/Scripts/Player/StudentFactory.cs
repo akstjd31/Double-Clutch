@@ -60,9 +60,14 @@ public class StudentFactory : MonoBehaviour
         SetRandomPassive(newStudent); //패시브 생성        
         newStudent.SetStat(GetRandomStats(newStudent.Grade)); //스탯 생성
 
-        newStudent.Init(_speciesDataReader, _personalityDataReader, _passiveDataReader, _traitDataReader);
+        InitStudent(newStudent);
 
         return newStudent;
+    }
+
+    public void InitStudent(Student target) //선수 생성시 & 저장 데이터 불러오기 시 호출
+    {
+        target.Init(_speciesDataReader, _personalityDataReader, _passiveDataReader, _traitDataReader);
     }
 
     private void InitDatas() //NameData만 타입별로 분류
@@ -74,13 +79,13 @@ public class StudentFactory : MonoBehaviour
             switch (nameData.namePart)
             {
                 case namePart.FirstName:
-                    _firstNames.Add(nameData.desc);
+                    _firstNames.Add(StringManager.Instance.GetString(nameData.nameKey));
                     break;
                 case namePart.MiddleName:
-                    _middleNames.Add(nameData.desc);
+                    _middleNames.Add(StringManager.Instance.GetString(nameData.nameKey));
                     break;
                 case namePart.LastName:
-                    _lastNames.Add(nameData.desc);
+                    _lastNames.Add(StringManager.Instance.GetString(nameData.nameKey));
                     break;
             }
         }
@@ -114,13 +119,20 @@ public class StudentFactory : MonoBehaviour
     }
 
     private Player_SpeciesData GetRandomSpecie() //랜덤한 종족 반환
-    {
+    {        
         return _speciesDataReader.DataList[Random.Range(0, _speciesDataReader.DataList.Count)];
     }
 
     private Player_VisualData GetRandomVisual(int specieId) //종족에 따라 랜덤한 비주얼 반환
     {
-        return _visualDataDict[specieId][Random.Range(0, _visualDataDict[specieId].Count)];
+        if (_visualDataDict.TryGetValue(specieId, out var value))
+        {
+            return _visualDataDict[specieId][Random.Range(0, _visualDataDict[specieId].Count)];
+        }
+        else
+        {
+            return new Player_VisualData();
+        }
     }
 
     private Player_PersonalityData GetRandomPersonality() //랜덤한 성격 반환

@@ -3,6 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum StudentState
+{
+    None, Tired, Injured
+}
+
 [Serializable]
 public class Student
 {
@@ -14,9 +19,13 @@ public class Student
     [SerializeField] int _personalityId = -1; // 성격 Id
     [SerializeField] List<int> _passiveIdList = new List<int>(); //패시브 Id
     [SerializeField] int _traitId = -1; //특성 Id
-    
     [SerializeField] int _grade = -1; //학년
     [SerializeField] List<Stat> _stats = new List<Stat>(); //스탯(잠재력)
+    
+    [SerializeField] Position _position;
+    [SerializeField] StudentState _state;
+    [SerializeField] int _condition = 100;
+
 
     //게임 실행 후 불러오는 데이터
     Player_SpeciesData _specieData; //종족
@@ -27,6 +36,8 @@ public class Student
     Dictionary<potential, Stat> _statDict = new Dictionary<potential, Stat>(); //스탯(잠재력)목록
     int _attack;
     int _defense;
+
+    
 
 
 
@@ -46,6 +57,9 @@ public class Student
     public int Grade => _grade;
     public int Attack => _attack;
     public int Defense => _defense;
+    public Position Position => _position;
+    public StudentState State => _state;
+    public int Condition => _condition;
 
     public int GetCurrentStat(potential type)
     {
@@ -154,6 +168,16 @@ public class Student
     {        
         _stats.Clear();
         _stats.AddRange(stat);
+    }
+
+    public void SetPosition(Position position)
+    {
+        _position = position;        
+    }
+
+    public void ChangeCondition(int amount)
+    {
+        _condition = Mathf.Clamp(_condition += amount, 0, 100);
     }
 
     #endregion
