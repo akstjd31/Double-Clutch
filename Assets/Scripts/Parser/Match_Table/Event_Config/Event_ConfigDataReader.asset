@@ -16,3 +16,106 @@ MonoBehaviour:
   associatedWorksheet: Event_Config
   START_ROW_LENGTH: 3
   END_ROW_LENGTH: -1
+  DataList:
+  - index: 1
+    logEventCode: GameStart
+    textTemplate: "\uACBD\uAE30\uAC00 \uC2DC\uC791\uB429\uB2C8\uB2E4! \uC810\uD504\uBCFC!"
+    scAdd: 0
+    soundResourceId: Sound_Cheer
+    cutInResourceId: 
+    videoResourceId: 
+  - index: 2
+    logEventCode: QuarterEnd
+    textTemplate: "{Quarter}\uCFFC\uD130\uAC00 \uC885\uB8CC\uB429\uB2C8\uB2E4."
+    scAdd: 0
+    soundResourceId: Sound_Clap
+    cutInResourceId: 
+    videoResourceId: 
+  - index: 3
+    logEventCode: GameEnd
+    textTemplate: "\uACBD\uAE30 \uC885\uB8CC!"
+    scAdd: 0
+    soundResourceId: Sound_Clap
+    cutInResourceId: 
+    videoResourceId: Video_Match_End
+  - index: 4
+    logEventCode: Dribble
+    textTemplate: "{PlayerName}, \uB4DC\uB9AC\uBE14\uC744 \uC2DC\uB3C4\uD569\uB2C8\uB2E4."
+    scAdd: 0
+    soundResourceId: 
+    cutInResourceId: 
+    videoResourceId: 
+  - index: 5
+    logEventCode: PassSucc
+    textTemplate: "{PlayerName}\uC758 \uAE54\uB054\uD55C \uD328\uC2A4."
+    scAdd: 0
+    soundResourceId: 
+    cutInResourceId: 
+    videoResourceId: 
+  - index: 6
+    logEventCode: Shoot2ptSucc
+    textTemplate: "{PlayerName}\uC758 \uC29B, \uAC00\uBCCD\uAC8C \uC131\uACF5\uD569\uB2C8\uB2E4!"
+    scAdd: 2
+    soundResourceId: Sound_Cheer
+    cutInResourceId: 
+    videoResourceId: 
+  - index: 7
+    logEventCode: Shoot3ptSucc
+    textTemplate: "{PlayerName}\uC758 3\uC810 \uC29B! \uB300\uB2E8\uD569\uB2C8\uB2E4!"
+    scAdd: 3
+    soundResourceId: Sound_Cheer
+    cutInResourceId: playerCutInResourceId01
+    videoResourceId: 
+  - index: 8
+    logEventCode: DunkSucc
+    textTemplate: "\uC640\uC6B0! {PlayerName}\uC758 \uC2AC\uB7A8 \uB369\uD06C!"
+    scAdd: 2
+    soundResourceId: Sound_Cheer
+    cutInResourceId: playerCutInResourceId02
+    videoResourceId: 
+  - index: 9
+    logEventCode: BuzzerBeater
+    textTemplate: "\uAE30\uC801 \uAC19\uC740 \uC29B! {PlayerName}\uC758 \uBC84\uC800\uBE44\uD130!"
+    scAdd: 2
+    soundResourceId: Sound_Cheer
+    cutInResourceId: playerCutInResourceId03
+    videoResourceId: 
+  - index: 10
+    logEventCode: Shoot2ptFail
+    textTemplate: "{PlayerName} \uC29B, \uB9C1\uC744 \uB9DE\uACE0 \uD280\uC5B4\uB098\uC624\uB294
+      \uACF5."
+    scAdd: 0
+    soundResourceId: 
+    cutInResourceId: 
+    videoResourceId: 
+  - index: 11
+    logEventCode: Shoot3ptFail
+    textTemplate: "3\uC810 \uC29B\uC744 \uC2DC\uB3C4\uD588\uC9C0\uB9CC, \uB4E4\uC5B4\uAC00\uC9C0
+      \uC54A\uC2B5\uB2C8\uB2E4."
+    scAdd: 0
+    soundResourceId: 
+    cutInResourceId: 
+    videoResourceId: 
+  - index: 12
+    logEventCode: Block
+    textTemplate: "\uC644\uBCBD\uD55C \uBE14\uB85C\uD0B9! \uACF5\uC774 \uC0C1\uB300\uC5D0\uAC8C
+      \uB118\uC5B4\uAC11\uB2C8\uB2E4!"
+    scAdd: 0
+    soundResourceId: Sound_Clap
+    cutInResourceId: 
+    videoResourceId: 
+  - index: 13
+    logEventCode: Steal
+    textTemplate: "\uC0C1\uB300\uC758 \uACF5\uC744 \uAC00\uB85C\uCC55\uB2C8\uB2E4!
+      \uB0A0\uCE74\uB85C\uC6B4 \uC2A4\uD2F8!"
+    scAdd: 0
+    soundResourceId: Sound_Clap
+    cutInResourceId: 
+    videoResourceId: 
+  - index: 14
+    logEventCode: Rebound
+    textTemplate: "{PlayerName}, \uB9AC\uBC14\uC6B4\uB4DC \uC7A1\uC544\uB0C5\uB2C8\uB2E4."
+    scAdd: 0
+    soundResourceId: Sound_Clap
+    cutInResourceId: 
+    videoResourceId: 
