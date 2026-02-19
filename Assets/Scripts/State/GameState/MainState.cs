@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class MainState : IState, IUIActionHandler
@@ -27,8 +28,7 @@ public class MainState : IState, IUIActionHandler
         {
             case UIAction.Main_Start:
                 // _gm.Execute() 커맨드 수행
-
-                GoLobby();
+                NextStep<LobbyState>("Test_Lobby");
                 break;
 
             case UIAction.Main_Quit:
@@ -41,10 +41,10 @@ public class MainState : IState, IUIActionHandler
         }
     }
 
-    public void GoLobby()
+    // 다음 스텝에 대한 정보
+    public void NextStep<T>(string sceneName) where T : class, IState
     {
-        // 씬 이름은 테스트용
-        _gm.SetNextFlow("Test_Lobby", _sm.Get<LobbyState>());
+        _gm.SetNextFlow(sceneName, _sm.Get<T>());
         _sm.ChangeState<LoadingState>();
     }
 }

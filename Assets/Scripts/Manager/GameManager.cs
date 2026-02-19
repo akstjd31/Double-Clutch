@@ -14,6 +14,9 @@ using UnityEngine;
 
 public class GameManager : Singleton<GameManager>
 {
+    [Header("Player")]
+    public string SchoolName { get; set; }
+    public string PlayerName { get; set; }
 
     [Header("GameState")]
     private StateMachine _sm = new StateMachine();
@@ -38,9 +41,16 @@ public class GameManager : Singleton<GameManager>
     private void InitCommandSystem()
     {  
         var file = "player_save.json";
-        // 임시 저장 경로
-        if (!SaveLoadManager.Instance.TryLoad(file, out PlayerSaveData save))
+        // 임시 저장 경로 (데이터 존재 여부에 따라 처음인지 아닌지를 판별)
+        if (SaveLoadManager.Instance.TryLoad(file, out PlayerSaveData save))
+        {
+            // PlayerPrefs.SetInt("FIRST_RUN_DONE", 1);
+        }
+        else
+        {
+            // PlayerPrefs.SetInt("FIRST_RUN_DONE", 0);
             save = new PlayerSaveData();
+        }
 
         _ctx = new GameContext(save, SaveLoadManager.Instance, file);
 
@@ -59,6 +69,7 @@ public class GameManager : Singleton<GameManager>
         _sm.Register(new MatchPrepState(this, _sm));
         _sm.Register(new MatchSimState(this, _sm));
         _sm.Register(new ResultState(this, _sm));
+        _sm.Register(new TutorialState(this, _sm));
     }
 
     private void Start()
