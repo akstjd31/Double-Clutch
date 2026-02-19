@@ -6,9 +6,9 @@ public class CalendarManager : Singleton<CalendarManager>
 {
     public event Action OnWeekChanged;
     [SerializeField] private Calendar_TableDataReader _calReader;
-    private int _currentYear = 0;
-    private int _currentMonth;
-    private int _currentWeek;
+    [SerializeField] private int _currentYear = 0;
+    [SerializeField] private int _currentMonth;
+    [SerializeField] private int _currentWeek;
     protected override void Awake()
     {
         base.Awake();
@@ -109,7 +109,7 @@ public static class CalendarSaveData
 
     public static int _weekId
     {
-        get => PlayerPrefs.GetInt(KEY_WEEK_ID, -1);
+        get => PlayerPrefs.GetInt(KEY_WEEK_ID, 0);
         set
         {
             PlayerPrefs.SetInt(KEY_WEEK_ID, value);
