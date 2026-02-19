@@ -16,7 +16,7 @@ public class Rival_MasterDataReader : DataReaderBase
         teamSector teamSector = default;
         string teamArchetypeId = null;
         teamTier teamTier = default;
-        int minAndroidCount = 0, minHumanCount = 0, minAnimalCount = 0, minCountSum = 0, weightAndroid = 0, weightHuman = 0, weightAnimal = 0, weightSum = 0;
+        int minHumanoidCount = 0, minHumanCount = 0, minAnimalCount = 0, minCountSum = 0, weightHumanoid = 0, weightHuman = 0, weightAnimal = 0, weightSum = 0;
 
         for (int i = 0; i < list.Count; i++)
         {
@@ -58,8 +58,8 @@ public class Rival_MasterDataReader : DataReaderBase
                         else if (Enum.TryParse(val, true, out teamTier e)) teamTier = e;
                     }
                     break;
-                case "minAndroidCount":
-                    int.TryParse(val, out minAndroidCount);
+                case "minHumanoidCount":
+                    int.TryParse(val, out minHumanoidCount);
                     break;
 
                 case "minHumanCount":
@@ -71,8 +71,8 @@ public class Rival_MasterDataReader : DataReaderBase
                 case "minCountSum":
                     int.TryParse(val, out minCountSum);
                     break;
-                case "weightAndroid":
-                    int.TryParse(val, out weightAndroid);
+                case "weightHumanoid":
+                    int.TryParse(val, out weightHumanoid);
                     break;
                 case "weightHuman":
                     int.TryParse(val, out weightHuman);
@@ -87,9 +87,9 @@ public class Rival_MasterDataReader : DataReaderBase
         }
         DataList.Add(new Rival_MasterData(
             teamId,desc,teamNameKey,teamSector,
-            teamArchetypeId,teamTier,minAndroidCount,
+            teamArchetypeId,teamTier, minHumanoidCount,
             minHumanCount,minAnimalCount,minCountSum,
-            weightAndroid,weightHuman,weightAnimal,weightSum
+            weightHumanoid, weightHuman,weightAnimal,weightSum
         ));
     }
 
