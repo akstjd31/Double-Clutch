@@ -51,7 +51,7 @@ public class MainState : IState, IUIActionHandler
     }
 
     // 처음 실행하는건지?
-    public bool IsFirstRun() => PlayerPrefs.GetInt(KEY_FIRST_RUN_DONE, 0) == 0;
+    private bool IsFirstRun() => PlayerPrefs.GetInt(KEY_FIRST_RUN_DONE, 0) == 0;
 
     // 다음 스텝에 대한 정보
     public void NextStep<T>(string sceneName) where T : class, IState
