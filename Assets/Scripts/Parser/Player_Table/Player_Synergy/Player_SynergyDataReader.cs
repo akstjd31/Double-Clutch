@@ -11,7 +11,7 @@ public class Player_SynergyDataReader : DataReaderBase
     internal void UpdateStats(List<GSTU_Cell> list, int rowIndex)
     {
         int synergyId = 0, traitID1 = 0, traitID2 = 0;
-        string synergyName = null;
+        string synergyName = null, synergyDesc = null;
         effectType eType = default;
         float eValue = 0;
 
@@ -53,6 +53,10 @@ public class Player_SynergyDataReader : DataReaderBase
                 case "effectValue":
                     float.TryParse(val, out eValue);
                     break;
+                
+                case "synergyDesc":
+                    synergyDesc = val;
+                    break;
             }
         }
 
@@ -60,7 +64,7 @@ public class Player_SynergyDataReader : DataReaderBase
         
         var synergyData = new PlayerSynergyData
         (
-            synergyId, traitID1, traitID2, synergyName, eType, eValue
+            synergyId, traitID1, traitID2, synergyName, eType, eValue, synergyDesc
         );
 
         DataList.Add(synergyData);
