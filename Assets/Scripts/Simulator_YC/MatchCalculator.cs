@@ -15,8 +15,8 @@ public static class MatchCalculator
 
     public static float CalculateDistance(Vector2 p1, Vector2 p2)
     {
-        float dx = (p2.x - p1.x) * ASPECT_RATIO;
-        float dy = (p2.y - p1.y) * 1.0f;
+        float dx = (p2.x - p1.x) * 1.0f;
+        float dy = (p2.y - p1.y) * ASPECT_RATIO;
         return Mathf.Sqrt(dx * dx + dy * dy);
     }
 
@@ -133,14 +133,14 @@ public static class MatchCalculator
 
 
     // 슛 성공 확률
-    public static bool CalculateShootSuccess(MatchPlayer attacker, float distance, List<MatchPlayer> enemies)
+    public static bool CalculateShootSuccess(MatchPlayer attacker, float distance, MatchTeam attackTeam, MatchTeam defendTeam)
     {
         float shootStat = (distance > 0.35f) ? attacker.GetStat(MatchStatType.ThreePoint) : attacker.GetStat(MatchStatType.TwoPoint);
 
         // 반경 0.05 내 가장 가까운 수비수의 블록 스탯 적용
         float blockStat = 0f;
         float minEnemyDist;
-        MatchPlayer nearestEnemy = GetNearestPlayer(attacker, enemies, out minEnemyDist);
+        MatchPlayer nearestEnemy = GetNearestPlayer(attacker, defendTeam.Roster, out minEnemyDist);
         if (nearestEnemy != null && minEnemyDist <= 0.05f)
         {
             blockStat = nearestEnemy.GetStat(MatchStatType.Block);
@@ -153,6 +153,28 @@ public static class MatchCalculator
         if (denominator <= 0) denominator = 1f;
 
         float prob = (shootStat / denominator) * 100f;
+        effectType targetEffect = (distance > 0.35f) ? effectType.Prob3pt : effectType.Prob2pt;
+        if (distance <= 0.05f) targetEffect = effectType.ProbDunk;
+
+        float passiveBonus = 0f;
+        foreach (var p in attacker.Passives)
+        {
+            if (p.effectType == targetEffect)
+            {
+                // 기획서 조건: BehindPoint (점수가 지고 있을 때 발동)
+                if (p.triggerType == "BehindPoint")
+                {
+                    if (defendTeam.Score - attackTeam.Score >= p.triggerValue)
+                        passiveBonus += (p.effectValue * 100f); // 기획서의 0.1을 10%로 변환
+                }
+                // 무조건 발동 등 다른 조건 추가 가능
+                else
+                {
+                    passiveBonus += (p.effectValue * 100f);
+                }
+            }
+        }
+        prob += passiveBonus; // 최종 확률에 패시브 더하기
 
         return Random.Range(0f, 100f) <= prob;
     }

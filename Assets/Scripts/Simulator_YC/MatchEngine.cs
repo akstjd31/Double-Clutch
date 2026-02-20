@@ -72,6 +72,11 @@ public class MatchEngine : MonoBehaviour
             // 선택한 효과 적용
             state.ApplyHalfTimeEffect(uiManager.SelectedEventIndex);
         }
+        // 후반전 재생 시작 전에 CourtPanel 자식 전부 즉시 삭제
+        foreach (Transform child in replayer.CourtPanel)
+        {
+            Destroy(child.gameObject);
+        }
 
         // 후반전(3~4쿼터 및 연장전) 연산
         CalculateUntilQuarter(4);
@@ -155,7 +160,7 @@ public class MatchEngine : MonoBehaviour
         MatchTeam defendTeam = (_currentPossession == TeamSide.Home) ? _awayTeam : _homeTeam;
 
         if (_ballHolder == null || !attackTeam.Roster.Contains(_ballHolder))
-            _ballHolder = attackTeam.GetPlayerByPosition(Position.PG);
+            _ballHolder = attackTeam.GetPlayerByPosition(Position.PG) ?? attackTeam.Roster[0];
 
         Vector2 hoopPos = (_currentPossession == TeamSide.Home) ? new Vector2(0.5f, 0.95f) : new Vector2(0.5f, 0.05f);
         float distToHoop = MatchCalculator.CalculateDistance(_ballHolder.LogicPosition, hoopPos);
@@ -167,22 +172,41 @@ public class MatchEngine : MonoBehaviour
         float timeCost = UnityEngine.Random.Range(5f, 10f);
         _simTime -= timeCost;
 
-        switch (action)
+        if (_simTime <= 0)
         {
-            case 0: DoShoot(_ballHolder, attackTeam, defendTeam, distToHoop, hoopPos); break;
-            case 1: DoPass(_ballHolder, attackTeam, defendTeam); break;
-            case 2: DoDribble(_ballHolder, defendTeam.Roster, hoopPos); break;
+            _simTime = 0; // 시간 마이너스 방지
+
+            if (action == 0)
+            {
+                // 슛을 시도했는데 마침 0초가 됨 -> 버저비터 찬스! (마지막 매개변수 true 전달)
+                DoShoot(_ballHolder, attackTeam, defendTeam, distToHoop, hoopPos, true);
+            }
+            else
+            {
+                // 패스나 드리블 중에 시간이 끝남 -> 공격 무산 및 쿼터 종료
+                RecordLog("시간 초과! 공격이 무산되며 쿼터가 종료됩니다.", "TIME_OVER");
+            }
+        }
+        else
+        {
+            // 시간이 넉넉히 남은 일반적인 상황
+            switch (action)
+            {
+                case 0: DoShoot(_ballHolder, attackTeam, defendTeam, distToHoop, hoopPos, false); break;
+                case 1: DoPass(_ballHolder, attackTeam, defendTeam); break;
+                case 2: DoDribble(_ballHolder, defendTeam.Roster, hoopPos); break;
+            }
         }
     }
 
-    private void DoShoot(MatchPlayer shooter, MatchTeam attackTeam, MatchTeam defendTeam, float distance, Vector2 hoopPos)
+    private void DoShoot(MatchPlayer shooter, MatchTeam attackTeam, MatchTeam defendTeam, float distance, Vector2 hoopPos, bool isBuzzerBeater)
     {
         bool isThree = distance > 0.35f;
         bool isDunk = distance <= 0.05f;
 
         int score = isThree ? 3 : 2;
 
-        bool success = MatchCalculator.CalculateShootSuccess(shooter, distance, defendTeam.Roster);
+        bool success = MatchCalculator.CalculateShootSuccess(shooter, distance, attackTeam, defendTeam);
 
         MatchLogData log = new MatchLogData();
         log.GameTime = Mathf.Max(0, _simTime);
@@ -196,21 +220,18 @@ public class MatchEngine : MonoBehaviour
         log.LogText = success ? $"{shooter.PlayerName} scored!" : $"{shooter.PlayerName} missed.";
         log.BallPos = shooter.LogicPosition;
         // 버저비터를 먼저 체크하고, 아닐 때만 덩크/3점 체크
-        if (_simTime <= 0 && success)
+        if (isBuzzerBeater && success)
         {
-            // 버저비터 최우선
             log.IsCutIn = true;
             log.CutInType = "BUZZER";
         }
         else if (success && isDunk)
         {
-            // 덩크
             log.IsCutIn = true;
             log.CutInType = "DUNK";
         }
         else if (success && isThree)
         {
-            // 3점슛
             log.IsCutIn = true;
             log.CutInType = "3PT";
         }
@@ -219,6 +240,7 @@ public class MatchEngine : MonoBehaviour
             log.IsCutIn = false;
             log.CutInType = "";
         }
+
         if (success && !isThree && !isDunk && _simTime > 0)
         {
             log.SfxType = "CHEER";
@@ -228,16 +250,20 @@ public class MatchEngine : MonoBehaviour
 
         if (success)
         {
-            SwitchPossession();
-            // 공을 허용한 팀(defendTeam)의 PG가 공을 가져감
-            //    → 위치는 그대로 (역공 시작)
+            SwitchPossession(false);
             _ballHolder = defendTeam.GetPlayerByPosition(Position.PG) ?? defendTeam.Roster[0];
+            Vector2 ourHoop = (_currentPossession == TeamSide.Home) ? new Vector2(0.5f, 0.05f) : new Vector2(0.5f, 0.95f);
+            _ballHolder.LogicPosition = ourHoop;
         }
         else
         {
             float yMin = (_currentPossession == TeamSide.Home) ? hoopPos.y - 0.2f : hoopPos.y;
             float yMax = (_currentPossession == TeamSide.Home) ? hoopPos.y : hoopPos.y + 0.2f;
-            Vector2 dropPos = hoopPos + new Vector2(UnityEngine.Random.Range(-0.2f, 0.2f), UnityEngine.Random.Range(-0.2f, 0.0f));
+            float yDropOffset = (_currentPossession == TeamSide.Home) ?
+                    UnityEngine.Random.Range(-0.2f, 0.0f) :  // 홈팀 공격 시: 골대(0.95)보다 아래로 떨어짐
+                    UnityEngine.Random.Range(0.0f, 0.2f);    // 어웨이 공격 시: 골대(0.05)보다 위로 떨어짐
+
+            Vector2 dropPos = hoopPos + new Vector2(UnityEngine.Random.Range(-0.2f, 0.2f), yDropOffset);
             List<MatchPlayer> allPlayers = new List<MatchPlayer>();
             allPlayers.AddRange(attackTeam.Roster);
             allPlayers.AddRange(defendTeam.Roster);
@@ -246,7 +272,7 @@ public class MatchEngine : MonoBehaviour
             RecordLog($"Rebound grabbed by {rebounder.PlayerName}!", "REBOUND");
             _ballHolder = rebounder;
 
-            if (defendTeam.Roster.Contains(rebounder)) SwitchPossession();
+            if (defendTeam.Roster.Contains(rebounder)) SwitchPossession(false); // 리바운드 후에도 자리 리셋 없이 진행하려면 false
         }
     }
 
@@ -288,14 +314,16 @@ public class MatchEngine : MonoBehaviour
         dribbler.LogicPosition = new Vector2(Mathf.Clamp01(dribbler.LogicPosition.x), Mathf.Clamp01(dribbler.LogicPosition.y));
     }
 
-    private void SwitchPossession()
+    private void SwitchPossession(bool resetPositions = true)
     {
 
         MatchTeam currentAttackTeam = (_currentPossession == TeamSide.Home) ? _homeTeam : _awayTeam;
         MatchTeam currentDefendTeam = (_currentPossession == TeamSide.Home) ? _awayTeam : _homeTeam;
-
-        ResetToDefensePosition(currentAttackTeam);
-        ResetToAttackPosition(currentDefendTeam);
+        if (resetPositions)
+        {
+            ResetToDefensePosition(currentAttackTeam);
+            ResetToAttackPosition(currentDefendTeam);
+        }
 
         _currentPossession = (_currentPossession == TeamSide.Home) ? TeamSide.Away : TeamSide.Home;
     }
