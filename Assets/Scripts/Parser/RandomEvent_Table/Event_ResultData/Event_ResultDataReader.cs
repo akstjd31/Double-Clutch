@@ -16,7 +16,7 @@ public class Event_ResultDataReader : DataReaderBase
         string scriptId = null; 
         string matchPersonalityId = null; 
         int outcomeGrade = 0; 
-        potentialType potentialChangeType = default;
+        potential potentialChangeType = default;
 
         int potentialChangeValue = 0;
         int conditionChange = 0;
@@ -52,8 +52,8 @@ public class Event_ResultDataReader : DataReaderBase
                 case "potentialChangeType":
                     if (!string.IsNullOrEmpty(val))
                     {
-                        if (int.TryParse(val, out var eInt)) potentialChangeType = (potentialType)eInt;
-                        else if (Enum.TryParse(val, true, out potentialType e)) potentialChangeType = e;
+                        if (int.TryParse(val, out var eInt)) potentialChangeType = (potential)eInt;
+                        else if (Enum.TryParse(val, true, out potential e)) potentialChangeType = e;
                     }
                     break;
 
