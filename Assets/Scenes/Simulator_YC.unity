@@ -1458,12 +1458,12 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 1852637643}
   - {fileID: 2139340026}
   - {fileID: 1201442167}
   - {fileID: 1658860866}
   - {fileID: 450184210}
   - {fileID: 992547262}
-  - {fileID: 1852637643}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -2889,8 +2889,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MatchReplayer
   _uiManager: {fileID: 1085035134}
   _matchState: {fileID: 1085035131}
-  _courtPanel: {fileID: 0}
+  _courtPanel: {fileID: 1852637643}
   PlaybackSpeed: 1
+  _audioSource: {fileID: 0}
+  _sfxCheer: {fileID: 0}
+  _sfxClap: {fileID: 0}
 --- !u!4 &1627678542
 Transform:
   m_ObjectHideFlags: 0

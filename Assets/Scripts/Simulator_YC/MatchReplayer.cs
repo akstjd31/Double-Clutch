@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
+using System.Reflection;
 
 public class MatchReplayer : MonoBehaviour
 {
@@ -21,6 +22,12 @@ public class MatchReplayer : MonoBehaviour
     // 홈/어웨이 골대 UI 오브젝트
     private RectTransform _homeHoopUI;
     private RectTransform _awayHoopUI;
+
+    // 오디오 관련 컴포넌트 추가
+    [Header("Audio Settings")]
+    [SerializeField] private AudioSource _audioSource;
+    [SerializeField] private AudioClip _sfxCheer; // 2점슛 함성 사운드
+    [SerializeField] private AudioClip _sfxClap;  // 스틸 박수 사운드
 
     private List<MatchLogData> _logs;
     public System.Action OnReplayEnded;
@@ -147,6 +154,16 @@ public class MatchReplayer : MonoBehaviour
                 _uiManager.UpdateScoreBoard(_matchState);
             }
 
+            //  사운드 재생 로직
+
+            if (!string.IsNullOrEmpty(log.SfxType) && _audioSource != null)
+            {
+                if (log.SfxType == "CHEER" && _sfxCheer != null)
+                    _audioSource.PlayOneShot(_sfxCheer);
+                else if (log.SfxType == "CLAP" && _sfxClap != null)
+                    _audioSource.PlayOneShot(_sfxClap);
+            }
+
             // 선수 이동
             MoveAllCircles(_matchState.HomeTeam, log.HomePositions, 0.5f / speed);
             MoveAllCircles(_matchState.AwayTeam, log.AwayPositions, 0.5f / speed);
@@ -200,8 +217,6 @@ public class MatchReplayer : MonoBehaviour
         OnReplayEnded?.Invoke();
     }
 
-
-    // 캡슐 이동 처리 함수
     private void MoveAllCircles(MatchTeam team, Vector2[] posArray, float duration)
     {
         for (int i = 0; i < team.Roster.Count; i++)

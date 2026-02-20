@@ -219,6 +219,10 @@ public class MatchEngine : MonoBehaviour
             log.IsCutIn = false;
             log.CutInType = "";
         }
+        if (success && !isThree && !isDunk && _simTime > 0)
+        {
+            log.SfxType = "CHEER";
+        }
 
         MatchLogs.Add(log);
 
@@ -255,7 +259,13 @@ public class MatchEngine : MonoBehaviour
         bool success = MatchCalculator.CalculatePassSuccess(passer, receiver, defendTeam.Roster, out interceptor);
 
         if (success) { RecordLog($"Pass to {receiver.PlayerName}", "PASS"); _ballHolder = receiver; }
-        else { RecordLog($"Pass Intercepted by {interceptor.PlayerName}!", "STEAL"); SwitchPossession(); _ballHolder = interceptor; }
+        else
+        {
+            // 스틸(패스 차단) 성공 시 박수 사운드 예약
+            RecordLog($"Pass Intercepted by {interceptor.PlayerName}!", "STEAL", "CLAP");
+            SwitchPossession();
+            _ballHolder = interceptor;
+        }
     }
 
     private void DoDribble(MatchPlayer dribbler, List<MatchPlayer> enemies, Vector2 hoopPos)
@@ -302,13 +312,14 @@ public class MatchEngine : MonoBehaviour
 
 
 
-    private void RecordLog(string text, string type)
+    private void RecordLog(string text, string type, string sfxType = "")
     {
         MatchLogData log = new MatchLogData();
         log.GameTime = Mathf.Max(0, _simTime);
         log.Quarter = _simQuarter;
         log.LogText = text;
         log.EventType = type;
+        log.SfxType = sfxType;
         if (_ballHolder != null) log.BallPos = _ballHolder.LogicPosition;
 
         SavePositionsToLog(log);

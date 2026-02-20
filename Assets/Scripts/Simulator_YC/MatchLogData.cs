@@ -20,6 +20,9 @@ public class MatchLogData
     public bool IsCutIn;        // 컷인 연출 여부
     public string CutInType;    // "DUNK", "3PT", "BUZZER"
 
+    // 사운드 연출용 타입
+    public string SfxType;
+
     public Vector2 BallPos;     // 공이 위치해야 할 논리 좌표 (0~1)
 
     // 오프볼 무브 연출을 위해 10명 선수의 좌표를 매 턴 저장
