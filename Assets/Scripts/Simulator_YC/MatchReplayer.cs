@@ -29,12 +29,17 @@ public class MatchReplayer : MonoBehaviour
     [SerializeField] private AudioClip _sfxCheer; // 2점슛 함성 사운드
     [SerializeField] private AudioClip _sfxClap;  // 스틸 박수 사운드
 
+    public RectTransform CourtPanel => _courtPanel;
     private List<MatchLogData> _logs;
     public System.Action OnReplayEnded;
 
     public void Init(List<MatchLogData> logs)
     {
         _logs = logs;
+
+        // 기존 선수 오브젝트 전부 정리 후 새로 생성
+        CleanUpVisuals();
+
         SpawnPlayerCircles(_matchState.HomeTeam, Color.blue);
         SpawnPlayerCircles(_matchState.AwayTeam, Color.red);
         SpawnHoops();
@@ -42,6 +47,27 @@ public class MatchReplayer : MonoBehaviour
 
         if (_uiManager != null) _uiManager.UpdateScoreBoard(_matchState);
     }
+
+    private void CleanUpVisuals()
+    {
+        foreach (Transform child in _courtPanel)
+        {
+            DestroyImmediate(child.gameObject);
+        }
+
+        _ballUI = null;
+        _homeHoopUI = null;
+        _awayHoopUI = null;
+
+        if (_matchState.HomeTeam != null)
+            foreach (var player in _matchState.HomeTeam.Roster)
+                player.VisualObject = null;
+
+        if (_matchState.AwayTeam != null)
+            foreach (var player in _matchState.AwayTeam.Roster)
+                player.VisualObject = null;
+    }
+
 
     // 선수 동그라미 생성
     private void SpawnPlayerCircles(MatchTeam team, Color color)
@@ -201,7 +227,7 @@ public class MatchReplayer : MonoBehaviour
                     _uiManager.UpdateScoreBoard(_matchState);
                     if (log.IsCutIn)
                     {
-                        _uiManager.ShowCutInEffect(log.CutInType);
+                        _uiManager.ShowCutInEffect(log.CutInType, speed);
                         yield return new WaitForSeconds(1.5f / speed);
                     }
                 }
