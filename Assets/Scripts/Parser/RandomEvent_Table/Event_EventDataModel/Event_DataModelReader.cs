@@ -11,7 +11,7 @@ public class Event_DataModelReader : DataReaderBase
     internal void UpdateStats(List<GSTU_Cell> list, int rowIndex)
     {
         string eventId = null;
-        potentialType mainPotentialType = default;
+        potential mainPotentialType = default;
         int requiredPotentialValue = 0;
         float potentialPercent = 0;
         string eventPriority = null;
@@ -34,8 +34,8 @@ public class Event_DataModelReader : DataReaderBase
                 case "mainPotentialType":
                     if (!string.IsNullOrEmpty(val))
                     {
-                        if (int.TryParse(val, out var eInt)) mainPotentialType = (potentialType)eInt;
-                        else if (Enum.TryParse(val, true, out potentialType e)) mainPotentialType = e;
+                        if (int.TryParse(val, out var eInt)) mainPotentialType = (potential)eInt;
+                        else if (Enum.TryParse(val, true, out potential e)) mainPotentialType = e;
                     }
                     break;
 

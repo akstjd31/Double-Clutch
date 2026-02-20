@@ -1,6 +1,11 @@
 ﻿using System;
 using UnityEngine;
 
+public enum textType
+{
+    Choice, Desc, End
+}
+
 [Serializable]
 public struct Event_ChoiceData
 {

@@ -8,7 +8,7 @@ public struct Event_ResultData
     public string scriptId;
     public string matchPersonalityId;
     public int outcomeGrade;
-    public potentialType potentialChangeType;
+    public potential potentialChangeType;
 
     public int potentialChangeValue;
     public int conditionChange;
@@ -20,7 +20,7 @@ public struct Event_ResultData
     public string floatingText;
 
     public Event_ResultData(
-        string resultId, string scriptId, string matchPersonalityId, int outcomeGrade, potentialType potentialChangeType,
+        string resultId, string scriptId, string matchPersonalityId, int outcomeGrade, potential potentialChangeType,
         int potentialChangeValue, int conditionChange, string statusChange, string reactionPortraitId, string resultscriptKey,
         string seId, string floatingText
         )
