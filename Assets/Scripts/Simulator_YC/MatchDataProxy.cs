@@ -28,30 +28,44 @@ public struct TeamTactics
 }
 
 
-public static class MatchDataProxy
+public class MatchDataProxy : MonoBehaviour
 {
-    public static float GetBalance(string key)
+    public static MatchDataProxy Instance { get; private set; }
+
+    [Header("Balance Settings")]
+    [SerializeField] private int W_Shot_Base = 1;     // 101: 슛 기본 가중치
+    [SerializeField] private int W_Pass_Base = 1;     // 102: 패스 기본 가중치
+    [SerializeField] private int W_Dribble_Base = 1;  // 103: 드리블 기본 가중치
+    [SerializeField] private float Pen_Dist_Hoop = 0.5f; // 104: 골대 거리 페널티 계수
+    [SerializeField] private float Pen_Def_Block = 1f;   // 105: 수비 블록 페널티 계수
+    [SerializeField] private float Pen_Def_Steal = 1f;   // 106: 수비 스틸 페널티 계수
+    [SerializeField] private int W_Default = 1;       // 107: 기본값
+
+    private void Awake()
+    {
+        if (Instance == null) Instance = this;
+        else Destroy(gameObject);
+    }
+
+    public float GetBalance(string key)
     {
         switch (key)
         {
-            case "DIST_3POINT_LINE": return 0.35f;
-            case "DIST_DUNK_RANGE": return 0.05f;
-            case "DIST_PENALTY": return 0.5f;
+            case "W_Shot_Base": return W_Shot_Base;
+            case "W_Pass_Base": return W_Pass_Base;
+            case "W_Dribble_Base": return W_Dribble_Base;
+            case "Pen_Dist_Hoop": return Pen_Dist_Hoop;
+            case "Pen_Def_Block": return Pen_Def_Block;
+            case "Pen_Def_Steal": return Pen_Def_Steal;
+            case "W_Default": return W_Default;
             default:
                 Debug.LogError($"[MatchDataProxy] 알 수 없는 키값: {key}");
                 return 0f;
         }
-
-        // [나중] : 담당자가 코드를 주면 위 switch문을 지우고 아래 한 줄로
-        // return Global.Data.MatchBalance.Get(key).Value; 
     }
 
-    // 전술 ID로 가중치 가져오기
-    // (League_Table.xlsx - Team_Color_Table.csv 데이터 기반)
-    public static TeamTactics GetTactics(string teamColorId)
+    public TeamTactics GetTactics(string teamColorId)
     {
-        // 테이블 미정 → 전부 기본값 1.0으로 반환
-        // 추후 테이블 확정되면 여기에 전술별 보정값 채워넣기
         switch (teamColorId)
         {
             case "TC_DEF_Base":
@@ -63,8 +77,7 @@ public static class MatchDataProxy
             case "TC_BIG_Base":
             case "TC_SML_Base":
             default:
-                return new TeamTactics(); // 전부 1.0
+                return new TeamTactics();
         }
     }
-
 }

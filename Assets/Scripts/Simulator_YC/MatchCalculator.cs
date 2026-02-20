@@ -54,6 +54,14 @@ public static class MatchCalculator
     // [기획서 6.2] 행동 결정
     public static int DecideAction(MatchPlayer player, float distToHoop, TeamTactics tactics, List<MatchPlayer> teammates, List<MatchPlayer> enemies)
     {
+        // 밸런스 값 가져오기
+        float penDistHoop = MatchDataProxy.Instance.GetBalance("Pen_Dist_Hoop");
+        float penBlock = MatchDataProxy.Instance.GetBalance("Pen_Def_Block");
+        float penSteal = MatchDataProxy.Instance.GetBalance("Pen_Def_Steal");
+        float wShotBase = MatchDataProxy.Instance.GetBalance("W_Shot_Base");
+        float wPassBase = MatchDataProxy.Instance.GetBalance("W_Pass_Base");
+        float wDribBase = MatchDataProxy.Instance.GetBalance("W_Dribble_Base");
+
         float nearestEnemyDist;
         MatchPlayer nearestEnemy = GetNearestPlayer(player, enemies, out nearestEnemyDist);
 
@@ -62,17 +70,12 @@ public static class MatchCalculator
         float enemyBlock = (nearestEnemy != null) ? nearestEnemy.GetStat(MatchStatType.Block) : 0f;
         float wShoot = (distToHoop > 0.35f) ? tactics.bonusThreePoint : tactics.bonusTwoPoint;
 
-        // 수비 압박 (0~1 사이로 정규화)
-        float blockPressure = enemyBlock / 100f * (1f / (nearestEnemyDist + 0.1f));
-        blockPressure = Mathf.Clamp(blockPressure, 0f, 1f); // 최대 1로 제한
-
         LastShootStat = shootStat;
-        LastBlockPressure = enemyBlock * (1f / (nearestEnemyDist + 0.1f));
+        LastBlockPressure = enemyBlock * (1f / (nearestEnemyDist + penBlock));
 
-
-        float scoreShoot = (shootStat * wShoot)
-                 - (distToHoop * 100f * wShoot)
-                 - (enemyBlock * (1f / (nearestEnemyDist + 0.1f)) * wShoot);
+        float scoreShoot = (shootStat * wShoot * wShotBase)
+                         - (distToHoop * penDistHoop * wShoot)
+                         - (enemyBlock * (1f / (nearestEnemyDist + penBlock)) * wShoot);
 
         // 패스 점수 공식
         float maxPassScore = -999f;
@@ -89,15 +92,15 @@ public static class MatchCalculator
             {
                 if (DistancePointToLineSegment(e.LogicPosition, player.LogicPosition, mate.LogicPosition) < 0.03f)
                 {
-                    hasEnemyOnPath = 1;                              // 경로상 적 있음
-                    pathEnemySteal = e.GetStat(MatchStatType.Steal); // 해당 적의 스틸 스탯
+                    hasEnemyOnPath = 1;
+                    pathEnemySteal = e.GetStat(MatchStatType.Steal);
                     break;
                 }
             }
 
-            float currentPassScore = (mate.GetStat(MatchStatType.Pass) * tactics.bonusPass)
-                       + (mateNearestEnemyDist * 100f)
-                       - (hasEnemyOnPath * pathEnemySteal * tactics.bonusPass);
+            float currentPassScore = (mate.GetStat(MatchStatType.Pass) * tactics.bonusPass * wPassBase)
+                                   + (mateNearestEnemyDist * penDistHoop)
+                                   - (hasEnemyOnPath * pathEnemySteal * tactics.bonusPass);
 
             if (currentPassScore > maxPassScore) maxPassScore = currentPassScore;
         }
@@ -105,20 +108,16 @@ public static class MatchCalculator
 
         // 드리블 점수 공식
         float enemySteal = (nearestEnemy != null) ? nearestEnemy.GetStat(MatchStatType.Steal) : 0f;
-        float stealPressure = enemySteal / 100f * (1f / (nearestEnemyDist + 0.1f));
-        stealPressure = Mathf.Clamp(stealPressure, 0f, 1f); // 최대 1로 제한
 
-        float scoreDribble = (player.GetStat(MatchStatType.Pass) * tactics.bonusDribble)
-                   + (nearestEnemyDist * 100f * tactics.bonusDribble)
-                   + (distToHoop * 100f * tactics.bonusDribble)
-                   - (enemySteal * (1f / (nearestEnemyDist + 0.1f)) * tactics.bonusDribble);
-
+        float scoreDribble = (player.GetStat(MatchStatType.Pass) * tactics.bonusDribble * wDribBase)
+                           + (nearestEnemyDist * penDistHoop * tactics.bonusDribble)
+                           + (distToHoop * penDistHoop * tactics.bonusDribble)
+                           - (enemySteal * (1f / (nearestEnemyDist + penSteal)) * tactics.bonusDribble);
 
         scoreShoot = Mathf.Max(0, scoreShoot);
         scorePass = Mathf.Max(0, scorePass);
         scoreDribble = Mathf.Max(0, scoreDribble);
 
-        // 임시 디버그용
         LastShootScore = scoreShoot;
         LastPassScore = scorePass;
         LastDribbleScore = scoreDribble;
@@ -127,10 +126,11 @@ public static class MatchCalculator
         if (total <= 0) return 1;
 
         float rand = Random.Range(0, total);
-        if (rand < scoreShoot) return 0; // Shoot
-        else if (rand < scoreShoot + scorePass) return 1; // Pass
-        else return 2; // Dribble
+        if (rand < scoreShoot) return 0;
+        else if (rand < scoreShoot + scorePass) return 1;
+        else return 2;
     }
+
 
     // 슛 성공 확률
     public static bool CalculateShootSuccess(MatchPlayer attacker, float distance, List<MatchPlayer> enemies)

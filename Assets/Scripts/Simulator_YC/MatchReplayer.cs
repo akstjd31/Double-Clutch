@@ -183,9 +183,10 @@ public class MatchReplayer : MonoBehaviour
                     ballRT.anchoredPosition = LogicToUIPos(log.BallPos);
                     ballRT.DOAnchorPos(hoopUIPos, 0.5f / speed);
                 }
-                else if (log.EventType == "PASS" || log.EventType == "DRIBBLE")
+                else
                 {
-                    ballRT.DOAnchorPos(targetUIPos, 0.4f / speed);
+
+                    ballRT.DOAnchorPos(targetUIPos, 0.3f / speed);
                 }
             }
 
