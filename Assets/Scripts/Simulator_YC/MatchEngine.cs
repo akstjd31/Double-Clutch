@@ -160,7 +160,7 @@ public class MatchEngine : MonoBehaviour
         Vector2 hoopPos = (_currentPossession == TeamSide.Home) ? new Vector2(0.5f, 0.95f) : new Vector2(0.5f, 0.05f);
         float distToHoop = MatchCalculator.CalculateDistance(_ballHolder.LogicPosition, hoopPos);
 
-        TeamTactics tactics = MatchDataProxy.GetTactics(attackTeam.TeamColorId);
+        TeamTactics tactics = MatchDataProxy.Instance.GetTactics(attackTeam.TeamColorId);
 
         int action = MatchCalculator.DecideAction(_ballHolder, distToHoop, tactics, attackTeam.Roster, defendTeam.Roster);
 
