@@ -62,7 +62,11 @@ public class MatchState : MonoBehaviour
 
         AddLog($"=== Half-Time Event Applied. Choice Index: {choiceIndex} ===");
     }
-
+    public void SetReplayState(int quarter, float time)
+    {
+        _currentQuarter = quarter;
+        _remainTime = time;
+    }
     /// <summary>
     /// 시간 흐름 처리 (행동 하나당 소요 시간 차감)
     /// </summary>

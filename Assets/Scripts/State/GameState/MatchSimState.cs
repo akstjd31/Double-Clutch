@@ -86,8 +86,7 @@ public class MatchSimState : IState
                     { MatchStatType.TwoPoint, 50 }, { MatchStatType.ThreePoint, 50 },
                     { MatchStatType.Pass, 50 }, { MatchStatType.Steal, 50 },
                     { MatchStatType.Block, 50 }, { MatchStatType.Rebound, 50 },
-                    { MatchStatType.Dribble, 50 }, { MatchStatType.Speed, 50 },
-                    { MatchStatType.Stamina, 100 }
+                    { MatchStatType.Dribble, 50 }
                 };
                 MatchPlayer player = new MatchPlayer(i, $"{teamName}_{positions[i]}", positions[i], stats, "test_res");
                 team.AddPlayer(player);
@@ -106,8 +105,6 @@ public class MatchSimState : IState
         stats.Add(MatchStatType.Block, s.GetCurrentStat(potential.StatBlock));
         stats.Add(MatchStatType.Rebound, s.GetCurrentStat(potential.StatRebound));
         stats.Add(MatchStatType.Dribble, 50);
-        stats.Add(MatchStatType.Speed, 50);
-        stats.Add(MatchStatType.Stamina, 100);
 
         return new MatchPlayer(id, s.Name, pos, stats, "Student_Resource");
     }
