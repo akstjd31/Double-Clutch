@@ -15,7 +15,7 @@ public class StudentManager : MonoBehaviour
     public bool CanRecruit => _recruitLimit > _myStudents.Count;
     public static StudentManager Instance { get; private set; }
     [SerializeField] StudentFactory _studentFactory; //선수 생성용 팩토리
-
+    //[SerializeField] FosterManager _fosterManager; //선수 육성용 매니저
     [SerializeField] private List<Student> _myStudents = new List<Student>(); //선수 목록
     public List<Student> MyStudents => _myStudents;
     private void Awake()
@@ -32,6 +32,16 @@ public class StudentManager : MonoBehaviour
             MakeTestStudents(5);
         }
         
+    }
+    
+    public List<Student> MakeRandomTeam(int n) // n명으로 구성된 선수 리스트를 반환하는 함수
+    {
+        List<Student> newTeam = new List<Student>();
+        for (int i = 0; i < n; i++)
+        {
+            newTeam.Add(_studentFactory.MakeRandomStudent());
+        }
+        return newTeam;        
     }
 
     public void MakeTestStudents(int n) //선수를 랜덤하게 n명 채워넣는 매서드(테스트용)
