@@ -4,12 +4,13 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Events;
+using static UnityEngine.GraphicsBuffer;
 
 #if UNITY_EDITOR
-[CustomEditor(typeof(Team_ArchetypeDataReader))]
-public class Team_ArchetypeDataReaderEditor : Editor
+[CustomEditor(typeof(Event_ConfigDataReader))]
+public class Event_ConfigDataReaderEditor : Editor
 {
-    private Team_ArchetypeDataReader data;
+    private Event_ConfigDataReader data;
 
     // ✅ 너 시트 구조 고정:
     // 1행 한글설명 / 2행 영문헤더 / 3행 타입 / 4행부터 데이터
@@ -17,7 +18,7 @@ public class Team_ArchetypeDataReaderEditor : Editor
 
     void OnEnable()
     {
-        data = (Team_ArchetypeDataReader)target;
+        data = (Event_ConfigDataReader)target;
     }
 
     public override void OnInspectorGUI()
@@ -53,7 +54,7 @@ public class Team_ArchetypeDataReaderEditor : Editor
 
             var row = GetRow(ss, rowIndex);
             if (row != null)
-                data.UpdateStats(row);
+                data.UpdateStats(row, rowIndex);
         }
 
         EditorUtility.SetDirty(target);
