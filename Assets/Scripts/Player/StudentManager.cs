@@ -71,7 +71,8 @@ public class StudentManager : MonoBehaviour
         StudentSaveData saveData = new StudentSaveData(_idCount, _myStudents);
 
         // 2. 매니저를 통해 저장합니다.
-        SaveLoadManager.Instance.Save(SAVE_FILE, saveData);
+        if (SaveLoadManager.Instance != null)
+            SaveLoadManager.Instance.Save(SAVE_FILE, saveData);
     }
 
     public void LoadGame()
