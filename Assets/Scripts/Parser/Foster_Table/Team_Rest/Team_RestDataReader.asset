@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 95a3762f8f0897141962c9baa6609c07, type: 3}
+  m_Name: Team_RestDataReader
+  m_EditorClassIdentifier: Assembly-CSharp::Team_RestDataReader
+  associatedSheet: 11ABmqX1F0SzN4HquzfWk1UqDskaAzbEmvOxAwI7ELcM
+  associatedWorksheet: Team_Rest
+  START_ROW_LENGTH: 3
+  END_ROW_LENGTH: -1
+  DataList:
+  - teamRestId: Rest_T_Dinner
+    desc: "\uC804\uCCB4 \uD68C\uC2DD"
+    conditionRecovery: 50
+    cureOverworkProb: 30
+    restCost: 500
+    restNameKey: Str_Re_T_Basic_Name_0001
+    restdescKey: Str_Re_T_Basic_Desc_0001
+    icon: Res_Re_T_Basic_Icon_0001
+  - teamRestId: Rest_T_Spa
+    desc: "\uB2E8\uCCB4 \uC628\uCC9C \uC5EC\uD589"
+    conditionRecovery: 100
+    cureOverworkProb: 50
+    restCost: 700
+    restNameKey: Str_Re_T_Tactic_Name_0001
+    restdescKey: Str_Re_T_Tactic_Desc_0001
+    icon: Res_Re_T_Tactic_Icon_0001

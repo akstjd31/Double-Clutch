@@ -12,18 +12,11 @@ public class MatchPlayer
     private Dictionary<MatchStatType, int> _stats; // 6대 스탯 + @ 관리
     private int _currentCondition; // 경기 중 소모되는 컨디션
 
-    // 시뮬레이션 상 현재 위치 (코트 위 좌표, 나중에 연출 연동용)
-    private Vector2 _currentPosition;
+    // 시뮬레이션은 이 좌표로 계산하고, 리플레이어는 이걸 월드 좌표로 변환해서 보여줌.
+    public Vector2 LogicPosition { get; set; }
 
-    private string _resourceKey;
-    private GameObject _visualObject;
-
-    public GameObject VisualObject
-    {
-        get => _visualObject;
-        set => _visualObject = value;
-    }
-
+    // 비주얼 오브젝트 (리플레이어에서 사용)
+    public GameObject VisualObject { get; set; }
     public int PlayerId => _playerId;
     public string PlayerName => _playerName;
     public Position MainPosition => _position;
@@ -40,25 +33,30 @@ public class MatchPlayer
         _playerName = name;
         _position = pos;
         _stats = new Dictionary<MatchStatType, int>(initStats);
-        _currentCondition = MAX_STAMINA; // 기본값 100 시작
-        _resourceKey = resourceKey;
+        _currentCondition = MAX_STAMINA;
+
+        // 초기 위치 설정
+        InitDefaultPosition();
     }
 
-    public int GetStat(MatchStatType type)
+    private void InitDefaultPosition()
+    {
+        switch (_position)
+        {
+            case Position.PG: LogicPosition = new Vector2(0.5f, 0.65f); break; // 탑
+            case Position.SG: LogicPosition = new Vector2(0.8f, 0.75f); break; // 우측 45도
+            case Position.SF: LogicPosition = new Vector2(0.2f, 0.75f); break; // 좌측 45도
+            case Position.PF: LogicPosition = new Vector2(0.65f, 0.85f); break; // 하이 포스트
+            case Position.C: LogicPosition = new Vector2(0.5f, 0.9f); break;  // 골밑
+            default: LogicPosition = new Vector2(0.5f, 0.5f); break;
+        }
+    }
+
+    public int GetStat(MatchStatType type, float tacticBonus = 1.0f)
     {
         if (_stats.ContainsKey(type))
-        {
-            // 컨디션에 따른 스탯 페널티 로직 추가 필요 (  보류중  )
-            return _stats[type];
-        }
+            return Mathf.RoundToInt(_stats[type] * tacticBonus);
         return 0;
     }
 
-    /// <summary>
-    /// 경기 중 위치 업데이트
-    /// </summary>
-    public void UpdatePosition(Vector2 newPos)
-    {
-        _currentPosition = newPos;
-    }
 }

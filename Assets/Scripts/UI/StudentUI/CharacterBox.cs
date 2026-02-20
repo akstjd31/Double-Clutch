@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using TMPro;
 
 /// <summary>
-/// ¿ªÇÒ : °³º° Ä³¸¯ÅÍ ¹Ú½º¿¡ ºÎÂøÇÏ¿© ¼±¼ö ÇÑ ¸íÀÇ Á¤º¸¸¦ °£·«ÇÏ°Ô Ç¥½Ã. ¹öÆ° Å¬¸¯½Ã ÇÁ·ÎÇÊ ÆÐ³Î È°¼ºÈ­.
+/// ï¿½ï¿½ï¿½ï¿½ : ï¿½ï¿½ï¿½ï¿½ Ä³ï¿½ï¿½ï¿½ï¿½ ï¿½Ú½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï°ï¿½ Ç¥ï¿½ï¿½. ï¿½ï¿½Æ° Å¬ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ð³ï¿½ È°ï¿½ï¿½È­.
 /// </summary>
 public class CharacterBox : MonoBehaviour
 {
@@ -20,8 +20,10 @@ public class CharacterBox : MonoBehaviour
         _selectButton.onClick.AddListener(() => StudentUIManager.Instance.OnCharacterBoxClick(target));
     }
 
-    private void OnDisable()
+    private void OnDestroy()
     {
         _selectButton.onClick.RemoveAllListeners();
     }
+
+    public Button GetSelectButton() => _selectButton;
 }

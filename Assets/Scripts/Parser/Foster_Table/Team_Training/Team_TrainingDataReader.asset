@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3dedd95fd0cce164fa68f9607f29c03c, type: 3}
+  m_Name: Team_TrainingDataReader
+  m_EditorClassIdentifier: Assembly-CSharp::Team_TrainingDataReader
+  associatedSheet: 11ABmqX1F0SzN4HquzfWk1UqDskaAzbEmvOxAwI7ELcM
+  associatedWorksheet: Team_Training
+  START_ROW_LENGTH: 3
+  END_ROW_LENGTH: -1
+  DataList:
+  - teamTrainingId: Train_T_Basic
+    desc: "\uD300 \uC77C\uBC18 \uD6C8\uB828"
+    trainingMode: 1
+    allGain: 1
+    mainGain: 0
+    subGain: 0
+    trainingCost: 500
+    conditionCostMin: 20
+    conditionCostMax: 25
+    trainingNameKey: Str_Tr_T_Basic_Name_0001
+    trainingdescKey: Str_Tr_T_Basic_Desc_0001
+    icon: Res_Tr_T_Basic_Icon_0001
+  - teamTrainingId: Train_T_Tactic
+    desc: "\uD300 \uC804\uC220 \uD6C8\uB828"
+    trainingMode: 2
+    allGain: 0
+    mainGain: 3
+    subGain: 1
+    trainingCost: 700
+    conditionCostMin: 20
+    conditionCostMax: 25
+    trainingNameKey: Str_Tr_T_Tactic_Name_0001
+    trainingdescKey: Str_Tr_T_Tactic_Desc_0001
+    icon: Res_Tr_T_Tactic_Icon_0001

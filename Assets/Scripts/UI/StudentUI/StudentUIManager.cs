@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>
 /// 로비 화면의 선수 UI 활성화 상태를 관리하는 비 싱글톤 매니저
@@ -9,6 +10,7 @@ public class StudentUIManager : MonoBehaviour
     public static StudentUIManager Instance;
     [SerializeField] ProfileDetailsPanel _profileDetailsPanel;
     [SerializeField] PassiveExplainBox _passiveExplainBox;
+    [SerializeField] Button _backBotton;
 
 
     private void Awake()
