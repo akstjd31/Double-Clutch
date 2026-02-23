@@ -18,6 +18,11 @@ public class MatchPlayer
 
     // 비주얼 오브젝트 (리플레이어에서 사용)
     public GameObject VisualObject { get; set; }
+
+    // 외형 리소스 키와 특성 ID를 저장할 프로퍼티
+    public string ResourceKey { get; private set; }
+    public int TraitId { get; set; } = -1;
+
     public int PlayerId => _playerId;
     public string PlayerName => _playerName;
     public Position MainPosition => _position;
@@ -26,7 +31,10 @@ public class MatchPlayer
         get => _currentCondition;
         set => _currentCondition = Mathf.Clamp(value, 0, MAX_STAMINA);
     }
-
+    // 하프타임 이벤트로 인한 임시 포지션(진형) 변경
+    public changeType TempPositionChange { get; set; } = changeType.Default;
+    // 하프타임 이벤트로 인한 임시 스탯 증감치 저장소
+    private Dictionary<MatchStatType, float> _tempStatBuffs = new Dictionary<MatchStatType, float>();
     // 생성자: 데이터 로드시 초기화
     public MatchPlayer(int id, string name, Position pos, Dictionary<MatchStatType, int> initStats, string resourceKey, List<Player_PassiveData> passives = null)
     {
@@ -36,6 +44,7 @@ public class MatchPlayer
         _stats = new Dictionary<MatchStatType, int>(initStats);
         _currentCondition = MAX_STAMINA;
         Passives = passives ?? new List<Player_PassiveData>();
+        ResourceKey = resourceKey;
         // 초기 위치 설정
         InitDefaultPosition();
     }
@@ -53,11 +62,18 @@ public class MatchPlayer
         }
     }
 
+    //  버프 부여 함수
+    public void AddTempStatBuff(MatchStatType type, float value)
+    {
+        if (!_tempStatBuffs.ContainsKey(type)) _tempStatBuffs[type] = 0f;
+        _tempStatBuffs[type] += value;
+    }
+    // 스탯 반환 시 임시 버프도 더해서 계산하도록 변경
     public int GetStat(MatchStatType type, float tacticBonus = 1.0f)
     {
-        if (_stats.ContainsKey(type))
-            return Mathf.RoundToInt(_stats[type] * tacticBonus);
-        return 0;
+        float baseStat = _stats.ContainsKey(type) ? _stats[type] : 0;
+        float buff = _tempStatBuffs.ContainsKey(type) ? _tempStatBuffs[type] : 0;
+        return Mathf.RoundToInt((baseStat + buff) * tacticBonus);
     }
 
 }

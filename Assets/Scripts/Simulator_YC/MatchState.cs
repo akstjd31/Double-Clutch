@@ -4,6 +4,12 @@ using UnityEngine;
 public class MatchState : MonoBehaviour
 {
 
+    [Header("Data Readers")]
+    [SerializeField] private Halftime_ScriptDataReader _halftimeScriptReader;
+    [SerializeField] private Halftime_ListDataReader _halftimeListReader;
+
+    public int CurrentHalftimeScriptId;
+
     public const int MAX_QUARTER = 4;
     public const float SECONDS_PER_QUARTER = 600f; // 10분
 
@@ -57,11 +63,68 @@ public class MatchState : MonoBehaviour
     //  하프타임 이벤트 효과 적용 함수 (껍데기)
     public void ApplyHalfTimeEffect(int choiceIndex)
     {
-        // 기획서에 구체적인 수치 테이블이 없으므로 로그만 남김.
-        // 추후 기획팀에서 [선택지별 효과 테이블]을 전달주면 여기에 스탯/컨디션 변경 코드 작성 필요.
+        if (_halftimeScriptReader == null) return;
 
-        AddLog($"=== Half-Time Event Applied. Choice Index: {choiceIndex} ===");
+        // 현재 진행 중인 하프타임 이벤트 스크립트 로드
+        var script = _halftimeScriptReader.DataList.Find(x => x.scriptId == CurrentHalftimeScriptId);
+        if (script.scriptId == 0) return;
+
+        potential choiceStat = default;
+        positionType choicePosition = default;
+        float changeStat = 0;
+        changeType changePosType = default;
+
+        // 선택지 버튼(0, 1, 2)에 따라 1번, 2번, 3번 효과 매핑
+        if (choiceIndex == 0)
+        {
+            choiceStat = script.choiceStat01; choicePosition = script.choicePosition01;
+            changeStat = script.changeStat01; changePosType = script.changePosition01;
+        }
+        else if (choiceIndex == 1)
+        {
+            choiceStat = script.choiceStat02; choicePosition = script.choicePosition02;
+            changeStat = script.changeStat02; changePosType = script.changePosition02;
+        }
+        else if (choiceIndex == 2)
+        {
+            choiceStat = script.choiceStat03; choicePosition = script.choicePosition03;
+            changeStat = script.changeStat03; changePosType = script.changePosition03;
+        }
+
+        // 유저 팀(HomeTeam) 선수들에게 효과 적용
+        foreach (var player in _homeTeam.Roster)
+        {
+            // 대상 포지션이 일치하거나, 특정 포지션 지목이 없는 경우(None)
+            if (choicePosition == positionType.None || (int)player.MainPosition + 1 == (int)choicePosition)
+            {
+                // 포지션(진형) 변경
+                if (changePosType != changeType.None)
+                    player.TempPositionChange = changePosType;
+
+                // 스탯 버프 적용
+                MatchStatType statType = ConvertPotentialToMatchStat(choiceStat);
+                player.AddTempStatBuff(statType, changeStat);
+            }
+        }
+
+        AddLog($"<color=orange>=== 하프타임 전술 지시 완료! (스탯 변화: {changeStat}, 진형: {changePosType}) ===</color>");
     }
+
+    // 잠재력 Enum을 MatchStat Enum으로 변환해주는 헬퍼 함수
+    private MatchStatType ConvertPotentialToMatchStat(potential p)
+    {
+        switch (p)
+        {
+            case potential.Stat2pt: return MatchStatType.TwoPoint;
+            case potential.Stat3pt: return MatchStatType.ThreePoint;
+            case potential.StatPass: return MatchStatType.Pass;
+            case potential.StatBlock: return MatchStatType.Block;
+            case potential.StatSteal: return MatchStatType.Steal;
+            case potential.StatRebound: return MatchStatType.Rebound;
+            default: return MatchStatType.TwoPoint;
+        }
+    }
+
     public void SetReplayState(int quarter, float time)
     {
         _currentQuarter = quarter;
@@ -138,5 +201,53 @@ public class MatchState : MonoBehaviour
     {
         AddLog($"=== Match Ended. Final Score {_homeTeam.Score} : {_awayTeam.Score} ===");
         // 결과 저장 로직 호출
+    }
+    // 전반전 종료 후, 현재 팀 상황에 맞는 하프타임 스크립트 ID를 결정하는 함수
+    public void DetermineHalftimeEvent()
+    {
+        if (_halftimeListReader == null) return;
+
+        List<Halftime_ListData> candidates = new List<Halftime_ListData>();
+
+        foreach (var data in _halftimeListReader.DataList)
+        {
+            bool isConditionMet = false;
+
+            switch (data.triggerCond)
+            {
+                case triggerCond.Random: // 언제든 등장 가능
+                    isConditionMet = true;
+                    break;
+                case triggerCond.ScoreGap: // 점수가 지고 있을 때 (유저 점수 - 상대 점수 <= 기준값)
+                    isConditionMet = (_homeTeam.Score - _awayTeam.Score) <= data.triggerValue;
+                    break;
+                case triggerCond.ReboundDiff: // 리바운드가 밀릴 때
+                    isConditionMet = (_homeTeam.ReboundCount - _awayTeam.ReboundCount) <= data.triggerValue;
+                    break;
+                case triggerCond.Stat2ptLow: // 2점슛 확률이 낮을 때 (기준값 % 이하)
+                    float pt2Rate = _homeTeam.Try2pt == 0 ? 0 : ((float)_homeTeam.Succ2pt / _homeTeam.Try2pt) * 100f;
+                    isConditionMet = _homeTeam.Try2pt > 0 && pt2Rate <= data.triggerValue;
+                    break;
+                case triggerCond.Stat3ptLow: // 3점슛 확률이 낮을 때 (기준값 % 이하)
+                    float pt3Rate = _homeTeam.Try3pt == 0 ? 0 : ((float)_homeTeam.Succ3pt / _homeTeam.Try3pt) * 100f;
+                    isConditionMet = _homeTeam.Try3pt > 0 && pt3Rate <= data.triggerValue;
+                    break;
+            }
+
+            if (isConditionMet) candidates.Add(data);
+        }
+
+        // 조건을 만족하는 이벤트들 중 하나를 랜덤으로 선택
+        if (candidates.Count > 0)
+        {
+            int rnd = UnityEngine.Random.Range(0, candidates.Count);
+            CurrentHalftimeScriptId = candidates[rnd].scriptId;
+        }
+        else
+        {
+            CurrentHalftimeScriptId = 1001; // 만족하는 게 없으면 기본 이벤트
+        }
+
+        AddLog($"[시스템] 하프타임 이벤트 결정됨 (Script ID: {CurrentHalftimeScriptId})");
     }
 }
