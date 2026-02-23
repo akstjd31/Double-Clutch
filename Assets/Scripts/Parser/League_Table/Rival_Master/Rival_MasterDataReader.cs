@@ -12,11 +12,11 @@ public class Rival_MasterDataReader : DataReaderBase
     // ✅ ItemData처럼 List<GSTU_Cell> 한 줄을 받아서 파싱
     internal void UpdateStats(List<GSTU_Cell> list, int rowIndex)
     {
-        string teamId = null, desc = null, teamName = null;
+        string teamId = null, desc = null, teamNameKey = null;
         teamSector teamSector = default;
         string teamArchetypeId = null;
         teamTier teamTier = default;
-        int minAndroidCount = 0, minHumanCount = 0, minAnimalCount = 0, minCountSum = 0, weightAndroid = 0, weightHuman = 0, weightAnimal = 0, weightSum = 0;
+        int minHumanoidCount = 0, minHumanCount = 0, minAnimalCount = 0, minCountSum = 0, weightHumanoid = 0, weightHuman = 0, weightAnimal = 0, weightSum = 0;
 
         for (int i = 0; i < list.Count; i++)
         {
@@ -35,8 +35,8 @@ public class Rival_MasterDataReader : DataReaderBase
                 case "desc":
                     desc = val;
                     break;
-                case "teamName":
-                    teamName = val;
+                case "teamNameKey":
+                    teamNameKey = val;
                     break;
                 case "teamSector":
                     // "Event", "League", "Training" 같은 문자열이 들어오는 형태
@@ -58,8 +58,8 @@ public class Rival_MasterDataReader : DataReaderBase
                         else if (Enum.TryParse(val, true, out teamTier e)) teamTier = e;
                     }
                     break;
-                case "minAndroidCount":
-                    int.TryParse(val, out minAndroidCount);
+                case "minHumanoidCount":
+                    int.TryParse(val, out minHumanoidCount);
                     break;
 
                 case "minHumanCount":
@@ -71,8 +71,8 @@ public class Rival_MasterDataReader : DataReaderBase
                 case "minCountSum":
                     int.TryParse(val, out minCountSum);
                     break;
-                case "weightAndroid":
-                    int.TryParse(val, out weightAndroid);
+                case "weightHumanoid":
+                    int.TryParse(val, out weightHumanoid);
                     break;
                 case "weightHuman":
                     int.TryParse(val, out weightHuman);
@@ -86,10 +86,10 @@ public class Rival_MasterDataReader : DataReaderBase
             }
         }
         DataList.Add(new Rival_MasterData(
-            teamId,desc,teamName,teamSector,
-            teamArchetypeId,teamTier,minAndroidCount,
+            teamId,desc,teamNameKey,teamSector,
+            teamArchetypeId,teamTier, minHumanoidCount,
             minHumanCount,minAnimalCount,minCountSum,
-            weightAndroid,weightHuman,weightAnimal,weightSum
+            weightHumanoid, weightHuman,weightAnimal,weightSum
         ));
     }
 
