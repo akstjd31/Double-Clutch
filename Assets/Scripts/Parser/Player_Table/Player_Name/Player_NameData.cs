@@ -2,7 +2,7 @@ using System;
 
 public enum nation
 {
-    None, Korea
+    None, Korea, America
 }
 
 public enum namePart

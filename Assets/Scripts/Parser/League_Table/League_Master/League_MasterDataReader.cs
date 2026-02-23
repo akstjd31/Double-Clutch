@@ -12,9 +12,9 @@ public class League_MasterDataReader : DataReaderBase
     // ✅ ItemData처럼 List<GSTU_Cell> 한 줄을 받아서 파싱
     internal void UpdateStats(List<GSTU_Cell> list, int rowIndex)
     {
-        string leagueId = null, desc = null, leagueName = null;
+        string leagueId = null, desc = null, leagueNameKey = null;
         leagueType leagueType = default;
-        int leagueTeamCount = 0, outConditionValue = 0;
+        int leagueTeamCount = 0, roundCount = 0, outConditionValue = 0;
         bool isSelectionRequired = false;
         string teamSelectionRuleId = null, leagueLevelId = null, leagueRewardId = null;
 
@@ -35,8 +35,8 @@ public class League_MasterDataReader : DataReaderBase
                 case "desc":
                     desc = val;
                     break;
-                case "leagueName":
-                    leagueName = val;
+                case "leagueNameKey":
+                    leagueNameKey = val;
                     break;
 
                 case "leagueType":
@@ -50,7 +50,9 @@ public class League_MasterDataReader : DataReaderBase
                 case "leagueTeamCount":
                     int.TryParse(val, out leagueTeamCount);
                     break;
-
+                case "roundCount":
+                    int.TryParse(val, out roundCount);
+                    break;
                 case "outConditionValue":
                     int.TryParse(val, out outConditionValue);
                     break;
@@ -71,7 +73,7 @@ public class League_MasterDataReader : DataReaderBase
             }
         }
         DataList.Add(new League_MasterData(
-            leagueId, desc, leagueName, leagueType, leagueTeamCount, outConditionValue, isSelectionRequired, teamSelectionRuleId, leagueLevelId, leagueRewardId
+            leagueId, desc, leagueNameKey, leagueType, leagueTeamCount, roundCount, outConditionValue, isSelectionRequired, teamSelectionRuleId, leagueLevelId, leagueRewardId
         ));
     }
 
