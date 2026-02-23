@@ -21,7 +21,13 @@ public class MatchTestBootstrapper : MonoBehaviour
 
         // 팀 생성
         MatchTeam homeTeam = CreateTeam(TeamSide.Home, "상북 고등학교", "TC_BAL_Base");
-        MatchTeam awayTeam = CreateTeam(TeamSide.Away, "진공 고등학교", "TC_DEF_Base");
+        MatchTeam awayTeam = EnemyTeamFactory.Instance.CreateEnemyTeam("Team_DOM_03", "LV_Swiss_03");
+
+        // 만약 팩토리 준비가 안 됐을 경우를 대비한 안전 장치
+        if (awayTeam == null)
+        {
+            awayTeam = CreateTeam(TeamSide.Away, "진공 고등학교", "TC_DEF_Base");
+        }
 
         // MatchState 초기화
         _state.InitializeMatch(homeTeam, awayTeam);
@@ -80,6 +86,6 @@ public class MatchTestBootstrapper : MonoBehaviour
         stats.Add(MatchStatType.Rebound, s.GetCurrentStat(potential.StatRebound));
         stats.Add(MatchStatType.Dribble, 50);
 
-        return new MatchPlayer(id, s.Name, pos, stats, "Student_Resource");
+        return new MatchPlayer(id, s.Name, pos, stats, "Student_Resource", s.Passive);
     }
 }

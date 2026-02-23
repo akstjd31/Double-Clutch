@@ -12,6 +12,7 @@ public class MatchPlayer
     private Dictionary<MatchStatType, int> _stats; // 6대 스탯 + @ 관리
     private int _currentCondition; // 경기 중 소모되는 컨디션
 
+    public List<Player_PassiveData> Passives { get; private set; }
     // 시뮬레이션은 이 좌표로 계산하고, 리플레이어는 이걸 월드 좌표로 변환해서 보여줌.
     public Vector2 LogicPosition { get; set; }
 
@@ -27,14 +28,14 @@ public class MatchPlayer
     }
 
     // 생성자: 데이터 로드시 초기화
-    public MatchPlayer(int id, string name, Position pos, Dictionary<MatchStatType, int> initStats, string resourceKey)
+    public MatchPlayer(int id, string name, Position pos, Dictionary<MatchStatType, int> initStats, string resourceKey, List<Player_PassiveData> passives = null)
     {
         _playerId = id;
         _playerName = name;
         _position = pos;
         _stats = new Dictionary<MatchStatType, int>(initStats);
         _currentCondition = MAX_STAMINA;
-
+        Passives = passives ?? new List<Player_PassiveData>();
         // 초기 위치 설정
         InitDefaultPosition();
     }

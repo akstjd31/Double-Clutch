@@ -42,8 +42,15 @@ public class MatchUIManager : MonoBehaviour
     // 점수판 갱신 (시간, 점수)
     public void UpdateScoreBoard(MatchState state)
     {
-        //  쿼터 표시
-        _textQuarter.text = $"{state.CurrentQuarter}Q";
+        // 쿼터 표시 수정 (4쿼터 이하는 1Q~4Q, 그 이상은 OT1, OT2...)
+        if (state.CurrentQuarter <= 4)
+        {
+            _textQuarter.text = $"{state.CurrentQuarter}Q";
+        }
+        else
+        {
+            _textQuarter.text = $"OT{state.CurrentQuarter - 4}";
+        }
 
         //  남은 시간 (초 -> 분:초 변환)
         int min = Mathf.FloorToInt(state.RemainTime / 60);
@@ -69,7 +76,7 @@ public class MatchUIManager : MonoBehaviour
     }
 
     // 컷인 연출 실행 함수
-    public void ShowCutInEffect(string type)
+    public void ShowCutInEffect(string type, float speed = 1.0f)
     {
         Debug.Log($">>> 컷인 함수 호출됨! 타입: {type} / 패널연결여부: {(_cutInPanel != null)}");
         if (_cutInPanel == null) return;
@@ -103,27 +110,27 @@ public class MatchUIManager : MonoBehaviour
             _cutInText.text = targetText;
 
         // 연출 시작 (코루틴)
-        StartCoroutine(CoPlayCutInAnim());
+        StartCoroutine(CoPlayCutInAnim(speed));
     }
 
-    private IEnumerator CoPlayCutInAnim()
+    private IEnumerator CoPlayCutInAnim(float speed)
     {
         _cutInPanel.SetActive(true);
         _cutInPanel.transform.localScale = Vector3.zero;
 
         // 팍 하고 튀어나옴 (DOTween)
-        _cutInPanel.transform.DOScale(1.2f, 0.2f).SetEase(Ease.OutBack);
-        yield return new WaitForSeconds(0.2f);
+        _cutInPanel.transform.DOScale(1.2f, 0.2f / speed).SetEase(Ease.OutBack);
+        yield return new WaitForSeconds(0.2f / speed);
 
         // 원래 크기로 살짝 복귀
-        _cutInPanel.transform.DOScale(1.0f, 0.1f);
+        _cutInPanel.transform.DOScale(1.0f, 0.1f / speed);
 
         // 1초 유지 (강조 시간)
-        yield return new WaitForSeconds(1.0f);
+        yield return new WaitForSeconds(1.0f / speed);
 
         // 사라짐
-        _cutInPanel.transform.DOScale(0f, 0.2f).SetEase(Ease.InBack);
-        yield return new WaitForSeconds(0.2f);
+        _cutInPanel.transform.DOScale(0f, 0.2f / speed).SetEase(Ease.InBack);
+        yield return new WaitForSeconds(0.2f / speed);
 
         _cutInPanel.SetActive(false);
     }

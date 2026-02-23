@@ -30,8 +30,13 @@ public class MatchSimState : IState
 
         // 팀 생성 및 데이터 연동 (MatchDebugSetup 로직 이식)
         MatchTeam homeTeam = CreateTeam(TeamSide.Home, "상북 고등학교", "TC_BAL_Base");
-        MatchTeam awayTeam = CreateTeam(TeamSide.Away, "진공 고등학교", "TC_DEF_Base");
+        MatchTeam awayTeam = EnemyTeamFactory.Instance.CreateEnemyTeam("Team_DOM_03", "LV_Swiss_03");
 
+        // 만약 팩토리 준비가 안 됐을 경우를 대비한 안전 장치
+        if (awayTeam == null)
+        {
+            awayTeam = CreateTeam(TeamSide.Away, "진공 고등학교", "TC_DEF_Base");
+        }
         // 초기화 및 시작
         _state.InitializeMatch(homeTeam, awayTeam);
 

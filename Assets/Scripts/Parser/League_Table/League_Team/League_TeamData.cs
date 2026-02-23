@@ -6,8 +6,11 @@ public struct League_TeamData
     public string desc;
     public int weekId;
     public int priorityTeamCount;
-    public int selectionCountTotal;
+    public string prioritySourceLeagueId;
+    public string candidateSectorList;
+    public int candidateSectorMask;
     public int leagueTeamTotal;
+    public int selectionCountTotal;
     public int selectionCountD;
     public int selectionCountC;
     public int selectionCountB;
@@ -20,8 +23,11 @@ public struct League_TeamData
     string desc,
     int weekId,
     int priorityTeamCount,
-    int selectionCountTotal,
+    string prioritySourceLeagueId,
+    string candidateSectorList,
+    int candidateSectorMask,
     int leagueTeamTotal,
+    int selectionCountTotal,
     int selectionCountD,
     int selectionCountC,
     int selectionCountB,
@@ -34,8 +40,11 @@ public struct League_TeamData
         this.desc = desc;
         this.weekId = weekId;
         this.priorityTeamCount = priorityTeamCount;
-        this.selectionCountTotal = selectionCountTotal;
+        this.prioritySourceLeagueId = prioritySourceLeagueId;
+        this.candidateSectorList = candidateSectorList;
+        this.candidateSectorMask = candidateSectorMask;
         this.leagueTeamTotal = leagueTeamTotal;
+        this.selectionCountTotal = selectionCountTotal;
         this.selectionCountD = selectionCountD;
         this.selectionCountC = selectionCountC;
         this.selectionCountB = selectionCountB;
