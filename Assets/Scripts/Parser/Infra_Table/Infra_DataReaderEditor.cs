@@ -1,4 +1,4 @@
-﻿using GoogleSheetsToUnity;
+using GoogleSheetsToUnity;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
@@ -7,10 +7,10 @@ using UnityEngine.Events;
 using static UnityEngine.GraphicsBuffer;
 
 #if UNITY_EDITOR
-[CustomEditor(typeof(Event_DataModelReader))]
-public class Event_DataModelReaderEditor : Editor
+[CustomEditor(typeof(Infra_DataReader))]
+public class Infra_DataReaderEditor : Editor
 {
-    private Event_DataModelReader data;
+    private Infra_DataReader data;
 
     // ✅ 너 시트 구조 고정:
     // 1행 한글설명 / 2행 영문헤더 / 3행 타입 / 4행부터 데이터
@@ -18,7 +18,7 @@ public class Event_DataModelReaderEditor : Editor
 
     void OnEnable()
     {
-        data = (Event_DataModelReader)target;
+        data = (Infra_DataReader)target;
     }
 
     public override void OnInspectorGUI()
@@ -59,7 +59,7 @@ public class Event_DataModelReaderEditor : Editor
 
         EditorUtility.SetDirty(target);
         AssetDatabase.SaveAssets();
-        Debug.Log($"[Event_ChoiceReaderEditor] Loaded: {data.DataList.Count} rows");
+        Debug.Log($"[Calendar_TableDataReader] Loaded: {data.DataList.Count} rows");
     }
     static IEnumerable<int> GetRowIndices(GstuSpreadSheet ss)
     {
