@@ -161,14 +161,7 @@ public static class MatchCalculator
         {
             if (p.effectType == targetEffect)
             {
-                // 기획서 조건: BehindPoint (점수가 지고 있을 때 발동)
-                if (p.triggerType == "BehindPoint")
-                {
-                    if (defendTeam.Score - attackTeam.Score >= p.triggerValue)
-                        passiveBonus += (p.effectValue * 100f); // 기획서의 0.1을 10%로 변환
-                }
-                // 무조건 발동 등 다른 조건 추가 가능
-                else
+                if (CheckPassiveCondition(p, attackTeam, defendTeam))
                 {
                     passiveBonus += (p.effectValue * 100f);
                 }
@@ -180,13 +173,13 @@ public static class MatchCalculator
     }
 
     // 패스 성공 확률
-    public static bool CalculatePassSuccess(MatchPlayer passer, MatchPlayer receiver, List<MatchPlayer> enemies, out MatchPlayer interceptor)
+    public static bool CalculatePassSuccess(MatchPlayer passer, MatchPlayer receiver, MatchTeam attackTeam, MatchTeam defendTeam, out MatchPlayer interceptor)
     {
         interceptor = null;
         MatchPlayer pathEnemy = null;
 
         // 최단 거리 0.03 미만인 적 탐색
-        foreach (var e in enemies)
+        foreach (var e in defendTeam.Roster)
         {
             if (DistancePointToLineSegment(e.LogicPosition, passer.LogicPosition, receiver.LogicPosition) < 0.03f)
             {
@@ -200,7 +193,23 @@ public static class MatchCalculator
         float passStat = passer.GetStat(MatchStatType.Pass);
         float stealStat = pathEnemy.GetStat(MatchStatType.Steal);
 
+        // 스틸 패시브 로직 추가!
+        float stealPassiveBonus = 0f;
+        foreach (var p in pathEnemy.Passives)
+        {
+            if (p.effectType == effectType.ProbSteal)
+            {
+                // 수비수(pathEnemy) 입장이므로 내 팀이 defendTeam, 적 팀이 attackTeam
+                if (CheckPassiveCondition(p, defendTeam, attackTeam))
+                {
+                    stealPassiveBonus += (p.effectValue * 100f);
+                }
+            }
+        }
+
         float prob = (passStat / (passStat + stealStat)) * 100f;
+        prob -= stealPassiveBonus;
+
         bool success = Random.Range(0f, 100f) <= prob;
 
         if (!success) interceptor = pathEnemy;
@@ -220,6 +229,27 @@ public static class MatchCalculator
 
         float prob = (dribbleStat / (dribbleStat + stealStat)) * 100f;
         return Random.Range(0f, 100f) <= prob;
+    }
+    // 패시브 발동 조건을 범용적으로 검사하는 함수
+    public static bool CheckPassiveCondition(Player_PassiveData p, MatchTeam myTeam, MatchTeam enemyTeam)
+    {
+        // 조건이 없거나 '-' 이면 상시 발동
+        if (string.IsNullOrEmpty(p.triggerType) || p.triggerType == "-")
+            return true;
+
+        switch (p.triggerType)
+        {
+            case "BehindPoint": // 우리 팀이 특정 점수차 이상 지고 있을 때 발동
+                return (enemyTeam.Score - myTeam.Score) >= p.triggerValue;
+
+            case "OnStolen": // 상대 공을 뺏으려(스틸) 할 때 발동
+                return true;
+
+            // 추후 기획서에 따라 Stat2ptLow 등의 조건이 추가되면 여기에 case를 늘려가면 됩니다
+
+            default:
+                return true;
+        }
     }
 
     // 리바운드 가중치 추첨

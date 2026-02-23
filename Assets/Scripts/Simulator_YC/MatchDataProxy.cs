@@ -41,6 +41,9 @@ public class MatchDataProxy : MonoBehaviour
     [SerializeField] private float Pen_Def_Steal = 1f;   // 106: 수비 스틸 페널티 계수
     [SerializeField] private int W_Default = 1;       // 107: 기본값
 
+
+    [Header("Data Readers")]
+    [SerializeField] private Team_ArchetypeDataReader _archetypeReader;
     private void Awake()
     {
         if (Instance == null) Instance = this;
@@ -66,18 +69,28 @@ public class MatchDataProxy : MonoBehaviour
 
     public TeamTactics GetTactics(string teamColorId)
     {
-        switch (teamColorId)
+        if (_archetypeReader == null || _archetypeReader.DataList.Count == 0)
         {
-            case "TC_DEF_Base":
-            case "TC_OFF_Base":
-            case "TC_BAL_Base":
-            case "TC_SHT_Base":
-            case "TC_SHT_Sniper":
-            case "TC_TAC_Base":
-            case "TC_BIG_Base":
-            case "TC_SML_Base":
-            default:
-                return new TeamTactics();
+            return new TeamTactics(); // 리더가 없으면 기본값 반환
         }
+
+        // 테이블에서 일치하는 전술 아키타입 검색
+        var archetype = _archetypeReader.DataList.Find(x => x.teamArchetypeId == teamColorId);
+
+        if (string.IsNullOrEmpty(archetype.teamArchetypeId))
+        {
+            return new TeamTactics(); // 데이터를 못 찾으면 기본값 반환
+        }
+
+        // 테이블 데이터 기반으로 가중치 적용 (드리블은 테이블에 없으므로 기본값 1.0f)
+        return new TeamTactics(
+            tp: archetype.weight2pt,
+            three: archetype.weight3pt,
+            pass: archetype.weightPass,
+            block: archetype.weightBlock,
+            steal: archetype.weightSteal,
+            rebound: archetype.weightRebound,
+            dribble: 1.0f
+        );
     }
 }
