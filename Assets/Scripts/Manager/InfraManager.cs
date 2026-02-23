@@ -24,7 +24,7 @@ public class InfraManager : Singleton<InfraManager>
         foreach (Infra_Data data in _reader.DataList)
         {
             if (MaxLevelData.ContainsKey(data.infraEffectType)) continue;
-            MaxLevelData.Add(data.infraEffectType, SetMaxLevelByGroup(data.infraEffectType));
+            MaxLevelData.Add(data.infraEffectType, GetMaxLevelByEffectType(data.infraEffectType));
         }
     }
 
@@ -42,7 +42,7 @@ public class InfraManager : Singleton<InfraManager>
     // }
 
     // 그룹 ID 중 맥스 레벨 반환
-    public int SetMaxLevelByGroup(infraEffectType infraET)
+    public int GetMaxLevelByEffectType(infraEffectType infraET)
     {
         if (_reader == null) return -1;
         if (infraET.Equals(infraEffectType.None)) return -1;
@@ -50,10 +50,26 @@ public class InfraManager : Singleton<InfraManager>
         int maxLv = 0;
         foreach (Infra_Data data in _reader.DataList)
         {
-            if (infraET.Equals(data.infraEffectType)) continue;
+            if (!infraET.Equals(data.infraEffectType)) continue;
             if (maxLv < data.infraLevel) maxLv = data.infraLevel;
         }
 
         return maxLv;
+    }
+
+    public List<int> GetCostListByEffectType(infraEffectType infraET)
+    {
+        if (_reader == null) return null;
+        if (infraET.Equals(infraEffectType.None)) return null;
+
+        var costList = new List<int>();
+        foreach (Infra_Data data in _reader.DataList)
+        {
+            if (!infraET.Equals(data.infraEffectType)) continue;
+            costList.Add(data.infraCost);
+
+        }
+
+        return costList;
     }
 }

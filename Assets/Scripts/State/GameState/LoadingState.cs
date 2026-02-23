@@ -15,7 +15,7 @@ public class LoadingState : IState
     public void Enter()
     {
         // 로딩 씬 이동
-        SceneManager.LoadScene("Test_Loading");
+        SceneManager.LoadScene(SceneName.LOADING);
     }
 
     public void Exit() { }

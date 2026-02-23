@@ -24,7 +24,7 @@ public class TutorialUI : MonoBehaviour
         this.gameObject.SetActive(false);
 
         // 튜토리얼 수행 완료
-        PlayerPrefs.SetInt("FIRST_RUN_DONE", 1);
+        PlayerPrefs.SetInt(PrefKeys.KEY_FIRST_RUN_DONE, 1);
         PlayerPrefs.Save();
     }
 }
