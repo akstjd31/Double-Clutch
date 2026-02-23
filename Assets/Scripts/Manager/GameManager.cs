@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 // 게임의 전반적인 상태
@@ -11,12 +12,27 @@ using UnityEngine;
 //     MatchSim,   // 농구 시합
 //     Result      // 결과 (보상 지급)
 // }
+public static class PrefKeys
+{
+    public const string KEY_FIRST_RUN_DONE = "FIRST_RUN_DONE";
+    public const string CURRENCY_SUBSIDY = "CURRENCY_SUBSIDY";
+}
+
+public static class SceneName
+{
+    public const string MAIN = "Test_Main";
+    public const string LOBBY = "Test_Lobby";
+    public const string LOADING = "Test_Loading";
+    public const string EVENT = "Test_Event";
+}
 
 public class GameManager : Singleton<GameManager>
 {
     [Header("Player")]
     public string SchoolName { get; set; }
     public string PlayerName { get; set; }
+    public int Money { get; set; }
+    public event Action<int> OnMoneyChanged;
 
     [Header("GameState")]
     private StateMachine _sm = new StateMachine();
@@ -35,7 +51,7 @@ public class GameManager : Singleton<GameManager>
         InitRegister();
 
         // 로딩화면에서 시작하여 메인으로 넘어가기
-        SetNextFlow("Test_Main", _sm.Get<MainState>());
+        SetNextFlow(SceneName.MAIN, _sm.Get<MainState>());
     }
 
     private void InitCommandSystem()
@@ -45,6 +61,7 @@ public class GameManager : Singleton<GameManager>
         if (SaveLoadManager.Instance.TryLoad(file, out PlayerSaveData save))
         {
             // PlayerPrefs.SetInt("FIRST_RUN_DONE", 1);
+            // 돈 데이터도 여기에 작성
         }
         else
         {
@@ -75,6 +92,8 @@ public class GameManager : Singleton<GameManager>
     private void Start()
     {
         _sm.ChangeState<LoadingState>();
+
+        Money = 0;
     }
 
     // 각 상태 클래스에서 필요시 사용
@@ -98,5 +117,12 @@ public class GameManager : Singleton<GameManager>
     {
         if (NextStateAfterLoading != null)
             _sm.ChangeState(NextStateAfterLoading);
+    }
+
+    public void OnMoneyChangedInvoke()
+    {
+        PlayerPrefs.SetInt(PrefKeys.CURRENCY_SUBSIDY, Money);
+        PlayerPrefs.Save();
+        OnMoneyChanged?.Invoke(Money);
     }
 }
