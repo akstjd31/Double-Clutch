@@ -2,13 +2,25 @@ using UnityEngine;
 
 public abstract class Infra : MonoBehaviour
 {
-    [SerializeField] protected int _currentLevel = 0;   // 현재 레벨
+    [SerializeField] protected int _currentLevel = 0;               // 현재 레벨
+    [SerializeField] protected infraEffectType _infraEffectType;
     public int CurrentLevel => _currentLevel;
-    public abstract int MaxLevel { get; }               // 최대 레벨
+    [SerializeField] protected int _maxLevel = -1;                  // 최대 레벨
     
-    public abstract int GetUpgradeCost();               // 업그레이드에 드는 비용인데, 이건 테이블 나와야 알듯? 일단 내 생각은 매개변수로 해당 데이터 관련된 구조체를 받고, 선언해놓은 변수들로 할당해주는 방식? 게터 -> 세터
+    // 최대 레벨 주입
+    public void SetMaxLevel()
+    {
+        var infraMgr = InfraManager.Instance;
+        if (infraMgr == null) return;
 
-    public bool CanUpgrade() => _currentLevel < MaxLevel;
+        if (_maxLevel == -1) _maxLevel = infraMgr.MaxLevelData[_infraEffectType];
+    }              
+
+    public bool CanUpgrade()
+    {
+        if (_maxLevel == -1) return false;
+        return _currentLevel < _maxLevel;
+    }
 
     public void Upgrade(int money)
     {
@@ -18,7 +30,8 @@ public abstract class Infra : MonoBehaviour
             return;
         }
 
-        int need = GetUpgradeCost();
+        SetMaxLevel();
+        int need = _maxLevel;
         if (money < need)
         {
             Debug.Log("업그레이드를 하기 위한 비용이 부족합니다!");

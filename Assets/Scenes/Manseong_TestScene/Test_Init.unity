@@ -209,6 +209,52 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &979961055
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 979961057}
+  - component: {fileID: 979961056}
+  m_Layer: 0
+  m_Name: InfraManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &979961056
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 979961055}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 968c1e29b8e387242ab5c23fada12b7e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InfraManager
+  dontDestroyOnLoad: 1
+  _reader: {fileID: 11400000, guid: ebb2227aff3db674b9ce488ad7b00ae3, type: 2}
+--- !u!4 &979961057
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 979961055}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1468292850
 GameObject:
   m_ObjectHideFlags: 0
@@ -240,9 +286,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CalendarManager
   dontDestroyOnLoad: 1
   _calReader: {fileID: 11400000, guid: b82a6093d4a4e7f4b838925ff652fb91, type: 2}
-  _currentYear: 0
-  _currentMonth: 0
-  _currentWeek: 0
 --- !u!4 &1468292852
 Transform:
   m_ObjectHideFlags: 0
@@ -358,3 +401,4 @@ SceneRoots:
   - {fileID: 400084808}
   - {fileID: 756173928}
   - {fileID: 1468292852}
+  - {fileID: 979961057}
