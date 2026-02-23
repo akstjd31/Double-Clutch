@@ -120,6 +120,8 @@ public class GameManager : Singleton<GameManager>
 
     public void OnMoneyChangedInvoke()
     {
+        PlayerPrefs.SetInt(PrefKeys.CURRENCY_SUBSIDY, Money);
+        PlayerPrefs.Save();
         OnMoneyChanged?.Invoke(Money);
     }
 }
