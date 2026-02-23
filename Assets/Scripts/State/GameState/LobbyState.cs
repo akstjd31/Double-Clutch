@@ -13,8 +13,6 @@ public class LobbyState : IState
 
     public void Enter()
     {
-        // 돈 저장
-        GameManager.Instance.OnMoneyChangedInvoke();
     }
 
     public void Exit()

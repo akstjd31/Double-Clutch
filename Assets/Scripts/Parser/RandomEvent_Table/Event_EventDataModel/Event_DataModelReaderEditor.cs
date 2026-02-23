@@ -7,10 +7,10 @@ using UnityEngine.Events;
 using static UnityEngine.GraphicsBuffer;
 
 #if UNITY_EDITOR
-[CustomEditor(typeof(Event_ChoiceDataReader))]
+[CustomEditor(typeof(Event_DataModelReader))]
 public class Event_DataModelReaderEditor : Editor
 {
-    private Event_ChoiceDataReader data;
+    private Event_DataModelReader data;
 
     // ✅ 너 시트 구조 고정:
     // 1행 한글설명 / 2행 영문헤더 / 3행 타입 / 4행부터 데이터
@@ -18,7 +18,7 @@ public class Event_DataModelReaderEditor : Editor
 
     void OnEnable()
     {
-        data = (Event_ChoiceDataReader)target;
+        data = (Event_DataModelReader)target;
     }
 
     public override void OnInspectorGUI()

@@ -61,6 +61,7 @@ public class GameManager : Singleton<GameManager>
         if (SaveLoadManager.Instance.TryLoad(file, out PlayerSaveData save))
         {
             // PlayerPrefs.SetInt("FIRST_RUN_DONE", 1);
+            // 돈 데이터도 여기에 작성
         }
         else
         {
