@@ -1,16 +1,6 @@
 using System;
 using UnityEngine;
 
-public enum textType
-{
-    None,Desc,Choice,End
-}
-
-public enum potential
-{
-    None,Stat2pt,Stat3pt,StatPass,StatSteal,StatBlock,StatRebound
-}
-
 [Serializable]
 public struct Halftime_ScriptData
 {

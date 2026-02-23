@@ -39,7 +39,7 @@ public class EnemyTeamFactory : MonoBehaviour
         int maxStat = Mathf.RoundToInt(levelData.maxPotential * tierWeight);
 
         // 팀 이름 (StringManager를 거쳐서 번역된 이름을 가져옴)
-        string teamName = StringManager.Instance != null ? StringManager.Instance.GetString(rivalData.teamName) : rivalData.teamName;
+        string teamName = StringManager.Instance != null ? StringManager.Instance.GetString(rivalData.teamNameKey) : rivalData.teamNameKey;
 
         // 아키타입 ID를 팀 전술(TeamColorId)로 넘겨줌
         MatchTeam enemyTeam = new MatchTeam(TeamSide.Away, teamName, archetypeData.teamArchetypeId);
@@ -108,13 +108,13 @@ public class EnemyTeamFactory : MonoBehaviour
         List<speciesType> result = new List<speciesType>();
 
         //  최소 인원만큼 무조건 배정 (Android로 선언하신 변수명 사용)
-        for (int i = 0; i < rivalData.minAndroidCount; i++) result.Add(speciesType.Humanoid);
+        for (int i = 0; i < rivalData.minHumanoidCount; i++) result.Add(speciesType.Humanoid);
         for (int i = 0; i < rivalData.minHumanCount; i++) result.Add(speciesType.Human);
         for (int i = 0; i < rivalData.minAnimalCount; i++) result.Add(speciesType.Animal);
 
         //  남은 자리는 가중치에 따라 랜덤 배정
         int remain = 5 - result.Count;
-        float totalWeight = rivalData.weightAndroid + rivalData.weightHuman + rivalData.weightAnimal;
+        float totalWeight = rivalData.weightHumanoid + rivalData.weightHuman + rivalData.weightAnimal;
 
         for (int i = 0; i < remain; i++)
         {
@@ -125,9 +125,9 @@ public class EnemyTeamFactory : MonoBehaviour
             }
 
             float rand = Random.Range(0f, totalWeight);
-            if (rand < rivalData.weightAndroid)
+            if (rand < rivalData.weightHumanoid)
                 result.Add(speciesType.Humanoid);
-            else if (rand < rivalData.weightAndroid + rivalData.weightHuman)
+            else if (rand < rivalData.weightHumanoid + rivalData.weightHuman)
                 result.Add(speciesType.Human);
             else
                 result.Add(speciesType.Animal);
