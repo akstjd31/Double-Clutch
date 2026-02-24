@@ -5,7 +5,8 @@ using System.Data.SqlTypes;
 public class PlayerSaveData : SaveBase
 {
     public string schoolName;
-    public string coachName;
+    public string coachName;    
+    public int honor;           // 명성
     public int money;
-    public int weekId;
+    public int weekId;          // 테이블 주 ID
 }

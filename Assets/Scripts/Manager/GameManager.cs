@@ -158,4 +158,10 @@ public class GameManager : Singleton<GameManager>
         saveData.weekId = weekId;
         OnDataChanged?.Invoke();
     }
+
+    public void SetHonor(int honor)
+    {
+        saveData.honor = honor;
+        OnDataChanged?.Invoke();
+    }
 }
