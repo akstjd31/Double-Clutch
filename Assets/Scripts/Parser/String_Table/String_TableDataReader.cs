@@ -12,7 +12,7 @@ public class String_TableDataReader : DataReaderBase
     // ✅ ItemData처럼 List<GSTU_Cell> 한 줄을 받아서 파싱
     internal void UpdateStats(List<GSTU_Cell> list, int rowIndex)
     {
-        string stringKey = null, Kr = null, En = null;
+        string stringKey = null, ko = null, en = null, ja = null;
 
         for (int i = 0; i < list.Count; i++)
         {
@@ -28,16 +28,19 @@ public class String_TableDataReader : DataReaderBase
                     stringKey = val;
                     break;
 
-                case "Kr":
-                    Kr = val;
+                case "ko":
+                    ko = val;
                     break;
-                case "En":
-                    En = val;
+                case "en":
+                    en = val;
+                    break;
+                case "ja":
+                    ja = val;
                     break;
             }
         }
         DataList.Add(new String_TableData(
-            stringKey,Kr,En
+            stringKey,ko,en,ja
 
         ));
     }

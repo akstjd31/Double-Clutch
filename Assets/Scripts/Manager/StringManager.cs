@@ -52,9 +52,9 @@ public class StringManager : Singleton<StringManager>
             switch (_nation)
             {
                 case nation.Korea:
-                    return data.Kr;
+                    return data.ko;
                 default: //기본 설정은 한국어로
-                    return data.Kr;
+                    return data.ko;
             }
         }
 
