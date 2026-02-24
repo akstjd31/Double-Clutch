@@ -1,9 +1,10 @@
 using UnityEngine;
-using UnityEngine.UI;
+using TMPro;
+
 public class LobbyUI : MonoBehaviour
 {
-    [SerializeField] private Text _calendarText;
-    [SerializeField] private Text _moneyText;
+    [SerializeField] private TextMeshProUGUI _calendarText;
+    [SerializeField] private TextMeshProUGUI _moneyText;
 
     private void OnEnable()
     {
