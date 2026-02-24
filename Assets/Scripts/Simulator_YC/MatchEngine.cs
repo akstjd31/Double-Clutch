@@ -386,7 +386,9 @@ public class MatchEngine : MonoBehaviour
         string finalText = config.textTemplate;
         if (actor != null) finalText = finalText.Replace("{PlayerName}", actor.PlayerName);
         if (target != null) finalText = finalText.Replace("{TargetName}", target.PlayerName); // 패스 대상 이름 치환
-        finalText = finalText.Replace("{Quarter}", _simQuarter.ToString());
+        // 5쿼터 이상이면 '연장 1', 아니면 원래 숫자 유지
+        string quarterString = _simQuarter > 4 ? $"연장 {_simQuarter - 4}" : _simQuarter.ToString();
+        finalText = finalText.Replace("{Quarter}", quarterString);
 
         MatchLogData log = new MatchLogData();
         log.GameTime = Mathf.Max(0, _simTime);
