@@ -5,13 +5,13 @@ public class LobbyUI : MonoBehaviour
     [SerializeField] private Text _calendarText;
     [SerializeField] private Text _moneyText;
 
-    private void Awake()
+    private void OnEnable()
     {
-        if (GameManager.Instance == null) return;
-        if (CalendarManager.Instance == null) return;
+        if (CalendarManager.Instance != null)
+            CalendarManager.Instance.OnWeekChanged += UpdateCalendarText;
 
-        CalendarManager.Instance.OnWeekChanged += UpdateCalendarText;
-        GameManager.Instance.OnMoneyChanged += UpdateMoneyText;
+        if (GameManager.Instance != null)
+            GameManager.Instance.OnMoneyChanged += UpdateMoneyText;
     }
 
     // Update is called once per frame
@@ -20,14 +20,13 @@ public class LobbyUI : MonoBehaviour
         UpdateCalendarText(CalendarManager.Instance.GetCalendar());
     }
 
-    private void OnDestroy()
+    private void OnDisable()
     {
-        if (CalendarManager.Instance == null) return;
-        if (GameManager.Instance == null) return;
-        
-
-        CalendarManager.Instance.OnWeekChanged -= UpdateCalendarText;
-        GameManager.Instance.OnMoneyChanged -= UpdateMoneyText;
+        if (CalendarManager.Instance != null)
+            CalendarManager.Instance.OnWeekChanged -= UpdateCalendarText;
+            
+        if (GameManager.Instance != null)
+            GameManager.Instance.OnMoneyChanged -= UpdateMoneyText;
     }
 
     public void UpdateCalendarText(Calendar calendar)

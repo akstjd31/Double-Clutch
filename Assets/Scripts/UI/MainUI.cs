@@ -9,14 +9,18 @@ public class MainUI : MonoBehaviour
     private void Awake()
     {
         if (_startButton != null)
-        {
             _startButton.onClick.AddListener(OnClickGameStart);
-        }
     }
 
     private void Start()
     {
         tutorialObj.SetActive(IsFirstRun());
+    }
+
+    private void OnDisable()
+    {
+        if (_startButton != null)
+            _startButton.onClick.RemoveListener(OnClickGameStart);
     }
 
     private void Update()
