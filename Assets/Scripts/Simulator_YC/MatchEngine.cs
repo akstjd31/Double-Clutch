@@ -17,7 +17,9 @@ public class MatchEngine : MonoBehaviour
     private MatchPlayer _ballHolder;
     private const float MAX_MOVE_PER_TICK = 1f / 3f; // 기획서 5.3: 틱당 최대 이동거리
 
-
+    [Header("Data Readers")]
+    [SerializeField] private Event_ConfigDataReader _eventConfigReader;
+    [SerializeField] private Position_PresetDataReader _positionPresetReader;
     public void StartSimulation()
     {
         // 엔진 내부에서 코루틴을 돌려 전반전/하프타임/후반전 흐름을 제어합니다.
@@ -49,6 +51,9 @@ public class MatchEngine : MonoBehaviour
 
         // 전반전(1~2쿼터) 연산
         CalculateUntilQuarter(2);
+
+        // 전반전이 끝났으므로 스탯을 평가하여 하프타임 이벤트를 정합니다.
+        state.DetermineHalftimeEvent();
 
         // 전반전 재생 시작
         bool isReplayDone = false;
@@ -115,14 +120,14 @@ public class MatchEngine : MonoBehaviour
         // 일반 쿼터 처리 (1~4쿼터)
         while (_simQuarter <= targetQuarter)
         {
-            RecordLog($"=== Quarter {_simQuarter} Start ===", "QUARTER_START");
+            RecordLog("GameStart");
 
             while (_simTime > 0)
             {
                 ProcessTurn();
             }
 
-            RecordLog($"--- Quarter {_simQuarter} Ended ---", "QUARTER_END");
+            RecordLog("QuarterEnd");
 
             _simQuarter++;
             _simTime = 600f;
@@ -134,22 +139,22 @@ public class MatchEngine : MonoBehaviour
         {
             while (_homeTeam.Score == _awayTeam.Score)
             {
-                RecordLog($"=== Overtime {_simQuarter - 4} Start ===", "QUARTER_START");
+                RecordLog("GameStart");
 
-                _simTime = 300f; // ← 이 값은 기획팀 확인 필요! (연장전 쿼터당 몇 분인지 미명시)
+                _simTime = 300f; 
 
                 while (_simTime > 0)
                 {
                     ProcessTurn();
                 }
 
-                RecordLog($"--- Overtime {_simQuarter - 4} Ended ---", "QUARTER_END");
+                RecordLog("QuarterEnd");
 
                 _simQuarter++;
                 _currentPossession = (_currentPossession == TeamSide.Home) ? TeamSide.Away : TeamSide.Home;
             }
 
-            RecordLog("=== Match Ended ===", "MATCH_END");
+            RecordLog("GameEnd");
         }
     }
 
@@ -207,6 +212,10 @@ public class MatchEngine : MonoBehaviour
         int score = isThree ? 3 : 2;
 
         bool success = MatchCalculator.CalculateShootSuccess(shooter, distance, attackTeam, defendTeam);
+
+        // 팀 스탯 기록
+        if (isThree) { attackTeam.Try3pt++; if (success) attackTeam.Succ3pt++; }
+        else { attackTeam.Try2pt++; if (success) attackTeam.Succ2pt++; }
 
         MatchLogData log = new MatchLogData();
         log.GameTime = Mathf.Max(0, _simTime);
@@ -269,10 +278,14 @@ public class MatchEngine : MonoBehaviour
             allPlayers.AddRange(defendTeam.Roster);
 
             MatchPlayer rebounder = MatchCalculator.CalculateReboundWinner(dropPos, allPlayers);
-            RecordLog($"Rebound grabbed by {rebounder.PlayerName}!", "REBOUND");
+            RecordLog("Rebound", rebounder);
             _ballHolder = rebounder;
 
-            if (defendTeam.Roster.Contains(rebounder)) SwitchPossession(false); // 리바운드 후에도 자리 리셋 없이 진행하려면 false
+            // 리바운드 기록
+            if (_homeTeam.Roster.Contains(rebounder)) _homeTeam.ReboundCount++;
+            else _awayTeam.ReboundCount++;
+
+            if (defendTeam.Roster.Contains(rebounder)) SwitchPossession(false);
         }
     }
 
@@ -282,13 +295,13 @@ public class MatchEngine : MonoBehaviour
         if (receiver == null) return;
 
         MatchPlayer interceptor;
-        bool success = MatchCalculator.CalculatePassSuccess(passer, receiver, defendTeam.Roster, out interceptor);
+        bool success = MatchCalculator.CalculatePassSuccess(passer, receiver, attackTeam, defendTeam, out interceptor);
 
-        if (success) { RecordLog($"Pass to {receiver.PlayerName}", "PASS"); _ballHolder = receiver; }
+        if (success) { RecordLog("PassSucc", passer); _ballHolder = receiver; }
         else
         {
             // 스틸(패스 차단) 성공 시 박수 사운드 예약
-            RecordLog($"Pass Intercepted by {interceptor.PlayerName}!", "STEAL", "CLAP");
+            RecordLog("Steal", interceptor);
             SwitchPossession();
             _ballHolder = interceptor;
         }
@@ -302,14 +315,14 @@ public class MatchEngine : MonoBehaviour
             Vector2 dir = (hoopPos - dribbler.LogicPosition).normalized;
             float moveDist = Mathf.Min(UnityEngine.Random.Range(0.1f, 0.2f), MAX_MOVE_PER_TICK);
             dribbler.LogicPosition += dir * moveDist;
-            RecordLog($"{dribbler.PlayerName} drives successfully!", "DRIBBLE");
+            RecordLog("Dribble", dribbler);
         }
         else
         {
             Vector2 sideDir = new Vector2(UnityEngine.Random.value > 0.5f ? 1 : -1, 0);
             float moveDist = Mathf.Min(0.1f, MAX_MOVE_PER_TICK);
             dribbler.LogicPosition += sideDir * moveDist;
-            RecordLog($"{dribbler.PlayerName} blocked, moves to side.", "BLOCK");
+            RecordLog("Block", dribbler);
         }
         dribbler.LogicPosition = new Vector2(Mathf.Clamp01(dribbler.LogicPosition.x), Mathf.Clamp01(dribbler.LogicPosition.y));
     }
@@ -340,6 +353,41 @@ public class MatchEngine : MonoBehaviour
 
 
 
+    private void RecordLog(string eventCode, MatchPlayer actor = null)
+    {
+        // Event_Config 테이블에서 해당 이벤트 코드 데이터 찾기
+        var config = _eventConfigReader.DataList.Find(x => x.logEventCode == eventCode);
+
+        if (string.IsNullOrEmpty(config.logEventCode))
+        {
+            Debug.LogWarning($"[MatchEngine] Event_Config 테이블에서 '{eventCode}'를 찾을 수 없습니다.");
+            return;
+        }
+
+        // 텍스트 치환
+        string finalText = config.textTemplate;
+        if (actor != null)
+            finalText = finalText.Replace("{PlayerName}", actor.PlayerName);
+        finalText = finalText.Replace("{Quarter}", _simQuarter.ToString());
+
+        // 로그 데이터 생성 및 할당
+        MatchLogData log = new MatchLogData();
+        log.GameTime = Mathf.Max(0, _simTime);
+        log.Quarter = _simQuarter;
+        log.LogText = finalText;           // 테이블에서 가져온 텍스트
+        log.EventType = eventCode;
+        log.ScoreAdded = config.scAdd;     // 테이블에 정의된 추가 점수
+
+        // 사운드 및 컷인 연출 할당
+        log.SfxType = config.soundResourceId == "-" ? "" : config.soundResourceId;
+        log.IsCutIn = config.cutInResourceId != "-";
+        log.CutInType = config.cutInResourceId == "-" ? "" : config.cutInResourceId;
+
+        if (_ballHolder != null) log.BallPos = _ballHolder.LogicPosition;
+
+        SavePositionsToLog(log);
+        MatchLogs.Add(log);
+    }
     private void RecordLog(string text, string type, string sfxType = "")
     {
         MatchLogData log = new MatchLogData();
@@ -353,7 +401,6 @@ public class MatchEngine : MonoBehaviour
         SavePositionsToLog(log);
         MatchLogs.Add(log);
     }
-
     // 10명의 선수를 살짝 이동시키고 좌표를 배열에 담는 함수
     private void SavePositionsToLog(MatchLogData log)
     {
@@ -402,38 +449,27 @@ public class MatchEngine : MonoBehaviour
 
     private Vector2 GetPreferredPosition(MatchPlayer player, bool isAttacking, TeamSide side)
     {
-        float x, y;
+        //  무조건 Default가 아닌, 선수의 TempPositionChange를 읽어옵니다.
+        var preset = _positionPresetReader.DataList.Find(x =>
+            x.positionType == (positionType)(player.MainPosition + 1) && // Enum 인덱스 차이 보정
+            x.changeType == player.TempPositionChange);
 
-        switch (player.MainPosition)
+        // 만약 해당 진형 데이터가 없다면 안전하게 Default로 폴백(Fallback)
+        if (preset.presetId == 0)
         {
-            case Position.PG:
-                x = UnityEngine.Random.Range(0.3f, 0.7f);
-                y = UnityEngine.Random.Range(0.60f, 0.75f);
-                break;
-            case Position.SG:
-                x = (player.LogicPosition.x < 0.5f)
-                    ? UnityEngine.Random.Range(0.1f, 0.3f)
-                    : UnityEngine.Random.Range(0.7f, 0.9f);
-                y = UnityEngine.Random.Range(0.70f, 0.85f);
-                break;
-            case Position.SF:
-                x = (player.LogicPosition.x < 0.5f)
-                    ? UnityEngine.Random.Range(0.05f, 0.2f)
-                    : UnityEngine.Random.Range(0.8f, 0.95f);
-                y = UnityEngine.Random.Range(0.75f, 0.90f);
-                break;
-            case Position.PF:
-                x = UnityEngine.Random.Range(0.35f, 0.65f);
-                y = UnityEngine.Random.Range(0.80f, 0.90f);
-                break;
-            case Position.C:
-                x = UnityEngine.Random.Range(0.40f, 0.60f);
-                y = UnityEngine.Random.Range(0.85f, 0.95f);
-                break;
-            default:
-                x = 0.5f;
-                y = 0.5f;
-                break;
+            preset = _positionPresetReader.DataList.Find(x =>
+                x.positionType == (positionType)(player.MainPosition + 1) &&
+                x.changeType == changeType.Default);
+        }
+
+        float x = 0.5f;
+        float y = 0.5f;
+
+        // 테이블 데이터를 기반으로 랜덤 좌표 생성
+        if (preset.presetId > 0)
+        {
+            x = UnityEngine.Random.Range(preset.offenseXMin, preset.offenseXMax);
+            y = UnityEngine.Random.Range(preset.offenseYMin, preset.offenseYMax);
         }
 
         // 어웨이팀은 공격 방향이 반대(아래)이므로 y 반전

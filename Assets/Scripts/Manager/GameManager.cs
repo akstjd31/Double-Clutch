@@ -1,5 +1,7 @@
 using System;
+using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 // 게임의 전반적인 상태
 // public enum GameState
@@ -55,7 +57,7 @@ public class GameManager : Singleton<GameManager>
     }
 
     private void InitCommandSystem()
-    {  
+    {
         var file = "player_save.json";
         // 임시 저장 경로 (데이터 존재 여부에 따라 처음인지 아닌지를 판별)
         if (SaveLoadManager.Instance.TryLoad(file, out PlayerSaveData save))
@@ -113,7 +115,7 @@ public class GameManager : Singleton<GameManager>
     }
 
     // LoadingScene에서 호출
-    public void NotifyLoadingDone()
+    private void NotifyLoadingDone()
     {
         if (NextStateAfterLoading != null)
             _sm.ChangeState(NextStateAfterLoading);
@@ -124,5 +126,22 @@ public class GameManager : Singleton<GameManager>
         PlayerPrefs.SetInt(PrefKeys.CURRENCY_SUBSIDY, Money);
         PlayerPrefs.Save();
         OnMoneyChanged?.Invoke(Money);
+    }
+
+    public void LoadNextScene()
+    {
+        StartCoroutine(LoadNextScene_Coroutine());
+    }
+
+    private IEnumerator LoadNextScene_Coroutine()
+    {
+        var target = NextSceneName;
+
+        var op = SceneManager.LoadSceneAsync(target, LoadSceneMode.Single);
+        op.allowSceneActivation = true;
+
+        yield return op; // 씬 로드 완료까지 대기
+
+        NotifyLoadingDone(); // 로드 끝난 뒤 상태 전환
     }
 }

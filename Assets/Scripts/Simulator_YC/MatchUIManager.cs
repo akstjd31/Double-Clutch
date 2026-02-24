@@ -1,8 +1,9 @@
+using System.Collections;
+using System.Collections.Generic;
+using DG.Tweening;
+using TMPro; 
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro; 
-using DG.Tweening;
-using System.Collections;
 
 public class MatchUIManager : MonoBehaviour
 {
@@ -33,6 +34,18 @@ public class MatchUIManager : MonoBehaviour
     [SerializeField] private Sprite _spriteDunk;
     [SerializeField] private Sprite _spriteThreePoint;
     [SerializeField] private Sprite _spriteBuzzerBeater;
+
+    // 로그 히스토리를 저장할 리스트와 최대 표시 줄 수
+    [SerializeField] private int _maxLogLines = 5; // 한 화면에 보여줄 최대 로그 개수 (UI 크기에 맞춰 조절)
+    private List<string> _logHistory = new List<string>();
+
+    [Header("Playback Speed UI")]
+    [SerializeField] private MatchReplayer _replayer; // 배속을 조절할 리플레이어 참조
+    [SerializeField] private TextMeshProUGUI _textSpeedButton; // 버튼 위에 "1.0x"라고 표시될 텍스트
+
+    // 기획서 기준 배속 단계
+    private float[] _speedSteps = { 1.0f, 2.0f, 4.0f, 8.0f };
+    private int _currentSpeedIndex = 0; // 현재 선택된 배속의 인덱스
 
 
     // 이벤트 선택 상태 확인용 프로퍼티
@@ -69,10 +82,39 @@ public class MatchUIManager : MonoBehaviour
     // 중계 로그 표시 (타자기 효과 or 그냥 텍스트)
     public void UpdateLogText(string message)
     {
-        _textLogMessage.text = message;
+        // 새 메시지를 리스트에 추가
+        _logHistory.Add(message);
 
-       
-        _textLogMessage.transform.DOPunchScale(Vector3.one * 0.1f, 0.2f);
+        // 최대 줄 수를 넘어가면 가장 오래된(위쪽) 로그 삭제
+        if (_logHistory.Count > _maxLogLines)
+        {
+            _logHistory.RemoveAt(0);
+        }
+
+        // 텍스트 결합 (최신 로그는 흰색으로 강조, 이전 로그는 회색으로 처리)
+        string combinedText = "";
+        for (int i = 0; i < _logHistory.Count; i++)
+        {
+            if (i == _logHistory.Count - 1)
+            {
+                // 방금 들어온 최신 로그
+                combinedText += $"<color=#FFFFFF>{_logHistory[i]}</color>";
+            }
+            else
+            {
+                // 이미 지나간 이전 로그들
+                combinedText += $"<color=#888888>{_logHistory[i]}</color>\n";
+            }
+        }
+
+        // UI 텍스트에 적용
+        _textLogMessage.text = combinedText;
+    }
+    // 경기가 새로 시작될 때 로그 창을 깨끗하게 비워주는 함수
+    public void ClearLog()
+    {
+        _logHistory.Clear();
+        _textLogMessage.text = "";
     }
 
     // 컷인 연출 실행 함수
@@ -179,6 +221,49 @@ public class MatchUIManager : MonoBehaviour
         if (_eventPanel != null)
         {
             _eventPanel.SetActive(false);
+        }
+    }
+    public void OnClickSpeedButton()
+    {
+        if (_replayer == null)
+        {
+            Debug.LogWarning("[MatchUIManager] MatchReplayer가 연결되지 않았습니다.");
+            return;
+        }
+
+        // 다음 배속 단계로 넘어감 (마지막 단계면 다시 0번 인덱스로)
+        _currentSpeedIndex++;
+        if (_currentSpeedIndex >= _speedSteps.Length)
+        {
+            _currentSpeedIndex = 0;
+        }
+
+        // 새로운 배속 값 적용
+        float newSpeed = _speedSteps[_currentSpeedIndex];
+        _replayer.PlaybackSpeed = newSpeed;
+
+        // 버튼 텍스트 갱신
+        if (_textSpeedButton != null)
+        {
+            _textSpeedButton.text = $"{newSpeed:F1}x";
+        }
+    }
+    // 스킵 시 진행 중이던 컷인 연출을 즉시 없애기 위한 헬퍼 함수
+    public void ForceCloseCutIn()
+    {
+        if (_cutInPanel != null)
+        {
+            _cutInPanel.transform.DOKill(); // DOTween 애니메이션 즉시 중지
+            _cutInPanel.SetActive(false);
+        }
+    }
+
+    // 버튼의 OnClick에 연결할 스킵 버튼 전용 함수
+    public void OnClickSkipButton()
+    {
+        if (_replayer != null)
+        {
+            _replayer.SkipReplay();
         }
     }
 }

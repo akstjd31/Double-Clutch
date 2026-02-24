@@ -7503,6 +7503,7 @@ GameObject:
   - component: {fileID: 1371941049}
   - component: {fileID: 1371941051}
   - component: {fileID: 1371941050}
+  - component: {fileID: 1371941052}
   m_Layer: 5
   m_Name: InputNamePanel
   m_TagString: Untagged
@@ -7568,6 +7569,21 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1371941048}
   m_CullTransparentMesh: 1
+--- !u!114 &1371941052
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1371941048}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc1ebaccaff99dc488101c4cb3ab2e32, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TutorialUI
+  _schoolNameField: {fileID: 1522149925}
+  _playerNameField: {fileID: 345685812}
+  _confirmButton: {fileID: 580292649}
 --- !u!1 &1387375590
 GameObject:
   m_ObjectHideFlags: 0
@@ -11399,6 +11415,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbaf2ed43c65d924ba5f168955b7b0ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MainUI
+  tutorialObj: {fileID: 1371941048}
+  _startButton: {fileID: 1854358320}
 --- !u!1 &2005553936
 GameObject:
   m_ObjectHideFlags: 0
