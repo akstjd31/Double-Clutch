@@ -4,13 +4,13 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
 /// <summary>
-/// »ó¼¼ ¼³¸í ¿ÂÅ¬¸¯À» À§ÇØ ÇÁ·ÎÇÊ ÆÐ³ÎÀÇ ÆÐ½Ãºê0, 1, 2¿¡ °¢°¢ ºÎÂø
-/// »ó¼¼ ¼³¸íÀº PassiveExplainBox¿¡¼­ °ü¸®
+/// ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å¬ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ð³ï¿½ï¿½ï¿½ ï¿½Ð½Ãºï¿½0, 1, 2ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+/// ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ PassiveExplainBoxï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 /// </summary>
 public class PassiveProfileBox : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     Player_PassiveData _data;
-    [SerializeField] Text _passiveText;
+    [SerializeField] TextMeshProUGUI _passiveText;
 
     public void Init(Player_PassiveData data)
     {
