@@ -8,14 +8,14 @@ public enum changeType
 public struct Position_PresetData
 {
     public int presetId;
-    public positionType positionType;
+    public Position positionType;
     public changeType changeType;
     public float offenseXMin;
     public float offenseXMax;
     public float offenseYMin;
     public float offenseYMax;
 
-    public Position_PresetData(int presetId,positionType positionType,changeType changeType,float offenseXMin,float offenseXMax,float offenseYMin,float offenseYMax)
+    public Position_PresetData(int presetId,Position positionType,changeType changeType,float offenseXMin,float offenseXMax,float offenseYMin,float offenseYMax)
     {
         this.presetId = presetId;
         this.positionType = positionType;

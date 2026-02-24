@@ -4,7 +4,8 @@ using UnityEngine;
 // 0부터 시작
 public enum Position
 {
-    PG = 0, // Point Guard
+    None = 0, 
+    PG,     // Point Guard
     SG,     // Shooting Guard
     SF,     // Small Forward
     PF,     // Power Forward

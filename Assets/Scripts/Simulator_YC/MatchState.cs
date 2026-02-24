@@ -70,7 +70,7 @@ public class MatchState : MonoBehaviour
         if (script.scriptId == 0) return;
 
         potential choiceStat = default;
-        positionType choicePosition = default;
+        Position choicePosition = default;
         float changeStat = 0;
         changeType changePosType = default;
 
@@ -95,7 +95,7 @@ public class MatchState : MonoBehaviour
         foreach (var player in _homeTeam.Roster)
         {
             // 대상 포지션이 일치하거나, 특정 포지션 지목이 없는 경우(None)
-            if (choicePosition == positionType.None || (int)player.MainPosition + 1 == (int)choicePosition)
+            if (choicePosition == Position.None || (int)player.MainPosition + 1 == (int)choicePosition)
             {
                 // 포지션(진형) 변경
                 if (changePosType != changeType.None)

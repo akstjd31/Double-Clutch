@@ -1,0 +1,54 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &2382580702861143267
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7083213133580434894}
+  - component: {fileID: 2540585676494607241}
+  m_Layer: 0
+  m_Name: EnemyTeamFactory
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7083213133580434894
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2382580702861143267}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1.77407, y: -0.39595, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2540585676494607241
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2382580702861143267}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ab734134239c1e45914b49761fadc47, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyTeamFactory
+  _rivalReader: {fileID: 11400000, guid: f9addf54606d27d45b6fc885787057fe, type: 2}
+  _archetypeReader: {fileID: 11400000, guid: 716634fb00f78bc41842041e37c5a086, type: 2}
+  _leagueLevelReader: {fileID: 11400000, guid: 1f2b51ab93100da4997214738663e46e, type: 2}
+  _speciesReader: {fileID: 11400000, guid: 04ba9e4fabbddf74fa3740152f0f15f4, type: 2}
+  _nameReader: {fileID: 11400000, guid: 4df5de6baf6874445a6090f7ef94976e, type: 2}
+  _visualReader: {fileID: 11400000, guid: 2aa9eada2bc6b5345af6c126c5e21446, type: 2}
+  _passiveReader: {fileID: 11400000, guid: b915f593ddc22774a9b6db72867720b9, type: 2}
+  _traitReader: {fileID: 11400000, guid: bb5bafbe9b70f7543b03e2e6f01e1924, type: 2}

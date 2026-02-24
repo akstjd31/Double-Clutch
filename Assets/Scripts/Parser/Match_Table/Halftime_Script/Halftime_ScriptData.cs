@@ -16,19 +16,19 @@ public struct Halftime_ScriptData
     public string cg;
     public string choice01;
     public potential choiceStat01;
-    public positionType choicePosition01;
+    public Position choicePosition01;
     public float changeStat01;
     public changeType changePosition01;
     public int nextId01;
     public string choice02;
     public potential choiceStat02;
-    public positionType choicePosition02;
+    public Position choicePosition02;
     public float changeStat02;
     public changeType changePosition02;
     public int nextId02;
     public string choice03;
     public potential choiceStat03;
-    public positionType choicePosition03;
+    public Position choicePosition03;
     public float changeStat03;
     public changeType changePosition03;
     public int nextId03;
@@ -52,19 +52,19 @@ string background,
 string cg,
 string choice01,
 potential choiceStat01,
-positionType choicePosition01,
+Position choicePosition01,
 float changeStat01,
 changeType changePosition01,
 int nextId01,
 string choice02,
 potential choiceStat02,
-positionType choicePosition02,
+Position choicePosition02,
 float changeStat02,
 changeType changePosition02,
 int nextId02,
 string choice03,
 potential choiceStat03,
-positionType choicePosition03,
+Position choicePosition03,
 float changeStat03,
 changeType changePosition03,
 int nextId03,
