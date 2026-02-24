@@ -2,7 +2,6 @@ using System;
 using System.Xml.Schema;
 using UnityEngine;
 
-[Serializable]
 public struct Calendar
 {
     public int year;
@@ -47,7 +46,7 @@ public class CalendarManager : Singleton<CalendarManager>
         }
 
         // 1. 주차 시작(주차 계산)
-        CalWeek(weekId);
+        CalcWeek(weekId);
         
         // 2. 시작 컷신 체크
         if (HasExistStartCutscene(weekId))
@@ -67,7 +66,7 @@ public class CalendarManager : Singleton<CalendarManager>
         // 5. 턴 종료 시
     }
 
-    private void CalWeek(int weekId)
+    private void CalcWeek(int weekId)
     {
         var data = _calReader.DataList[weekId];
 
@@ -89,7 +88,8 @@ public class CalendarManager : Singleton<CalendarManager>
             weekId = data.targetidDefault;
         }
 
-        CalendarSaveData._weekId = weekId;
+        if (GameManager.Instance != null)
+            GameManager.Instance.SetWeekId(weekId);
 
         calendar.month = data.month;
         calendar.week = data.weekNo;
@@ -116,19 +116,4 @@ public class CalendarManager : Singleton<CalendarManager>
     }
 
     public Calendar GetCalendar() => this.calendar;
-}
-
-public static class CalendarSaveData
-{
-    private const string KEY_WEEK_ID = "WEEK_ID";
-
-    public static int _weekId
-    {
-        get => PlayerPrefs.GetInt(KEY_WEEK_ID, 0);
-        set
-        {
-            PlayerPrefs.SetInt(KEY_WEEK_ID, value);
-            PlayerPrefs.Save();
-        }
-    }
 }

@@ -18,15 +18,17 @@ public class TutorialUI : MonoBehaviour
         if (GameManager.Instance == null) return;
 
         var gm = GameManager.Instance;
-        gm.SchoolName = _schoolNameField.text;
-        gm.PlayerName = _playerNameField.text;
+        var data = new PlayerSaveData();
+
+        data.schoolName = _schoolNameField.text;
+        data.coachName = _playerNameField.text;
+
+        gm.InitData(data);
 
         this.gameObject.SetActive(false);
 
         // 튜토리얼 수행 완료
         PlayerPrefs.SetInt(PrefKeys.KEY_FIRST_RUN_DONE, 1);
         PlayerPrefs.Save();
-
-        Debug.Log($"{gm.SchoolName} 학교를 맡으신 {gm.PlayerName} 감독님 환영합니다!");
     }
 }

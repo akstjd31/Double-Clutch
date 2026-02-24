@@ -50,12 +50,12 @@ public class Infra : MonoBehaviour
         if (GameManager.Instance == null) return;
         var gameMgr = GameManager.Instance;
 
-        if (gameMgr.Money < money)
+        if (gameMgr.SaveData.money < money)
         {
             Debug.Log("업그레이드를 하기 위한 비용이 부족합니다!");
             return;
         }
 
-        gameMgr.Money -= money;
+        gameMgr.SetMoney(gameMgr.SaveData.money - money);
     }
 }
