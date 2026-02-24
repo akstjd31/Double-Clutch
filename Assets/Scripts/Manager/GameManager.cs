@@ -28,13 +28,18 @@ public static class SceneName
     public const string EVENT = "Test_Event";
 }
 
+public static class FilePath
+{
+    public const string PLAYER_PATH = "Player_Data.json";
+}
+
 public class GameManager : Singleton<GameManager>
 {
-    [Header("Player")]
-    public string SchoolName { get; set; }
-    public string PlayerName { get; set; }
-    public int Money { get; set; }
-    public event Action<int> OnMoneyChanged;
+    [Header("Data")]
+    [SerializeField] private PlayerSaveData saveData;
+    public PlayerSaveData SaveData => saveData;
+
+    public event Action OnDataChanged;
 
     [Header("GameState")]
     private StateMachine _sm = new StateMachine();
@@ -58,24 +63,21 @@ public class GameManager : Singleton<GameManager>
 
     private void InitCommandSystem()
     {
-        var file = "player_save.json";
         // 임시 저장 경로 (데이터 존재 여부에 따라 처음인지 아닌지를 판별)
-        if (SaveLoadManager.Instance.TryLoad(file, out PlayerSaveData save))
+        if (SaveLoadManager.Instance.TryLoad(FilePath.PLAYER_PATH, out saveData))
         {
-            // PlayerPrefs.SetInt("FIRST_RUN_DONE", 1);
-            // 돈 데이터도 여기에 작성
+            PlayerPrefs.SetInt(PrefKeys.KEY_FIRST_RUN_DONE, 1);
         }
         else
         {
-            // PlayerPrefs.SetInt("FIRST_RUN_DONE", 0);
-            save = new PlayerSaveData();
+            PlayerPrefs.SetInt(PrefKeys.KEY_FIRST_RUN_DONE, 0);
         }
 
-        _ctx = new GameContext(save, SaveLoadManager.Instance, file);
+        // _ctx = new GameContext(save, SaveLoadManager.Instance, FilePath.PLAYER_PATH);
 
-        _bus = new CommandBus();
-        _bus.OnFailed += (_, msg) => Debug.LogWarning($"실패: {msg}");
-        _bus.OnExecuted += (cmd) => Debug.Log($"성공: {cmd.GetType().Name}");
+        // _bus = new CommandBus();
+        // _bus.OnFailed += (_, msg) => Debug.LogWarning($"실패: {msg}");
+        // _bus.OnExecuted += (cmd) => Debug.Log($"성공: {cmd.GetType().Name}");
     }
 
     // 객체 미리 등록해놓기
@@ -91,11 +93,18 @@ public class GameManager : Singleton<GameManager>
         _sm.Register(new TutorialState(this, _sm));
     }
 
+    public void InitData(PlayerSaveData data)
+    {
+        saveData = data;
+        Debug.Log($"{saveData.schoolName} 학교 {saveData.coachName} 감독님 환영합니다!");
+        SavePlayerData();
+    }
+
+    private void SavePlayerData() => SaveLoadManager.Instance.Save(FilePath.PLAYER_PATH, saveData);
+
     private void Start()
     {
         _sm.ChangeState<LoadingState>();
-
-        Money = 0;
     }
 
     // 각 상태 클래스에서 필요시 사용
@@ -121,13 +130,6 @@ public class GameManager : Singleton<GameManager>
             _sm.ChangeState(NextStateAfterLoading);
     }
 
-    public void OnMoneyChangedInvoke()
-    {
-        PlayerPrefs.SetInt(PrefKeys.CURRENCY_SUBSIDY, Money);
-        PlayerPrefs.Save();
-        OnMoneyChanged?.Invoke(Money);
-    }
-
     public void LoadNextScene()
     {
         StartCoroutine(LoadNextScene_Coroutine());
@@ -143,5 +145,23 @@ public class GameManager : Singleton<GameManager>
         yield return op; // 씬 로드 완료까지 대기
 
         NotifyLoadingDone(); // 로드 끝난 뒤 상태 전환
+    }
+
+    public void SetMoney(int money)
+    {
+        saveData.money = money;
+        OnDataChanged?.Invoke();
+    }
+
+    public void SetWeekId(int weekId)
+    {
+        saveData.weekId = weekId;
+        OnDataChanged?.Invoke();
+    }
+
+    public void SetHonor(int honor)
+    {
+        saveData.honor = honor;
+        OnDataChanged?.Invoke();
     }
 }

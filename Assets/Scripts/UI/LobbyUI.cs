@@ -11,7 +11,7 @@ public class LobbyUI : MonoBehaviour
             CalendarManager.Instance.OnWeekChanged += UpdateCalendarText;
 
         if (GameManager.Instance != null)
-            GameManager.Instance.OnMoneyChanged += UpdateMoneyText;
+            GameManager.Instance.OnDataChanged += UpdateMoneyText;
     }
 
     // Update is called once per frame
@@ -26,7 +26,7 @@ public class LobbyUI : MonoBehaviour
             CalendarManager.Instance.OnWeekChanged -= UpdateCalendarText;
             
         if (GameManager.Instance != null)
-            GameManager.Instance.OnMoneyChanged -= UpdateMoneyText;
+            GameManager.Instance.OnDataChanged -= UpdateMoneyText;
     }
 
     public void UpdateCalendarText(Calendar calendar)
@@ -34,8 +34,8 @@ public class LobbyUI : MonoBehaviour
         _calendarText.text = $"{calendar.year}년차 {calendar.month}월 {calendar.week}주";
     }
 
-    public void UpdateMoneyText(int money)
+    public void UpdateMoneyText()
     {
-        _moneyText.text = $"{money.ToString("N0")}G";
+        _moneyText.text = $"{GameManager.Instance.SaveData.money.ToString("N0")}G";
     }
 }
