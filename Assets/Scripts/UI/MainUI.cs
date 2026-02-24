@@ -3,6 +3,7 @@ using UnityEngine.UI;
 
 public class MainUI : MonoBehaviour
 {
+    [SerializeField] private GameObject tutorialObj;
     [SerializeField] private Button _startButton;
 
     private void Awake()
@@ -11,6 +12,11 @@ public class MainUI : MonoBehaviour
         {
             _startButton.onClick.AddListener(OnClickGameStart);
         }
+    }
+
+    private void Start()
+    {
+        tutorialObj.SetActive(IsFirstRun());
     }
 
     private void Update()
@@ -34,7 +40,13 @@ public class MainUI : MonoBehaviour
 //         }
 // #endif
 
+        // 모바일 백 버튼 시 게임 종료
+        if (Input.GetKeyDown(KeyCode.Escape))
+            OnClickQuitButton();
     }
+
+    // 처음 실행하는건지?
+    private bool IsFirstRun() => PlayerPrefs.GetInt(PrefKeys.KEY_FIRST_RUN_DONE, 0) == 0;
 
     public void OnClickGameStart() => GameManager.Instance.Dispatch(UIAction.Main_Start);
     public void OnClickQuitButton() => GameManager.Instance.Dispatch(UIAction.Main_Quit);

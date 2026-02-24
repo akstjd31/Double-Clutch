@@ -2,8 +2,6 @@ using UnityEngine;
 using UnityEngine.UI;
 public class LobbyUI : MonoBehaviour
 {
-    
-    [SerializeField] private GameObject _tutorialObj;
     [SerializeField] private Text _calendarText;
     [SerializeField] private Text _moneyText;
 
@@ -19,8 +17,6 @@ public class LobbyUI : MonoBehaviour
     // Update is called once per frame
     private void Start()
     {
-        _tutorialObj.SetActive(IsFirstRun());
-
         UpdateCalendarText(CalendarManager.Instance.GetCalendar());
     }
 
@@ -33,9 +29,6 @@ public class LobbyUI : MonoBehaviour
         CalendarManager.Instance.OnWeekChanged -= UpdateCalendarText;
         GameManager.Instance.OnMoneyChanged -= UpdateMoneyText;
     }
-
-    // 처음 실행하는건지?
-    private bool IsFirstRun() => PlayerPrefs.GetInt(PrefKeys.KEY_FIRST_RUN_DONE, 0) == 0;
 
     public void UpdateCalendarText(Calendar calendar)
     {

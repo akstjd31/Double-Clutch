@@ -26,5 +26,7 @@ public class TutorialUI : MonoBehaviour
         // 튜토리얼 수행 완료
         PlayerPrefs.SetInt(PrefKeys.KEY_FIRST_RUN_DONE, 1);
         PlayerPrefs.Save();
+
+        Debug.Log($"{gm.SchoolName} 학교를 맡으신 {gm.PlayerName} 감독님 환영합니다!");
     }
 }
