@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.LightTransport;
+
 using UnityEngine.UIElements;
 
 [CreateAssetMenu(fileName = "Event_ChoiceDataReader", menuName = "Scriptable Object/Event_ChoiceDataReader", order = int.MaxValue)]
