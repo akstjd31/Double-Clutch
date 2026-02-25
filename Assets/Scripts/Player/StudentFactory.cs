@@ -26,7 +26,9 @@ public class StudentFactory : MonoBehaviour
     [SerializeField] Player_StartingStateDataReader _startingStateDataReader; //능력치 시작 범위 데이터
     [Header("Player_MaxPotentialDataReader(능력치 성장 최대값 데이터)")]
     [SerializeField] Player_MaxPotentialDataReader _maxPotentialDataReader; //능력치 성장 최대값 데이터
-            
+    [Header("Player_GrowthRateDataReader(능력치 성장률 데이터)")]
+    [SerializeField] Player_GrowthRateDataReader _growthRateDataReader; //능력치 성장률 데이터
+
     const float FIRST_GRADE_RATE = 0.6f;
     const float SECOND_GRADE_RATE = 0.2f;
     const float THIRD_GRADE_RATE = 0.2f;
@@ -161,6 +163,15 @@ public class StudentFactory : MonoBehaviour
         }
     }
 
+    private int GetRandomGrowthRate(int grade) //학년에 따른 랜덤 성장률 반환
+    {
+        int min = _growthRateDataReader.DataList[grade - 1].minGrowthRate;
+        int max = _growthRateDataReader.DataList[grade - 1].maxGrowthRate;
+        
+        return Random.Range(min, max);
+    }
+
+
     private void SetRandomPassive(Student student) //선수에게 랜덤 패시브를 중복없이 부여(다른 랜덤 함수와 달리 부여까지 함에 주의)
     {
         List<Player_PassiveData> availablePool = student.GetAvailablePassives(_passiveDataReader.DataList); //선수에게 부여 가능한 남은 패시브 목록 받아오기
@@ -187,11 +198,17 @@ public class StudentFactory : MonoBehaviour
     {
         List<Stat> newStat = new List<Stat>();
         Player_StartingStateData stateSetting = _startingStateDataReader.DataList[grade - 1]; //해당 학년의 스탯 범위 가져오기
-        Player_MaxPotentialData maxPotentialData = _maxPotentialDataReader.DataList[0];
+        Player_MaxPotentialData maxPotentialData = _maxPotentialDataReader.DataList[0]; //스탯 최대 성장률 데이터 참조
         foreach (potential type in System.Enum.GetValues(typeof(potential)))
         {            
+            if (type == potential.None)
+            {
+                continue;
+            }
+
             int currentValue = Random.Range(stateSetting.startMin, stateSetting.startMax + 1); //현재 스탯 할당
             int limitValue = Random.Range(maxPotentialData.minPotentialValue, maxPotentialData.maxPotentialValue + 1); //스탯 최대치 할당
+            int growthRate = GetRandomGrowthRate(grade);
             int safetyNet = 0;
             while (limitValue <= currentValue && safetyNet < 100) //만약 시작 스탯이 최대 성장치 보다 높게 뽑히면 최대 100번까지 최대 스탯을 다시 리롤
             {
@@ -200,9 +217,9 @@ public class StudentFactory : MonoBehaviour
             }
             if (limitValue <= currentValue) //100번 돌렸는데도 보정 안되었으면 강제 보정
             {
-                limitValue = currentValue + Random.Range(5, 15); //테이블에서 큰 변동 있을 시 확인해서 반영 필요!
+                limitValue = currentValue + Random.Range(5, 15); //강제 보정치. 테이블에서 큰 변동 있을 시 확인해서 반영 필요!
             }
-            Stat stat = new Stat(type, currentValue, limitValue);
+            Stat stat = new Stat(type, currentValue, limitValue, growthRate);
             newStat.Add(stat);
         }
         return newStat;

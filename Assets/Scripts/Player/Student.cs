@@ -5,7 +5,7 @@ using UnityEngine;
 
 public enum StudentState
 {
-    None, Tired, Injured
+    None, OverWorked, Injured
 }
 
 [Serializable]
@@ -20,11 +20,12 @@ public class Student
     [SerializeField] List<int> _passiveIdList = new List<int>(); //패시브 Id
     [SerializeField] int _traitId = -1; //특성 Id
     [SerializeField] int _grade = -1; //학년
-    [SerializeField] List<Stat> _stats = new List<Stat>(); //스탯(잠재력)
-    
+    [SerializeField] List<Stat> _stats = new List<Stat>(); //스탯(잠재력)    
+
     [SerializeField] Position _position;
     [SerializeField] StudentState _state;
     [SerializeField] int _condition = 100;
+    [SerializeField] int _cureCount = 0;
 
 
     //게임 실행 후 불러오는 데이터
@@ -60,10 +61,16 @@ public class Student
     public Position Position => _position;
     public StudentState State => _state;
     public int Condition => _condition;
+    public int CureCount => _cureCount;
 
-    public int GetCurrentStat(potential type)
+    public int GetCurrentStat(potential type) //현재 스탯 수치 반환(바로가기) 매서드
     {
         return _statDict[type].Current;
+    }
+
+    public Stat GetStat(potential type) //원하는 타입의 스탯 반환
+    {
+        return _statDict[type];
     }
 
 
@@ -180,6 +187,20 @@ public class Student
         _condition = Mathf.Clamp(_condition += amount, 0, 100);
     }
 
+    public void ChangeState(StudentState newState)
+    {
+        _state = newState;
+        if (newState == StudentState.None)
+        {
+            _cureCount = 0;
+        }
+    }
+
+    public void SetCureCount(int count)
+    {
+        _cureCount = count;
+    }
+
     #endregion
 
 
@@ -210,6 +231,8 @@ public class Student
         {
             switch (stat.Type)
             {
+                case potential.None:
+                    break;
                 case potential.Stat2pt:
                 case potential.Stat3pt:
                 case potential.StatPass:
