@@ -10,8 +10,13 @@ public class Player_SynergyDataReader : DataReaderBase
 
     internal void UpdateStats(List<GSTU_Cell> list, int rowIndex)
     {
+<<<<<<< Updated upstream
         int synergyId = 0, traitID1 = 0, traitID2 = 0;
         string synergyName = null;
+=======
+        string synergyId = null, traitID1 = null, traitID2 = null;
+        string synergyName = null, synergyDesc = null;
+>>>>>>> Stashed changes
         effectType eType = default;
         float eValue = 0;
 
@@ -26,15 +31,15 @@ public class Player_SynergyDataReader : DataReaderBase
             switch (col)
             {
                 case "synergyId":
-                    int.TryParse(val, out synergyId);
+                    synergyId = val;
                     break;
 
                 case "traitID1":
-                    int.TryParse(val, out traitID1);
+                    traitID1 = val;
                     break;
 
                 case "traitID2":
-                    int.TryParse(val, out traitID2);
+                    traitID2 = val;
                     break;
 
                 case "synergyName":
@@ -56,8 +61,6 @@ public class Player_SynergyDataReader : DataReaderBase
             }
         }
 
-        if (synergyId <= 0) return;
-        
         var synergyData = new PlayerSynergyData
         (
             synergyId, traitID1, traitID2, synergyName, eType, eValue

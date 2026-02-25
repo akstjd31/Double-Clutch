@@ -11,7 +11,7 @@ public class Event_ConfigDataReader : DataReaderBase
 
     internal void UpdateStats(List<GSTU_Cell> list, int rowIndex)
     {
-        int idx = 0, scAdd = 0;
+        int scAdd = 0;
         string logEC = null, tTemplate = null, sRId = null, cutInRId = null, vRId = null;
 
         for (int i = 0; i < list.Count; i++)
@@ -23,11 +23,7 @@ public class Event_ConfigDataReader : DataReaderBase
                 val = "";
             
             switch (col)
-            {
-                case "index":
-                    int.TryParse(val, out idx);
-                    break;
-                    
+            {     
                 case "logEventCode":
                     logEC = val;
                     break;
@@ -56,7 +52,7 @@ public class Event_ConfigDataReader : DataReaderBase
 
         var eventConfigData = new Event_ConfigData
         (
-            idx, logEC, tTemplate, scAdd, sRId, cutInRId, vRId
+            logEC, tTemplate, scAdd, sRId, cutInRId, vRId
         );
 
         DataList.Add(eventConfigData);

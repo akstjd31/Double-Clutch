@@ -20,6 +20,9 @@ public class LobbyUI : MonoBehaviour
         _tutorialObj.SetActive(IsFirstRun());
 
         UpdateCalendarText(CalendarManager.Instance.GetCalendar());
+
+        if (CalendarManager.Instance != null)
+            CalendarManager.Instance.NextTurn();
     }
 
     private void OnDestroy()
