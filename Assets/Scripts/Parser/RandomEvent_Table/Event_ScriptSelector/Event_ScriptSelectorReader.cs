@@ -10,7 +10,7 @@ public class Event_ScriptSelectorReader : DataReaderBase
 
     internal void UpdateStats(List<GSTU_Cell> list, int rowIndex)
     {
-        int selectorId = 0;
+        string selectorId = null;
         string eventId = null;
         coreType selectCoreType = default;
         string scriptId = null;
@@ -26,7 +26,7 @@ public class Event_ScriptSelectorReader : DataReaderBase
             switch (col)
             {
                 case "selectorId":
-                    int.TryParse(val, out selectorId);
+                    selectorId = val;
                     break;
 
                 case "coreType":
@@ -46,9 +46,6 @@ public class Event_ScriptSelectorReader : DataReaderBase
                     break;
             }
         }
-
-
-        if (selectorId <= 0) return;
 
         var synergyData = new Event_ScriptSelectorData
         (

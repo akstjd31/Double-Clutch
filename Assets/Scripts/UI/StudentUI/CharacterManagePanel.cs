@@ -4,36 +4,44 @@ using UnityEngine.UI;
 
 public class CharacterManagePanel : MonoBehaviour
 {
-    [SerializeField] GameObject _characterBoxPrefab;
+    [SerializeField] CharacterBox _characterBoxPrefab;
     [SerializeField] Transform _characterBoxParent;
-    [SerializeField] GameObject _backButtonObj;
+    [SerializeField] GameObject _backButtonObj;    
 
-    List<GameObject> boxList = new List<GameObject>();
+    GenericObjectPool<CharacterBox> _characterBoxPool;
 
-    private void Start()
+    List<CharacterBox> _boxList = new List<CharacterBox>();
+
+    private void Awake()
     {
-        for (int i = 0; i < StudentManager.Instance.MyStudents.Count; i++)
-        {
-            GameObject newBox = Instantiate(_characterBoxPrefab, _characterBoxParent);
-            var cBox = newBox.GetComponent<CharacterBox>();
-
-            if (cBox != null)
-            {
-                cBox.Init(StudentManager.Instance.MyStudents[i]);
-                var btn = cBox.GetSelectButton();
-
-                btn.onClick.AddListener(delegate { _backButtonObj.SetActive(false); });
-            }
-        
-            boxList.Add(newBox);
-        }
+        _characterBoxPool = new GenericObjectPool<CharacterBox>(_characterBoxPrefab, _characterBoxParent);
     }
 
-    private void OnDestroy()
+    private void OnEnable()
     {
-        for(int i = 0;i < boxList.Count; i++)
+        RefreshPlayerList();
+    }
+
+    public void RefreshPlayerList()
+    {
+        foreach (var box in _boxList) //기존에 사용하던 박스들을 풀로 반납
         {
-            Destroy(boxList[i]);
+            _characterBoxPool.Release(box);
+        }
+        _boxList.Clear();
+
+        var students = StudentManager.Instance.MyStudents;// 보유한 선수 수만큼 풀에서 가져와서 생성 (풀에 없으면 내장 오브젝트 풀이 자동 생성)
+        for (int i = 0; i < students.Count; i++)
+        {
+            CharacterBox newBox = _characterBoxPool.Get(); //박스 채우기
+
+            newBox.Init(students[i]); //박스에 선수 정보 주입
+
+            var btn = newBox.GetSelectButton(); // 뒤로가기 버튼 설정
+            btn.onClick.RemoveAllListeners();
+            btn.onClick.AddListener(() => { _backButtonObj.SetActive(false); });
+
+            _boxList.Add(newBox);
         }
     }
 }
