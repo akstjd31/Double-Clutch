@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.LightTransport;
 using UnityEngine.UIElements;
 
 [CreateAssetMenu(fileName = "Event_ResultDataReader", menuName = "Scriptable Object/Event_ResultDataReader", order = int.MaxValue)]

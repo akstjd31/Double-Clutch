@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.LightTransport;
 using UnityEngine.UIElements;
 
 [CreateAssetMenu(fileName = "Event_SoundDataReader", menuName = "Scriptable Object/Event_SoundDataReader", order = int.MaxValue)]
