@@ -7,8 +7,8 @@ using TMPro;
 /// </summary>
 public class CharacterBox : MonoBehaviour
 {
-    [SerializeField] Text _nameText;
-    [SerializeField] Text _gradeText;
+    [SerializeField] TextMeshProUGUI _nameText;
+    [SerializeField] TextMeshProUGUI _gradeText;
     [SerializeField] Button _selectButton;
 
     public void Init(Student student)

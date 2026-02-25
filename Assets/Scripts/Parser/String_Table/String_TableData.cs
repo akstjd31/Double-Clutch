@@ -3,13 +3,15 @@ using System;
 public struct String_TableData
 {
     public string stringKey;
-    public string Kr;
-    public string En;
+    public string ko;
+    public string en;
+    public string ja;
 
-    public String_TableData(string stringKey, string Kr, string En)
+    public String_TableData(string stringKey, string ko, string en, string ja)
     {
         this.stringKey = stringKey;
-        this.Kr = Kr;
-        this.En = En;
+        this.ko = ko;
+        this.en = en;
+        this.ja = ja;
     }
 }
