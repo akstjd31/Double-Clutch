@@ -13,10 +13,10 @@ public enum effectType
 [Serializable]
 public struct Player_PassiveData
 {
-    public int skillId;
+    public string skillId;
     public string skillName;
     public skillCategory skillCategory;
-    public string triggerType;
+    public triggerCond triggerCond;
     public int triggerValue;
     public effectType effectType;
     public float effectValue;
@@ -26,15 +26,15 @@ public struct Player_PassiveData
 
     public Player_PassiveData
         (
-            int _skillId, string _skillName, skillCategory _skillCategory,
-            string _triggerType, int _triggerValue, effectType _effectType, float _effectValue, int _effectDuration,
+            string _skillId, string _skillName, skillCategory _skillCategory,
+            triggerCond _triggerCond, int _triggerValue, effectType _effectType, float _effectValue, int _effectDuration,
             int _CoolTime, string _passiveDesc
         )
     {
         skillId = _skillId;
         skillName = _skillName;
         skillCategory = _skillCategory;
-        triggerType = _triggerType;
+        triggerCond = _triggerCond;
         triggerValue = _triggerValue;
         effectType = _effectType;
         effectValue = _effectValue;

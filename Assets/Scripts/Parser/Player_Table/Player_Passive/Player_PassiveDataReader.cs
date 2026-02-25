@@ -12,10 +12,10 @@ public class Player_PassiveDataReader : DataReaderBase
     // ItemData처럼 List<GSTU_Cell> 한 줄을 받아서 파싱
     internal void UpdateStats(List<GSTU_Cell> list, int rowIndex)
     {
-        int skillId = 0;
+        string skillId = null;
         string skillName = "";
         skillCategory category = default;
-        string triggerType = "";
+        triggerCond triggerCond = default;
         int triggerValue = 0;
         effectType effectType = default;
         float effectValue = 0;
@@ -34,7 +34,7 @@ public class Player_PassiveDataReader : DataReaderBase
             switch (col)
             {
                 case "skillId":
-                    int.TryParse(val, out skillId);
+                    skillId = val;
                     break;
 
                 case "skillName":
@@ -50,8 +50,12 @@ public class Player_PassiveDataReader : DataReaderBase
                     }
                     break;
 
-                case "triggerType":
-                    triggerType = val;
+                case "triggerCond":
+                    if (!string.IsNullOrEmpty(val))
+                    {
+                        if (int.TryParse(val, out var eInt)) triggerCond = (triggerCond)eInt;
+                        else if (Enum.TryParse(val, true, out triggerCond e)) triggerCond = e;
+                    }
                     break;
 
                 case "triggerValue":
@@ -87,10 +91,10 @@ public class Player_PassiveDataReader : DataReaderBase
         }
 
         // skillId 없으면 스킵 (타입행/빈행 방지)
-        if (skillId <= 0) return;
+        if (string.IsNullOrEmpty(skillId)) return;
 
         DataList.Add(new Player_PassiveData(
-            skillId, skillName, category, triggerType, triggerValue, effectType,
+            skillId, skillName, category, triggerCond, triggerValue, effectType,
             effectValue, effectDuration, CoolTime, passiveDesc
         ));
     }

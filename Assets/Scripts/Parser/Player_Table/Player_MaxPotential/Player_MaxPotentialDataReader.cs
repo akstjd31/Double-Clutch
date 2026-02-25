@@ -12,7 +12,7 @@ public class Player_MaxPotentialDataReader : DataReaderBase
     // ItemData처럼 List<GSTU_Cell> 한 줄을 받아서 파싱
     internal void UpdateStats(List<GSTU_Cell> list, int rowIndex)
     {
-        int key = 0;
+        string potentialId = null;
         int minPotentialValue = 0;
         int maxPotentialValue = 0;
         
@@ -27,8 +27,8 @@ public class Player_MaxPotentialDataReader : DataReaderBase
 
             switch (col)
             {
-                case "key":
-                    int.TryParse(val, out key);
+                case "potentialId":
+                    potentialId = val;
                     break;
                 case "minPotentialValue":
                     int.TryParse(val, out minPotentialValue);
@@ -41,9 +41,9 @@ public class Player_MaxPotentialDataReader : DataReaderBase
         }
 
         // skillId 없으면 스킵 (타입행/빈행 방지)
-        if (key <= 0) return;
+        if (string.IsNullOrEmpty(potentialId)) return;
 
-        DataList.Add(new Player_MaxPotentialData(key, minPotentialValue, maxPotentialValue));
+        DataList.Add(new Player_MaxPotentialData(potentialId, minPotentialValue, maxPotentialValue));
     }
 
     private static bool ParseBool(string val)

@@ -12,7 +12,8 @@ public class Player_ReputationDataReader : DataReaderBase
     // ✅ ItemData처럼 List<GSTU_Cell> 한 줄을 받아서 파싱
     internal void UpdateStats(List<GSTU_Cell> list, int rowIndex)
     {
-        int key = 0, minReputationScore = 0, minStepValue = 0, maxReputationScore = 0, maxStepValue = 0;
+        string reputationId = null;
+        int minReputationScore = 0, minStepValue = 0, maxReputationScore = 0, maxStepValue = 0;
 
         for (int i = 0; i < list.Count; i++)
         {
@@ -24,8 +25,8 @@ public class Player_ReputationDataReader : DataReaderBase
 
             switch (col)
             {
-                case "key":
-                    int.TryParse(val, out key);
+                case "reputationId":
+                    reputationId = val;
                     break;
                 case "minReputationScore":
                     int.TryParse(val, out minReputationScore);
@@ -43,10 +44,9 @@ public class Player_ReputationDataReader : DataReaderBase
         }
 
         // ✅ weekId가 없으면 스킵 (타입행/빈행 방지)
-        if (key <= 0) return;
+        if (string.IsNullOrEmpty(reputationId)) return;
 
-        DataList.Add(new Player_ReputationData(key, minReputationScore, minStepValue, maxReputationScore, maxStepValue
-        ));
+        DataList.Add(new Player_ReputationData(reputationId, minReputationScore, minStepValue, maxReputationScore, maxStepValue));
     }
 
     private static bool ParseBool(string val)
