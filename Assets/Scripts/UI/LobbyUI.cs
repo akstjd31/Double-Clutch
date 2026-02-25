@@ -19,6 +19,9 @@ public class LobbyUI : MonoBehaviour
     private void Start()
     {
         UpdateCalendarText(CalendarManager.Instance.GetCalendar());
+
+        if (CalendarManager.Instance != null)
+            CalendarManager.Instance.NextTurn();
     }
 
     private void OnDisable()
