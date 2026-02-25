@@ -17,19 +17,19 @@ public class Halftime_ScriptDataReader : DataReaderBase
         textType textType = default;
         string standingRight = null, standingLeft = null, background = null, cg = null, choice01 = null;
         potential choiceStat01 = default;
-        positionType choicePosition01 = default;   
+        Position choicePosition01 = default;   
         float changeStat01 = 0.0f;
         changeType changePosition01 = default;
         int nextId01 = 0;
         string choice02 = null;
         potential choiceStat02 = default;
-        positionType choicePosition02 = default;
+        Position choicePosition02 = default;
         float changeStat02 = 0.0f;
         changeType changePosition02 = default;
         int nextId02 = 0;
         string choice03 = null;
         potential choiceStat03 = default;
-        positionType choicePosition03 = default;
+        Position choicePosition03 = default;
         float changeStat03 = 0.0f;
         changeType changePosition03 = default;
         int nextId03 = 0;
@@ -96,8 +96,8 @@ public class Halftime_ScriptDataReader : DataReaderBase
                 case "choicePosition01":
                     if (!string.IsNullOrEmpty(val))
                     {
-                        if (int.TryParse(val, out var eInt)) choicePosition01 = (positionType)eInt;
-                        else if (Enum.TryParse(val, true, out positionType e)) choicePosition01 = e;
+                        if (int.TryParse(val, out var eInt)) choicePosition01 = (Position)eInt;
+                        else if (Enum.TryParse(val, true, out Position e)) choicePosition01 = e;
                     }
                     break;
                 case "changeStat01":
@@ -126,8 +126,8 @@ public class Halftime_ScriptDataReader : DataReaderBase
                 case "choicePosition02":
                     if (!string.IsNullOrEmpty(val))
                     {
-                        if (int.TryParse(val, out var eInt)) choicePosition02 = (positionType)eInt;
-                        else if (Enum.TryParse(val, true, out positionType e)) choicePosition02 = e;
+                        if (int.TryParse(val, out var eInt)) choicePosition02 = (Position)eInt;
+                        else if (Enum.TryParse(val, true, out Position e)) choicePosition02 = e;
                     }
                     break;
                 case "changeStat02":
@@ -156,8 +156,8 @@ public class Halftime_ScriptDataReader : DataReaderBase
                 case "choicePosition03":
                     if (!string.IsNullOrEmpty(val))
                     {
-                        if (int.TryParse(val, out var eInt)) choicePosition03 = (positionType)eInt;
-                        else if (Enum.TryParse(val, true, out positionType e)) choicePosition03 = e;
+                        if (int.TryParse(val, out var eInt)) choicePosition03 = (Position)eInt;
+                        else if (Enum.TryParse(val, true, out Position e)) choicePosition03 = e;
                     }
                     break;
                 case "changeStat03":

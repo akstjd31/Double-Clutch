@@ -20,7 +20,7 @@ MonoBehaviour:
   - teamArchetypeId: SML_Base
     desc: "\uC13C\uD130\uB97C \uBE7C\uACE0 \uD3EC\uC6CC\uB4DC \uAE30\uB3D9\uB825\uC744
       \uB192\uC778 \uC18D\uACF5 \uC704\uC8FC \uAD6C\uC131"
-    teamColorName: "\uC2A4\uBAB0 \uBCFC"
+    teamArchetypeNameKey: Str_TeamArchetypeName_SML_Base
     countPG: 1
     countSG: 1
     countSF: 2
@@ -32,10 +32,38 @@ MonoBehaviour:
     weightBlock: 1
     weightSteal: 1
     weightRebound: 1
+  - teamArchetypeId: SML_PhysicalInside
+    desc: "\uD53C\uC9C0\uCEEC \uC778\uC0AC\uC774\uB4DC\uD615"
+    teamArchetypeNameKey: Str_TeamArchetypeName_SML_PhysicalInside
+    countPG: 1
+    countSG: 1
+    countSF: 2
+    countPF: 1
+    countC: 0
+    weight2pt: 1.5
+    weight3pt: 1
+    weightPass: 1
+    weightBlock: 1
+    weightSteal: 1
+    weightRebound: 1.5
+  - teamArchetypeId: SML_Perimeter
+    desc: "\uD37C\uB9AC\uBBF8\uD130 \uD5CC\uD130\uD615"
+    teamArchetypeNameKey: Str_TeamArchetypeName_SML_Perimeter
+    countPG: 1
+    countSG: 1
+    countSF: 2
+    countPF: 1
+    countC: 0
+    weight2pt: 1
+    weight3pt: 1.5
+    weightPass: 1
+    weightBlock: 1
+    weightSteal: 1.5
+    weightRebound: 1
   - teamArchetypeId: BAL_Base
     desc: "\uBAA8\uB4E0 \uD3EC\uC9C0\uC158\uC5D0 \uC778\uC6D0\uC774 \uACE0\uB974\uAC8C
       1\uBA85\uC529 \uBC30\uC815\uB41C \uADE0\uD615 \uC7A1\uD78C \uD300"
-    teamColorName: "\uD45C\uC900 \uBC38\uB7F0\uC2A4"
+    teamArchetypeNameKey: Str_TeamArchetypeName_BAL_Base
     countPG: 1
     countSG: 1
     countSF: 1
@@ -47,10 +75,38 @@ MonoBehaviour:
     weightBlock: 1
     weightSteal: 1
     weightRebound: 1
+  - teamArchetypeId: BAL_Scoring
+    desc: "2\uC810\uC29B\uACFC 3\uC810\uC29B \uD2B9\uD654"
+    teamArchetypeNameKey: Str_TeamArchetypeName_BAL_Scoring
+    countPG: 1
+    countSG: 1
+    countSF: 1
+    countPF: 1
+    countC: 1
+    weight2pt: 1.5
+    weight3pt: 1.5
+    weightPass: 1
+    weightBlock: 1
+    weightSteal: 1
+    weightRebound: 1
+  - teamArchetypeId: BAL_InsideOut
+    desc: "\uC778\uC0AC\uC774\uB4DC-\uC544\uC6C3 \uC804\uAC1C\uD615"
+    teamArchetypeNameKey: Str_TeamArchetypeName_BAL_InsideOut
+    countPG: 1
+    countSG: 1
+    countSF: 1
+    countPF: 1
+    countC: 1
+    weight2pt: 1.5
+    weight3pt: 1
+    weightPass: 1.5
+    weightBlock: 1
+    weightSteal: 1
+    weightRebound: 1
   - teamArchetypeId: OFF_Base
     desc: "\uAC15\uB825\uD55C \uD3EC\uC6CC\uB4DC\uC9C4\uC758 \uD53C\uC9C0\uCEEC\uACFC
       \uC911\uAC70\uB9AC \uB4DD\uC810 \uAC15\uC870"
-    teamColorName: "\uB4C0\uC5BC \uD3EC\uC6CC\uB4DC"
+    teamArchetypeNameKey: Str_TeamArchetypeName_OFF_Base
     countPG: 0
     countSG: 1
     countSF: 1
@@ -62,10 +118,23 @@ MonoBehaviour:
     weightBlock: 1
     weightSteal: 1
     weightRebound: 1
+  - teamArchetypeId: OFF_TwoWayAce
+    desc: "\uD22C\uC6E8\uC774 \uC5D0\uC774\uC2A4\uD615"
+    teamArchetypeNameKey: Str_TeamArchetypeName_OFF_TwoWayAce
+    countPG: 0
+    countSG: 1
+    countSF: 1
+    countPF: 2
+    countC: 1
+    weight2pt: 1.5
+    weight3pt: 1
+    weightPass: 1
+    weightBlock: 1
+    weightSteal: 1.5
+    weightRebound: 1
   - teamArchetypeId: SHT_Base
-    desc: "\uC288\uD305 \uAC00\uB4DC 2\uBA85\uC744 \uBC30\uCE58\uD558\uC5EC \uC678\uACFD
-      3\uC810\uC29B \uD654\uB825 \uC9D1\uC911"
-    teamColorName: "\uB4C0\uC5BC \uAC00\uB4DC"
+    desc: "\uB4C0\uC5BC \uAC00\uB4DC \uC804\uC220"
+    teamArchetypeNameKey: Str_TeamArchetypeName_SHT_Base
     countPG: 0
     countSG: 2
     countSF: 1
@@ -78,9 +147,8 @@ MonoBehaviour:
     weightSteal: 1
     weightRebound: 1
   - teamArchetypeId: SHT_Sniper
-    desc: "\uAE30\uBCF8 \uB4C0\uC5BC \uAC00\uB4DC \uC804\uC220\uC5D0 \uB300\uD558\uC5EC
-      \uD300 3\uC810\uC29B \uC7A0\uC7AC\uB825 1.5\uBC30 \uAC00\uC911"
-    teamColorName: "3\uC810\uC29B \uD2B9\uD654 \uB4C0\uC5BC \uAC00\uB4DC"
+    desc: "3\uC810\uC29B \uD2B9\uD654"
+    teamArchetypeNameKey: Str_TeamArchetypeName_SHT_Sniper
     countPG: 0
     countSG: 2
     countSF: 1
@@ -92,10 +160,24 @@ MonoBehaviour:
     weightBlock: 1
     weightSteal: 1
     weightRebound: 1
+  - teamArchetypeId: SHT_LongRange
+    desc: "\uB871\uB808\uC778\uC9C0 \uC288\uD130\uD615 (\uC218\uBE44 \uAC00\uC138)"
+    teamArchetypeNameKey: Str_TeamArchetypeName_SHT_LongRange
+    countPG: 0
+    countSG: 2
+    countSF: 1
+    countPF: 1
+    countC: 1
+    weight2pt: 1
+    weight3pt: 1.5
+    weightPass: 1
+    weightBlock: 1.5
+    weightSteal: 1
+    weightRebound: 1
   - teamArchetypeId: TAC_Base
     desc: "\uD3EC\uC778\uD2B8 \uAC00\uB4DC 2\uBA85\uC758 \uC815\uAD50\uD55C \uD328\uC2A4
       \uAC8C\uC784\uACFC \uC804\uC220 \uC870\uC728"
-    teamColorName: "\uD50C\uB808\uC774\uBA54\uC774\uD0B9"
+    teamArchetypeNameKey: Str_TeamArchetypeName_TAC_Base
     countPG: 2
     countSG: 1
     countSF: 1
@@ -108,16 +190,15 @@ MonoBehaviour:
     weightSteal: 1
     weightRebound: 1
   - teamArchetypeId: TAC_Pass
-    desc: "\uAE30\uBCF8 \uD50C\uB808\uC774\uBA54\uC774\uD0B9 \uC804\uC220\uC5D0 \uB300\uD558\uC5EC
-      \uD328\uC2A4 \uC7A0\uC7AC\uB825 1.5\uBC30 \uAC00\uC911"
-    teamColorName: "\uD328\uC2A4 \uD2B9\uD654 \uD50C\uB808\uC774\uBA54\uC774\uD0B9"
+    desc: "\uC678\uACFD \uD50C\uB808\uC774\uBA54\uC774\uCEE4\uD615"
+    teamArchetypeNameKey: Str_TeamArchetypeName_TAC_Pass
     countPG: 2
     countSG: 1
     countSF: 1
     countPF: 0
     countC: 1
     weight2pt: 1
-    weight3pt: 1
+    weight3pt: 1.5
     weightPass: 1.5
     weightBlock: 1
     weightSteal: 1
@@ -125,7 +206,7 @@ MonoBehaviour:
   - teamArchetypeId: BIG_Base
     desc: "2\uBA85\uC758 \uC13C\uD130\uB97C \uAE30\uC6A9\uD558\uC5EC \uACE8\uBC11
       \uC7A5\uC545\uB825 \uADF9\uB300\uD654"
-    teamColorName: "\uD2B8\uC708 \uD0C0\uC6CC"
+    teamArchetypeNameKey: Str_TeamArchetypeName_BIG_Base
     countPG: 1
     countSG: 0
     countSF: 1
@@ -137,10 +218,38 @@ MonoBehaviour:
     weightBlock: 1
     weightSteal: 1
     weightRebound: 1
+  - teamArchetypeId: BIG_Hustle
+    desc: "\uD5C8\uC2AC \uCE74\uC6B4\uD130\uD615"
+    teamArchetypeNameKey: Str_TeamArchetypeName_BIG_Hustle
+    countPG: 1
+    countSG: 0
+    countSF: 1
+    countPF: 1
+    countC: 2
+    weight2pt: 1
+    weight3pt: 1
+    weightPass: 1
+    weightBlock: 1
+    weightSteal: 1.5
+    weightRebound: 1.5
+  - teamArchetypeId: BIG_BoardDish
+    desc: "\uBCF4\uB4DC \uC564 \uB514\uC2DC\uD615"
+    teamArchetypeNameKey: Str_TeamArchetypeName_BIG_BoardDish
+    countPG: 1
+    countSG: 0
+    countSF: 1
+    countPF: 1
+    countC: 2
+    weight2pt: 1
+    weight3pt: 1
+    weightPass: 1.5
+    weightBlock: 1
+    weightSteal: 1
+    weightRebound: 1.5
   - teamArchetypeId: DEF_Base
     desc: "\uADF9\uB2E8\uC801\uC778 \uACE8\uBC11 \uC218\uBE44\uC640 \uB9AC\uBC14\uC6B4\uB4DC
       \uD2B9\uD654 (\uAC00\uB4DC \uC5C6\uC74C)"
-    teamColorName: "\uC778\uC0AC\uC774\uB4DC \uC6D4"
+    teamArchetypeNameKey: Str_TeamArchetypeName_DEF_Base
     countPG: 0
     countSG: 0
     countSF: 1
@@ -151,4 +260,32 @@ MonoBehaviour:
     weightPass: 1
     weightBlock: 1
     weightSteal: 1
+    weightRebound: 1
+  - teamArchetypeId: DEF_Fortress
+    desc: "\uC778\uC0AC\uC774\uB4DC \uC694\uC0C8\uD615"
+    teamArchetypeNameKey: Str_TeamArchetypeName_DEF_Fortress
+    countPG: 0
+    countSG: 0
+    countSF: 1
+    countPF: 2
+    countC: 2
+    weight2pt: 1
+    weight3pt: 1
+    weightPass: 1
+    weightBlock: 1.5
+    weightSteal: 1
+    weightRebound: 1.5
+  - teamArchetypeId: DEF_Pressure
+    desc: "\uC555\uBC15 \uC218\uBE44\uD615"
+    teamArchetypeNameKey: Str_TeamArchetypeName_DEF_Pressure
+    countPG: 0
+    countSG: 0
+    countSF: 1
+    countPF: 2
+    countC: 2
+    weight2pt: 1
+    weight3pt: 1
+    weightPass: 1
+    weightBlock: 1.5
+    weightSteal: 1.5
     weightRebound: 1

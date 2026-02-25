@@ -1,19 +1,18 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-
 /// <summary>
-/// ¿ªÇÒ : ¼±¼ö ÇÁ·ÎÇÊ ÆÐ³Î¿¡ ºÎÂøÇÏ¿© Á¤º¸ ÅØ½ºÆ® Ç¥½Ã
+/// ï¿½ï¿½ï¿½ï¿½ : ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ð³Î¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ø½ï¿½Æ® Ç¥ï¿½ï¿½
 /// </summary>
 public class ProfileDetailsPanel : MonoBehaviour
 {
-    [SerializeField] Text _nameText;
-    [SerializeField] Text _gradeText;
+    [SerializeField] TextMeshProUGUI _nameText;
+    [SerializeField] TextMeshProUGUI _gradeText;
     
-    [SerializeField] Text _attackText;
-    [SerializeField] Text _defenseText;
-    [SerializeField] Text _personalityText;
-    [SerializeField] Text _traitText;
+    [SerializeField] TextMeshProUGUI _attackText;
+    [SerializeField] TextMeshProUGUI _defenseText;
+    [SerializeField] TextMeshProUGUI _personalityText;
+    [SerializeField] TextMeshProUGUI _traitText;
 
     [SerializeField] PassiveProfileBox _profileBox0;
     [SerializeField] PassiveProfileBox _profileBox1;
@@ -22,7 +21,7 @@ public class ProfileDetailsPanel : MonoBehaviour
     public void Init(Student student)
     {
         _nameText.text = student.Name;
-        _gradeText.text = student.Grade.ToString() + "ÇÐ³â";
+        _gradeText.text = student.Grade.ToString() + "ï¿½Ð³ï¿½";
         _attackText.text = student.Attack.ToString();
         _defenseText.text = student.Defense.ToString();
         _personalityText.text = StringManager.Instance.GetString(student.PersonalityData.personalityName);

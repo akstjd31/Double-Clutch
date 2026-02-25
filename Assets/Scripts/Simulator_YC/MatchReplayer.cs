@@ -33,6 +33,10 @@ public class MatchReplayer : MonoBehaviour
     private List<MatchLogData> _logs;
     public System.Action OnReplayEnded;
 
+    private Coroutine _replayCoroutine;
+    private int _currentLogIndex = 0;
+    private bool _isSkipping = false;
+
     public void Init(List<MatchLogData> logs)
     {
         _logs = logs;
@@ -161,15 +165,20 @@ public class MatchReplayer : MonoBehaviour
             OnReplayEnded?.Invoke();
             return;
         }
-        StartCoroutine(ReplayRoutine());
+        _isSkipping = false;
+        _currentLogIndex = 0;
+
+        // 실행한 코루틴을 변수에 담아둠 (나중에 강제 정지하기 위함)
+        _replayCoroutine = StartCoroutine(ReplayRoutine());
     }
 
     private IEnumerator ReplayRoutine()
     {
         if (_uiManager != null) _uiManager.UpdateLogText("=== Match Replay Start ===");
 
-        foreach (var log in _logs)
+        for (_currentLogIndex = 0; _currentLogIndex < _logs.Count; _currentLogIndex++)
         {
+            var log = _logs[_currentLogIndex];
             float speed = Mathf.Max(1.0f, PlaybackSpeed);
 
             _matchState.SetReplayState(log.Quarter, log.GameTime);
@@ -180,21 +189,15 @@ public class MatchReplayer : MonoBehaviour
                 _uiManager.UpdateScoreBoard(_matchState);
             }
 
-            //  사운드 재생 로직
-
             if (!string.IsNullOrEmpty(log.SfxType) && _audioSource != null)
             {
-                if (log.SfxType == "CHEER" && _sfxCheer != null)
-                    _audioSource.PlayOneShot(_sfxCheer);
-                else if (log.SfxType == "CLAP" && _sfxClap != null)
-                    _audioSource.PlayOneShot(_sfxClap);
+                if (log.SfxType == "CHEER" && _sfxCheer != null) _audioSource.PlayOneShot(_sfxCheer);
+                else if (log.SfxType == "CLAP" && _sfxClap != null) _audioSource.PlayOneShot(_sfxClap);
             }
 
-            // 선수 이동
             MoveAllCircles(_matchState.HomeTeam, log.HomePositions, 0.5f / speed);
             MoveAllCircles(_matchState.AwayTeam, log.AwayPositions, 0.5f / speed);
 
-            // 공 이동
             if (_ballUI != null)
             {
                 RectTransform ballRT = _ballUI.GetComponent<RectTransform>();
@@ -202,21 +205,16 @@ public class MatchReplayer : MonoBehaviour
 
                 if (log.EventType == "GOAL" || log.EventType == "MISS")
                 {
-                    Vector2 hoopUIPos = (log.TeamId == 0)
-                        ? _awayHoopUI.anchoredPosition
-                        : _homeHoopUI.anchoredPosition;
-
+                    Vector2 hoopUIPos = (log.TeamId == 0) ? _awayHoopUI.anchoredPosition : _homeHoopUI.anchoredPosition;
                     ballRT.anchoredPosition = LogicToUIPos(log.BallPos);
                     ballRT.DOAnchorPos(hoopUIPos, 0.5f / speed);
                 }
                 else
                 {
-
                     ballRT.DOAnchorPos(targetUIPos, 0.3f / speed);
                 }
             }
 
-            // 득점 처리
             if (log.EventType == "GOAL")
             {
                 if (log.TeamId == 0) _matchState.HomeTeam.AddScore(log.ScoreAdded);
@@ -236,11 +234,7 @@ public class MatchReplayer : MonoBehaviour
             yield return new WaitForSeconds(1.0f / speed);
         }
 
-        if (_uiManager != null)
-        {
-            _uiManager.UpdateLogText("=== Match Phase Ended ===");
-        }
-
+        if (_uiManager != null) _uiManager.UpdateLogText("=== Match Phase Ended ===");
         OnReplayEnded?.Invoke();
     }
 
@@ -255,5 +249,46 @@ public class MatchReplayer : MonoBehaviour
                 rt.DOAnchorPos(uiPos, duration);
             }
         }
+    }
+    public void SkipReplay()
+    {
+        if (_isSkipping) return;
+        _isSkipping = true;
+
+        // 재생 중이던 연출 코루틴 강제 정지
+        if (_replayCoroutine != null)
+        {
+            StopCoroutine(_replayCoroutine);
+            _replayCoroutine = null;
+        }
+
+        // 남은 로그들을 순식간에 돌리면서 점수만 한방에 합산
+        for (int i = _currentLogIndex; i < _logs.Count; i++)
+        {
+            var log = _logs[i];
+            if (log.EventType == "GOAL")
+            {
+                if (log.TeamId == 0) _matchState.HomeTeam.AddScore(log.ScoreAdded);
+                else _matchState.AwayTeam.AddScore(log.ScoreAdded);
+            }
+        }
+
+        // 상태 갱신 (마지막 로그의 시간/쿼터로 맞춤)
+        if (_logs.Count > 0)
+        {
+            var lastLog = _logs[_logs.Count - 1];
+            _matchState.SetReplayState(lastLog.Quarter, lastLog.GameTime);
+        }
+
+        // UI 최신화 및 진행 중이던 컷인 강제 종료
+        if (_uiManager != null)
+        {
+            _uiManager.UpdateScoreBoard(_matchState);
+            _uiManager.UpdateLogText("=== Match Phase Skipped ===");
+            _uiManager.ForceCloseCutIn();
+        }
+
+        // 다음 단계(하프타임 또는 경기 종료)로 즉시 넘어감
+        OnReplayEnded?.Invoke();
     }
 }

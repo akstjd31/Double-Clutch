@@ -28,7 +28,7 @@ public class MainState : IState, IUIActionHandler
         {
             case UIAction.Main_Start:
                 // _gm.Execute() 커맨드 수행
-                NextStep<LobbyState>("Test_Lobby");
+                NextStep<LobbyState>(SceneName.LOBBY);
                 break;
 
             case UIAction.Main_Quit:

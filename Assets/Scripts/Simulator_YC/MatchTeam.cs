@@ -10,6 +10,12 @@ public class MatchTeam
     private List<MatchPlayer> _roster; // 현재 출전 중인 5명
     private int _score;
 
+    public int ReboundCount { get; set; }
+    public int Try2pt { get; set; }
+    public int Succ2pt { get; set; }
+    public int Try3pt { get; set; }
+    public int Succ3pt { get; set; }
+
     public TeamSide Side => _side;
     public string TeamName => _teamName;
     public string TeamColorId => _teamColorId;

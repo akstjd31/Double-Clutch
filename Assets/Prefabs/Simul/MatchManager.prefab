@@ -1,0 +1,97 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &4961259914562008073
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 511829381786719645}
+  - component: {fileID: 7831702377714122865}
+  - component: {fileID: 6225409172891308612}
+  - component: {fileID: 2974266514483483379}
+  m_Layer: 0
+  m_Name: MatchManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &511829381786719645
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4961259914562008073}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7831702377714122865
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4961259914562008073}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51614b5b98aa9174c8e06ab24ac0b135, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MatchEngine
+  MatchLogs: []
+  _eventConfigReader: {fileID: 11400000, guid: 3f2ceb8850ca0eb45912bee07def54b0, type: 2}
+  _positionPresetReader: {fileID: 11400000, guid: 861ec4d86760af54b984d896ed8494d5, type: 2}
+--- !u!114 &6225409172891308612
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4961259914562008073}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dacf4a2adc4ec1e4caef7109d9555a6c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MatchState
+  _halftimeScriptReader: {fileID: 11400000, guid: f5b1f3dfb4a88e14abedd50bd2b50282, type: 2}
+  _halftimeListReader: {fileID: 11400000, guid: d6034e5cd316d22439a7652f9862ce49, type: 2}
+  CurrentHalftimeScriptId: 1001
+--- !u!114 &2974266514483483379
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4961259914562008073}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 332affc3377a31d46a5cc9300de056c1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MatchUIManager
+  _textQuarter: {fileID: 0}
+  _textTime: {fileID: 0}
+  _textHomeScore: {fileID: 0}
+  _textAwayScore: {fileID: 0}
+  _textHomeName: {fileID: 0}
+  _textAwayName: {fileID: 0}
+  _resultPanel: {fileID: 0}
+  _finalScoreText: {fileID: 0}
+  _textLogMessage: {fileID: 0}
+  _eventPanel: {fileID: 0}
+  _cutInPanel: {fileID: 0}
+  _cutInImage: {fileID: 0}
+  _cutInText: {fileID: 0}
+  _spriteDunk: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
+  _spriteThreePoint: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
+  _spriteBuzzerBeater: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
+  _maxLogLines: 5
+  _replayer: {fileID: 0}
+  _textSpeedButton: {fileID: 0}

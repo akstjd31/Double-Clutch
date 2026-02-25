@@ -15,7 +15,7 @@ public class TutorialState : IState
     {
         // 튜토리얼 시작
         MarkFirstRunDone();
-        _gm.SetNextFlow("Test_Lobby", _sm.Get<LobbyState>());
+        _gm.SetNextFlow(SceneName.LOBBY, _sm.Get<LobbyState>());
     }
 
     public void Exit()
@@ -26,7 +26,7 @@ public class TutorialState : IState
     // 튜토리얼 끝날 때쯤에 실행될 메서드 (이 플레이어는 튜토리얼이 필요없음)
     public void MarkFirstRunDone()
     {
-        PlayerPrefs.SetInt("FIRST_RUN_DONE", 1);
+        PlayerPrefs.SetInt(PrefKeys.KEY_FIRST_RUN_DONE, 1);
         PlayerPrefs.Save();
     }
 

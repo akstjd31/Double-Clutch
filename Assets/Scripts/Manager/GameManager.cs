@@ -1,4 +1,7 @@
+using System;
+using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 // 게임의 전반적인 상태
 // public enum GameState
@@ -11,12 +14,32 @@ using UnityEngine;
 //     MatchSim,   // 농구 시합
 //     Result      // 결과 (보상 지급)
 // }
+public static class PrefKeys
+{
+    public const string KEY_FIRST_RUN_DONE = "FIRST_RUN_DONE";
+    public const string CURRENCY_SUBSIDY = "CURRENCY_SUBSIDY";
+}
+
+public static class SceneName
+{
+    public const string MAIN = "Test_Main";
+    public const string LOBBY = "Test_Lobby";
+    public const string LOADING = "Test_Loading";
+    public const string EVENT = "Test_Event";
+}
+
+public static class FilePath
+{
+    public const string PLAYER_PATH = "PlayerSaveData.json";
+}
 
 public class GameManager : Singleton<GameManager>
 {
-    [Header("Player")]
-    public string SchoolName { get; set; }
-    public string PlayerName { get; set; }
+    [Header("Data")]
+    [SerializeField] private PlayerSaveData saveData;
+    public PlayerSaveData SaveData => saveData;
+
+    public event Action OnDataChanged;
 
     [Header("GameState")]
     private StateMachine _sm = new StateMachine();
@@ -35,28 +58,26 @@ public class GameManager : Singleton<GameManager>
         InitRegister();
 
         // 로딩화면에서 시작하여 메인으로 넘어가기
-        SetNextFlow("Test_Main", _sm.Get<MainState>());
+        SetNextFlow(SceneName.MAIN, _sm.Get<MainState>());
     }
 
     private void InitCommandSystem()
-    {  
-        var file = "player_save.json";
+    {
         // 임시 저장 경로 (데이터 존재 여부에 따라 처음인지 아닌지를 판별)
-        if (SaveLoadManager.Instance.TryLoad(file, out PlayerSaveData save))
+        if (SaveLoadManager.Instance.TryLoad(FilePath.PLAYER_PATH, out saveData))
         {
-            // PlayerPrefs.SetInt("FIRST_RUN_DONE", 1);
+            PlayerPrefs.SetInt(PrefKeys.KEY_FIRST_RUN_DONE, 1);
         }
         else
         {
-            // PlayerPrefs.SetInt("FIRST_RUN_DONE", 0);
-            save = new PlayerSaveData();
+            PlayerPrefs.SetInt(PrefKeys.KEY_FIRST_RUN_DONE, 0);
         }
 
-        _ctx = new GameContext(save, SaveLoadManager.Instance, file);
+        // _ctx = new GameContext(save, SaveLoadManager.Instance, FilePath.PLAYER_PATH);
 
-        _bus = new CommandBus();
-        _bus.OnFailed += (_, msg) => Debug.LogWarning($"실패: {msg}");
-        _bus.OnExecuted += (cmd) => Debug.Log($"성공: {cmd.GetType().Name}");
+        // _bus = new CommandBus();
+        // _bus.OnFailed += (_, msg) => Debug.LogWarning($"실패: {msg}");
+        // _bus.OnExecuted += (cmd) => Debug.Log($"성공: {cmd.GetType().Name}");
     }
 
     // 객체 미리 등록해놓기
@@ -71,6 +92,15 @@ public class GameManager : Singleton<GameManager>
         _sm.Register(new ResultState(this, _sm));
         _sm.Register(new TutorialState(this, _sm));
     }
+
+    public void InitData(PlayerSaveData data)
+    {
+        saveData = data;
+        Debug.Log($"{saveData.schoolName} 학교 {saveData.coachName} 감독님 환영합니다!");
+        SavePlayerData();
+    }
+
+    private void SavePlayerData() => SaveLoadManager.Instance.Save(FilePath.PLAYER_PATH, saveData);
 
     private void Start()
     {
@@ -94,9 +124,44 @@ public class GameManager : Singleton<GameManager>
     }
 
     // LoadingScene에서 호출
-    public void NotifyLoadingDone()
+    private void NotifyLoadingDone()
     {
         if (NextStateAfterLoading != null)
             _sm.ChangeState(NextStateAfterLoading);
+    }
+
+    public void LoadNextScene()
+    {
+        StartCoroutine(LoadNextScene_Coroutine());
+    }
+
+    private IEnumerator LoadNextScene_Coroutine()
+    {
+        var target = NextSceneName;
+
+        var op = SceneManager.LoadSceneAsync(target, LoadSceneMode.Single);
+        op.allowSceneActivation = true;
+
+        yield return op; // 씬 로드 완료까지 대기
+
+        NotifyLoadingDone(); // 로드 끝난 뒤 상태 전환
+    }
+
+    public void SetMoney(int money)
+    {
+        saveData.money = money;
+        OnDataChanged?.Invoke();
+    }
+
+    public void SetWeekId(int weekId)
+    {
+        saveData.weekId = weekId;
+        OnDataChanged?.Invoke();
+    }
+
+    public void SetHonor(int honor)
+    {
+        saveData.honor = honor;
+        OnDataChanged?.Invoke();
     }
 }

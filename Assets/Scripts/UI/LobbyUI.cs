@@ -1,39 +1,45 @@
 using UnityEngine;
-using UnityEngine.UI;
+using TMPro;
 
 public class LobbyUI : MonoBehaviour
 {
-    private const string KEY_FIRST_RUN_DONE = "FIRST_RUN_DONE";
-    [SerializeField] private GameObject _tutorialObj;
-    [SerializeField] private Text calendarText;
+    [SerializeField] private TextMeshProUGUI _calendarText;
+    [SerializeField] private TextMeshProUGUI _moneyText;
 
-    private void Awake()
+    private void OnEnable()
     {
-        if (CalendarManager.Instance == null) return;
+        if (CalendarManager.Instance != null)
+            CalendarManager.Instance.OnWeekChanged += UpdateCalendarText;
 
-        CalendarManager.Instance.OnWeekChanged += UpdateCalendarText;
+        if (GameManager.Instance != null)
+            GameManager.Instance.OnDataChanged += UpdateMoneyText;
     }
 
     // Update is called once per frame
     private void Start()
     {
-        _tutorialObj.SetActive(IsFirstRun());
-
         UpdateCalendarText(CalendarManager.Instance.GetCalendar());
+
+        if (CalendarManager.Instance != null)
+            CalendarManager.Instance.NextTurn();
     }
 
-    private void OnDestroy()
+    private void OnDisable()
     {
-        if (CalendarManager.Instance == null) return;
-
-        CalendarManager.Instance.OnWeekChanged -= UpdateCalendarText;
+        if (CalendarManager.Instance != null)
+            CalendarManager.Instance.OnWeekChanged -= UpdateCalendarText;
+            
+        if (GameManager.Instance != null)
+            GameManager.Instance.OnDataChanged -= UpdateMoneyText;
     }
-
-    // 처음 실행하는건지?
-    private bool IsFirstRun() => PlayerPrefs.GetInt(KEY_FIRST_RUN_DONE, 0) == 0;
 
     public void UpdateCalendarText(Calendar calendar)
     {
-        calendarText.text = $"{calendar.year}년차 {calendar.month}월 {calendar.week}주";
+        _calendarText.text = $"{calendar.year}년차 {calendar.month}월 {calendar.week}주";
+    }
+
+    public void UpdateMoneyText()
+    {
+        _moneyText.text = $"{GameManager.Instance.SaveData.money.ToString("N0")}G";
     }
 }
