@@ -11,7 +11,7 @@ public class Player_SpeciesDataReader : DataReaderBase
 
     internal void UpdateStats(List<GSTU_Cell> list, int rowIndex)
     {
-        int speciesId = 0;
+        string speciesId = null;
         speciesType species = default;
         string speciesName = null;
         string desc = null;
@@ -26,7 +26,7 @@ public class Player_SpeciesDataReader : DataReaderBase
             switch (col)
             {
                 case "speciesId":
-                    int.TryParse(val, out speciesId);
+                    speciesId = val;    
                     break;
                 case "speciesType":
                     if (!string.IsNullOrEmpty(val))
@@ -36,17 +36,14 @@ public class Player_SpeciesDataReader : DataReaderBase
                         else if (Enum.TryParse(val, true, out speciesType e)) species = e;
                     }
                     break;
-                case "spciesName":
-                    desc = val;
+                case "speciesName":
+                    speciesName = val;
                     break;
                 case "desc":
                     desc = val;
                     break;
             }
         }
-
-        // ✅ speciesId가 없으면 스킵 (타입행/빈행 방지)
-        if (speciesId <= 0) return;
 
         DataList.Add(new Player_SpeciesData(
             speciesId,species,speciesName,desc

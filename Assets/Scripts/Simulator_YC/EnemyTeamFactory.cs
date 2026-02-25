@@ -85,13 +85,13 @@ public class EnemyTeamFactory : MonoBehaviour
             if (_visualReader != null && _speciesReader != null)
             {
                 // 현재 종족 타입(예: Animal)에 해당하는 구체적 종족 ID(호랑이, 토끼 등) 목록 찾기
-                List<int> validSpeciesIds = _speciesReader.DataList.FindAll(s => s.species == currentSpecies).ConvertAll(s => s.speciesId);
+                List<string> validSpeciesIds = _speciesReader.DataList.FindAll(s => s.species == currentSpecies).ConvertAll(s => s.speciesId);
                 // 그 종족 ID들에 해당하는 외형(Visual) 목록 찾기
-                List<Player_VisualData> validVisuals = _visualReader.DataList.FindAll(v => validSpeciesIds.Contains(v.species));
+                List<Player_VisualData> validVisuals = _visualReader.DataList.FindAll(v => validSpeciesIds.Contains(v.speciesId));
 
                 if (validVisuals.Count > 0)
                 {
-                    resourceKey = validVisuals[Random.Range(0, validVisuals.Count)].assetKey;
+                    resourceKey = validVisuals[Random.Range(0, validVisuals.Count)].playerImageResource;
                 }
             }
 
@@ -108,7 +108,7 @@ public class EnemyTeamFactory : MonoBehaviour
             }
 
             //  특성(Trait) 데이터 추첨 (추후 시너지 연산을 위해)
-            int assignedTraitId = -1;
+            string assignedTraitId = string.Empty;
             if (levelData.isRivalTraitApplied && _traitReader != null)
             {
                 if (_traitReader.DataList.Count > 0)
