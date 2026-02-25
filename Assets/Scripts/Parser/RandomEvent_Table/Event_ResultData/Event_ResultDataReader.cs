@@ -13,9 +13,10 @@ public class Event_ResultDataReader : DataReaderBase
     internal void UpdateStats(List<GSTU_Cell> list, int rowIndex)
     {
         string resultId = null;
+        string choiceId = null;
         string scriptId = null; 
-        string matchPersonalityId = null; 
-        int outcomeGrade = 0; 
+        int nextId = 0;
+        personalityType matchPersonalityId = default; 
         potential potentialChangeType = default;
 
         int potentialChangeValue = 0;
@@ -40,14 +41,21 @@ public class Event_ResultDataReader : DataReaderBase
                 case "resultId":
                     resultId = val;
                     break;
+                case "choiceId":
+                    choiceId = val;
+                    break;
                 case "scriptId":
                     scriptId = val;
                     break;
-                case "matchPersonalityId":
-                    matchPersonalityId = val;
+                case "nextId":
+                    int.TryParse(val, out nextId);
                     break;
-                case "outcomeGrade":
-                    int.TryParse(val, out outcomeGrade);
+                case "matchPersonalityId":
+                    if (!string.IsNullOrEmpty(val))
+                    {
+                        if (int.TryParse(val, out var eInt)) matchPersonalityId = (personalityType)eInt;
+                        else if (Enum.TryParse(val, true, out personalityType e)) matchPersonalityId = e;
+                    }
                     break;
                 case "potentialChangeType":
                     if (!string.IsNullOrEmpty(val))
@@ -83,16 +91,13 @@ public class Event_ResultDataReader : DataReaderBase
         }
 
 
-        if (resultId == "") return;
+        DataList.Add(new Event_ResultData(
         
-        var synergyData = new Event_ResultData
-        (
-            resultId, scriptId, matchPersonalityId, outcomeGrade, potentialChangeType,
+            resultId, choiceId, scriptId, nextId, matchPersonalityId, potentialChangeType,
             potentialChangeValue, conditionChange, statusChange, reactionPortraitId, resultscriptKey,
             seId, floatingText
-        );
+        ));
 
-        DataList.Add(synergyData);
     }
 
     private static bool ParseBool(string val)
