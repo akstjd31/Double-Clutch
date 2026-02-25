@@ -5,9 +5,10 @@ using UnityEngine;
 public struct Event_ResultData
 {
     public string resultId;
+    public string choiceId;
     public string scriptId;
-    public string matchPersonalityId;
-    public int outcomeGrade;
+    public int nextId;
+    public personalityType matchPersonalityId;
     public potential potentialChangeType;
 
     public int potentialChangeValue;
@@ -20,15 +21,16 @@ public struct Event_ResultData
     public string floatingText;
 
     public Event_ResultData(
-        string resultId, string scriptId, string matchPersonalityId, int outcomeGrade, potential potentialChangeType,
+        string resultId, string choiceId, string scriptId, int nextId, personalityType matchPersonalityId, potential potentialChangeType,
         int potentialChangeValue, int conditionChange, string statusChange, string reactionPortraitId, string resultscriptKey,
         string seId, string floatingText
         )
     {
         this.resultId = resultId;
+        this.choiceId = choiceId;
         this.scriptId = scriptId;
+        this.nextId = nextId;
         this.matchPersonalityId = matchPersonalityId;
-        this.outcomeGrade = outcomeGrade;
         this.potentialChangeType = potentialChangeType;
 
         this.potentialChangeValue = potentialChangeValue;

@@ -13,7 +13,7 @@ public class Calendar_TableDataReader : DataReaderBase
     internal void UpdateStats(List<GSTU_Cell> list, int rowIndex)
     {
         int weekId = 0, month = 0, weekNo = 0, targetIdDefault = 0, targetIdSpecial = 0;
-        string desc = null;
+        string desc = null, weekDescKey = null;
         phaseType phase = default;
         bool isSpecialWeek = false, hasSeasonOut = false;
         string leagueId = null, startCutscene = null, endCutscene = null, tutorialId = null, backgroundImageId = null, backgroundMusicId = null;
@@ -35,7 +35,9 @@ public class Calendar_TableDataReader : DataReaderBase
                 case "desc":
                     desc = val;
                     break;
-
+                case "weekDescKey":
+                    weekDescKey = val;
+                    break;
                 case "month":
                     int.TryParse(val, out month);
                     break;
@@ -100,7 +102,7 @@ public class Calendar_TableDataReader : DataReaderBase
         if (weekId <= 0) return;
 
         DataList.Add(new Calendar_TableData(
-            weekId, desc, month, weekNo, phase,
+            weekId, desc, weekDescKey, month, weekNo, phase,
             isSpecialWeek, hasSeasonOut, targetIdDefault, targetIdSpecial,
             leagueId, startCutscene, endCutscene, tutorialId,
             backgroundImageId, backgroundMusicId

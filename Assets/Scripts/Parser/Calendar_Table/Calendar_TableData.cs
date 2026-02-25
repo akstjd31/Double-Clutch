@@ -13,6 +13,7 @@ public struct Calendar_TableData
 {
     public int weekid;
     public string desc;
+    public string weekDescKey;
     public int month;
     public int weekNo;
     public phaseType phase;
@@ -28,13 +29,14 @@ public struct Calendar_TableData
     public string backgroundMusicId;
 
     public Calendar_TableData(
-        int weekid, string desc, int month, int weekNo, phaseType phase,
+        int weekid, string desc, string weekDescKey, int month, int weekNo, phaseType phase,
         bool isSpecialWeek, bool hasSeasonOut, int targetidDefault, int targetidSpecial,
         string leagueId, string startCutscene, string endCutscene, string tutorialId,
         string backgroundImageId, string backgroundMusicId)
     {
         this.weekid = weekid;
         this.desc = desc;
+        this.weekDescKey = weekDescKey;
         this.month = month;
         this.weekNo = weekNo;
         this.phase = phase;
