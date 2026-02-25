@@ -95,7 +95,7 @@ public class MatchState : MonoBehaviour
         foreach (var player in _homeTeam.Roster)
         {
             // 대상 포지션이 일치하거나, 특정 포지션 지목이 없는 경우(None)
-            if (choicePosition == Position.None || (int)player.MainPosition + 1 == (int)choicePosition)
+            if (choicePosition == Position.None || player.MainPosition == choicePosition)
             {
                 // 포지션(진형) 변경
                 if (changePosType != changeType.None)

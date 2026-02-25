@@ -133,9 +133,9 @@ public static class MatchCalculator
 
 
     // 슛 성공 확률
-    public static bool CalculateShootSuccess(MatchPlayer attacker, float distance, MatchTeam attackTeam, MatchTeam defendTeam)
+    public static bool CalculateShootSuccess(MatchPlayer attacker, float distance, MatchTeam attackTeam, MatchTeam defendTeam, TeamTactics attackTactics, TeamTactics defendTactics)
     {
-        float shootStat = (distance > 0.35f) ? attacker.GetStat(MatchStatType.ThreePoint) : attacker.GetStat(MatchStatType.TwoPoint);
+        float shootStat = (distance > 0.35f) ? attacker.GetStat(MatchStatType.ThreePoint, attackTactics.bonusThreePoint) : attacker.GetStat(MatchStatType.TwoPoint, attackTactics.bonusTwoPoint);
 
         // 반경 0.05 내 가장 가까운 수비수의 블록 스탯 적용
         float blockStat = 0f;
@@ -143,7 +143,7 @@ public static class MatchCalculator
         MatchPlayer nearestEnemy = GetNearestPlayer(attacker, defendTeam.Roster, out minEnemyDist);
         if (nearestEnemy != null && minEnemyDist <= 0.05f)
         {
-            blockStat = nearestEnemy.GetStat(MatchStatType.Block);
+            blockStat = nearestEnemy.GetStat(MatchStatType.Block, defendTactics.bonusBlock);
         }
 
         // 거리 페널티 (멀수록 분모 증가)
@@ -173,7 +173,7 @@ public static class MatchCalculator
     }
 
     // 패스 성공 확률
-    public static bool CalculatePassSuccess(MatchPlayer passer, MatchPlayer receiver, MatchTeam attackTeam, MatchTeam defendTeam, out MatchPlayer interceptor)
+    public static bool CalculatePassSuccess(MatchPlayer passer, MatchPlayer receiver, MatchTeam attackTeam, MatchTeam defendTeam, TeamTactics attackTactics, TeamTactics defendTactics, out MatchPlayer interceptor)
     {
         interceptor = null;
         MatchPlayer pathEnemy = null;
@@ -190,8 +190,8 @@ public static class MatchCalculator
 
         if (pathEnemy == null) return true; // 방해 없으면 100% 성공
 
-        float passStat = passer.GetStat(MatchStatType.Pass);
-        float stealStat = pathEnemy.GetStat(MatchStatType.Steal);
+        float passStat = passer.GetStat(MatchStatType.Pass, attackTactics.bonusPass);
+        float stealStat = pathEnemy.GetStat(MatchStatType.Steal, defendTactics.bonusSteal);
 
         // 스틸 패시브 로직 추가!
         float stealPassiveBonus = 0f;
@@ -217,15 +217,15 @@ public static class MatchCalculator
     }
 
     // 드리블 성공 확률
-    public static bool CalculateDribbleSuccess(MatchPlayer dribbler, List<MatchPlayer> enemies)
+    public static bool CalculateDribbleSuccess(MatchPlayer dribbler, List<MatchPlayer> enemies, TeamTactics attackTactics, TeamTactics defendTactics)
     {
         float minEnemyDist;
         MatchPlayer nearestEnemy = GetNearestPlayer(dribbler, enemies, out minEnemyDist);
 
         if (nearestEnemy == null || minEnemyDist > 0.1f) return true; // 주변에 없으면 성공
 
-        float dribbleStat = dribbler.GetStat(MatchStatType.Dribble);
-        float stealStat = nearestEnemy.GetStat(MatchStatType.Steal);
+        float dribbleStat = dribbler.GetStat(MatchStatType.Dribble, attackTactics.bonusDribble);
+        float stealStat = nearestEnemy.GetStat(MatchStatType.Steal, defendTactics.bonusSteal);
 
         float prob = (dribbleStat / (dribbleStat + stealStat)) * 100f;
         return Random.Range(0f, 100f) <= prob;
