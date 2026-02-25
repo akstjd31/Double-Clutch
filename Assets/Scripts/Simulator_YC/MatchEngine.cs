@@ -180,9 +180,10 @@ public class MatchEngine : MonoBehaviour
         Vector2 hoopPos = (_currentPossession == TeamSide.Home) ? new Vector2(0.5f, 0.95f) : new Vector2(0.5f, 0.05f);
         float distToHoop = MatchCalculator.CalculateDistance(_ballHolder.LogicPosition, hoopPos);
 
-        TeamTactics tactics = MatchDataProxy.Instance.GetTactics(attackTeam.TeamColorId);
+        TeamTactics attackTactics = MatchDataProxy.Instance.GetTactics(attackTeam.TeamColorId);
+        TeamTactics defendTactics = MatchDataProxy.Instance.GetTactics(defendTeam.TeamColorId);
 
-        int action = MatchCalculator.DecideAction(_ballHolder, distToHoop, tactics, attackTeam.Roster, defendTeam.Roster);
+        int action = MatchCalculator.DecideAction(_ballHolder, distToHoop, attackTactics, attackTeam.Roster, defendTeam.Roster);
 
         float timeCost = UnityEngine.Random.Range(5f, 10f);
         _simTime -= timeCost;
@@ -194,7 +195,7 @@ public class MatchEngine : MonoBehaviour
             if (action == 0)
             {
                 // 슛을 시도했는데 마침 0초가 됨 -> 버저비터 찬스! (마지막 매개변수 true 전달)
-                DoShoot(_ballHolder, attackTeam, defendTeam, distToHoop, hoopPos, true);
+                DoShoot(_ballHolder, attackTeam, defendTeam, distToHoop, hoopPos, true, attackTactics, defendTactics);
             }
             else
             {
@@ -207,21 +208,21 @@ public class MatchEngine : MonoBehaviour
             // 시간이 넉넉히 남은 일반적인 상황
             switch (action)
             {
-                case 0: DoShoot(_ballHolder, attackTeam, defendTeam, distToHoop, hoopPos, false); break;
-                case 1: DoPass(_ballHolder, attackTeam, defendTeam); break;
-                case 2: DoDribble(_ballHolder, defendTeam.Roster, hoopPos); break;
+                case 0: DoShoot(_ballHolder, attackTeam, defendTeam, distToHoop, hoopPos, false, attackTactics, defendTactics); break;
+                case 1: DoPass(_ballHolder, attackTeam, defendTeam, attackTactics, defendTactics); break;
+                case 2: DoDribble(_ballHolder, defendTeam.Roster, hoopPos, attackTactics, defendTactics); break;
             }
         }
     }
 
-    private void DoShoot(MatchPlayer shooter, MatchTeam attackTeam, MatchTeam defendTeam, float distance, Vector2 hoopPos, bool isBuzzerBeater)
+    private void DoShoot(MatchPlayer shooter, MatchTeam attackTeam, MatchTeam defendTeam, float distance, Vector2 hoopPos, bool isBuzzerBeater, TeamTactics attackTactics, TeamTactics defendTactics)
     {
         bool isThree = distance > 0.35f;
         bool isDunk = distance <= 0.05f;
 
         int score = isThree ? 3 : 2;
 
-        bool success = MatchCalculator.CalculateShootSuccess(shooter, distance, attackTeam, defendTeam);
+        bool success = MatchCalculator.CalculateShootSuccess(shooter, distance, attackTeam, defendTeam, attackTactics, defendTactics);
 
         // 팀 스탯 기록
         if (isThree) { attackTeam.Try3pt++; if (success) attackTeam.Succ3pt++; }
@@ -306,13 +307,13 @@ public class MatchEngine : MonoBehaviour
         }
     }
 
-    private void DoPass(MatchPlayer passer, MatchTeam attackTeam, MatchTeam defendTeam)
+    private void DoPass(MatchPlayer passer, MatchTeam attackTeam, MatchTeam defendTeam, TeamTactics attackTactics, TeamTactics defendTactics)
     {
         MatchPlayer receiver = attackTeam.Roster.Find(p => p != passer);
         if (receiver == null) return;
 
         MatchPlayer interceptor;
-        bool success = MatchCalculator.CalculatePassSuccess(passer, receiver, attackTeam, defendTeam, out interceptor);
+        bool success = MatchCalculator.CalculatePassSuccess(passer, receiver, attackTeam, defendTeam, attackTactics, defendTactics, out interceptor);
 
         // 패스 성공 시 타겟(receiver)도 같이 RecordLog로 넘겨줍니다.
         if (success) { RecordLog("PassSucc", passer, receiver); _ballHolder = receiver; }
@@ -324,9 +325,9 @@ public class MatchEngine : MonoBehaviour
         }
     }
 
-    private void DoDribble(MatchPlayer dribbler, List<MatchPlayer> enemies, Vector2 hoopPos)
+    private void DoDribble(MatchPlayer dribbler, List<MatchPlayer> enemies, Vector2 hoopPos, TeamTactics attackTactics, TeamTactics defendTactics)
     {
-        bool success = MatchCalculator.CalculateDribbleSuccess(dribbler, enemies);
+        bool success = MatchCalculator.CalculateDribbleSuccess(dribbler, enemies, attackTactics, defendTactics);
         if (success)
         {
             Vector2 dir = (hoopPos - dribbler.LogicPosition).normalized;
@@ -373,7 +374,7 @@ public class MatchEngine : MonoBehaviour
     {
         var config = _eventConfigReader.DataList.Find(x => x.logEventCode == eventCode);
 
-        if (string.IsNullOrEmpty(config.logEventCode))
+        if (config == null || string.IsNullOrEmpty(config.logEventCode))
         {
             Debug.LogWarning($"[MatchEngine] Event_Config 테이블에서 '{eventCode}'를 찾을 수 없습니다.");
             return;
@@ -479,8 +480,8 @@ public class MatchEngine : MonoBehaviour
     {
         //  무조건 Default가 아닌, 선수의 TempPositionChange를 읽어옵니다.
         var preset = _positionPresetReader.DataList.Find(x =>
-            x.positionType == (Position)(player.MainPosition + 1) && // Enum 인덱스 차이 보정
-            x.changeType == player.TempPositionChange);
+        x.positionType == player.MainPosition && 
+        x.changeType == player.TempPositionChange);
 
         // 만약 해당 진형 데이터가 없다면 안전하게 Default로 폴백(Fallback)
         if (preset.presetId == 0)
