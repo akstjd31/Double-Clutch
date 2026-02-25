@@ -15,9 +15,9 @@ public class Student
     [SerializeField] int _studentId = -1; //학생 식별용 고유 id(학생 영입 확정 후 부여)
     [SerializeField] string _name; //이름
     [SerializeField] string _specieId = string.Empty; // 종족
-    [SerializeField] int _visualId = -1; // 비주얼 Id
+    [SerializeField] string _visualId = string.Empty; // 비주얼 Id
     [SerializeField] string _personalityId = string.Empty; // 성격 Id
-    [SerializeField] List<int> _passiveIdList = new List<int>(); //패시브 Id
+    [SerializeField] List<string> _passiveIdList = new List<string>(); //패시브 Id
     [SerializeField] string _traitId = string.Empty; //특성 Id
     [SerializeField] int _grade = -1; //학년
     [SerializeField] List<Stat> _stats = new List<Stat>(); //스탯(잠재력)
@@ -46,11 +46,11 @@ public class Student
     public string Name => _name;
     public string SpecieId => _specieId;
     public Player_SpeciesData SpecieData => _specieData;
-    public int VisualId => _visualId;
+    public string VisualId => _visualId;
     public Player_VisualData VisualData => _visualData;
     public string PersonalityId => _personalityId;
     public Player_PersonalityData PersonalityData => _personalityData;
-    public List<int> PassiveId => _passiveIdList;
+    public List<string> PassiveId => _passiveIdList;
     public List<Player_PassiveData> Passive => _passiveDataList;
     public string TraitId => _traitId;
     public Player_TraitData TraitData => _traitData;
@@ -107,14 +107,14 @@ public class Student
         {
             _personalityId = data.personalityId;
         }
-    }    
+    }
 
-    public void SetPassiveId(int passiveId)
+    public void SetPassiveId(string passiveId)
     {
         if (!_passiveIdList.Contains(passiveId))
         {
             _passiveIdList.Add(passiveId);
-        }        
+        }
     }
 
     public void SetPassive(Player_PassiveData data)
@@ -128,7 +128,7 @@ public class Student
             _passiveIdList.Add(data.skillId);
         }
     }
-    public bool HasPassive(int skillId)
+    public bool HasPassive(string skillId)
     {
         return _passiveIdList.Contains(skillId);
     }

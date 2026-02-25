@@ -21,7 +21,7 @@ public class MatchPlayer
 
     // 외형 리소스 키와 특성 ID를 저장할 프로퍼티
     public string ResourceKey { get; private set; }
-    public int TraitId { get; set; } = -1;
+    public string TraitId { get; set; } = string.Empty;
 
     public int PlayerId => _playerId;
     public string PlayerName => _playerName;

@@ -233,19 +233,28 @@ public static class MatchCalculator
     // 패시브 발동 조건을 범용적으로 검사하는 함수
     public static bool CheckPassiveCondition(Player_PassiveData p, MatchTeam myTeam, MatchTeam enemyTeam)
     {
-        // 조건이 없거나 '-' 이면 상시 발동
-        if (string.IsNullOrEmpty(p.triggerType) || p.triggerType == "-")
+        // triggerCond는 Enum이므로 None일 때 상시 발동으로 처리합니다.
+        if (p.triggerCond == triggerCond.None)
             return true;
 
-        switch (p.triggerType)
+        switch (p.triggerCond)
         {
-            case "BehindPoint": // 우리 팀이 특정 점수차 이상 지고 있을 때 발동
+            case triggerCond.ScoreGap: // 우리 팀이 특정 점수차 이상 지고 있을 때 발동
                 return (enemyTeam.Score - myTeam.Score) >= p.triggerValue;
 
-            case "OnStolen": // 상대 공을 뺏으려(스틸) 할 때 발동
+            case triggerCond.Random: // 랜덤 확률로 발동이 필요한 경우 (임시로 항상 true 또는 로직 추가)
                 return true;
 
-            // 추후 기획서에 따라 Stat2ptLow 등의 조건이 추가되면 여기에 case를 늘려가면 됩니다
+            case triggerCond.ReboundDiff: // 리바운드가 특정 수치 이상 밀릴 때
+                return (myTeam.ReboundCount - enemyTeam.ReboundCount) <= p.triggerValue;
+
+            case triggerCond.Stat2ptLow: // 2점슛 성공률이 낮을 때
+                float pt2Rate = myTeam.Try2pt == 0 ? 0 : ((float)myTeam.Succ2pt / myTeam.Try2pt) * 100f;
+                return myTeam.Try2pt > 0 && pt2Rate <= p.triggerValue;
+
+            case triggerCond.Stat3ptLow: // 3점슛 성공률이 낮을 때
+                float pt3Rate = myTeam.Try3pt == 0 ? 0 : ((float)myTeam.Succ3pt / myTeam.Try3pt) * 100f;
+                return myTeam.Try3pt > 0 && pt3Rate <= p.triggerValue;
 
             default:
                 return true;
