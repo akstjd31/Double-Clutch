@@ -1,9 +1,10 @@
 using UnityEngine;
-using UnityEngine.UI;
+using TMPro;
+
 public class LobbyUI : MonoBehaviour
 {
-    [SerializeField] private Text _calendarText;
-    [SerializeField] private Text _moneyText;
+    [SerializeField] private TextMeshProUGUI _calendarText;
+    [SerializeField] private TextMeshProUGUI _moneyText;
 
     private void OnEnable()
     {
@@ -18,6 +19,9 @@ public class LobbyUI : MonoBehaviour
     private void Start()
     {
         UpdateCalendarText(CalendarManager.Instance.GetCalendar());
+
+        if (CalendarManager.Instance != null)
+            CalendarManager.Instance.NextTurn();
     }
 
     private void OnDisable()

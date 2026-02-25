@@ -1,10 +1,11 @@
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class TutorialUI : MonoBehaviour
 {
-    [SerializeField] private InputField _schoolNameField;
-    [SerializeField] private InputField _playerNameField;
+    [SerializeField] private TMP_InputField _schoolNameField;
+    [SerializeField] private TMP_InputField _playerNameField;
     [SerializeField] private Button _confirmButton;
 
     private void Start()

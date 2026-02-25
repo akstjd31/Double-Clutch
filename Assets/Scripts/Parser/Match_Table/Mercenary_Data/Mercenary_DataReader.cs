@@ -13,7 +13,7 @@ public class Mercenary_DataReader : DataReaderBase
     internal void UpdateStats(List<GSTU_Cell> list, int rowIndex)
     {
         int playerUId = 0;
-        positionType positionType = default;
+        Position positionType = default;
         string mercName = null;
         int traitId = 0, passiveId1 = 0, passiveId2 = 0, passiveId3 = 0, stat2ptValue = 0, stat3ptValue = 0, statAssistValue = 0, statBlockValue = 0, statStealValue = 0, statReboundValue = 0, currentCondition = 0;
         handicapState handicapState = default;
@@ -36,8 +36,8 @@ public class Mercenary_DataReader : DataReaderBase
                     if (!string.IsNullOrEmpty(val))
                     {
                         // 숫자(enum int)도 대응
-                        if (int.TryParse(val, out var eInt)) positionType = (positionType)eInt;
-                        else if (Enum.TryParse(val, true, out positionType e)) positionType = e;
+                        if (int.TryParse(val, out var eInt)) positionType = (Position)eInt;
+                        else if (Enum.TryParse(val, true, out Position e)) positionType = e;
                     }
                     break;
                 case "mercName":

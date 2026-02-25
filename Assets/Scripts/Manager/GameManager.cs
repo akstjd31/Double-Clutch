@@ -30,7 +30,7 @@ public static class SceneName
 
 public static class FilePath
 {
-    public const string PLAYER_PATH = "Player_Data.json";
+    public const string PLAYER_PATH = "PlayerSaveData.json";
 }
 
 public class GameManager : Singleton<GameManager>

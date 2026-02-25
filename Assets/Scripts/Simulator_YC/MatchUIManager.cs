@@ -16,11 +16,19 @@ public class MatchUIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _textAwayName;
 
     [Header("Result Popup")]
-    [SerializeField] private GameObject _resultPanel;       // 결과 패널 전체 (껏다 켰다 할 것)
-    [SerializeField] private TextMeshProUGUI _finalScoreText; // 중앙 큰 점수
+    [SerializeField] private GameObject _resultPanel;              // 결과 패널 전체
+    [SerializeField] private TextMeshProUGUI _textResultHomeScore; // 아군 점수 (ex: 10)
+    [SerializeField] private TextMeshProUGUI _textResultHomeName;  // 아군 이름 (ex: 플레고)
+    [SerializeField] private TextMeshProUGUI _textResultAwayScore; // 적군 점수 (ex: 9)
+    [SerializeField] private TextMeshProUGUI _textResultAwayName;  // 적군 이름 (ex: 라이벌고)
+    [SerializeField] private TextMeshProUGUI _textResultTitle;     // 승패 텍스트 (ex: 승리 / 패배)
+    [SerializeField] private TextMeshProUGUI _textResultReward;    // 지원금 텍스트 (ex: 지원금 : +49)
 
     [Header("Match Log")]
     [SerializeField] private TextMeshProUGUI _textLogMessage;
+
+    [Header("Quarter End Popup")]
+    [SerializeField] private GameObject _quarterEndPanel; // "2쿼터 종료" 팝업 전체
 
     [Header("Event Popup")]
     [SerializeField] private GameObject _eventPanel; // 하프타임 이벤트 패널 (유니티에서 연결)
@@ -29,6 +37,9 @@ public class MatchUIManager : MonoBehaviour
     [SerializeField] private GameObject _cutInPanel;      // 컷인 전체 패널 (Canvas 내 Panel)
     [SerializeField] private Image _cutInImage;           // 컷인 이미지 출력부 (UI Image)
     [SerializeField] private TextMeshProUGUI _cutInText;  // 컷인 텍스트 (DUNK! 등)
+
+    [Header("Settings UI")]
+    [SerializeField] private GameObject _settingPanel;
 
     // 유니티 에디터에서 연결할 스프라이트들
     [SerializeField] private Sprite _spriteDunk;
@@ -47,6 +58,8 @@ public class MatchUIManager : MonoBehaviour
     private float[] _speedSteps = { 1.0f, 2.0f, 4.0f, 8.0f };
     private int _currentSpeedIndex = 0; // 현재 선택된 배속의 인덱스
 
+    // 쿼터 종료 확인 버튼을 눌렀는지 체크하는 프로퍼티
+    public bool IsQuarterEndConfirmed { get; private set; } = false;
 
     // 이벤트 선택 상태 확인용 프로퍼티
     public bool IsEventSelected { get; private set; } = false;
@@ -179,17 +192,39 @@ public class MatchUIManager : MonoBehaviour
 
 
     // 경기 종료 시 호출할 함수
-    public void ShowResultPopup(int homeScore, int awayScore)
+    public void ShowResultPopup(string homeName, int homeScore, string awayName, int awayScore, int rewardAmount = 0)
     {
         // 패널 켜기
         if (_resultPanel != null)
         {
             _resultPanel.SetActive(true);
 
-            // 최종 점수 세팅
-            if (_finalScoreText != null)
+            // 점수 및 팀 이름 세팅
+            if (_textResultHomeName != null) _textResultHomeName.text = homeName;
+            if (_textResultHomeScore != null) _textResultHomeScore.text = homeScore.ToString();
+
+            if (_textResultAwayName != null) _textResultAwayName.text = awayName;
+            if (_textResultAwayScore != null) _textResultAwayScore.text = awayScore.ToString();
+
+            // 승패 판정 (동점은 연장전 로직상 발생하지 않음)
+            if (_textResultTitle != null)
             {
-                _finalScoreText.text = $"{homeScore} : {awayScore}";
+                if (homeScore > awayScore)
+                {
+                    _textResultTitle.text = "승리";
+                    _textResultTitle.color = new Color(1f, 0.8f, 0f); // 승리 시 텍스트 색상 (노란색/금색 계열)
+                }
+                else
+                {
+                    _textResultTitle.text = "패배";
+                    _textResultTitle.color = Color.white; // 패배 시 기본 흰색
+                }
+            }
+
+            // 지원금 세팅 (지원금 작업 완료 전까지는 0이나 임의의 값 출력)
+            if (_textResultReward != null)
+            {
+                _textResultReward.text = $"지원금 : +{rewardAmount}";
             }
 
             // 등장 연출
@@ -264,6 +299,54 @@ public class MatchUIManager : MonoBehaviour
         if (_replayer != null)
         {
             _replayer.SkipReplay();
+        }
+    }
+    // [게임메뉴] 버튼을 눌렀을 때 호출할 함수
+    public void OnClickGameMenuButton()
+    {
+        if (_settingPanel != null)
+        {
+            _settingPanel.SetActive(true);
+
+            // 세팅 창이 켜졌을 때 게임을 일시정지
+            Time.timeScale = 0f; 
+        }
+    }
+
+    // 세팅 창 바깥 어두운 배경을 터치했을 때 호출할 함수 (파란 화살표 부분)
+    public void OnClickCloseSettingButton()
+    {
+        if (_settingPanel != null)
+        {
+            _settingPanel.SetActive(false);
+
+            // 일시정지 해제
+            Time.timeScale = 1f;
+        }
+    }
+    // 2쿼터 종료 팝업 열기
+    public void ShowQuarterEndPopup()
+    {
+        if (_quarterEndPanel != null)
+        {
+            _quarterEndPanel.SetActive(true);
+            IsQuarterEndConfirmed = false; // 플래그 초기화
+        }
+        else
+        {
+            // 패널이 연결 안 되어 있으면 그냥 바로 넘어간 것으로 처리
+            IsQuarterEndConfirmed = true;
+        }
+    }
+
+    // [확인] 버튼을 눌렀을 때 호출될 함수
+    public void OnClickQuarterEndConfirm()
+    {
+        IsQuarterEndConfirmed = true; // 확인 완료 플래그 켜기
+
+        if (_quarterEndPanel != null)
+        {
+            _quarterEndPanel.SetActive(false); // 팝업 닫기
         }
     }
 }

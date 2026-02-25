@@ -1,10 +1,7 @@
 using Google.GData.Documents;
 using System;
 
-public enum positionType
-{
-    None,PG,SG,SF,PF,C
-}
+
 public enum handicapState
 {
     None
@@ -13,7 +10,7 @@ public enum handicapState
 public struct Mercenary_Data
 {
     public int playerUId;
-    public positionType positionType;
+    public Position positionType;
     public string mercName;
     public int traitId;
     public int passiveId1;
@@ -32,7 +29,7 @@ public struct Mercenary_Data
 
     public Mercenary_Data(
         int playerUId,
-        positionType positionType,
+        Position positionType,
         string mercName,
         int traitId,
         int passiveId1,
