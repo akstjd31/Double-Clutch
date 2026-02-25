@@ -5,6 +5,7 @@ public class LobbyUI : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI _calendarText;
     [SerializeField] private TextMeshProUGUI _moneyText;
+    [SerializeField] private TextMeshProUGUI _honorText;
 
     private void OnEnable()
     {
@@ -12,7 +13,10 @@ public class LobbyUI : MonoBehaviour
             CalendarManager.Instance.OnWeekChanged += UpdateCalendarText;
 
         if (GameManager.Instance != null)
+        {
             GameManager.Instance.OnDataChanged += UpdateMoneyText;
+            GameManager.Instance.OnDataChanged += UpdateHonorText;
+        }
     }
 
     // Update is called once per frame
@@ -30,7 +34,10 @@ public class LobbyUI : MonoBehaviour
             CalendarManager.Instance.OnWeekChanged -= UpdateCalendarText;
             
         if (GameManager.Instance != null)
+        {
             GameManager.Instance.OnDataChanged -= UpdateMoneyText;
+            GameManager.Instance.OnDataChanged -= UpdateHonorText;
+        }
     }
 
     public void UpdateCalendarText(Calendar calendar)
@@ -41,5 +48,10 @@ public class LobbyUI : MonoBehaviour
     public void UpdateMoneyText()
     {
         _moneyText.text = $"{GameManager.Instance.SaveData.money.ToString("N0")}G";
+    }
+
+    public void UpdateHonorText()
+    {
+        _honorText.text = GameManager.Instance.SaveData.honor.ToString("N0");
     }
 }
