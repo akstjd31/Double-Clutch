@@ -14,11 +14,11 @@ public class Student
     //저장되는 데이터(-1은 미할당을 의미)
     [SerializeField] int _studentId = -1; //학생 식별용 고유 id(학생 영입 확정 후 부여)
     [SerializeField] string _name; //이름
-    [SerializeField] int _specieId = -1; // 종족
+    [SerializeField] string _specieId = string.Empty; // 종족
     [SerializeField] int _visualId = -1; // 비주얼 Id
-    [SerializeField] int _personalityId = -1; // 성격 Id
+    [SerializeField] string _personalityId = string.Empty; // 성격 Id
     [SerializeField] List<int> _passiveIdList = new List<int>(); //패시브 Id
-    [SerializeField] int _traitId = -1; //특성 Id
+    [SerializeField] string _traitId = string.Empty; //특성 Id
     [SerializeField] int _grade = -1; //학년
     [SerializeField] List<Stat> _stats = new List<Stat>(); //스탯(잠재력)    
 
@@ -45,15 +45,15 @@ public class Student
     //외부 호출용 프로퍼티(조회용)
     public int StudentId => _studentId;
     public string Name => _name;
-    public int SpecieId => _specieId;
+    public string SpecieId => _specieId;
     public Player_SpeciesData SpecieData => _specieData;
     public int VisualId => _visualId;
     public Player_VisualData VisualData => _visualData;
-    public int PersonalityId => _personalityId;
+    public string PersonalityId => _personalityId;
     public Player_PersonalityData PersonalityData => _personalityData;
     public List<int> PassiveId => _passiveIdList;
     public List<Player_PassiveData> Passive => _passiveDataList;
-    public int TraitId => _traitId;
+    public string TraitId => _traitId;
     public Player_TraitData TraitData => _traitData;
     public int Grade => _grade;
     public int Attack => _attack;
@@ -85,14 +85,14 @@ public class Student
     {
         _name = name;
     }
-    public void SetSpecieId(int specieId)
+    public void SetSpecieId(string specieId)
     {
         _specieId = specieId;
     }
     public void SetSpecie(Player_SpeciesData data)
     {
         _specieData = data;
-        if (_specieId == -1)
+        if (string.IsNullOrEmpty(_specieId))
         {
             _specieId = data.speciesId;
         }
@@ -103,14 +103,14 @@ public class Student
         _visualData = data;
     }
 
-    public void SetPersonalityId(int personalityId)
+    public void SetPersonalityId(string personalityId)
     {
         _personalityId = personalityId;
     }
     public void SetPersonality(Player_PersonalityData data)
     {
         _personalityData = data;
-        if (_personalityId == -1)
+        if (string.IsNullOrEmpty(_personalityId))
         {
             _personalityId = data.personalityId;
         }
@@ -153,14 +153,14 @@ public class Student
         return available;
     }
 
-    public void SetTraitsId(int traitId)
+    public void SetTraitsId(string traitId)
     {
         _traitId = traitId;        
     }
     public void SetTrait(Player_TraitData data)
     {
         _traitData = data;
-        if (_traitId  == -1)
+        if (string.IsNullOrEmpty(_traitId))
         {
             _traitId = data.traitId;
         }

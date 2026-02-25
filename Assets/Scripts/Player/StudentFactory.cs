@@ -41,8 +41,8 @@ public class StudentFactory : MonoBehaviour
     List<string> _middleNames = new List<string>(); //이름 중간자
     List<string> _lastNames = new List<string>(); //이름 끝자
     
-    //비주얼 데이터 종족별(int specie) 분류 묶음
-    Dictionary<int, List<Player_VisualData>> _visualDataDict = new Dictionary<int, List<Player_VisualData>>();
+    //비주얼 데이터 종족별(string specie) 분류 묶음
+    Dictionary<string, List<Player_VisualData>> _visualDataDict = new Dictionary<string, List<Player_VisualData>>();
 
     private void Start()
     {
@@ -94,7 +94,7 @@ public class StudentFactory : MonoBehaviour
 
         foreach (var visualData in _visualDataReader.DataList)
         {
-            int specieId = visualData.species; // 데이터에 포함된 종족 ID
+            string specieId = visualData.speciesId; // 데이터에 포함된 종족 ID
 
             // 딕셔너리에 해당 종족 키가 없으면 리스트를 새로 만들어줌
             if (!_visualDataDict.ContainsKey(specieId))
@@ -125,7 +125,7 @@ public class StudentFactory : MonoBehaviour
         return _speciesDataReader.DataList[Random.Range(0, _speciesDataReader.DataList.Count)];
     }
 
-    private Player_VisualData GetRandomVisual(int specieId) //종족에 따라 랜덤한 비주얼 반환
+    private Player_VisualData GetRandomVisual(string specieId) //종족에 따라 랜덤한 비주얼 반환
     {
         if (_visualDataDict.TryGetValue(specieId, out var value))
         {
