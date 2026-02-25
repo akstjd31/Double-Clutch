@@ -105,6 +105,15 @@ public class GameManager : Singleton<GameManager>
     private void Start()
     {
         _sm.ChangeState<LoadingState>();
+
+        OnDataChanged += SavePlayerData;
+    }
+
+    protected override void OnDestroy()
+    {
+        base.OnDestroy();
+        
+        OnDataChanged -= SavePlayerData;
     }
 
     // 각 상태 클래스에서 필요시 사용
