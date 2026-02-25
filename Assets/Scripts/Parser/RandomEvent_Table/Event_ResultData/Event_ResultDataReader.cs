@@ -96,7 +96,6 @@ public class Event_ResultDataReader : DataReaderBase
             potentialChangeValue, conditionChange, statusChange, reactionPortraitId, resultscriptKey,
             seId, floatingText
         ));
-
     }
 
     private static bool ParseBool(string val)
