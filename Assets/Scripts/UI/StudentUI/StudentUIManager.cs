@@ -15,13 +15,15 @@ public class StudentUIManager : MonoBehaviour
     [SerializeField] Button _backBotton;
 
     [SerializeField] TrainingPanel _trainingPanel;
-    [SerializeField] IndividualTrainingCommandPopUp _trainingCommandPopUp;
+    [SerializeField] IndividualTrainingCommandPopUp _individualTrainingCommandPopUp;
+    [SerializeField] TeamTrainingCommandPopUp _teamTrainingCommandPopUp;
 
     [SerializeField] ConditionWarningPopUp _conditionWarningPopUp;
-    [SerializeField] PositionWarningPopUp _positionWarningPopUp;
+    [SerializeField] StateWarningPopUp_Individual _stateWarningPopUp_Individual;
+    [SerializeField] GameObject _stateWarningPopUp_Team;
     [SerializeField] WeeklyTrainingReportPopUp _weeklyTrainingReportPopUp;
     [SerializeField] TrainingStartConfirmPopUp _trainingStartConfirmPopUp;
-
+    [SerializeField] Button _startFosterButton;
     [SerializeField] GameObject _costWarningPopUp;
     private void Awake()
     {
@@ -53,14 +55,24 @@ public class StudentUIManager : MonoBehaviour
 
     public void OnTrainingCharacterBoxClick(Student target) //플레이어 박스 온클릭에서 호출
     {
-        _trainingCommandPopUp.gameObject.SetActive(true);
-        _trainingCommandPopUp.Init(target);
+        _individualTrainingCommandPopUp.gameObject.SetActive(true);
+        _individualTrainingCommandPopUp.Init(target);
     }
 
-    public void OpenPositionWarningPopUp(Student target) //TrainingBox 온클릭에서 호출. PositionWarningBox를 띄우는 역할.
+    public void OnTeamTrainingButtonClick() //단순 활성화라 인스펙터 연결로 해도 OK
     {
-        _positionWarningPopUp.gameObject.SetActive(true);
-        _positionWarningPopUp.Init(target);
+        _teamTrainingCommandPopUp.gameObject.SetActive(true);
+    }
+
+    public void OpenStateWarningPopUp_Individual(Student target) //피로, 부상 선수에게 훈련 할당시 팝업 호출용(개인 훈련 전용)
+    {
+        _stateWarningPopUp_Individual.gameObject.SetActive(true);
+        _stateWarningPopUp_Individual.Init(target);
+    }
+
+    public void OpenStateWarningPopUp_Team()//피로, 부상 선수에게 훈련 할당시 팝업 호출용(팀 훈련 전용)
+    {
+        _stateWarningPopUp_Team.gameObject.SetActive(true);
     }
 
     public void OpenConditionWarningPopUp(List<Student> targets, int cost)

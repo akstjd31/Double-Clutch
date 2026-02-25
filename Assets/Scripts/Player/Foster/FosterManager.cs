@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 /// <summary>
 /// todo : 1. 개인 훈련, 2. 개인 휴식, 3. 팀 훈련, 4. 팀 휴식
 /// </summary>
@@ -122,9 +123,9 @@ public class FosterManager : MonoBehaviour
             return;
         }
 
-        if (target.Position == Position.C || (target.State !=  StudentState.None && command is IndividualTraining)) //포지션 미할당 학생인나 학생에게 부상 및 과로가 있는데 훈련을 할당하려고 하면 여기서 팝업띄우고 할당 못하게 함.
+        if (target.State != StudentState.None && command is IndividualTraining) //학생에게 부상 및 과로가 있는데 개인 훈련을 할당하려고 하면 여기서 팝업띄우고 할당 못하게 함.
         {
-            StudentUIManager.Instance.OpenPositionWarningPopUp(target);
+            StudentUIManager.Instance.OpenStateWarningPopUp_Individual(target);
             return;
         }
 
@@ -140,7 +141,7 @@ public class FosterManager : MonoBehaviour
     }
 
     public void ReserveTeamTraining(ITraining command)
-    {        
+    {
         int nextTotalCost = command.GetCost();
 
         if (nextTotalCost > _myGold) //돈 체크
@@ -149,13 +150,17 @@ public class FosterManager : MonoBehaviour
             return;
         }
 
+        foreach(var target in StudentManager.Instance.MyStudents)
+        {
+            if (target.State != StudentState.None && command is TeamTraining) //선수 한 명이라도 부상 및 과로가 있는데 팀 훈련을 예약하려고 하면 여기서 팝업띄우고 경고만 해주기(예약은 됨)
+            {
+                StudentUIManager.Instance.OpenStateWarningPopUp_Team();                
+            }
+        }
+
         _schedules.Clear(); //팀 스케줄 예약 시 개인 스케줄 예약 목록 삭제.
         _teamSchedule = command;
-
-        //foreach (var student in StudentManager.Instance.MyStudents) //팀 훈련의 타겟은 무조건 MyStudent에서 받아오기. SetTarget은 안씀.(인터페이스용 구현)
-        //{            
-        //    command.SetTarget(student);
-        //}
+        
         _scheduleCost = nextTotalCost;
     }
 

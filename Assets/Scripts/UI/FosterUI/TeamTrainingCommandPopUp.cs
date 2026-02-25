@@ -4,34 +4,33 @@ using UnityEngine;
 public class TeamTrainingCommandPopUp : MonoBehaviour
 {
     [SerializeField] Transform _trainingListParent; // 훈련 설정 버튼이 놓일 부모 오브젝트 위치
-    [SerializeField] GameObject _trainingBoxPrefab; // 훈련 설정 버튼 프리팹
+    [SerializeField] TrainingBox _trainingBoxPrefab; // 훈련 설정 버튼 프리팹
 
-    Student _selectedStudent;
+    GenericObjectPool<TrainingBox> _teamTrainingPool;
+    private List<TrainingBox> _boxList = new List<TrainingBox>();
 
-    private List<TrainingBox> _boxes = new List<TrainingBox>();
-
-    private void Start() //박스는 일단 전부 만들기
+    private void Awake()
     {
-        MakeTrainingList();
+        _teamTrainingPool = new GenericObjectPool<TrainingBox>(_trainingBoxPrefab, _trainingListParent, 4, 6);
     }
 
-    public void Init(Student student) //누구의 훈련인지 설정
+    private void OnEnable()
     {
-        _selectedStudent = student;
-
-        foreach (var box in _boxes)
-        {
-            box.SetStudent(_selectedStudent);
-        }
+        Init();
     }
 
-    private void MakeTrainingList()
+    public void Init() //팀 훈련은 어차피 전체 적용이므로 타겟 세팅 x
     {
-        foreach (var box in _boxes) //기존 박스 목록 리셋
+        RefreshTrainingList();
+    }
+
+    public void RefreshTrainingList()
+    {
+        foreach (var box in _boxList) //기존 박스 목록 리셋
         {
-            Destroy(box.gameObject);
+            _teamTrainingPool.Release(box);
         }
-        _boxes.Clear();
+        _boxList.Clear();
 
 
         var trainingDB = FosterManager.Instance.Team_TrainingDB.DataList;
@@ -47,20 +46,11 @@ public class TeamTrainingCommandPopUp : MonoBehaviour
 
     }
     private void CreateBox(ITraining command)
-    {
-        GameObject go = Instantiate(_trainingBoxPrefab, _trainingListParent);
-        TrainingBox box = go.GetComponent<TrainingBox>();
+    {        
+        TrainingBox box = _teamTrainingPool.Get();
+        box.Init(command);        
 
-        if (box != null)
-        {
-            box.SetStudent(_selectedStudent);
-            box.Init(command);
-        }
-
-        _boxes.Add(box);
+        _boxList.Add(box);
     }
-    public void OnPositionChangeButtonClick(Position position)
-    {
-        _selectedStudent.SetPosition(position);
-    }
+    
 }

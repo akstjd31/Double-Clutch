@@ -18,7 +18,7 @@ public class TrainingBox : MonoBehaviour
     public Student Target => _target;
 
 
-    public void Init(ITraining command)
+    public void Init(ITraining command) //팀 훈련은 Init만 하기
     {        
         _command = command;
 
@@ -30,7 +30,7 @@ public class TrainingBox : MonoBehaviour
         _trainingcost.text = StringManager.Instance.GetString(command.GetCost().ToString() + "G");
     }
 
-    public void SetStudent(Student target)
+    public void SetStudent(Student target) //개인 훈련은 Init 후 SetStudent로 대상 정해주기
     {
         _target = target;
         _command.SetTarget(_target);

@@ -1,67 +1,67 @@
-using NUnit.Framework.Internal;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>
-/// TrainingComamndPopUp에 부착하기
-/// 개인 훈련 목록 전부 생성하기
-/// </summary>
 public class IndividualTrainingCommandPopUp : MonoBehaviour
 {
     [SerializeField] Transform _trainingListParent;
-    [SerializeField] GameObject _trainingBoxPrefab;
+    [SerializeField] TrainingBox _trainingBoxPrefab; // GameObject 대신 TrainingBox 타입으로 변경 권장
 
-    Student _selectedStudent;
+    private GenericObjectPool<TrainingBox> _pool;
+    private List<TrainingBox> _boxList = new List<TrainingBox>();
+    private Student _selectedStudent;
 
-    private List<TrainingBox> _boxes = new List<TrainingBox>();
-
-    private void Start() //박스는 일단 전부 만들기
-    {
-        MakeTrainingList();
-    }
-
-    public void Init(Student student) //누구의 훈련인지 설정
+    private void Awake()
     {        
+        _pool = new GenericObjectPool<TrainingBox>(_trainingBoxPrefab, _trainingListParent);
+    }
+  
+    public void Init(Student student)
+    {
         _selectedStudent = student;
 
-        foreach(var box in _boxes)
+        // 기존 사용하던 박스 반납
+        foreach (var box in _boxList)
         {
-            box.SetStudent(_selectedStudent);
+            _pool.Release(box);
         }
-    }
+        _boxList.Clear();
 
-    private void MakeTrainingList()
-    {
-        foreach (var box in _boxes) //기존 박스 목록 리셋
-        {
-            Destroy(box.gameObject); 
-        }
-        _boxes.Clear();
-        
-
+        // 개인 훈련 데이터 생성 및 배치
         var trainingDB = FosterManager.Instance.IndividualTrainingDB.DataList;
         foreach (var data in trainingDB)
         {
             CreateBox(new IndividualTraining(data));
         }
+
+        // 개인 휴식 데이터 생성 및 배치
         var restDB = FosterManager.Instance.IndividualRestDB.DataList;
         foreach (var data in restDB)
         {
             CreateBox(new IndividualRest(data));
         }
-
     }
+
     private void CreateBox(ITraining command)
     {
-        GameObject go = Instantiate(_trainingBoxPrefab, _trainingListParent);
-        TrainingBox box = go.GetComponent<TrainingBox>();
+        // 풀에서 박스 생성
+        TrainingBox box = _pool.Get();
 
-        if (box != null)
-        {
-            box.SetStudent(_selectedStudent);
-            box.Init(command);            
-        }
+        // 데이터 주입 (학생 설정 후 Init 호출)
+        box.Init(command);
+        box.SetStudent(_selectedStudent);        
 
-        _boxes.Add(box);
+        _boxList.Add(box);
+    }
+        
+    //선수 개인 훈련 시 포지션 변경 버튼에 각각 연결
+    public void OnCClick() => ChangePosition(Position.C);
+    public void OnPFClick() => ChangePosition(Position.PF);
+    public void OnPGClick() => ChangePosition(Position.PG);
+    public void OnSFClick() => ChangePosition(Position.SF);
+    public void OnSGClick() => ChangePosition(Position.SG);
+    private void ChangePosition(Position position)
+    {
+        _selectedStudent.SetPosition(position);
     }
 }
