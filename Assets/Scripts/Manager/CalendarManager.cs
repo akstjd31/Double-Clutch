@@ -27,6 +27,11 @@ public class CalendarManager : Singleton<CalendarManager>
         base.Awake();
     }
 
+    private void Start()
+    {
+        NextTurn();
+    }
+
     public void NextTurn()
     {
         if (_calReader == null) return;

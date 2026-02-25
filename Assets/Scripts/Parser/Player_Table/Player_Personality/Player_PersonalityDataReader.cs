@@ -12,7 +12,7 @@ public class Player_PersonalityDataReader : DataReaderBase
     // ✅ ItemData처럼 List<GSTU_Cell> 한 줄을 받아서 파싱
     internal void UpdateStats(List<GSTU_Cell> list, int rowIndex)
     {
-        string personalityId = null;
+        int personalityId = 0;
         coreType core = default;
         personalityType personality = default;
         string personalityName = null;
@@ -30,7 +30,7 @@ public class Player_PersonalityDataReader : DataReaderBase
             switch (col)
             {
                 case "personalityId":
-                    personalityId = val;
+                    int.TryParse(val, out personalityId);
                     break;
                 case "coreType":
                     if (!string.IsNullOrEmpty(val))
@@ -57,6 +57,9 @@ public class Player_PersonalityDataReader : DataReaderBase
                     break;
             }
         }
+
+        // ✅ weekId가 없으면 스킵 (타입행/빈행 방지)
+        if (personalityId <= 0) return;
 
         DataList.Add(new Player_PersonalityData(personalityId , core, personality, personalityName,desc
         ));

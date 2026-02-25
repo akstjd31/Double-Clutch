@@ -73,48 +73,6 @@ public class EnemyTeamFactory : MonoBehaviour
             stats[MatchStatType.Rebound] = Mathf.RoundToInt(Random.Range(minStat, maxStat + 1) * archetypeData.weightRebound);
             stats[MatchStatType.Dribble] = Mathf.RoundToInt(Random.Range(minStat, maxStat + 1));
 
-<<<<<<< Updated upstream
-=======
-
-            // 외형(Visual) 데이터 추첨 (종족에 맞춰서)
-            string resourceKey = "Enemy_Resource_Default";
-            if (_visualReader != null && _speciesReader != null)
-            {
-                // 현재 종족 타입(예: Animal)에 해당하는 구체적 종족 ID(호랑이, 토끼 등) 목록 찾기
-                List<string> validSpeciesIds = _speciesReader.DataList.FindAll(s => s.species == currentSpecies).ConvertAll(s => s.speciesId);
-                // 그 종족 ID들에 해당하는 외형(Visual) 목록 찾기
-                List<Player_VisualData> validVisuals = _visualReader.DataList.FindAll(v => validSpeciesIds.Contains(v.speciesId));
-
-                if (validVisuals.Count > 0)
-                {
-                    resourceKey = validVisuals[Random.Range(0, validVisuals.Count)].playerImageResource;
-                }
-            }
-
-            //  패시브(Passive) 데이터 추첨 (리그 레벨 설정에 따라)
-            List<Player_PassiveData> assignedPassives = new List<Player_PassiveData>();
-            if (levelData.isRivalPassiveApplied && _passiveReader != null)
-            {
-                // 경기용(Match) 패시브만 필터링해서 1개 쥐어줌
-                var matchPassives = _passiveReader.DataList.FindAll(p => p.skillCategory == skillCategory.Match);
-                if (matchPassives.Count > 0)
-                {
-                    assignedPassives.Add(matchPassives[Random.Range(0, matchPassives.Count)]);
-                }
-            }
-
-            //  특성(Trait) 데이터 추첨 (추후 시너지 연산을 위해)
-            string assignedTraitId = string.Empty;
-            if (levelData.isRivalTraitApplied && _traitReader != null)
-            {
-                if (_traitReader.DataList.Count > 0)
-                {
-                    assignedTraitId = _traitReader.DataList[Random.Range(0, _traitReader.DataList.Count)].traitId;
-                }
-            }
-
-
->>>>>>> Stashed changes
             MatchPlayer player = new MatchPlayer(
                 id: 20000 + i,
                 name: playerName,

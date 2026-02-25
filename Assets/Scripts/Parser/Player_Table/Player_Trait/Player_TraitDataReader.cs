@@ -12,7 +12,7 @@ public class Player_TraitDataReader : DataReaderBase
     // ItemData처럼 List<GSTU_Cell> 한 줄을 받아서 파싱
     internal void UpdateStats(List<GSTU_Cell> list, int rowIndex)
     {
-        string traitId = null ;
+        int traitId = 0;
         string traitName = "";
         string desc = "";
 
@@ -27,7 +27,7 @@ public class Player_TraitDataReader : DataReaderBase
             switch (col)
             {
                 case "traitId":
-                    traitId = val;
+                    int.TryParse(val, out traitId);
                     break;
 
                 case "traitName":
@@ -41,6 +41,9 @@ public class Player_TraitDataReader : DataReaderBase
                
             }
         }
+
+        // traitId 없으면 스킵 (타입행/빈행 방지)
+        if (traitId <= 0) return;
 
         DataList.Add(new Player_TraitData(
             traitId, traitName, desc

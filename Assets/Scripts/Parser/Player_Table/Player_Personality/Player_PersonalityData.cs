@@ -21,13 +21,13 @@ public enum personalityType
 [Serializable]
 public struct Player_PersonalityData
 {
-    public string personalityId;
+    public int personalityId;
     public coreType core;
     public personalityType personality;
     public string personalityName;
     public string desc;
 
-    public Player_PersonalityData(string personalityId, coreType core, personalityType personality, string personalityName, string desc)
+    public Player_PersonalityData(int personalityId, coreType core, personalityType personality, string personalityName, string desc)
     {
         this.personalityId = personalityId;
         this.core = core;
