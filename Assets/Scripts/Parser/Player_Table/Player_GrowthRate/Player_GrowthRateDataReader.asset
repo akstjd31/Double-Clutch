@@ -9,14 +9,20 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: da5913e55908f3a4bb89eb0b3a104fef, type: 3}
-  m_Name: Player_MaxPotentialDataReader
-  m_EditorClassIdentifier: Assembly-CSharp::Player_MaxPotentialDataReader
+  m_Script: {fileID: 11500000, guid: 1b9f8e753df30ac469d293fa5dd16eef, type: 3}
+  m_Name: Player_GrowthRateDataReader
+  m_EditorClassIdentifier: Assembly-CSharp::Player_GrowthRateDataReader
   associatedSheet: 1OvgbNmHB66X2dGKiIJ9j1CUalvQ517eFo-IFB-3F7KU
-  associatedWorksheet: MaxPotential
+  associatedWorksheet: GrowthRate
   START_ROW_LENGTH: 3
   END_ROW_LENGTH: -1
   DataList:
   - key: 1
-    minPotentialValue: 30
-    maxPotentialValue: 70
+    minGrowthRate: 1
+    maxGrowthRate: 6
+  - key: 2
+    minGrowthRate: 2
+    maxGrowthRate: 5
+  - key: 3
+    minGrowthRate: 3
+    maxGrowthRate: 4

@@ -3,6 +3,7 @@ using UnityEngine;
 
 public enum potential
 {
+    None,
     Stat2pt, // 2점 슛 능력
     Stat3pt, // 3점 슛 능력
     StatPass, // 어시스트 능력    
@@ -17,18 +18,19 @@ public class Stat
     [SerializeField] potential _type;//스탯의 종류
     [SerializeField] int _current; //현재 스탯값
     [SerializeField] int _limit; //스탯 최대 성장치
-
+    [SerializeField] int _growthRate; //스탯 성장률
 
     public potential Type => _type;
     public int Current => _current;
     public int Limit => _limit;
+    public int GrowthRate => _growthRate;
 
-
-    public Stat(potential type, int current, int limit) //생성자에서 종류, 초기값, 최대치 지정
+    public Stat(potential type, int current, int limit, int growthRate) //생성자에서 종류, 초기값, 최대치 지정
     {
         _type = type;
         _current = current;
         _limit = limit;
+        _growthRate = growthRate;
     }
 
     public int GrowAndReturn(int amount) // 스탯을 성장시키고 성장치를 반환하는 메서드
