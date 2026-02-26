@@ -13,7 +13,7 @@ public class CharacterList : MonoBehaviour
     GenericObjectPool<PlayerCard> _playerCardPool;
     public List<PlayerCard> CardList = new List<PlayerCard>();
 
-    private int _colorIndex = 0;
+    private int _colorIndex;
     private readonly Color[] _colors =
     {
         Color.red,
@@ -38,31 +38,30 @@ public class CharacterList : MonoBehaviour
             _playerCardPool.Release(card);
         }
         CardList.Clear();
+        _colorIndex = 0;
 
 
         foreach (Student student in StudentManager.Instance.MyStudents)
         {
             PlayerCard newCard = _playerCardPool.Get();
             newCard.SetImageColor(GetNextColor());
-            newCard.Init(student, CardList.Count);
+            newCard.Init(student);
             CardList.Add(newCard);
         }
     }
 
     public Color GetNextColor()
     {
-        Color c=  _colors[_colorIndex];
+        Color c = _colors[_colorIndex];
         _colorIndex = (_colorIndex + 1) % _colors.Length;
         return c;
     }
 
-    // public void ReFresh()
-    // {
-    //     for (int i = 0; i < CardList.Count; i++)
-    //     {
-    //         if (CardList[i].Index == i) continue;
-
-    //         for (int j = )
-    //     }
-    // }
+    public void ReFresh()
+    {
+        for (int i = 0; i < CardList.Count; i++)
+        {
+            CardList[i].transform.SetSiblingIndex(i);
+        }
+    }
 }

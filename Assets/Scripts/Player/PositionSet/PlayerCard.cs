@@ -14,10 +14,8 @@ public class PlayerCard : MonoBehaviour
     private bool _isAvailable;
     public Student Player => _player;
     public bool IsAvailable => _isAvailable;
-    private int _index;                         // 생성될 떄 본인 자리 기억
-    public int Index => _index;
 
-    public void Init(Student student, int idx)
+    public void Init(Student student)
     {
         _player = student;
         _playerName.text = student.Name;
@@ -36,8 +34,6 @@ public class PlayerCard : MonoBehaviour
         {
             _isAvailable = true;
         }
-
-        _index = idx;
     }
 
     public void SetImageColor(Color color) => this.GetComponent<Image>().color = color;
