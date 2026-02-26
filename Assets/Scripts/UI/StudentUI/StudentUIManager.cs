@@ -61,6 +61,12 @@ public class StudentUIManager : MonoBehaviour
         _individualTrainingCommandPopUp.Init(target);
     }
 
+    public void OnTrainingBoxClick()
+    {
+        _individualTrainingCommandPopUp.gameObject.SetActive(false);
+        _teamTrainingCommandPopUp.gameObject.SetActive(false);
+    }
+
     public void OnTeamTrainingButtonClick() //단순 활성화라 인스펙터 연결로 해도 OK
     {
         _teamTrainingCommandPopUp.gameObject.SetActive(true);

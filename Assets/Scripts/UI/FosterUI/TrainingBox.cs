@@ -23,7 +23,8 @@ public class TrainingBox : MonoBehaviour
         _command = command;
 
         _button.onClick.RemoveAllListeners();
-        _button.onClick.AddListener(command.IsTeam()? (() => FosterManager.Instance.ReserveTeamTraining(_command)): () => FosterManager.Instance.ReserveIndividualTraining(_command));
+        _button.onClick.AddListener(command.IsTeam()? (() => FosterManager.Instance.ReserveTeamTraining(_command)): () => FosterManager.Instance.ReserveIndividualTraining(_command));        
+        _button.onClick.AddListener(() => StudentUIManager.Instance.OnTrainingBoxClick());        
 
         _trainingName.text = StringManager.Instance.GetString(command.GetNameKey());
         _trainingDesc.text = StringManager.Instance.GetString(command.GetDescKey());
