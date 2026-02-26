@@ -62,7 +62,7 @@ public class CalendarManager : Singleton<CalendarManager>
         }
         
         // 3. 페이즈 체크
-        if (!CheckPhaseType()) return;
+        if (!CheckPhaseType(weekId)) return;
 
         // 4. 종료 컷신 체크
         if (HasExistEndCutscene(weekId))
@@ -106,9 +106,6 @@ public class CalendarManager : Singleton<CalendarManager>
         calendar.month = newData.month;
         calendar.week = newData.weekNo;
 
-        if (GameManager.Instance != null)
-            GameManager.Instance.SetWeekId(weekId);
-
         OnWeekChanged?.Invoke(calendar);
     }
 
@@ -116,12 +113,11 @@ public class CalendarManager : Singleton<CalendarManager>
     public bool HasExistStartCutscene(int weekId) => _calReader.DataList[weekId - 1].startCutscene.Equals("");
 
     public bool HasExistEndCutscene(int weekId) => _calReader.DataList[weekId - 1].endCutscene.Equals("");
-    public bool CheckPhaseType()
+    public bool CheckPhaseType(int weekId)
     {
-        return IsEndPhase;
         // var curPhaseType = _calReader.DataList[weekId].phase;
         
-        // 페이즈 타입에 따른 시스템 시작 (굳이?)
+        // 페이즈 타입에 따른 시스템 시작
         // switch (curPhaseType)
         // {
         //     case phaseType.Training:
@@ -133,7 +129,9 @@ public class CalendarManager : Singleton<CalendarManager>
         //         break;
         // }
 
+        return IsEndPhase;
     }
 
     public Calendar GetCalendar() => this.calendar;
+    public phaseType GetPhaseType(int weekId) => _calReader.DataList[weekId].phase;
 }
