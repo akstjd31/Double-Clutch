@@ -39,4 +39,6 @@ public class PlayerCard : MonoBehaviour
 
         _index = idx;
     }
+
+    public void SetImageColor(Color color) => this.GetComponent<Image>().color = color;
 }

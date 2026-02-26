@@ -4,7 +4,8 @@ using UnityEngine.UI;
 
 public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
-    [SerializeField] private Canvas rootCanvas;
+    [SerializeField] private Canvas _rootCanvas;
+    [SerializeField] private CharacterList _charList;
     private Transform _currentParent;
     private RectTransform _rect;
     private bool _droppedSuccessfully;
@@ -13,7 +14,9 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
 
     private void Awake()
     {
+        _rootCanvas = GameObject.FindAnyObjectByType<Canvas>();
         _currentParent = this.transform.parent;
+        _charList = _currentParent.GetComponent<CharacterList>();
         _rect = (RectTransform)this.transform;
     }
 
@@ -21,12 +24,12 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
     {
         _droppedSuccessfully = false;
 
-        if (rootCanvas != null)
-            this.transform.SetParent(rootCanvas.transform, true);
+        if (_rootCanvas != null)
+            this.transform.SetParent(_rootCanvas.transform, true);
 
         RectTransformUtility.ScreenPointToLocalPointInRectangle
         (
-            (RectTransform)rootCanvas.transform,
+            (RectTransform)_rootCanvas.transform,
             eventData.position,
             eventData.pressEventCamera,
             out var localPoint
@@ -37,11 +40,11 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
     
     public void OnDrag(PointerEventData eventData)
     {
-        if (rootCanvas == null) return;
+        if (_rootCanvas == null) return;
 
         RectTransformUtility.ScreenPointToLocalPointInRectangle
         (
-            (RectTransform)rootCanvas.transform,
+            (RectTransform)_rootCanvas.transform,
             eventData.position,
             eventData.pressEventCamera,
             out var localPoint
