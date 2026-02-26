@@ -40,6 +40,20 @@ public class TrainingCharacterBox : MonoBehaviour
 
     public void SetStudentState()
     {
-
+        if (_student.State == StudentState.OverWorked)
+        {
+            _stateText.text = "과로";
+            return;
+        }
+        if (_student.State == StudentState.Injured)
+        {
+            _stateText.text = "부상";
+            return;
+        }
+        if (_student.CurrentTraining != null)
+        {
+            _stateText.text = StringManager.Instance.GetString(_student.CurrentTraining.GetNameKey());
+            return;
+        }
     }
 }

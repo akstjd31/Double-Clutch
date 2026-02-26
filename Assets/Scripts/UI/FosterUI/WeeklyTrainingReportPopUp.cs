@@ -8,13 +8,14 @@ public class WeeklyTrainingReportPopUp : MonoBehaviour
     [SerializeField] Transform _characterRowParent;
 
     GenericObjectPool<CharacterRow> _characterRowPool;
-    List<CharacterRow> _characterRowList;
+    List<CharacterRow> _characterRowList = new List<CharacterRow>();
     private void Awake()
     {
         _characterRowPool = new GenericObjectPool<CharacterRow>(_characterRowPrefab, _characterRowParent);
     }
     public void Init(List<Student> students)
     {
+        Debug.Log("ResultPopUp Init!");
         RefreshCharacterRowList(students);
     }
 
@@ -28,11 +29,11 @@ public class WeeklyTrainingReportPopUp : MonoBehaviour
         
         for (int i = 0; i < students.Count; i++)
         {
-            CharacterRow newRow = _characterRowPool.Get(); //박스 채우기
-
+            CharacterRow newRow = _characterRowPool.Get(); //박스 채우기            
             newRow.Init(students[i]); //박스에 선수 정보 주입            
 
             _characterRowList.Add(newRow);
+            Debug.Log("CharacterRow Initiate!");
         }
     }
 }

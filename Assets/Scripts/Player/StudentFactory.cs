@@ -71,10 +71,7 @@ public class StudentFactory : MonoBehaviour
         SetRandomPassive(newStudent); //패시브 생성        
         newStudent.SetStat(GetRandomStats(newStudent.Grade)); //스탯 생성
 
-        Position bestPosition = DecideBestPosition(newStudent);
-        newStudent.SetPosition(bestPosition);
-
-        InitStudent(newStudent);
+        InitStudent(newStudent);        
 
         return newStudent;
     }
@@ -82,6 +79,8 @@ public class StudentFactory : MonoBehaviour
     public void InitStudent(Student target) //선수 생성시 & 저장 데이터 불러오기 시 호출
     {
         target.Init(_speciesDataReader, _personalityDataReader, _passiveDataReader, _traitDataReader);
+        Position bestPosition = DecideBestPosition(target);
+        target.SetPosition(bestPosition);
     }
 
     private void InitDatas() //NameData만 타입별로 분류
