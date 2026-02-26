@@ -4,6 +4,7 @@ using DG.Tweening;
 using TMPro; 
 using UnityEngine;
 using UnityEngine.UI;
+using System;
 
 public class MatchUIManager : MonoBehaviour
 {
@@ -64,6 +65,9 @@ public class MatchUIManager : MonoBehaviour
     // 이벤트 선택 상태 확인용 프로퍼티
     public bool IsEventSelected { get; private set; } = false;
     public int SelectedEventIndex { get; private set; } = -1;
+
+    // 확인 버튼을 눌렀을 때 실행할 함수를 담아둘 변수 추가
+    private Action _onResultConfirmAction;
 
     // 점수판 갱신 (시간, 점수)
     public void UpdateScoreBoard(MatchState state)
@@ -192,8 +196,9 @@ public class MatchUIManager : MonoBehaviour
 
 
     // 경기 종료 시 호출할 함수
-    public void ShowResultPopup(string homeName, int homeScore, string awayName, int awayScore, int rewardAmount = 0)
+    public void ShowResultPopup(string homeName, int homeScore, string awayName, int awayScore, int rewardAmount = 0, Action onConfirm = null)
     {
+        _onResultConfirmAction = onConfirm;
         // 패널 켜기
         if (_resultPanel != null)
         {
@@ -348,5 +353,16 @@ public class MatchUIManager : MonoBehaviour
         {
             _quarterEndPanel.SetActive(false); // 팝업 닫기
         }
+    }
+    // 버튼 클릭 함수
+    public void OnClickResultConfirmButton()
+    {
+        if (_resultPanel != null)
+        {
+            _resultPanel.SetActive(false);
+        }
+
+        // ResultState에서 넘겨줬던 ReturnToLobby 함수를 여기서 실행
+        _onResultConfirmAction?.Invoke();
     }
 }
