@@ -4337,7 +4337,7 @@ GameObject:
   - component: {fileID: 186579993}
   - component: {fileID: 186579995}
   m_Layer: 5
-  m_Name: Image (2)
+  m_Name: PF
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4413,6 +4413,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DropPosition
   allowOnlyOne: 1
+  isPositionSlot: 1
+  _charList: {fileID: 1108288567}
 --- !u!1 &190325584
 GameObject:
   m_ObjectHideFlags: 0
@@ -11379,7 +11381,7 @@ GameObject:
   - component: {fileID: 550827087}
   - component: {fileID: 550827089}
   m_Layer: 5
-  m_Name: Image (4)
+  m_Name: SG
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11455,6 +11457,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DropPosition
   allowOnlyOne: 1
+  isPositionSlot: 1
+  _charList: {fileID: 1108288567}
 --- !u!1 &554729430
 GameObject:
   m_ObjectHideFlags: 0
@@ -11860,7 +11864,7 @@ GameObject:
   - component: {fileID: 573133840}
   - component: {fileID: 573133842}
   m_Layer: 5
-  m_Name: Image
+  m_Name: C
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11936,6 +11940,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DropPosition
   allowOnlyOne: 1
+  isPositionSlot: 1
+  _charList: {fileID: 1108288567}
 --- !u!1 &577168000
 GameObject:
   m_ObjectHideFlags: 0
@@ -12597,7 +12603,6 @@ GameObject:
   - component: {fileID: 609306419}
   - component: {fileID: 609306418}
   - component: {fileID: 609306417}
-  - component: {fileID: 609306420}
   - component: {fileID: 609306421}
   m_Layer: 5
   m_Name: CharacterList
@@ -12689,21 +12694,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 609306415}
   m_CullTransparentMesh: 1
---- !u!114 &609306420
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 609306415}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fb1f8d1ad49e1cc4daa95d9e9df49914, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CharacterList
-  _playerCardPrefab: {fileID: 6905289655230804431, guid: 00332da3ac7a77f40b778bb90c9503e1, type: 3}
-  _cardContainer: {fileID: 609306416}
-  CardList: []
 --- !u!114 &609306421
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12717,6 +12707,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DropPosition
   allowOnlyOne: 0
+  isPositionSlot: 0
+  _charList: {fileID: 1108288567}
 --- !u!1 &615702298
 GameObject:
   m_ObjectHideFlags: 0
@@ -13002,7 +12994,7 @@ GameObject:
   - component: {fileID: 634960486}
   - component: {fileID: 634960488}
   m_Layer: 5
-  m_Name: Image (1)
+  m_Name: PG
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -13078,6 +13070,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DropPosition
   allowOnlyOne: 1
+  isPositionSlot: 1
+  _charList: {fileID: 1108288567}
 --- !u!1 &636265801
 GameObject:
   m_ObjectHideFlags: 0
@@ -24121,7 +24115,7 @@ GameObject:
   - component: {fileID: 1039411597}
   - component: {fileID: 1039411599}
   m_Layer: 5
-  m_Name: Image (3)
+  m_Name: SF
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -24197,6 +24191,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DropPosition
   allowOnlyOne: 1
+  isPositionSlot: 1
+  _charList: {fileID: 1108288567}
 --- !u!1 &1049463217
 GameObject:
   m_ObjectHideFlags: 0
@@ -25736,6 +25732,7 @@ GameObject:
   - component: {fileID: 1108288564}
   - component: {fileID: 1108288566}
   - component: {fileID: 1108288565}
+  - component: {fileID: 1108288567}
   m_Layer: 5
   m_Name: PositionSet
   m_TagString: Untagged
@@ -25806,6 +25803,24 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1108288563}
   m_CullTransparentMesh: 1
+--- !u!114 &1108288567
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1108288563}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb1f8d1ad49e1cc4daa95d9e9df49914, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CharacterList
+  _playerCardPrefab: {fileID: 6905289655230804431, guid: 00332da3ac7a77f40b778bb90c9503e1, type: 3}
+  _cardContainer: {fileID: 609306416}
+  _positionTrf: {fileID: 1049463218}
+  _cardList: []
+  _droppedCardList: []
+  _dropPositionList: []
 --- !u!1 &1112515887
 GameObject:
   m_ObjectHideFlags: 0

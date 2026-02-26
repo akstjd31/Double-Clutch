@@ -9,23 +9,19 @@ public class CharacterList : MonoBehaviour
 {
     [SerializeField] PlayerCard _playerCardPrefab;
     [SerializeField] Transform _cardContainer; //????? ??? ???
-    [SerializeField] DropPosition _C;
-    [SerializeField] DropPosition _PG;
-    [SerializeField] DropPosition _PF;
-    [SerializeField] DropPosition _SF;
-    [SerializeField] DropPosition _SG;
+    [SerializeField] Transform _positionTrf;
 
 
     GenericObjectPool<PlayerCard> _playerCardPool;
 
-    private List<PlayerCard> _cardList = new List<PlayerCard>();
+    [SerializeField] private List<PlayerCard> _cardList = new List<PlayerCard>();
     public List<PlayerCard> CardList => _cardList;
 
 
-    private List<PlayerCard> _droppedCardList = new List<PlayerCard>();
+    [SerializeField] private List<PlayerCard> _droppedCardList = new List<PlayerCard>();
     public List<PlayerCard> DroppedCardList => _droppedCardList;
 
-    private List<DropPosition> _dropPositionList = new List<DropPosition>();
+    [SerializeField] private List<DropPosition> _dropPositionList = new List<DropPosition>();
 
     private int _colorIndex;
     private readonly Color[] _colors =
@@ -43,12 +39,8 @@ public class CharacterList : MonoBehaviour
     private void Awake()
     {
         _playerCardPool = new GenericObjectPool<PlayerCard>(_playerCardPrefab, _cardContainer, 5, 20);
-        _dropPositionList.Add(_C);
-        _dropPositionList.Add(_PG);
-        _dropPositionList.Add(_PF);
-        _dropPositionList.Add(_SF);
-        _dropPositionList.Add(_SG);
     }
+
 
     private void OnEnable()
     {
@@ -56,13 +48,20 @@ public class CharacterList : MonoBehaviour
 
         _colorIndex = 0;
 
-
         foreach (Student student in StudentManager.Instance.MyStudents)
         {
             PlayerCard newCard = _playerCardPool.Get();
             newCard.SetImageColor(GetNextColor());
             newCard.Init(student);
             CardList.Add(newCard);
+        }
+
+        if (_dropPositionList == null)
+        {
+            foreach (var dp in _positionTrf.GetComponentsInChildren<DropPosition>())
+            {
+                _dropPositionList.Add(dp);
+            }
         }
     }
 
@@ -98,16 +97,17 @@ public class CharacterList : MonoBehaviour
             _cardList.Add(card);
         }
     }
+
     private void ClearAllCards()
     {
-        // CardList¿¡ ÀÖ´Â Ä«µå ¹Ý³³
+        // CardListï¿½ï¿½ ï¿½Ö´ï¿½ Ä«ï¿½ï¿½ ï¿½Ý³ï¿½
         foreach (var card in _cardList)
         {
             if (card != null) _playerCardPool.Release(card);
         }
         _cardList.Clear();
 
-        // µå·ÓµÈ À§Ä¡¿¡ ÀÖ´Â Ä«µåµéµµ Ç®·Î ¹Ý³³
+        // ï¿½ï¿½Óµï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½Ö´ï¿½ Ä«ï¿½ï¿½éµµ Ç®ï¿½ï¿½ ï¿½Ý³ï¿½
         foreach (var position in _dropPositionList)
         {
             if (position != null) _playerCardPool.Release(position.GetComponentInChildren<PlayerCard>());

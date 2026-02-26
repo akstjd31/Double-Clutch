@@ -4,6 +4,8 @@ using UnityEngine.EventSystems;
 public class DropPosition : MonoBehaviour, IDropHandler
 {
     [SerializeField] private bool allowOnlyOne = false;
+    [SerializeField] private bool isPositionSlot = false;
+    [SerializeField] private CharacterList _charList;
 
     public void OnDrop(PointerEventData eventData)
     {
@@ -18,5 +20,19 @@ public class DropPosition : MonoBehaviour, IDropHandler
         if (allowOnlyOne && this.transform.childCount > 0) return;
 
         draggable.HandleDroppedSuccessfully(this.transform);
+
+        var card = draggedObj.GetComponent<PlayerCard>();
+        if (card == null) return;
+
+        if (isPositionSlot)
+        {
+            _charList.RemoveOnPosition(card);
+            _charList.AddOnPosition(card);
+        }
+        else
+        {
+            _charList.AddOnPosition(card);
+            _charList.RemoveOnPosition(card);
+        }
     }
 }
