@@ -105,6 +105,8 @@ public class StudentFactory : MonoBehaviour
             // 해당 종족 리스트에 추가
             _visualDataDict[specieId].Add(visualData);
         }
+
+        _maxPotential = _maxPotentialDataReader.DataList[0]; //스탯 최대 성장률 데이터 참조
     }
 
     
@@ -198,7 +200,7 @@ public class StudentFactory : MonoBehaviour
     {
         List<Stat> newStat = new List<Stat>();
         Player_StartingStateData stateSetting = _startingStateDataReader.DataList[grade - 1]; //해당 학년의 스탯 범위 가져오기
-        Player_MaxPotentialData maxPotentialData = _maxPotentialDataReader.DataList[0]; //스탯 최대 성장률 데이터 참조
+        
         foreach (potential type in System.Enum.GetValues(typeof(potential)))
         {            
             if (type == potential.None)
@@ -207,7 +209,7 @@ public class StudentFactory : MonoBehaviour
             }
 
             int currentValue = Random.Range(stateSetting.startMin, stateSetting.startMax + 1); //현재 스탯 할당
-            int limitValue = Random.Range(maxPotentialData.minPotentialValue, maxPotentialData.maxPotentialValue + 1); //스탯 최대치 할당
+            int limitValue = Random.Range(_maxPotential.minPotentialValue, _maxPotential.maxPotentialValue + 1); //스탯 최대치 할당
             int growthRate = GetRandomGrowthRate(grade);
             int safetyNet = 0;
             while (limitValue <= currentValue && safetyNet < 100) //만약 시작 스탯이 최대 성장치 보다 높게 뽑히면 최대 100번까지 최대 스탯을 다시 리롤
