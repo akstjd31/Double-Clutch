@@ -44,6 +44,15 @@ public class StudentFactory : MonoBehaviour
     //비주얼 데이터 종족별(string specie) 분류 묶음
     Dictionary<string, List<Player_VisualData>> _visualDataDict = new Dictionary<string, List<Player_VisualData>>();
 
+    private List<PositionOfferData> _positionOffers = new List<PositionOfferData>() //포지션 별 가중치 정보
+    {
+        new PositionOfferData(Position.C),
+        new PositionOfferData(Position.PF),
+        new PositionOfferData(Position.SF),
+        new PositionOfferData(Position.SG),
+        new PositionOfferData(Position.PG)
+    };
+
     private void Start()
     {
         InitDatas();
@@ -61,6 +70,9 @@ public class StudentFactory : MonoBehaviour
         newStudent.SetName(GetRandomName()); //이름 생성
         SetRandomPassive(newStudent); //패시브 생성        
         newStudent.SetStat(GetRandomStats(newStudent.Grade)); //스탯 생성
+
+        Position bestPosition = DecideBestPosition(newStudent);
+        newStudent.SetPosition(bestPosition);
 
         InitStudent(newStudent);
 
@@ -107,10 +119,33 @@ public class StudentFactory : MonoBehaviour
         }
 
         _maxPotential = _maxPotentialDataReader.DataList[0]; //스탯 최대 성장률 데이터 참조
+
+
     }
 
-    
+    private Position DecideBestPosition(Student student)
+    {
+        Position bestPos = Position.C;
+        float maxScore = -1f;
 
+        foreach (var offer in _positionOffers)
+        {
+            // 공식: (메인1 * 3) + (메인2 * 3) + (서브 * 1)
+            int m1 = student.GetCurrentStat(offer.MainPotential1);
+            int m2 = student.GetCurrentStat(offer.MainPotential2);
+            int sub = student.GetCurrentStat(offer.SubPotential);
+
+            float currentScore = (m1 * 3f) + (m2 * 3f) + (sub * 1f);
+
+            if (currentScore > maxScore)
+            {
+                maxScore = currentScore;
+                bestPos = offer.Position;
+            }
+        }
+
+        return bestPos;
+    }
 
 
     private string GetRandomName() //랜덤한 이름 조합해서 반환

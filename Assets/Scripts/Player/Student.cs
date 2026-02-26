@@ -73,6 +73,15 @@ public class Student
         return _statDict[type];
     }
 
+    public float GetPositionScore(Position position)
+    {
+        PositionOfferData offer = new PositionOfferData(position);
+        int m1 = GetCurrentStat(offer.MainPotential1);
+        int m2 = GetCurrentStat(offer.MainPotential2);
+        int sub = GetCurrentStat(offer.SubPotential);
+
+        return (m1 * 3f) + (m2 * 3f) + (sub * 1f);
+    }
 
     #region 데이터 할당용 함수
 

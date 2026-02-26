@@ -45,6 +45,11 @@ public class TeamTraining : ITraining
         {
             _target = target;
 
+            if (_target.State != StudentState.None)
+            {
+                continue;
+            }
+
             if (_target.Condition <= 0)
             {
                 GetInjuryOrOverwork(_target);

@@ -46,8 +46,12 @@ public class ConditionWarningPopUp : MonoBehaviour
         _problemList.Clear();
 
         foreach (Student target in students) //넘겨받은 학생 중 문제 컨디션 0 다시 체크 후 경고문구 생성
-        {            
-            if (target.Condition <= 0)
+        {
+            if (target.State != StudentState.None) //부상, 과로 학생용(팀 훈련 시)
+            {
+                CreateWarning(target.Name, target.State);
+            }
+            else if (target.Condition <= 0) //컨디션 0 학생(범용)
             {
                 CreateWarning(target.Name);
             }
@@ -63,7 +67,12 @@ public class ConditionWarningPopUp : MonoBehaviour
     {
         Problem problem = _problemPool.Get();
         problem.Init(name);
-    }    
+    }
+    private void CreateWarning(string name, StudentState state)
+    {
+        Problem problem = _problemPool.Get();
+        problem.Init(name, state);
+    }
 
     private void OnDestroy()
     {
