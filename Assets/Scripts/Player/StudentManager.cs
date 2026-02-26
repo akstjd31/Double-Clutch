@@ -15,7 +15,7 @@ public class StudentManager : MonoBehaviour
     public bool CanRecruit => _recruitLimit > _myStudents.Count;
     public static StudentManager Instance { get; private set; }
     [SerializeField] StudentFactory _studentFactory; //선수 생성용 팩토리
-    //[SerializeField] FosterManager _fosterManager; //선수 육성용 매니저
+    [SerializeField] FosterManager _fosterManager; //선수 육성용 매니저
     [SerializeField] private List<Student> _myStudents = new List<Student>(); //선수 목록
     public List<Student> MyStudents => _myStudents;
     private void Awake()

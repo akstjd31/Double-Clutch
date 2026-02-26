@@ -5,7 +5,7 @@ using UnityEngine;
 
 public enum StudentState
 {
-    None, Tired, Injured
+    None, OverWorked, Injured
 }
 
 [Serializable]
@@ -15,16 +15,17 @@ public class Student
     [SerializeField] int _studentId = -1; //학생 식별용 고유 id(학생 영입 확정 후 부여)
     [SerializeField] string _name; //이름
     [SerializeField] string _specieId = string.Empty; // 종족
-    [SerializeField] int _visualId = -1; // 비주얼 Id
+    [SerializeField] string _visualId = string.Empty; // 비주얼 Id
     [SerializeField] string _personalityId = string.Empty; // 성격 Id
-    [SerializeField] List<int> _passiveIdList = new List<int>(); //패시브 Id
+    [SerializeField] List<string> _passiveIdList = new List<string>(); //패시브 Id
     [SerializeField] string _traitId = string.Empty; //특성 Id
     [SerializeField] int _grade = -1; //학년
-    [SerializeField] List<Stat> _stats = new List<Stat>(); //스탯(잠재력)
-    
+    [SerializeField] List<Stat> _stats = new List<Stat>(); //스탯(잠재력)    
+
     [SerializeField] Position _position;
     [SerializeField] StudentState _state;
     [SerializeField] int _condition = 100;
+    [SerializeField] int _cureCount = 0;
 
 
     //게임 실행 후 불러오는 데이터
@@ -46,11 +47,11 @@ public class Student
     public string Name => _name;
     public string SpecieId => _specieId;
     public Player_SpeciesData SpecieData => _specieData;
-    public int VisualId => _visualId;
+    public string VisualId => _visualId;
     public Player_VisualData VisualData => _visualData;
     public string PersonalityId => _personalityId;
     public Player_PersonalityData PersonalityData => _personalityData;
-    public List<int> PassiveId => _passiveIdList;
+    public List<string> PassiveId => _passiveIdList;
     public List<Player_PassiveData> Passive => _passiveDataList;
     public string TraitId => _traitId;
     public Player_TraitData TraitData => _traitData;
@@ -60,10 +61,16 @@ public class Student
     public Position Position => _position;
     public StudentState State => _state;
     public int Condition => _condition;
+    public int CureCount => _cureCount;
 
-    public int GetCurrentStat(potential type)
+    public int GetCurrentStat(potential type) //현재 스탯 수치 반환(바로가기) 매서드
     {
         return _statDict[type].Current;
+    }
+
+    public Stat GetStat(potential type) //원하는 타입의 스탯 반환
+    {
+        return _statDict[type];
     }
 
 
@@ -107,14 +114,14 @@ public class Student
         {
             _personalityId = data.personalityId;
         }
-    }    
+    }
 
-    public void SetPassiveId(int passiveId)
+    public void SetPassiveId(string passiveId)
     {
         if (!_passiveIdList.Contains(passiveId))
         {
             _passiveIdList.Add(passiveId);
-        }        
+        }
     }
 
     public void SetPassive(Player_PassiveData data)
@@ -128,7 +135,7 @@ public class Student
             _passiveIdList.Add(data.skillId);
         }
     }
-    public bool HasPassive(int skillId)
+    public bool HasPassive(string skillId)
     {
         return _passiveIdList.Contains(skillId);
     }
@@ -180,6 +187,20 @@ public class Student
         _condition = Mathf.Clamp(_condition += amount, 0, 100);
     }
 
+    public void ChangeState(StudentState newState)
+    {
+        _state = newState;
+        if (newState == StudentState.None)
+        {
+            _cureCount = 0;
+        }
+    }
+
+    public void SetCureCount(int count)
+    {
+        _cureCount = count;
+    }
+
     #endregion
 
 
@@ -210,6 +231,8 @@ public class Student
         {
             switch (stat.Type)
             {
+                case potential.None:
+                    break;
                 case potential.Stat2pt:
                 case potential.Stat3pt:
                 case potential.StatPass:

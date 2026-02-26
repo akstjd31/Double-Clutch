@@ -4,16 +4,16 @@ using System;
 [Serializable]
 public struct Player_MaxPotentialData
 {
-    public int key;
+    public string potentialId;
     public int minPotentialValue;
     public int maxPotentialValue;
 
-   
 
-    public Player_MaxPotentialData(int _key, int _minPotentialValue, int _maxPotentialValue)
+
+    public Player_MaxPotentialData(string _potentialId, int _minPotentialValue, int _maxPotentialValue)
     {
-        key = _key;
+        potentialId = _potentialId;
         minPotentialValue = _minPotentialValue;
-        maxPotentialValue = _maxPotentialValue;     
+        maxPotentialValue = _maxPotentialValue;
     }
 }

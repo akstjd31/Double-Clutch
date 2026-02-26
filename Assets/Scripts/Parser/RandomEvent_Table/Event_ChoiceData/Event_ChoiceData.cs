@@ -9,25 +9,21 @@ public enum textType
 [Serializable]
 public struct Event_ChoiceData
 {
-    public int index;
+    public string index;
     public string scriptId;
     public int currentId;
-    public int nextId;
-    public string textKey;
-
     public textType textType;
-    public string standingRight;
+
+    public string textKey;
     public string standingLeft;
+    public string standingRight;
     public string background;
     public string cg;
 
     public string choice01;
-    public int nextId01;
     public string choice02;
-    public int nextId02;
     public string choice03;
 
-    public int nextId03;
     public string bgm;
     public string sfx;
     public string buttonEffectId;
@@ -40,10 +36,10 @@ public struct Event_ChoiceData
 
     public Event_ChoiceData
         (
-        int index, string scriptId, int currentId, int nextId, string textKey,
-        textType textType, string standingRight, string standingLeft, string background, string cg,
-        string choice01, int nextId01, string choice02, int nextId02, string choice03,
-        int nextId03, string bgm, string sfx, string buttonEffectId, string hoverSeId,
+        string index, string scriptId, int currentId,
+        textType textType, string textKey, string standingLeft, string standingRight, string background, string cg,
+        string choice01, string choice02, string choice03,
+        string bgm, string sfx, string buttonEffectId, string hoverSeId,
         float textSpeed, string cameraEffectId, string startEffectId
 
         )
@@ -51,22 +47,18 @@ public struct Event_ChoiceData
         this.index = index;
         this.scriptId = scriptId;
         this.currentId = currentId;
-        this.nextId = nextId;
-        this.textKey = textKey;
-
         this.textType = textType;
-        this.standingRight = standingRight;
+
+        this.textKey = textKey;
         this.standingLeft = standingLeft;
+        this.standingRight = standingRight;
         this.background = background;
         this.cg = cg;
 
         this.choice01 = choice01;
-        this.nextId01 = nextId01;
         this.choice02 = choice02;
-        this.nextId02 = nextId02;
         this.choice03 = choice03;
 
-        this.nextId03 = nextId03;
         this.bgm = bgm;
         this.sfx = sfx;
         this.buttonEffectId = buttonEffectId;

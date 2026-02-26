@@ -12,27 +12,42 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aac8f6f110c042b4c955dfbec9391186, type: 3}
   m_Name: Event_ChoiceDataReader
   m_EditorClassIdentifier: Assembly-CSharp::Event_ChoiceDataReader
-  associatedSheet: 1uA7PmOoKcrYYsATWphkz-1MBKoOmMXzYOZwHi5uEPJU
+  associatedSheet: 1HxoU5jVbTRFDYDtvSiz1G6QVezVdK2yY7p7y5-tFp44
   associatedWorksheet: ChoiceData
-  START_ROW_LENGTH: 4
+  START_ROW_LENGTH: 2
   END_ROW_LENGTH: -1
   DataList:
-  - index: 1000001
-    scriptId: EVT_100001_DISCIPLINE
-    currentId: 1
-    nextId: 0
-    textKey: EVT_100001_DESC_DISCIPLINE_001
+  - index: index
+    scriptId: scriptId
+    currentId: 0
     textType: 0
-    standingRight: 
+    textKey: textKey
+    standingLeft: standingLeft
+    standingRight: standingRight
+    background: background
+    cg: cg
+    choice01: choice01
+    choice02: choice02
+    choice03: choice03
+    bgm: bgm
+    sfx: sfx
+    buttonEffectId: buttonEffectId
+    hoverSeId: hoverSeId
+    textSpeed: 0
+    cameraEffectId: cameraEffectId
+    startEffectId: startEffectId
+  - index: Script_000001
+    scriptId: Event_00001_Discipline
+    currentId: 1
+    textType: 1
+    textKey: Event_00001_Desc_Discipline_001
     standingLeft: 
+    standingRight: 
     background: 
     cg: 
-    choice01: EVT_100001_CH_DISCIPLINE_001
-    nextId01: 2
-    choice02: EVT_100001_CH_DISCIPLINE_002
-    nextId02: 3
-    choice03: EVT_100001_CH_DISCIPLINE_003
-    nextId03: 4
+    choice01: 
+    choice02: 
+    choice03: 
     bgm: 
     sfx: 
     buttonEffectId: 
@@ -40,22 +55,18 @@ MonoBehaviour:
     textSpeed: 0
     cameraEffectId: 
     startEffectId: 
-  - index: 1000002
-    scriptId: EVT_100001_DISCIPLINE
+  - index: Script_000002
+    scriptId: Event_00001_Discipline
     currentId: 2
-    nextId: 5
-    textKey: EVT_100001_DESC_DISCIPLINE_002
     textType: 1
-    standingRight: 
+    textKey: Event_00001_Desc_Discipline_002
     standingLeft: 
+    standingRight: 
     background: 
     cg: 
     choice01: 
-    nextId01: 0
     choice02: 
-    nextId02: 0
     choice03: 
-    nextId03: 0
     bgm: 
     sfx: 
     buttonEffectId: 
@@ -63,22 +74,18 @@ MonoBehaviour:
     textSpeed: 0
     cameraEffectId: 
     startEffectId: 
-  - index: 1000003
-    scriptId: EVT_100001_DISCIPLINE
+  - index: Script_000003
+    scriptId: Event_00001_Discipline
     currentId: 3
-    nextId: 5
-    textKey: EVT_100001_DESC_DISCIPLINE_003
-    textType: 1
-    standingRight: 
+    textType: 0
+    textKey: Event_00001_Desc_Discipline_003
     standingLeft: 
+    standingRight: 
     background: 
     cg: 
-    choice01: 
-    nextId01: 0
-    choice02: 
-    nextId02: 0
-    choice03: 
-    nextId03: 0
+    choice01: Event_00001_Ch_Discipline_001
+    choice02: Event_00001_Ch_Discipline_002
+    choice03: Event_00001_Ch_Discipline_003
     bgm: 
     sfx: 
     buttonEffectId: 
@@ -86,45 +93,18 @@ MonoBehaviour:
     textSpeed: 0
     cameraEffectId: 
     startEffectId: 
-  - index: 1000004
-    scriptId: EVT_100001_DISCIPLINE
-    currentId: 4
-    nextId: 5
-    textKey: EVT_100001_DESC_DISCIPLINE_004
-    textType: 1
-    standingRight: 
-    standingLeft: 
-    background: 
-    cg: 
-    choice01: 
-    nextId01: 0
-    choice02: 
-    nextId02: 0
-    choice03: 
-    nextId03: 0
-    bgm: 
-    sfx: 
-    buttonEffectId: 
-    hoverSeId: 
-    textSpeed: 0
-    cameraEffectId: 
-    startEffectId: 
-  - index: 1000005
-    scriptId: EVT_100001_DISCIPLINE
-    currentId: 5
-    nextId: 0
-    textKey: EVT_100001_DESC_DISCIPLINE_005
+  - index: Script_000004
+    scriptId: Event_00001_Discipline
+    currentId: 1101
     textType: 2
-    standingRight: 
+    textKey: Event_00001_Desc_Principled_101
     standingLeft: 
+    standingRight: 
     background: 
     cg: 
     choice01: 
-    nextId01: 0
     choice02: 
-    nextId02: 0
     choice03: 
-    nextId03: 0
     bgm: 
     sfx: 
     buttonEffectId: 
@@ -132,22 +112,18 @@ MonoBehaviour:
     textSpeed: 0
     cameraEffectId: 
     startEffectId: 
-  - index: 1000006
-    scriptId: EVT_100001_BOND
-    currentId: 1
-    nextId: 0
-    textKey: EVT_100001_DESC_Bond_001
-    textType: 0
-    standingRight: 
+  - index: Script_000005
+    scriptId: Event_00001_Discipline
+    currentId: 2101
+    textType: 2
+    textKey: Event_00001_Desc_Guardian_101
     standingLeft: 
+    standingRight: 
     background: 
     cg: 
     choice01: 
-    nextId01: 0
     choice02: 
-    nextId02: 0
     choice03: 
-    nextId03: 0
     bgm: 
     sfx: 
     buttonEffectId: 
@@ -155,22 +131,18 @@ MonoBehaviour:
     textSpeed: 0
     cameraEffectId: 
     startEffectId: 
-  - index: 1000007
-    scriptId: EVT_100001_BOND
-    currentId: 2
-    nextId: 0
-    textKey: 
-    textType: 0
-    standingRight: 
+  - index: Script_000006
+    scriptId: Event_00001_Discipline
+    currentId: 3101
+    textType: 2
+    textKey: Event_00001_Desc_Tactician_101
     standingLeft: 
+    standingRight: 
     background: 
     cg: 
     choice01: 
-    nextId01: 0
     choice02: 
-    nextId02: 0
     choice03: 
-    nextId03: 0
     bgm: 
     sfx: 
     buttonEffectId: 
@@ -178,22 +150,18 @@ MonoBehaviour:
     textSpeed: 0
     cameraEffectId: 
     startEffectId: 
-  - index: 1000008
-    scriptId: EVT_100001_BOND
-    currentId: 3
-    nextId: 0
-    textKey: 
-    textType: 0
-    standingRight: 
+  - index: Script_000007
+    scriptId: Event_00001_Discipline
+    currentId: 4101
+    textType: 2
+    textKey: Event_00001_Desc_Exemplary_101
     standingLeft: 
+    standingRight: 
     background: 
     cg: 
     choice01: 
-    nextId01: 0
     choice02: 
-    nextId02: 0
     choice03: 
-    nextId03: 0
     bgm: 
     sfx: 
     buttonEffectId: 
@@ -201,22 +169,18 @@ MonoBehaviour:
     textSpeed: 0
     cameraEffectId: 
     startEffectId: 
-  - index: 1000009
-    scriptId: EVT_100001_BOND
-    currentId: 4
-    nextId: 0
-    textKey: 
-    textType: 0
-    standingRight: 
+  - index: Script_000008
+    scriptId: Event_00001_Discipline
+    currentId: 1201
+    textType: 2
+    textKey: Event_00001_Desc_Principled_201
     standingLeft: 
+    standingRight: 
     background: 
     cg: 
     choice01: 
-    nextId01: 0
     choice02: 
-    nextId02: 0
     choice03: 
-    nextId03: 0
     bgm: 
     sfx: 
     buttonEffectId: 
@@ -224,22 +188,18 @@ MonoBehaviour:
     textSpeed: 0
     cameraEffectId: 
     startEffectId: 
-  - index: 1000010
-    scriptId: EVT_100001_COLD
-    currentId: 1
-    nextId: 0
-    textKey: 
-    textType: 0
-    standingRight: 
+  - index: Script_000009
+    scriptId: Event_00001_Discipline
+    currentId: 2201
+    textType: 2
+    textKey: Event_00001_Desc_Guardian_201
     standingLeft: 
+    standingRight: 
     background: 
     cg: 
     choice01: 
-    nextId01: 0
     choice02: 
-    nextId02: 0
     choice03: 
-    nextId03: 0
     bgm: 
     sfx: 
     buttonEffectId: 
@@ -247,22 +207,18 @@ MonoBehaviour:
     textSpeed: 0
     cameraEffectId: 
     startEffectId: 
-  - index: 1000011
-    scriptId: EVT_100001_COLD
-    currentId: 2
-    nextId: 0
-    textKey: 
-    textType: 0
-    standingRight: 
+  - index: Script_000010
+    scriptId: Event_00001_Discipline
+    currentId: 3201
+    textType: 2
+    textKey: Event_00001_Desc_Tactician_201
     standingLeft: 
+    standingRight: 
     background: 
     cg: 
     choice01: 
-    nextId01: 0
     choice02: 
-    nextId02: 0
     choice03: 
-    nextId03: 0
     bgm: 
     sfx: 
     buttonEffectId: 
@@ -270,22 +226,18 @@ MonoBehaviour:
     textSpeed: 0
     cameraEffectId: 
     startEffectId: 
-  - index: 1000012
-    scriptId: EVT_100001_COLD
-    currentId: 3
-    nextId: 0
-    textKey: 
-    textType: 0
-    standingRight: 
+  - index: Script_000011
+    scriptId: Event_00001_Discipline
+    currentId: 4201
+    textType: 2
+    textKey: Event_00001_Desc_Exemplary_201
     standingLeft: 
+    standingRight: 
     background: 
     cg: 
     choice01: 
-    nextId01: 0
     choice02: 
-    nextId02: 0
     choice03: 
-    nextId03: 0
     bgm: 
     sfx: 
     buttonEffectId: 
@@ -293,22 +245,75 @@ MonoBehaviour:
     textSpeed: 0
     cameraEffectId: 
     startEffectId: 
-  - index: 1000013
-    scriptId: EVT_100001_INSTINCT
-    currentId: 1
-    nextId: 0
-    textKey: 
-    textType: 0
-    standingRight: 
+  - index: Script_000012
+    scriptId: Event_00001_Discipline
+    currentId: 1301
+    textType: 2
+    textKey: Event_00001_Desc_Principled_301
     standingLeft: 
+    standingRight: 
     background: 
     cg: 
     choice01: 
-    nextId01: 0
     choice02: 
-    nextId02: 0
     choice03: 
-    nextId03: 0
+    bgm: 
+    sfx: 
+    buttonEffectId: 
+    hoverSeId: 
+    textSpeed: 0
+    cameraEffectId: 
+    startEffectId: 
+  - index: Script_000013
+    scriptId: Event_00001_Discipline
+    currentId: 2301
+    textType: 2
+    textKey: Event_00001_Desc_Guardian_301
+    standingLeft: 
+    standingRight: 
+    background: 
+    cg: 
+    choice01: 
+    choice02: 
+    choice03: 
+    bgm: 
+    sfx: 
+    buttonEffectId: 
+    hoverSeId: 
+    textSpeed: 0
+    cameraEffectId: 
+    startEffectId: 
+  - index: Script_000014
+    scriptId: Event_00001_Discipline
+    currentId: 3301
+    textType: 2
+    textKey: Event_00001_Desc_Tactician_301
+    standingLeft: 
+    standingRight: 
+    background: 
+    cg: 
+    choice01: 
+    choice02: 
+    choice03: 
+    bgm: 
+    sfx: 
+    buttonEffectId: 
+    hoverSeId: 
+    textSpeed: 0
+    cameraEffectId: 
+    startEffectId: 
+  - index: Script_000015
+    scriptId: Event_00001_Discipline
+    currentId: 4301
+    textType: 2
+    textKey: Event_00001_Desc_Exemplary_301
+    standingLeft: 
+    standingRight: 
+    background: 
+    cg: 
+    choice01: 
+    choice02: 
+    choice03: 
     bgm: 
     sfx: 
     buttonEffectId: 
