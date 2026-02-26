@@ -12,6 +12,7 @@ public class TrainingCharacterBox : MonoBehaviour
     [SerializeField] Button _button;
     //[SerializeField] Image _studentImage;
     [SerializeField] Image _stateBackGround;
+    [SerializeField] TextMeshProUGUI _nameText;
     [SerializeField] TextMeshProUGUI _stateText;
 
 
@@ -22,6 +23,7 @@ public class TrainingCharacterBox : MonoBehaviour
     {
         _student = student;
         _button.onClick.AddListener(()=> StudentUIManager.Instance.OnTrainingCharacterBoxClick(_student));
+        _nameText.text = _student.Name;
     }
 
     public Button GetSelectButton() => _button;

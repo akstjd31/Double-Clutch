@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class IndividualTrainingCommandPopUp : MonoBehaviour
 {
     [SerializeField] Transform _trainingListParent;
-    [SerializeField] TrainingBox _trainingBoxPrefab; // GameObject 대신 TrainingBox 타입으로 변경 권장
+    [SerializeField] TrainingBox _trainingBoxPrefab;
+    [SerializeField] TextMeshProUGUI _nameText;
 
     private GenericObjectPool<TrainingBox> _pool;
     private List<TrainingBox> _boxList = new List<TrainingBox>();
@@ -40,6 +42,8 @@ public class IndividualTrainingCommandPopUp : MonoBehaviour
         {
             CreateBox(new IndividualRest(data));
         }
+
+        _nameText.text = _selectedStudent.Name + " 육성 커맨드";
     }
 
     private void CreateBox(ITraining command)
