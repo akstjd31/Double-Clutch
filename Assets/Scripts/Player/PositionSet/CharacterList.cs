@@ -3,12 +3,12 @@ using UnityEngine;
 
 
 /// <summary>
-/// CharacterList ¿ÀºêÁ§Æ®¿¡ ÇÒ´çÇØ¼­ ÇÏ´Ü ¼±¼ö Ä«µå »ý¼º
+/// CharacterList ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½Ò´ï¿½ï¿½Ø¼ï¿½ ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ï¿½ Ä«ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 /// </summary>
 public class CharacterList : MonoBehaviour
 {
     [SerializeField] PlayerCard _playerCardPrefab;
-    [SerializeField] Transform _cardContainer; //¾Æ¸¶µµ ÀÚ±â ÀÚ½Å
+    [SerializeField] Transform _cardContainer; //ï¿½Æ¸ï¿½ï¿½ï¿½ ï¿½Ú±ï¿½ ï¿½Ú½ï¿½
 
     GenericObjectPool<PlayerCard> _playerCardPool;
     public List<PlayerCard> CardList = new List<PlayerCard>();
@@ -31,8 +31,13 @@ public class CharacterList : MonoBehaviour
         foreach (Student student in StudentManager.Instance.MyStudents)
         {
             PlayerCard newCard = _playerCardPool.Get();
+            newCard.Init(student, CardList.Count);
             CardList.Add(newCard);
-            newCard.Init(student);
         }
     }
+
+    // public void ReFresh()
+    // {
+        
+    // }
 }
