@@ -132,7 +132,7 @@ GameObject:
   - component: {fileID: 3981881}
   - component: {fileID: 3981880}
   m_Layer: 5
-  m_Name: LeagueButton
+  m_Name: MatchButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9876,7 +9876,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 457298446}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1073168487}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &457298446
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10409,6 +10421,18 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
+      - m_Target: {fileID: 1073168487}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
       - m_Target: {fileID: 1918134543}
         m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
         m_MethodName: SetActive
@@ -26392,6 +26416,8 @@ MonoBehaviour:
   _calendarText: {fileID: 412203876}
   _moneyText: {fileID: 913355542}
   _honorText: {fileID: 1289310716}
+  _trainingButton: {fileID: 745312277}
+  _matchButton: {fileID: 3981880}
 --- !u!1 &1131465298
 GameObject:
   m_ObjectHideFlags: 0
