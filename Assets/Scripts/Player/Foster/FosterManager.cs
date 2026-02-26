@@ -75,10 +75,12 @@ public class FosterManager : MonoBehaviour
         if (problemStudents.Count > 0) //문제 있는 학생이 하나라도 있다면
         {
             StudentUIManager.Instance.OpenConditionWarningPopUp(problemStudents, _scheduleCost); //컨디션 경고 팝업 호출
+            Debug.Log("컨디션 경고창 호출");
         }
         else
         {
             StudentUIManager.Instance.OpenTrainingStartConfirmPopUp(_scheduleCost);
+            Debug.Log("훈련 확인창 호출");
         }
     }
     private bool HasProblem(Student target)
@@ -139,6 +141,7 @@ public class FosterManager : MonoBehaviour
         {
             _schedules.Add(target, command); // 아니라면 딕셔너리에 학생 / 커맨드 추가
         }
+        target.SetCurrentTraining(command);
         _scheduleCost = nextTotalCost; // 최종 비용 업데이트
     }
 
@@ -152,12 +155,13 @@ public class FosterManager : MonoBehaviour
             return;
         }
 
-        foreach(var target in StudentManager.Instance.MyStudents)
+        foreach (var target in StudentManager.Instance.MyStudents)
         {
             //if (target.State != StudentState.None && command is TeamTraining) //선수 한 명이라도 부상 및 과로가 있는데 팀 훈련을 예약하려고 하면 여기서 팝업띄우고 경고만 해주기(예약은 됨)
             //{
             //    StudentUIManager.Instance.OpenStateWarningPopUp_Team();                ==>>> 최종 훈련 버튼 클릭 시 개별 맞춤형 경고하는 것으로 수정(기획 변경)
             //}
+            target.SetCurrentTraining(command);
         }
 
         _schedules.Clear(); //팀 스케줄 예약 시 개인 스케줄 예약 목록 삭제.

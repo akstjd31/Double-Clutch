@@ -91,6 +91,7 @@ public class StudentUIManager : MonoBehaviour
 
     public void OpenTrainingStartConfirmPopUp(int cost)
     {
+        _trainingStartConfirmPopUp.gameObject.SetActive(true);
         _trainingStartConfirmPopUp.Init(cost);        
     }
 
