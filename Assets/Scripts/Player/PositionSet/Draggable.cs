@@ -8,6 +8,7 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
     [SerializeField] private CharacterList _charList;
     private Transform _currentParent;
     private RectTransform _rect;
+    private CanvasGroup _canvasGroup;
     private bool _droppedSuccessfully;
     private Vector2 _pointerOffset;
     private PlayerCard _playerCard;
@@ -17,6 +18,7 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
     {
         _rootCanvas = GameObject.FindAnyObjectByType<Canvas>();
         _currentParent = this.transform.parent;
+        _canvasGroup = this.GetComponent<CanvasGroup>();
         _charList = _currentParent.GetComponent<CharacterList>();
         _playerCard = this.GetComponent<PlayerCard>();
         _rect = (RectTransform)this.transform;
@@ -25,6 +27,7 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
     public void OnBeginDrag(PointerEventData eventData)
     {
         _droppedSuccessfully = false;
+        _canvasGroup.blocksRaycasts = false;
 
         if (_rootCanvas != null)
             this.transform.SetParent(_rootCanvas.transform, true);
@@ -57,6 +60,8 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
 
     public void OnEndDrag(PointerEventData eventData)
     {
+        _canvasGroup.blocksRaycasts = true;
+
         // 드랍 실패 시
         if (!_droppedSuccessfully)
         {
@@ -76,9 +81,10 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
         // 새 부모로 적용
         transform.SetParent(newParent, false);
         _rect.anchoredPosition = Vector2.zero;
+        _rect.localScale = Vector3.one;
 
         // 기존 부모 변경
         _currentParent = newParent;
-        _charList = newParent.GetComponent<CharacterList>();
+        //_charList = newParent.GetComponent<CharacterList>();
     }
 }
