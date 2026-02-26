@@ -17,7 +17,7 @@ public class StateWarningPopUp_Individual : MonoBehaviour
     private string GetStateString(StudentState state)
     {
         if (state == StudentState.Injured) return "부상";
-        else if (state == StudentState.OverWorked) return "피로";
+        else if (state == StudentState.OverWorked) return "과로";
         else return ("선수 상태가 정상입니다. 팝업 창 표시 로직을 점검해주세요");
     }
 }
