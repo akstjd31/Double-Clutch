@@ -1,12 +1,16 @@
 using UnityEngine;
 using TMPro;
 using System.Collections;
+using UnityEngine.UI;
 
 public class LobbyUI : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI _calendarText;
     [SerializeField] private TextMeshProUGUI _moneyText;
     [SerializeField] private TextMeshProUGUI _honorText;
+    [SerializeField] private Button _trainingButton;
+    [SerializeField] private Button _matchButton;
+
 
     private void OnEnable()
     {
@@ -30,9 +34,11 @@ public class LobbyUI : MonoBehaviour
         UpdateMoneyText();
         UpdateHonorText();
 
-        if (CalendarManager.Instance == null) return;
+        var calMgr = CalendarManager.Instance;
+        if (calMgr == null) return;
 
-        UpdateCalendarText(CalendarManager.Instance.GetCalendar());
+        UpdateCalendarText(calMgr.GetCalendar());
+        SetButtonActivate(calMgr.GetPhaseType(gameMgr.SaveData.weekId));
     }
 
     private void OnDisable()
@@ -68,5 +74,20 @@ public class LobbyUI : MonoBehaviour
         
         CalendarManager.Instance.IsEndPhase = true;
         CalendarManager.Instance.NextTurn();
+    }
+
+    // 육성 or 경기 시작 버튼
+    public void SetButtonActivate(phaseType type)
+    {
+        if (type.Equals(phaseType.League))
+        {
+            _matchButton.gameObject.SetActive(true);
+            _trainingButton.gameObject.SetActive(false);
+        }
+        else    //else if (type.Equals(phaseType.Training))
+        {
+            _matchButton.gameObject.SetActive(false);
+            _trainingButton.gameObject.SetActive(true);
+        }
     }
 }

@@ -22,12 +22,12 @@ public class PlayerCard : MonoBehaviour
         _playerPosition.text = _playerPosition.ToString();        
         if (student.State == StudentState.OverWorked)
         {
-            _playerState.text = "ÇÇ·Î";
+            _playerState.text = "ï¿½Ç·ï¿½";
             _isAvailable = false;
         }
         else if (student.State == StudentState.Injured)
         {
-            _playerState.text = "ºÎ»ó";
+            _playerState.text = "ï¿½Î»ï¿½";
             _isAvailable = false;
         }
         else
@@ -35,4 +35,6 @@ public class PlayerCard : MonoBehaviour
             _isAvailable = true;
         }
     }
+
+    public void SetImageColor(Color color) => this.GetComponent<Image>().color = color;
 }
