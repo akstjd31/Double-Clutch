@@ -10,20 +10,22 @@ using static UnityEngine.GraphicsBuffer;
 public class StudentUIManager : MonoBehaviour
 {
     public static StudentUIManager Instance;
+    [Header("선수 관리창 관련 UI")]
     [SerializeField] ProfileDetailsPanel _profileDetailsPanel;
     [SerializeField] PassiveExplainBox _passiveExplainBox;
     [SerializeField] Button _backBotton;
 
+    [Header("선수 육성창 관련 UI")]
     [SerializeField] TrainingPanel _trainingPanel;
     [SerializeField] IndividualTrainingCommandPopUp _individualTrainingCommandPopUp;
     [SerializeField] TeamTrainingCommandPopUp _teamTrainingCommandPopUp;
 
     [SerializeField] ConditionWarningPopUp _conditionWarningPopUp;
     [SerializeField] StateWarningPopUp_Individual _stateWarningPopUp_Individual;
-    [SerializeField] GameObject _stateWarningPopUp_Team;
+    //[SerializeField] GameObject _stateWarningPopUp_Team;    
     [SerializeField] WeeklyTrainingReportPopUp _weeklyTrainingReportPopUp;
     [SerializeField] TrainingStartConfirmPopUp _trainingStartConfirmPopUp;
-    [SerializeField] Button _startFosterButton;
+    [SerializeField] Button _startFosterButton;    
     [SerializeField] GameObject _costWarningPopUp;
     private void Awake()
     {
@@ -70,10 +72,10 @@ public class StudentUIManager : MonoBehaviour
         _stateWarningPopUp_Individual.Init(target);
     }
 
-    public void OpenStateWarningPopUp_Team()//피로, 부상 선수에게 훈련 할당시 팝업 호출용(팀 훈련 전용)
-    {
-        _stateWarningPopUp_Team.gameObject.SetActive(true);
-    }
+    //public void OpenStateWarningPopUp_Team()//피로, 부상 선수에게 훈련 할당시 팝업 호출용(팀 훈련 전용)
+    //{
+    //    _stateWarningPopUp_Team.gameObject.SetActive(true);
+    //}
 
     public void OpenConditionWarningPopUp(List<Student> targets, int cost)
     {
@@ -83,8 +85,7 @@ public class StudentUIManager : MonoBehaviour
 
     public void OpenTrainingStartConfirmPopUp(int cost)
     {
-        //_trainingStartConfirmPopUp.Init(cost);
-        _conditionWarningPopUp.Init(cost);
+        _trainingStartConfirmPopUp.Init(cost);        
     }
 
     public void OpenCostWarningPopUp()
