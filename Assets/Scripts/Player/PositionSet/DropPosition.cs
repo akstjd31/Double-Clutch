@@ -8,7 +8,7 @@ public class DropPosition : MonoBehaviour, IDropHandler, IPointerClickHandler
     [SerializeField] private bool allowOnlyOne = false;
     [SerializeField] private bool isPositionSlot = false;
     [SerializeField] private CharacterList _charList;
-
+    [SerializeField] Position _position;
     private void OnEnable()
     {
         if (isPositionSlot)
@@ -45,6 +45,7 @@ public class DropPosition : MonoBehaviour, IDropHandler, IPointerClickHandler
         {
             _charList.RemoveOnPosition(card);
         }
+        card.Player.SetMatchPosition(_position);
     }
 
     public void SetSelected(bool on)

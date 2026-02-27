@@ -1214,8 +1214,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 568505876}
   m_HandleRect: {fileID: 568505875}
   m_Direction: 2
-  m_Value: 1.0000005
-  m_Size: 0.60413504
+  m_Value: 0.9999845
+  m_Size: 0.60413456
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -4417,6 +4417,7 @@ MonoBehaviour:
   allowOnlyOne: 1
   isPositionSlot: 1
   _charList: {fileID: 1108288567}
+  _position: 4
 --- !u!114 &186579996
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11478,6 +11479,7 @@ MonoBehaviour:
   allowOnlyOne: 1
   isPositionSlot: 1
   _charList: {fileID: 1108288567}
+  _position: 2
 --- !u!114 &550827090
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11842,8 +11844,8 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1205930628}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0.39586496}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMin: {x: 0, y: 0.3958593}
+  m_AnchorMax: {x: 1, y: 0.99999386}
   m_AnchoredPosition: {x: 0.00004196167, y: 0}
   m_SizeDelta: {x: 0.000026703, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -11978,6 +11980,7 @@ MonoBehaviour:
   allowOnlyOne: 1
   isPositionSlot: 1
   _charList: {fileID: 1108288567}
+  _position: 5
 --- !u!114 &573133843
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12761,6 +12764,7 @@ MonoBehaviour:
   allowOnlyOne: 0
   isPositionSlot: 0
   _charList: {fileID: 1108288567}
+  _position: 0
 --- !u!1 &615702298
 GameObject:
   m_ObjectHideFlags: 0
@@ -13126,6 +13130,7 @@ MonoBehaviour:
   allowOnlyOne: 1
   isPositionSlot: 1
   _charList: {fileID: 1108288567}
+  _position: 1
 --- !u!114 &634960489
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -19472,6 +19477,7 @@ GameObject:
   - component: {fileID: 906543073}
   - component: {fileID: 906543072}
   - component: {fileID: 906543071}
+  - component: {fileID: 906543074}
   m_Layer: 5
   m_Name: CharacterBox
   m_TagString: Untagged
@@ -19565,6 +19571,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 906543069}
   m_CullTransparentMesh: 1
+--- !u!114 &906543074
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 906543069}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3af23bdfd6014094ea36add7734b9d11, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CharacterPowerBox
+  _characterName: {fileID: 493798795}
+  _characterPosition: {fileID: 1016650209}
+  _characterAttack: {fileID: 1523517904}
+  _characterDefense: {fileID: 810688691}
 --- !u!1 &908848142
 GameObject:
   m_ObjectHideFlags: 0
@@ -24252,6 +24274,7 @@ MonoBehaviour:
   allowOnlyOne: 1
   isPositionSlot: 1
   _charList: {fileID: 1108288567}
+  _position: 3
 --- !u!114 &1039411600
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -30286,8 +30309,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1569291558}
   m_HandleRect: {fileID: 1569291557}
   m_Direction: 2
-  m_Value: 1.0000001
-  m_Size: 0.60413504
+  m_Value: 0.9999998
+  m_Size: 0.604135
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -36021,6 +36044,7 @@ GameObject:
   - component: {fileID: 1557960417}
   - component: {fileID: 1557960416}
   - component: {fileID: 1557960415}
+  - component: {fileID: 1557960418}
   m_Layer: 5
   m_Name: CharacterBox (1)
   m_TagString: Untagged
@@ -36114,6 +36138,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1557960413}
   m_CullTransparentMesh: 1
+--- !u!114 &1557960418
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1557960413}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3af23bdfd6014094ea36add7734b9d11, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CharacterPowerBox
+  _characterName: {fileID: 707058061}
+  _characterPosition: {fileID: 550428550}
+  _characterAttack: {fileID: 1536719804}
+  _characterDefense: {fileID: 1669149626}
 --- !u!1 &1559299524
 GameObject:
   m_ObjectHideFlags: 0
@@ -37225,6 +37265,7 @@ GameObject:
   - component: {fileID: 1604712806}
   - component: {fileID: 1604712805}
   - component: {fileID: 1604712804}
+  - component: {fileID: 1604712807}
   m_Layer: 5
   m_Name: CharacterBox (4)
   m_TagString: Untagged
@@ -37318,6 +37359,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1604712802}
   m_CullTransparentMesh: 1
+--- !u!114 &1604712807
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1604712802}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3af23bdfd6014094ea36add7734b9d11, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CharacterPowerBox
+  _characterName: {fileID: 1881426526}
+  _characterPosition: {fileID: 1988744117}
+  _characterAttack: {fileID: 1279156721}
+  _characterDefense: {fileID: 1250530377}
 --- !u!1 &1606792686
 GameObject:
   m_ObjectHideFlags: 0
@@ -41289,6 +41346,7 @@ GameObject:
   - component: {fileID: 1842233417}
   - component: {fileID: 1842233416}
   - component: {fileID: 1842233415}
+  - component: {fileID: 1842233418}
   m_Layer: 5
   m_Name: CharacterBox (3)
   m_TagString: Untagged
@@ -41382,6 +41440,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1842233413}
   m_CullTransparentMesh: 1
+--- !u!114 &1842233418
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1842233413}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3af23bdfd6014094ea36add7734b9d11, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CharacterPowerBox
+  _characterName: {fileID: 1374463835}
+  _characterPosition: {fileID: 1163765574}
+  _characterAttack: {fileID: 149908918}
+  _characterDefense: {fileID: 1587103649}
 --- !u!1 &1851174411
 GameObject:
   m_ObjectHideFlags: 0
@@ -43311,6 +43385,7 @@ GameObject:
   - component: {fileID: 1932521105}
   - component: {fileID: 1932521104}
   - component: {fileID: 1932521103}
+  - component: {fileID: 1932521106}
   m_Layer: 5
   m_Name: CharacterBox (2)
   m_TagString: Untagged
@@ -43404,6 +43479,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1932521101}
   m_CullTransparentMesh: 1
+--- !u!114 &1932521106
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1932521101}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3af23bdfd6014094ea36add7734b9d11, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CharacterPowerBox
+  _characterName: {fileID: 35594879}
+  _characterPosition: {fileID: 58739187}
+  _characterAttack: {fileID: 1438963585}
+  _characterDefense: {fileID: 1010283820}
 --- !u!1 &1933874994
 GameObject:
   m_ObjectHideFlags: 0
@@ -46920,6 +47011,8 @@ GameObject:
   - component: {fileID: 2135459786}
   - component: {fileID: 2135459788}
   - component: {fileID: 2135459787}
+  - component: {fileID: 2135459790}
+  - component: {fileID: 2135459789}
   m_Layer: 5
   m_Name: FightingPower
   m_TagString: Untagged
@@ -46990,6 +47083,41 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2135459785}
   m_CullTransparentMesh: 1
+--- !u!114 &2135459789
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2135459785}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bad24b799c321cd44a4c5e0d95f825f4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MercenaryMaker
+  _mercenaryDB: {fileID: 11400000, guid: 34a73672d87b99a44b7e79e3cea5fcae, type: 2}
+--- !u!114 &2135459790
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2135459785}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1c4272b2b498c7543bb93f391aadc1c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FightingPower
+  _mercenaryMaker: {fileID: 2135459789}
+  _schoolName: {fileID: 1469105399}
+  _fightingPowerText: {fileID: 1037271817}
+  _fightingList:
+  - {fileID: 906543074}
+  - {fileID: 1557960418}
+  - {fileID: 1932521106}
+  - {fileID: 1842233418}
+  - {fileID: 1604712807}
+  _characterList: {fileID: 1108288567}
 --- !u!1 &2139294215
 GameObject:
   m_ObjectHideFlags: 0
