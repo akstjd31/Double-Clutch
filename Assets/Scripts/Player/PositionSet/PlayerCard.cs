@@ -1,9 +1,11 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
-public class PlayerCard : MonoBehaviour
+public class PlayerCard : MonoBehaviour, IPointerClickHandler
 {
+    [SerializeField] private Outline _outline;
     [SerializeField] Image _playerImage;
     [SerializeField] TextMeshProUGUI _playerName;
     [SerializeField] TextMeshProUGUI _playerPosition;
@@ -34,6 +36,21 @@ public class PlayerCard : MonoBehaviour
         {
             _isAvailable = true;
         }
+
+        if (_outline != null)
+            _outline.enabled = false;
+    }
+
+    public void SetSelected(bool on)
+    {
+        if (_outline != null) _outline.enabled = on;
+    }
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        var list = GetComponentInParent<CharacterList>();
+        if (list != null)
+            list.OnClickCard(this);
     }
 
     public void SetImageColor(Color color) => this.GetComponent<Image>().color = color;
