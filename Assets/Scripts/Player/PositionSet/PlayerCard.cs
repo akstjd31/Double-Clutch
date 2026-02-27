@@ -1,9 +1,11 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
-public class PlayerCard : MonoBehaviour
+public class PlayerCard : MonoBehaviour, IPointerClickHandler
 {
+    [SerializeField] private Outline _outline;
     [SerializeField] Image _playerImage;
     [SerializeField] TextMeshProUGUI _playerName;
     [SerializeField] TextMeshProUGUI _playerPosition;
@@ -19,21 +21,42 @@ public class PlayerCard : MonoBehaviour
     {
         _player = student;
         _playerName.text = student.Name;
-        _playerPosition.text = _playerPosition.ToString();        
+        _playerPosition.text = student.Position.ToString();   
         if (student.State == StudentState.OverWorked)
         {
-            _playerState.text = "�Ƿ�";
+            _playerState.text = "OverWorked";
             _isAvailable = false;
         }
         else if (student.State == StudentState.Injured)
         {
-            _playerState.text = "�λ�";
+            _playerState.text = "Injured";
             _isAvailable = false;
         }
         else
         {
             _isAvailable = true;
         }
+
+        // 참여하지 못하는 선수는 레이캐스트 꺼버림
+        if (!_isAvailable)
+        {
+            this.GetComponent<Image>().raycastTarget = false;
+        }
+
+        if (_outline != null)
+            _outline.enabled = false;
+    }
+
+    public void SetSelected(bool on)
+    {
+        if (_outline != null) _outline.enabled = on;
+    }
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        var list = GetComponentInParent<CharacterList>();
+        if (list != null)
+            list.OnClickCard(this);
     }
 
     public void SetImageColor(Color color) => this.GetComponent<Image>().color = color;

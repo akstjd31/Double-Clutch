@@ -1,50 +1,50 @@
 using System.Collections.Generic;
 using UnityEngine;
 /// <summary>
-/// ¿ªÇÒ: Å×ÀÌºí·ÎºÎÅÍ µ¥ÀÌÅÍ ¹­À½À» ¹Þ¾Æ¿Â µÚ,
-/// µ¥ÀÌÅÍ ¹­À½¿¡¼­ ·£´ýÇÑ °ªÀ» »Ì¾Æ³»¾î ÇÐ»ýÀ» »ý¼º.
+/// ï¿½ï¿½ï¿½ï¿½: ï¿½ï¿½ï¿½Ìºï¿½ï¿½Îºï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¾Æ¿ï¿½ ï¿½ï¿½,
+/// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ì¾Æ³ï¿½ï¿½ï¿½ ï¿½Ð»ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
 /// 
-/// ÇÒ´çÇØ¾ß ÇÒ ÇÐ»ý ÇÊµå
-/// ÀÌ¸§, Á¾Á·, ¼º°Ý, ÆÐ½Ãºê, Æ¯¼º1, Æ¯¼º2, ÇÐ³â, ½ºÅÈ
+/// ï¿½Ò´ï¿½ï¿½Ø¾ï¿½ ï¿½ï¿½ ï¿½Ð»ï¿½ ï¿½Êµï¿½
+/// ï¿½Ì¸ï¿½, ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½, ï¿½Ð½Ãºï¿½, Æ¯ï¿½ï¿½1, Æ¯ï¿½ï¿½2, ï¿½Ð³ï¿½, ï¿½ï¿½ï¿½ï¿½
 /// </summary>
 public class StudentFactory : MonoBehaviour
 {
-    [Header("<size=18>µ¥ÀÌÅÍ ¸®´õ SO ¸ðÀ½</size>")]
-    [Header("Player_SpeciesDataReader(Á¾Á· µ¥ÀÌÅÍ)")]
-    [SerializeField] Player_SpeciesDataReader _speciesDataReader; //Á¾Á· µ¥ÀÌÅÍ
-    [Header("Player_PersonalityDataReader(¼º°Ý µ¥ÀÌÅÍ)")]
-    [SerializeField] Player_PersonalityDataReader _personalityDataReader; //¼º°Ý µ¥ÀÌÅÍ
-    [Header("Player_TraitDataReader(Æ¯¼º µ¥ÀÌÅÍ)")]
-    [SerializeField] Player_TraitDataReader _traitDataReader; //Æ¯¼º µ¥ÀÌÅÍ
-    [Header("Player_PassiveDataReader(ÆÐ½Ãºê µ¥ÀÌÅÍ)")]
-    [SerializeField] Player_PassiveDataReader _passiveDataReader; //ÆÐ½Ãºê µ¥ÀÌÅÍ
-    [Header("Player_NameDataReader(ÀÌ¸§ µ¥ÀÌÅÍ)")]
-    [SerializeField] Player_NameDataReader _nameDataReader; //ÀÌ¸§ µ¥ÀÌÅÍ
-    [Header("Player_VisualDataReader(¿ÜÇü µ¥ÀÌÅÍ)")]
-    [SerializeField] Player_VisualDataReader _visualDataReader; //¿ÜÇü µ¥ÀÌÅÍ
-    [Header("Player_StartingStateDataReader(´É·ÂÄ¡ ½ÃÀÛ ¹üÀ§ µ¥ÀÌÅÍ)")]
-    [SerializeField] Player_StartingStateDataReader _startingStateDataReader; //´É·ÂÄ¡ ½ÃÀÛ ¹üÀ§ µ¥ÀÌÅÍ
-    [Header("Player_MaxPotentialDataReader(´É·ÂÄ¡ ¼ºÀå ÃÖ´ë°ª µ¥ÀÌÅÍ)")]
-    [SerializeField] Player_MaxPotentialDataReader _maxPotentialDataReader; //´É·ÂÄ¡ ¼ºÀå ÃÖ´ë°ª µ¥ÀÌÅÍ
-    [Header("Player_GrowthRateDataReader(´É·ÂÄ¡ ¼ºÀå·ü µ¥ÀÌÅÍ)")]
-    [SerializeField] Player_GrowthRateDataReader _growthRateDataReader; //´É·ÂÄ¡ ¼ºÀå·ü µ¥ÀÌÅÍ
+    [Header("<size=18>ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ SO ï¿½ï¿½ï¿½ï¿½</size>")]
+    [Header("Player_SpeciesDataReader(ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)")]
+    [SerializeField] Player_SpeciesDataReader _speciesDataReader; //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    [Header("Player_PersonalityDataReader(ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)")]
+    [SerializeField] Player_PersonalityDataReader _personalityDataReader; //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    [Header("Player_TraitDataReader(Æ¯ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)")]
+    [SerializeField] Player_TraitDataReader _traitDataReader; //Æ¯ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    [Header("Player_PassiveDataReader(ï¿½Ð½Ãºï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)")]
+    [SerializeField] Player_PassiveDataReader _passiveDataReader; //ï¿½Ð½Ãºï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    [Header("Player_NameDataReader(ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)")]
+    [SerializeField] Player_NameDataReader _nameDataReader; //ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    [Header("Player_VisualDataReader(ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)")]
+    [SerializeField] Player_VisualDataReader _visualDataReader; //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    [Header("Player_StartingStateDataReader(ï¿½É·ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)")]
+    [SerializeField] Player_StartingStateDataReader _startingStateDataReader; //ï¿½É·ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    [Header("Player_MaxPotentialDataReader(ï¿½É·ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ë°ª ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)")]
+    [SerializeField] Player_MaxPotentialDataReader _maxPotentialDataReader; //ï¿½É·ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ë°ª ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    [Header("Player_GrowthRateDataReader(ï¿½É·ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)")]
+    [SerializeField] Player_GrowthRateDataReader _growthRateDataReader; //ï¿½É·ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
     const float FIRST_GRADE_RATE = 0.6f;
     const float SECOND_GRADE_RATE = 0.2f;
     const float THIRD_GRADE_RATE = 0.2f;
 
-    List<Player_StartingStateData> _startingStates = new List<Player_StartingStateData>(); //½ºÅÈ ÃÖ¼Ò°ª
-    Player_MaxPotentialData _maxPotential; //½ºÅÈ ÃÖ´ñ°ª
+    List<Player_StartingStateData> _startingStates = new List<Player_StartingStateData>(); //ï¿½ï¿½ï¿½ï¿½ ï¿½Ö¼Ò°ï¿½
+    Player_MaxPotentialData _maxPotential; //ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½
 
-    //ÀÌ¸§ µ¥ÀÌÅÍ Å¸ÀÔº°(namePart) ºÐ·ù ¹­À½
-    List<string> _firstNames = new List<string>(); //¼º
-    List<string> _middleNames = new List<string>(); //ÀÌ¸§ Áß°£ÀÚ
-    List<string> _lastNames = new List<string>(); //ÀÌ¸§ ³¡ÀÚ
+    //ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Å¸ï¿½Ôºï¿½(namePart) ï¿½Ð·ï¿½ ï¿½ï¿½ï¿½ï¿½
+    List<string> _firstNames = new List<string>(); //ï¿½ï¿½
+    List<string> _middleNames = new List<string>(); //ï¿½Ì¸ï¿½ ï¿½ß°ï¿½ï¿½ï¿½
+    List<string> _lastNames = new List<string>(); //ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½ï¿½
     
-    //ºñÁÖ¾ó µ¥ÀÌÅÍ Á¾Á·º°(string specie) ºÐ·ù ¹­À½
+    //ï¿½ï¿½ï¿½Ö¾ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(string specie) ï¿½Ð·ï¿½ ï¿½ï¿½ï¿½ï¿½
     Dictionary<string, List<Player_VisualData>> _visualDataDict = new Dictionary<string, List<Player_VisualData>>();
 
-    private List<PositionOfferData> _positionOffers = new List<PositionOfferData>() //Æ÷Áö¼Ç º° °¡ÁßÄ¡ Á¤º¸
+    private List<PositionOfferData> _positionOffers = new List<PositionOfferData>() //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½
     {
         new PositionOfferData(Position.C),
         new PositionOfferData(Position.PF),
@@ -53,41 +53,36 @@ public class StudentFactory : MonoBehaviour
         new PositionOfferData(Position.PG)
     };
 
-    private void Start()
-    {
-        InitDatas();
-    }
-
     public Student MakeRandomStudent()
     {
         Student newStudent = new Student();
         
-        newStudent.SetSpecie(GetRandomSpecie()); //Á¾Á· »ý¼º
+        newStudent.SetSpecie(GetRandomSpecie()); //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         newStudent.SetVisual(GetRandomVisual(newStudent.SpecieId));
-        newStudent.SetGrade(GetrRandomGrade()); //ÇÐ³â »ý¼º
-        newStudent.SetPersonality(GetRandomPersonality()); //¼º°Ý »ý¼º
-        newStudent.SetTrait(GetRandomTrait()); //Æ¯¼º »ý¼º
-        newStudent.SetName(GetRandomName()); //ÀÌ¸§ »ý¼º
-        SetRandomPassive(newStudent); //ÆÐ½Ãºê »ý¼º        
-        newStudent.SetStat(GetRandomStats(newStudent.Grade)); //½ºÅÈ »ý¼º
+        newStudent.SetGrade(GetrRandomGrade()); //ï¿½Ð³ï¿½ ï¿½ï¿½ï¿½ï¿½
+        newStudent.SetPersonality(GetRandomPersonality()); //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+        newStudent.SetTrait(GetRandomTrait()); //Æ¯ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+        newStudent.SetName(GetRandomName()); //ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½ï¿½
+        SetRandomPassive(newStudent); //ï¿½Ð½Ãºï¿½ ï¿½ï¿½ï¿½ï¿½        
+        newStudent.SetStat(GetRandomStats(newStudent.Grade)); //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
         InitStudent(newStudent);        
 
         return newStudent;
     }
 
-    public void InitStudent(Student target) //¼±¼ö »ý¼º½Ã & ÀúÀå µ¥ÀÌÅÍ ºÒ·¯¿À±â ½Ã È£Ãâ
+    public void InitStudent(Student target) //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ & ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ò·ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ È£ï¿½ï¿½
     {
         target.Init(_speciesDataReader, _personalityDataReader, _passiveDataReader, _traitDataReader);
         Position bestPosition = DecideBestPosition(target);
         target.SetPosition(bestPosition);
     }
 
-    private void InitDatas() //NameData¸¸ Å¸ÀÔº°·Î ºÐ·ù
+    public void InitDatas() //NameDataï¿½ï¿½ Å¸ï¿½Ôºï¿½ï¿½ï¿½ ï¿½Ð·ï¿½
     {
         for (int i = 0; i < _nameDataReader.DataList.Count; i++)
         {
-            //ÀÌ¸§ µ¥ÀÌÅÍ desc ºÎºÐ ÃßÈÄ namekey·Î º¯°æ ¹× ½ºÆ®¸µ µ¥ÀÌÅÍ Å×ÀÌºí ÂüÁ¶ ÇÊ¿ä.
+            //ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ desc ï¿½Îºï¿½ ï¿½ï¿½ï¿½ï¿½ namekeyï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ìºï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ê¿ï¿½.
             Player_NameData nameData = _nameDataReader.DataList[i];
             switch (nameData.namePart)
             {
@@ -105,19 +100,19 @@ public class StudentFactory : MonoBehaviour
 
         foreach (var visualData in _visualDataReader.DataList)
         {
-            string specieId = visualData.speciesId; // µ¥ÀÌÅÍ¿¡ Æ÷ÇÔµÈ Á¾Á· ID
+            string specieId = visualData.speciesId; // ï¿½ï¿½ï¿½ï¿½ï¿½Í¿ï¿½ ï¿½ï¿½ï¿½Ôµï¿½ ï¿½ï¿½ï¿½ï¿½ ID
 
-            // µñ¼Å³Ê¸®¿¡ ÇØ´ç Á¾Á· Å°°¡ ¾øÀ¸¸é ¸®½ºÆ®¸¦ »õ·Î ¸¸µé¾îÁÜ
+            // ï¿½ï¿½Å³Ê¸ï¿½ï¿½ï¿½ ï¿½Ø´ï¿½ ï¿½ï¿½ï¿½ï¿½ Å°ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             if (!_visualDataDict.ContainsKey(specieId))
             {
                 _visualDataDict[specieId] = new List<Player_VisualData>();
             }
 
-            // ÇØ´ç Á¾Á· ¸®½ºÆ®¿¡ Ãß°¡
+            // ï¿½Ø´ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ß°ï¿½
             _visualDataDict[specieId].Add(visualData);
         }
 
-        _maxPotential = _maxPotentialDataReader.DataList[0]; //½ºÅÈ ÃÖ´ë ¼ºÀå·ü µ¥ÀÌÅÍ ÂüÁ¶
+        _maxPotential = _maxPotentialDataReader.DataList[0]; //ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
 
     }
@@ -129,7 +124,7 @@ public class StudentFactory : MonoBehaviour
 
         foreach (var offer in _positionOffers)
         {
-            // °ø½Ä: (¸ÞÀÎ1 * 3) + (¸ÞÀÎ2 * 3) + (¼­ºê * 1)
+            // ï¿½ï¿½ï¿½ï¿½: (ï¿½ï¿½ï¿½ï¿½1 * 3) + (ï¿½ï¿½ï¿½ï¿½2 * 3) + (ï¿½ï¿½ï¿½ï¿½ * 1)
             int m1 = student.GetCurrentStat(offer.MainPotential1);
             int m2 = student.GetCurrentStat(offer.MainPotential2);
             int sub = student.GetCurrentStat(offer.SubPotential);
@@ -147,7 +142,7 @@ public class StudentFactory : MonoBehaviour
     }
 
 
-    private string GetRandomName() //·£´ýÇÑ ÀÌ¸§ Á¶ÇÕÇØ¼­ ¹ÝÈ¯
+    private string GetRandomName() //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ø¼ï¿½ ï¿½ï¿½È¯
     {
         string first = _firstNames[Random.Range(0, _firstNames.Count)];
         string middle = _middleNames[Random.Range(0, _middleNames.Count)];
@@ -156,12 +151,12 @@ public class StudentFactory : MonoBehaviour
         return first + middle + last;
     }
 
-    private Player_SpeciesData GetRandomSpecie() //·£´ýÇÑ Á¾Á· ¹ÝÈ¯
+    private Player_SpeciesData GetRandomSpecie() //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯
     {        
         return _speciesDataReader.DataList[Random.Range(0, _speciesDataReader.DataList.Count)];
     }
 
-    private Player_VisualData GetRandomVisual(string specieId) //Á¾Á·¿¡ µû¶ó ·£´ýÇÑ ºñÁÖ¾ó ¹ÝÈ¯
+    private Player_VisualData GetRandomVisual(string specieId) //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ö¾ï¿½ ï¿½ï¿½È¯
     {
         if (_visualDataDict.TryGetValue(specieId, out var value))
         {
@@ -173,17 +168,17 @@ public class StudentFactory : MonoBehaviour
         }
     }
 
-    private Player_PersonalityData GetRandomPersonality() //·£´ýÇÑ ¼º°Ý ¹ÝÈ¯
+    private Player_PersonalityData GetRandomPersonality() //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯
     {
         return _personalityDataReader.DataList[Random.Range(0, _personalityDataReader.DataList.Count)];
     }    
-    private Player_TraitData GetRandomTrait() //·£´ýÇÑ Æ¯¼º ¹ÝÈ¯
+    private Player_TraitData GetRandomTrait() //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Æ¯ï¿½ï¿½ ï¿½ï¿½È¯
     {
         return _traitDataReader.DataList[Random.Range(0, _traitDataReader.DataList.Count)];
     }
-    private int GetrRandomGrade() //·£´ý ÇÐ³âÀ» °¡ÁßÄ¡¿¡ µû¶ó ¹ÝÈ¯
+    private int GetrRandomGrade() //ï¿½ï¿½ï¿½ï¿½ ï¿½Ð³ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯
     {
-        float random = Random.value; //0~1 »çÀÌ ·£´ý °ª »ý¼º
+        float random = Random.value; //0~1 ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
         if (random < FIRST_GRADE_RATE)
         {
@@ -199,7 +194,7 @@ public class StudentFactory : MonoBehaviour
         }
     }
 
-    private int GetRandomGrowthRate(int grade) //ÇÐ³â¿¡ µû¸¥ ·£´ý ¼ºÀå·ü ¹ÝÈ¯
+    private int GetRandomGrowthRate(int grade) //ï¿½Ð³â¿¡ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯
     {
         int min = _growthRateDataReader.DataList[grade - 1].minGrowthRate;
         int max = _growthRateDataReader.DataList[grade - 1].maxGrowthRate;
@@ -208,9 +203,9 @@ public class StudentFactory : MonoBehaviour
     }
 
 
-    private void SetRandomPassive(Student student) //¼±¼ö¿¡°Ô ·£´ý ÆÐ½Ãºê¸¦ Áßº¹¾øÀÌ ºÎ¿©(´Ù¸¥ ·£´ý ÇÔ¼ö¿Í ´Þ¸® ºÎ¿©±îÁö ÇÔ¿¡ ÁÖÀÇ)
+    private void SetRandomPassive(Student student) //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ð½Ãºê¸¦ ï¿½ßºï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Î¿ï¿½(ï¿½Ù¸ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½ï¿½ï¿½ ï¿½Þ¸ï¿½ ï¿½Î¿ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ô¿ï¿½ ï¿½ï¿½ï¿½ï¿½)
     {
-        List<Player_PassiveData> availablePool = student.GetAvailablePassives(_passiveDataReader.DataList); //¼±¼ö¿¡°Ô ºÎ¿© °¡´ÉÇÑ ³²Àº ÆÐ½Ãºê ¸ñ·Ï ¹Þ¾Æ¿À±â
+        List<Player_PassiveData> availablePool = student.GetAvailablePassives(_passiveDataReader.DataList); //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Î¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ð½Ãºï¿½ ï¿½ï¿½ï¿½ ï¿½Þ¾Æ¿ï¿½ï¿½ï¿½
         int currentPassiveCount = student.PassiveId.Count;
         int targetCount = student.Grade;
         int needCount = targetCount - currentPassiveCount;
@@ -226,14 +221,14 @@ public class StudentFactory : MonoBehaviour
             Player_PassiveData data = availablePool[randomIndex];
 
             student.SetPassive(data);
-            availablePool.RemoveAt(randomIndex); // ÀÌ¹ø ·çÇÁ ³» Áßº¹ ¹æÁö
+            availablePool.RemoveAt(randomIndex); // ï¿½Ì¹ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ßºï¿½ ï¿½ï¿½ï¿½ï¿½
         }
     }
 
     private List<Stat> GetRandomStats(int grade)
     {
         List<Stat> newStat = new List<Stat>();
-        Player_StartingStateData stateSetting = _startingStateDataReader.DataList[grade - 1]; //ÇØ´ç ÇÐ³âÀÇ ½ºÅÈ ¹üÀ§ °¡Á®¿À±â
+        Player_StartingStateData stateSetting = _startingStateDataReader.DataList[grade - 1]; //ï¿½Ø´ï¿½ ï¿½Ð³ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         
         foreach (potential type in System.Enum.GetValues(typeof(potential)))
         {            
@@ -242,18 +237,18 @@ public class StudentFactory : MonoBehaviour
                 continue;
             }
 
-            int currentValue = Random.Range(stateSetting.startMin, stateSetting.startMax + 1); //ÇöÀç ½ºÅÈ ÇÒ´ç
-            int limitValue = Random.Range(_maxPotential.minPotentialValue, _maxPotential.maxPotentialValue + 1); //½ºÅÈ ÃÖ´ëÄ¡ ÇÒ´ç
+            int currentValue = Random.Range(stateSetting.startMin, stateSetting.startMax + 1); //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ò´ï¿½
+            int limitValue = Random.Range(_maxPotential.minPotentialValue, _maxPotential.maxPotentialValue + 1); //ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½Ä¡ ï¿½Ò´ï¿½
             int growthRate = GetRandomGrowthRate(grade);
             int safetyNet = 0;
-            while (limitValue <= currentValue && safetyNet < 100) //¸¸¾à ½ÃÀÛ ½ºÅÈÀÌ ÃÖ´ë ¼ºÀåÄ¡ º¸´Ù ³ô°Ô »ÌÈ÷¸é ÃÖ´ë 100¹ø±îÁö ÃÖ´ë ½ºÅÈÀ» ´Ù½Ã ¸®·Ñ
+            while (limitValue <= currentValue && safetyNet < 100) //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ 100ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ù½ï¿½ ï¿½ï¿½ï¿½ï¿½
             {
                 limitValue = Random.Range(_maxPotential.minPotentialValue, _maxPotential.maxPotentialValue + 1);
                 safetyNet++;
             }
-            if (limitValue <= currentValue) //100¹ø µ¹·È´Âµ¥µµ º¸Á¤ ¾ÈµÇ¾úÀ¸¸é °­Á¦ º¸Á¤
+            if (limitValue <= currentValue) //100ï¿½ï¿½ ï¿½ï¿½ï¿½È´Âµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ÈµÇ¾ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
             {
-                limitValue = currentValue + Random.Range(5, 15); //°­Á¦ º¸Á¤Ä¡. Å×ÀÌºí¿¡¼­ Å« º¯µ¿ ÀÖÀ» ½Ã È®ÀÎÇØ¼­ ¹Ý¿µ ÇÊ¿ä!
+                limitValue = currentValue + Random.Range(5, 15); //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ä¡. ï¿½ï¿½ï¿½Ìºï¿½ï¿½ï¿½ï¿½ï¿½ Å« ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ È®ï¿½ï¿½ï¿½Ø¼ï¿½ ï¿½Ý¿ï¿½ ï¿½Ê¿ï¿½!
             }
             Stat stat = new Stat(type, currentValue, limitValue, growthRate);
             newStat.Add(stat);

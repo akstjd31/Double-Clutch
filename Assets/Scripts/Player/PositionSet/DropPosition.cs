@@ -1,11 +1,24 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
-public class DropPosition : MonoBehaviour, IDropHandler
+public class DropPosition : MonoBehaviour, IDropHandler, IPointerClickHandler
 {
+    [SerializeField] private Outline _outline;
     [SerializeField] private bool allowOnlyOne = false;
     [SerializeField] private bool isPositionSlot = false;
     [SerializeField] private CharacterList _charList;
+    [SerializeField] Position _position;
+    private void OnEnable()
+    {
+        if (isPositionSlot)
+        {
+            if (_outline == null)
+                _outline = this.GetComponent<Outline>();
+
+            _outline.enabled = false;
+        }
+    }
 
     public void OnDrop(PointerEventData eventData)
     {
@@ -32,5 +45,18 @@ public class DropPosition : MonoBehaviour, IDropHandler
         {
             _charList.RemoveOnPosition(card);
         }
+        card.Player.SetMatchPosition(_position);
+    }
+
+    public void SetSelected(bool on)
+    {
+        if (_outline != null)
+            _outline.enabled = on;
+    }
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        if (_charList != null)
+            _charList.OnClickPosition(this);
     }
 }

@@ -2,39 +2,41 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 /// <summary>
-/// ¿ªÇÒ: ¼±¼ö ¿µÀÔ ¹× °ü¸®
+/// ????: ???? ???? ?? ????
 /// </summary>
 
 
-public class StudentManager : MonoBehaviour 
+public class StudentManager : Singleton<StudentManager> 
 {
     private const string SAVE_FILE = "StudentSave.json";
 
-    int _idCount = 0; //¼±¼ö ¿µÀÔ ½Ã ºÎ¿©ÇÒ °íÀ¯ id Ä«¿îÅÍ(ÀúÀå/·Îµå ÇÊ¿ä)
-    int _recruitLimit = 5; //¼±¼ö ¿µÀÔ ÃÖ´ëÄ¡
+    int _idCount = 0; //???? ???? ?? ?ï¿½ï¿½??? ???? id ?????(????/?ï¿½ï¿½? ???)
+    int _recruitLimit = 5; //???? ???? ????
     public bool CanRecruit => _recruitLimit > _myStudents.Count;
-    public static StudentManager Instance { get; private set; }
-    [SerializeField] StudentFactory _studentFactory; //¼±¼ö »ı¼º¿ë ÆÑÅä¸®
-    [SerializeField] FosterManager _fosterManager; //¼±¼ö À°¼º¿ë ¸Å´ÏÀú
-    [SerializeField] private List<Student> _myStudents = new List<Student>(); //¼±¼ö ¸ñ·Ï
+    // public static StudentManager Instance { get; private set; }
+    [SerializeField] StudentFactory _studentFactory; //???? ?????? ????
+    [SerializeField] private List<Student> _myStudents = new List<Student>(); //???? ???
     public List<Student> MyStudents => _myStudents;
-    private void Awake()
+    protected override void Awake()
     {
-        Instance = this;
+        base.Awake();
+        // Instance = this;
     }
 
     private void Start()
     {
-        LoadGame();
+        if (_studentFactory != null) 
+            _studentFactory.InitDatas();
 
         if (_myStudents.Count == 0)
         {
-            MakeTestStudents(5);
+            MakeTestStudents(3);
         }
         
+        LoadGame();
     }
     
-    public List<Student> MakeRandomTeam(int n) // n¸íÀ¸·Î ±¸¼ºµÈ ¼±¼ö ¸®½ºÆ®¸¦ ¹İÈ¯ÇÏ´Â ÇÔ¼ö
+    public List<Student> MakeRandomTeam(int n) // n?????? ?????? ???? ??????? ?????? ???
     {
         List<Student> newTeam = new List<Student>();
         for (int i = 0; i < n; i++)
@@ -44,7 +46,7 @@ public class StudentManager : MonoBehaviour
         return newTeam;        
     }
 
-    public void MakeTestStudents(int n) //¼±¼ö¸¦ ·£´ıÇÏ°Ô n¸í Ã¤¿ö³Ö´Â ¸Å¼­µå(Å×½ºÆ®¿ë)
+    public void MakeTestStudents(int n) //?????? ??????? n?? ?????? ?????(??????)
     {
         for (int i = 0; i < n; i++)
         {
@@ -56,20 +58,20 @@ public class StudentManager : MonoBehaviour
     {
         if (!CanRecruit)
         {
-            Debug.Log("¿µÀÔ ÃÖ´ëÄ¡·Î ÀÎÇÑ ¿µÀÔ ºÒ°¡!");
+            Debug.Log("ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½Ä¡ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ò°ï¿½!");
             return;
         }
         _myStudents.Add(newStudent);
 
         newStudent.SetStudentId(_idCount++);
 
-        //¿©±â Ui °»½Å ·ÎÁ÷ ³Ö±â
+        //???? Ui ???? ???? ???
     }
 
-    // ÀüÃ¼ ÇĞ»ı ¸ñ·Ï °¡Á®¿À±â
+    // ??? ?ï¿½ï¿½? ??? ????????
     public List<Student> GetAllStudents() => _myStudents;
 
-    // id·Î ÇĞ»ı Á¶È¸
+    // id?? ?ï¿½ï¿½? ???
     public Student FindStudentById(int id)
     {
         return _myStudents.Find(s => s.StudentId == id);
@@ -77,10 +79,10 @@ public class StudentManager : MonoBehaviour
 
     public void SaveGame()
     {
-        // 1. ÀúÀåÇÒ µ¥ÀÌÅÍ¸¦ ÆÑ¿¡ ´ã½À´Ï´Ù.
+        // 1. ?????? ??????? ??? ??????.
         StudentSaveData saveData = new StudentSaveData(_idCount, _myStudents);
 
-        // 2. ¸Å´ÏÀú¸¦ ÅëÇØ ÀúÀåÇÕ´Ï´Ù.
+        // 2. ??????? ???? ????????.
         if (SaveLoadManager.Instance != null)
             SaveLoadManager.Instance.Save(SAVE_FILE, saveData);
     }
@@ -89,19 +91,19 @@ public class StudentManager : MonoBehaviour
     {
         if (SaveLoadManager.Instance.TryLoad<StudentSaveData>(SAVE_FILE, out var data))
         {
-            // 1. º¯¼ö º¹±¸
+            // 1. ???? ????
             _idCount = data.lastIdCount;
             _myStudents = data.studentList;
 
-            // 2. ¡Ú¸Å¿ì Áß¿ä¡Ú ·ÎµåµÈ ÇĞ»ıµéÀº ScriptableObject(SO) ¿¬°áÀÌ ²÷°ÜÀÖÀ½!
-            // ÆÑÅä¸®°¡ µé°í ÀÖ´Â DB¸¦ ÀÌ¿ëÇØ ´Ù½Ã Init ÇØÁà¾ß ÇÕ´Ï´Ù.
+            // 2. ???? ???? ?ï¿½ï¿½?? ?ï¿½ï¿½????? ScriptableObject(SO) ?????? ????????!
+            // ?????? ??? ??? DB?? ????? ??? Init ????? ????.
             foreach (var student in _myStudents)
             {
                 _studentFactory.InitStudent(student);
             }
 
-            Debug.Log("°ÔÀÓ ·Îµå ¿Ï·á!");
-            // UI °»½Å ·ÎÁ÷ È£Ãâ ÇÊ¿ä
+            Debug.Log("ï¿½ï¿½ï¿½ï¿½ ï¿½Îµï¿½ ï¿½Ï·ï¿½!");
+            // UI ???? ???? ??? ???
         }
     }
 
@@ -109,5 +111,4 @@ public class StudentManager : MonoBehaviour
     {
         SaveGame();
     }
-
 }
