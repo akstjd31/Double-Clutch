@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using UnityEngine;
 
 
@@ -11,6 +12,7 @@ public class CharacterList : MonoBehaviour
     [SerializeField] PlayerCard _playerCardPrefab;
     [SerializeField] Transform _cardContainer; //????? ??? ???
     [SerializeField] Transform _positionTrf;
+    [SerializeField] GameObject _matchStartPanelObj;
 
 
     GenericObjectPool<PlayerCard> _playerCardPool;
@@ -76,6 +78,16 @@ public class CharacterList : MonoBehaviour
         }
     }
 
+    public bool CheckMaxPositionBatch()
+    {
+        for (int i = 0; i < MAX_BATCH_COUNT; i++)
+        {
+            if (_positionCards[i] == null) return false;
+        }
+
+        return true;
+    }
+
     public bool AddOnPosition(PlayerCard card, DropPosition dPos)
     {
         if (card == null || dPos == null) return false;
@@ -100,6 +112,8 @@ public class CharacterList : MonoBehaviour
 
         _cardList.Remove(card);
 
+        // 포지셔닝이 완료되었다면 버튼 활성화
+        _matchStartPanelObj.SetActive(CheckMaxPositionBatch());
         return true;
     }
 
@@ -124,7 +138,7 @@ public class CharacterList : MonoBehaviour
 
         return card;
     }
-    
+
     private void EnsureArrays()
     {
         if (_positionCards == null || _positionCards.Length != MAX_BATCH_COUNT)
