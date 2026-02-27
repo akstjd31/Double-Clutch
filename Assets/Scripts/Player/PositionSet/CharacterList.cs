@@ -13,6 +13,7 @@ public class CharacterList : MonoBehaviour
     [SerializeField] Transform _cardContainer; //????? ??? ???
     [SerializeField] Transform _positionTrf;
     [SerializeField] GameObject _matchStartPanelObj;
+    [SerializeField] FightingPower _fightingPower;
 
 
     GenericObjectPool<PlayerCard> _playerCardPool;
@@ -165,6 +166,13 @@ public class CharacterList : MonoBehaviour
         }
 
         return true;
+    }
+
+    public void OnMatchStartButtonClick()
+    {
+        _fightingPower.gameObject.SetActive(true);
+        _fightingPower.Init();
+        gameObject.SetActive(false);
     }
 
     public bool AddOnPosition(PlayerCard card, DropPosition dPos)
