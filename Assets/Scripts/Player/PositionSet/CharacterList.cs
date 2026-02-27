@@ -22,7 +22,8 @@ public class CharacterList : MonoBehaviour
     [SerializeField] private PlayerCard[] _positionCards;
     public PlayerCard[] PositionCards => _positionCards;
 
-    [SerializeField] private List<DropPosition> _dropPositionList = new List<DropPosition>();
+    [SerializeField] private DropPosition[] _dropPositions;
+
 
     private int _colorIndex;
     private readonly Color[] _colors =
@@ -40,6 +41,7 @@ public class CharacterList : MonoBehaviour
     private void Awake()
     {
         _playerCardPool = new GenericObjectPool<PlayerCard>(_playerCardPrefab, _cardContainer, 5, 20);
+
         _positionCards = new PlayerCard[MAX_BATCH_COUNT];
     }
 
@@ -56,14 +58,6 @@ public class CharacterList : MonoBehaviour
             // newCard.SetImageColor(GetNextColor());
             newCard.Init(student);
             CardList.Add(newCard);
-        }
-
-        if (_dropPositionList == null)
-        {
-            foreach (var dp in _positionTrf.GetComponentsInChildren<DropPosition>())
-            {
-                _dropPositionList.Add(dp);
-            }
         }
     }
 
@@ -82,51 +76,85 @@ public class CharacterList : MonoBehaviour
         }
     }
 
-    public void AddOnPosition(PlayerCard card)
+    public bool AddOnPosition(PlayerCard card, DropPosition dPos)
     {
-        if (card == null) return;
+        if (card == null || dPos == null) return false;
 
-        if (IsCardInPositionSlots(card) == -1)
-        {
-            // 빈자리 채우기
-            for (int i = 0; i < MAX_BATCH_COUNT; i++)
-            {
-                if (_positionCards[i] == null)
-                {
-                    _positionCards[i] = card;
-                    break;
-                }
-            }
+        EnsureArrays();
 
-            _cardList.Remove(card);
-        }
+        int idx = GetSlotIndex(dPos);
+        if (idx < 0) return false;
+
+        // 같은 카드가 다른 슬롯에 이미 있으면 제거
+        int already = IndexOfCard(card);
+        if (already >= 0 && already != idx)
+            _positionCards[already] = null;
+
+        // 교체
+        var prev = _positionCards[idx];
+        if (prev != null && prev != card)
+            _cardList.Add(prev);
+
+        // 배치
+        _positionCards[idx] = card;
+
+        _cardList.Remove(card);
+
+        return true;
     }
 
-    public void RemoveOnPosition(PlayerCard card)
+    public PlayerCard RemoveOnPosition(PlayerCard card)
     {
-        if (card == null) return;
+        if (card == null) return null;
 
-        int idx = IsCardInPositionSlots(card);
-        if (idx == -1) return;
+        EnsureArrays();
 
-        _positionCards[idx] = null;
-
-        for (int i = idx; i < _positionCards.Length - 1; i++)
-        {
-            _positionCards[i] = _positionCards[i + 1];
-            _positionCards[i + 1] = null;
-        }
-
-        _cardList.Add(card);
-    }
-
-    // 포지션에 배치된 카드 중 동일한 카드 존재 시 인덱스 반환
-    private int IsCardInPositionSlots(PlayerCard card)
-    {
         for (int i = 0; i < _positionCards.Length; i++)
         {
-            if (_positionCards[i] == null) continue;
-            if (_positionCards[i].Equals(card))
+            if (_positionCards[i] == card)
+            {
+                _positionCards[i] = null;
+                break;
+            }
+        }
+
+        // 리스트에 없으면 복귀
+        if (!_cardList.Contains(card))
+            _cardList.Add(card);
+
+        return card;
+    }
+    
+    private void EnsureArrays()
+    {
+        if (_positionCards == null || _positionCards.Length != MAX_BATCH_COUNT)
+            _positionCards = new PlayerCard[MAX_BATCH_COUNT];
+
+        if (_cardList == null)
+            _cardList = new List<PlayerCard>();
+    }
+
+    private int GetSlotIndex(DropPosition dPos) => IsCardInPositionSlots(dPos);
+
+    private int IndexOfCard(PlayerCard card)
+    {
+        if (_positionCards == null) return -1;
+
+        for (int i = 0; i < _positionCards.Length; i++)
+        {
+            if (_positionCards[i] == card) return i;
+        }
+        return -1;
+    }
+
+    // 배치된 카드의 현재 인덱스 반환 (하단 보유 카드 -> 포지션 배치시에만 사용)
+    private int IsCardInPositionSlots(DropPosition dPos)
+    {
+        if (_dropPositions == null) return -1;
+
+        for (int i = 0; i < _positionCards.Length; i++)
+        {
+            if (_dropPositions[i].Equals(dPos))
                 return i;
         }
 
@@ -143,11 +171,11 @@ public class CharacterList : MonoBehaviour
         _cardList.Clear();
 
         // ��ӵ� ��ġ�� �ִ� ī��鵵 Ǯ�� �ݳ�
-        if (_dropPositionList != null)
+        if (_dropPositions != null)
         {
-            foreach (var position in _dropPositionList)
+            foreach (var position in _dropPositions)
             {
-                if (position != null) _playerCardPool.Release(position.GetComponentInChildren<PlayerCard>());
+                if (position.transform.childCount > 0) _playerCardPool.Release(position.GetComponentInChildren<PlayerCard>());
             }
         }
 
