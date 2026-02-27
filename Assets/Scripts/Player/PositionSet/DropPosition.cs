@@ -24,6 +24,7 @@ public class DropPosition : MonoBehaviour, IDropHandler
         var card = draggedObj.GetComponent<PlayerCard>();
         if (card == null) return;
 
+        // 포지션 슬롯인지 아닌지에 따라 포함될 리스트 위치도 다름
         if (isPositionSlot)
         {
             _charList.RemoveOnPosition(card);
@@ -34,5 +35,7 @@ public class DropPosition : MonoBehaviour, IDropHandler
             _charList.AddOnPosition(card);
             _charList.RemoveOnPosition(card);
         }
+
+
     }
 }

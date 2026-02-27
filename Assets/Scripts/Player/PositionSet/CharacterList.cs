@@ -51,7 +51,7 @@ public class CharacterList : MonoBehaviour
         foreach (Student student in StudentManager.Instance.MyStudents)
         {
             PlayerCard newCard = _playerCardPool.Get();
-            newCard.SetImageColor(GetNextColor());
+            // newCard.SetImageColor(GetNextColor());
             newCard.Init(student);
             CardList.Add(newCard);
         }

@@ -75,9 +75,11 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
         _droppedSuccessfully = true;
 
         // 새 부모로 적용
-        transform.SetParent(newParent, false);
-        _rect.anchoredPosition = Vector2.zero;
-        _rect.localScale = Vector3.one;
+        transform.SetParent(newParent, true);
+        _rect.anchorMin = new Vector2(0.5f, 0.5f);
+        _rect.anchorMax = new Vector2(0.5f, 0.5f);
+        _rect.pivot = new Vector2(0.5f, 0.5f);
+        _rect.anchoredPosition = Vector2.zero; // 부모 기준 정확히 중앙
 
         // 기존 부모 변경
         _currentParent = newParent;
