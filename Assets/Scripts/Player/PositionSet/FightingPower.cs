@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 /// <summary>
@@ -11,6 +12,8 @@ public class FightingPower : MonoBehaviour
     [SerializeField] TextMeshProUGUI _fightingPowerText;
     [SerializeField] CharacterPowerBox[] _fightingList = new CharacterPowerBox[5];
     [SerializeField] CharacterList _characterList;
+    private List<Student> _matchingStudentList = new List<Student>();
+    public List<Student> MatchingStudentList => _matchingStudentList;
     int _totalFightingPower = 0;    
 
     public void Init()
@@ -46,6 +49,8 @@ public class FightingPower : MonoBehaviour
             {
                 _fightingList[i].Init(targetStudent);
                 _totalFightingPower += (_fightingList[i].Attack + _fightingList[i].Defense);
+
+                _matchingStudentList.Add(targetStudent);
             }
         }
 
