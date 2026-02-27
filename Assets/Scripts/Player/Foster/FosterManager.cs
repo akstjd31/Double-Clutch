@@ -86,27 +86,64 @@ public class FosterManager : MonoBehaviour
     private bool HasProblem(Student target)
     {
         return target.Condition <= 0 || target.State != StudentState.None;
-    }    
+    }
 
-    public void StartFoster()
+    public void UpdateScheduleState()
     {
+        int maxStudentCount = StudentManager.Instance.MyStudents.Count;
+        int currentReservedCount = 0;
+        bool canStart = false;
+
         if (_teamSchedule != null)
         {
-            _teamSchedule.StartAction();
+            // 팀 스케줄이 있으면 무조건 꽉 찬 것으로 간주
+            currentReservedCount = maxStudentCount;
+            canStart = true;
         }
         else
         {
+            // 개인 스케줄은 딕셔너리에 담긴 학생 수
+            currentReservedCount = _schedules.Count;
+            canStart = (currentReservedCount == maxStudentCount);
+        }
+
+        // UI 매니저에게 전달
+        StudentUIManager.Instance.RefreshStartFosterButton(canStart, currentReservedCount, maxStudentCount);
+    }
+
+    public void StartFoster()
+    {
+        Debug.Log("StartFoster 진입");
+        foreach (var student in StudentManager.Instance.MyStudents)
+        {
+            student.PrepareStatChange();
+        }
+        if (_teamSchedule != null)
+        {
+            Debug.Log("팀 스케줄 실행 시도");
+            _teamSchedule.StartAction();
+            Debug.Log("팀 스케줄 실행 완료");
+        }
+        else
+        {
+            Debug.Log($"개인 스케줄 실행 시도 (개수: {_schedules.Count})");
             foreach (var training in _schedules.Values)
             {
                 training.StartAction();
-            }            
-        }
+            }
+            Debug.Log("개인 스케줄 실행 완료");
+        }        
+        
         GameManager.Instance.SetMoney(_myGold - _scheduleCost);
-        _schedules.Clear();
+
+        _schedules.Clear(); //내부 카운트 및 UI 상태 초기화
         _scheduleCost = 0;
         _teamSchedule = null;
+        UpdateScheduleState(); 
+        Debug.Log("Foster 로직 종료, UI 호출 직전"); // 이 로그가 찍히는지 확인!
         StudentUIManager.Instance.OpenWeeklyTrainingReportPopUp(StudentManager.Instance.MyStudents);
     }
+    
 
     public void ReserveIndividualTraining(ITraining command)
     {
@@ -143,6 +180,7 @@ public class FosterManager : MonoBehaviour
         }
         target.SetCurrentTraining(command);
         _scheduleCost = nextTotalCost; // 최종 비용 업데이트
+        UpdateScheduleState(); //버튼 표시 및 활성화 여부 갱신
     }
 
     public void ReserveTeamTraining(ITraining command)
@@ -165,9 +203,10 @@ public class FosterManager : MonoBehaviour
         }
 
         _schedules.Clear(); //팀 스케줄 예약 시 개인 스케줄 예약 목록 삭제.
-        _teamSchedule = command;
-        
+        _teamSchedule = command;        
         _scheduleCost = nextTotalCost;
+
+        UpdateScheduleState(); //버튼 표시 및 활성화 여부 갱신
     }
 
 

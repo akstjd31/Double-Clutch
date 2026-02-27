@@ -283,6 +283,7 @@ GameObject:
   - component: {fileID: 8298164096491572663}
   - component: {fileID: 663306628432786379}
   - component: {fileID: 537589889573234692}
+  - component: {fileID: 3536695879746693471}
   m_Layer: 5
   m_Name: State
   m_TagString: Untagged
@@ -348,6 +349,18 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!225 &3536695879746693471
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4526559699425687359}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 0
+  m_BlocksRaycasts: 0
+  m_IgnoreParentGroups: 0
 --- !u!1 &6261872139647057305
 GameObject:
   m_ObjectHideFlags: 0
@@ -572,19 +585,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 6849050273011204205}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &7291948686953870803
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -598,7 +599,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TrainingCharacterBox
   _button: {fileID: 5754787167084076686}
-  _stateBackGround: {fileID: 0}
+  _stateBackGround: {fileID: 537589889573234692}
   _nameText: {fileID: 3815651596689420423}
   _stateText: {fileID: 7238780138117249633}
 --- !u!1 &6870244525195612764

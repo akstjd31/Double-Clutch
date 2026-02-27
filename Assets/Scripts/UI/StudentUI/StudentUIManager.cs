@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using static UnityEngine.GraphicsBuffer;
@@ -26,6 +27,7 @@ public class StudentUIManager : MonoBehaviour
     [SerializeField] WeeklyTrainingReportPopUp _weeklyTrainingReportPopUp;
     [SerializeField] TrainingStartConfirmPopUp _trainingStartConfirmPopUp;
     [SerializeField] Button _startFosterButton;    
+    [SerializeField] TextMeshProUGUI _startFosterButtonCount;
     [SerializeField] GameObject _costWarningPopUp;
     private void Awake()
     {
@@ -53,6 +55,7 @@ public class StudentUIManager : MonoBehaviour
     public void OnTrainingButtonClick() //로비 화면의 육성버튼 온클릭에서 호출
     {
         _trainingPanel.gameObject.SetActive(true);
+        FosterManager.Instance.UpdateScheduleState();
     }
 
     public void OnTrainingCharacterBoxClick(Student target) //플레이어 박스 온클릭에서 호출
@@ -82,6 +85,12 @@ public class StudentUIManager : MonoBehaviour
     //{
     //    _stateWarningPopUp_Team.gameObject.SetActive(true);
     //}
+
+    public void RefreshStartFosterButton(bool isInteractable, int currentCount, int maxCount)
+    {
+        _startFosterButton.interactable = isInteractable;
+        _startFosterButtonCount.text = $"육성 시작 {currentCount} / {maxCount}";
+    }
 
     public void OpenConditionWarningPopUp(List<Student> targets, int cost)
     {
