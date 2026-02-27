@@ -8,7 +8,7 @@ public class MatchState : MonoBehaviour
     [SerializeField] private Halftime_ScriptDataReader _halftimeScriptReader;
     [SerializeField] private Halftime_ListDataReader _halftimeListReader;
 
-    public int CurrentHalftimeScriptId;
+    public string CurrentHalftimeScriptId;
 
     public const int MAX_QUARTER = 4;
     public const float SECONDS_PER_QUARTER = 600f; // 10분
@@ -223,7 +223,7 @@ public class MatchState : MonoBehaviour
         }
         else
         {
-            CurrentHalftimeScriptId = 1001; // 만족하는 게 없으면 기본 이벤트
+            CurrentHalftimeScriptId = "Script_Halftime_001"; // 만족하는 게 없으면 기본 이벤트
         }
 
         AddLog($"[시스템] 하프타임 이벤트 결정됨 (Script ID: {CurrentHalftimeScriptId})");

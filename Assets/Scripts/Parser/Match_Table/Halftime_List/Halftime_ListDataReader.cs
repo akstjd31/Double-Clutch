@@ -12,7 +12,7 @@ public class Halftime_ListDataReader : DataReaderBase
     // ✅ ItemData처럼 List<GSTU_Cell> 한 줄을 받아서 파싱
     internal void UpdateStats(List<GSTU_Cell> list, int rowIndex)
     {
-        int scriptId = 0;
+        string scriptId = null;
         string desc = null;
         triggerCond triggerCond = default;
         int triggerValue = 0;
@@ -28,7 +28,7 @@ public class Halftime_ListDataReader : DataReaderBase
             switch (col)
             {
                 case "scriptId":
-                    int.TryParse(val, out scriptId);
+                    scriptId = val;
                     break;
 
                 case "desc":

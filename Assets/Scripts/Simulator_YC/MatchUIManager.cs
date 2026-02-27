@@ -33,7 +33,6 @@ public class MatchUIManager : MonoBehaviour
 
     [Header("Halftime Event Visual Novel UI")]
     [SerializeField] private GameObject _halftimeVNPanel; // 비주얼 노벨 전체 패널
-    [SerializeField] private TextMeshProUGUI _txtDialogue; // 대사 출력 텍스트
     [SerializeField] private Button _btnNext; // 일반 대화(Desc/End) 넘기기용 전체 화면 버튼
     [SerializeField] private GameObject _choiceGroup; // 선택지 버튼들을 묶어둔 부모 객체
     [SerializeField] private Button _btnChoice1;
@@ -42,6 +41,22 @@ public class MatchUIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _txtChoice2;
     [SerializeField] private Button _btnChoice3;
     [SerializeField] private TextMeshProUGUI _txtChoice3;
+    [SerializeField] private Image _imgBackground;      // 배경 이미지
+    [SerializeField] private Image _imgStandingLeft;    // 좌측 스탠딩
+    [SerializeField] private Image _imgStandingMiddle;  // 중앙 캐릭터
+    [SerializeField] private Image _imgStandingRight;   // 우측 스탠딩
+    [SerializeField] private Image _imgCG;              // CG 패널
+
+    [Header("Left Dialogue UI")]
+    [SerializeField] private GameObject _leftBubbleGroup;         // 좌측 대화창 전체 부모
+    [SerializeField] private TextMeshProUGUI _txtLeftSpeakerName; // 좌측 화자 이름
+    [SerializeField] private TextMeshProUGUI _txtLeftDialogue;    // 좌측 대사
+
+    [Header("Right Dialogue UI")]
+    [SerializeField] private GameObject _rightBubbleGroup;         // 우측 대화창 전체 부모
+    [SerializeField] private TextMeshProUGUI _txtRightSpeakerName; // 우측 화자 이름
+    [SerializeField] private TextMeshProUGUI _txtRightDialogue;    // 우측 대사
+
 
     [Header("Cut-In Effect")]
     [SerializeField] private GameObject _cutInPanel;      // 컷인 전체 패널 (Canvas 내 Panel)
@@ -68,7 +83,7 @@ public class MatchUIManager : MonoBehaviour
     private float[] _speedSteps = { 1.0f, 2.0f, 4.0f, 8.0f };
     private int _currentSpeedIndex = 0; // 현재 선택된 배속의 인덱스
 
-    private int _currentScriptId;
+    private string _currentScriptId;
     private int _currentLineId;
     public bool IsEventFinished { get; private set; } = false;
 
@@ -247,7 +262,7 @@ public class MatchUIManager : MonoBehaviour
             _resultPanel.transform.DOScale(1f, 0.5f).SetEase(Ease.OutBack);
         }
     }
-    public void StartHalftimeEvent(int scriptId)
+    public void StartHalftimeEvent(string scriptId)
     {
         _currentScriptId = scriptId;
         _currentLineId = 1; // 스크립트의 첫 번째 줄(currentId = 1)부터 시작
@@ -271,15 +286,45 @@ public class MatchUIManager : MonoBehaviour
         var lineData = matchState.HalftimeScriptReader.DataList.Find(x => x.scriptId == _currentScriptId && x.currentId == lineId);
 
         // 데이터를 못 찾거나 0이면 이벤트 강제 종료 (안전장치)
-        if (lineData.scriptId == 0)
+        if (string.IsNullOrEmpty(lineData.scriptId) || lineData.scriptId == "-")
         {
             EndHalftimeEvent();
             return;
         }
 
         // 대사 출력 (StringManager 연동)
-        if (_txtDialogue != null)
-            _txtDialogue.text = StringManager.Instance.GetString(lineData.textKey);
+        string rawText = StringManager.Instance.GetString(lineData.textKey);
+        rawText = ReplaceVariables(rawText, matchState);
+
+
+        if (lineData.speakDirection == "Left")
+        {
+            // 좌측 화자일 때
+            _leftBubbleGroup.SetActive(true);
+            _rightBubbleGroup.SetActive(false);
+
+            if (_txtLeftSpeakerName != null) _txtLeftSpeakerName.text = lineData.playerName;
+            if (_txtLeftDialogue != null) _txtLeftDialogue.text = rawText;
+        }
+        else if (lineData.speakDirection == "Right")
+        {
+            // 우측 화자일 때
+            _leftBubbleGroup.SetActive(false);
+            _rightBubbleGroup.SetActive(true);
+
+            if (_txtRightSpeakerName != null) _txtRightSpeakerName.text = lineData.playerName;
+            if (_txtRightDialogue != null) _txtRightDialogue.text = rawText;
+        }
+        else
+        {
+            // 독백이나 중앙 텍스트일 경우 (기획에 따라 예외 처리)
+            _leftBubbleGroup.SetActive(false);
+            _rightBubbleGroup.SetActive(false);
+        }
+
+
+        // 비주얼 이미지 갱신 로직 추가 (Resources.Load 사용 가정)
+        UpdateVisuals(lineData);
 
         // 타입에 따른 버튼 및 선택지 활성화 처리
         _btnNext.gameObject.SetActive(false);
@@ -313,6 +358,78 @@ public class MatchUIManager : MonoBehaviour
         }
     }
 
+    // 텍스트 내 {PG}, {SG} 등의 변수를 실제 선수 이름으로 치환하는 헬퍼 함수
+    private string ReplaceVariables(string text, MatchState state)
+    {
+        if (string.IsNullOrEmpty(text)) return text;
+
+        text = text.Replace("{ME}", GameManager.Instance.SaveData.coachName); // 감독 이름
+
+        // 출전 중인 유저(Home) 팀 선수의 이름으로 치환
+        if (text.Contains("{PG}")) text = text.Replace("{PG}", state.HomeTeam.GetPlayerByPosition(Position.PG)?.PlayerName ?? "가드");
+        if (text.Contains("{SG}")) text = text.Replace("{SG}", state.HomeTeam.GetPlayerByPosition(Position.SG)?.PlayerName ?? "가드");
+        if (text.Contains("{SF}")) text = text.Replace("{SF}", state.HomeTeam.GetPlayerByPosition(Position.SF)?.PlayerName ?? "포워드");
+        if (text.Contains("{PF}")) text = text.Replace("{PF}", state.HomeTeam.GetPlayerByPosition(Position.PF)?.PlayerName ?? "포워드");
+        if (text.Contains("{C}")) text = text.Replace("{C}", state.HomeTeam.GetPlayerByPosition(Position.C)?.PlayerName ?? "센터");
+
+        return text;
+    }
+    // 테이블의 문자열 키를 기반으로 UI 이미지를 켜고 끄는 헬퍼 함수
+    private void UpdateVisuals(Halftime_ScriptData lineData)
+    {
+        // 배경 이미지 갱신
+        if (!string.IsNullOrEmpty(lineData.background) && lineData.background != "-")
+        {
+            if (_imgBackground != null) _imgBackground.gameObject.SetActive(true);
+            // TODO: ResourceLoad 방식에 맞춰 이미지 로드. 예: _imgBackground.sprite = Resources.Load<Sprite>(lineData.background);
+        }
+
+        // 좌측 스탠딩 처리
+        if (!string.IsNullOrEmpty(lineData.standingLeft) && lineData.standingLeft != "-")
+        {
+            if (_imgStandingLeft != null)
+            {
+                _imgStandingLeft.gameObject.SetActive(true);
+                // 예시: _imgStandingLeft.sprite = Resources.Load<Sprite>(lineData.standingLeft);
+                _imgStandingLeft.color = (lineData.speakDirection == "Left") ? Color.white : Color.gray;
+            }
+        }
+        else
+        {
+            _imgStandingLeft.gameObject.SetActive(false);
+        }
+
+        // 중앙 스탠딩 처리 (단독 등장용)
+        if (!string.IsNullOrEmpty(lineData.standingMiddle) && lineData.standingMiddle != "-")
+        {
+            if (_imgStandingMiddle != null)
+            {
+                _imgStandingMiddle.gameObject.SetActive(true);
+                // 예시: _imgStandingMiddle.sprite = Resources.Load<Sprite>(lineData.standingMiddle);
+                // 중앙(Center/Middle) 화자일 때 밝게, 아니면 어둡게
+                _imgStandingMiddle.color = (lineData.speakDirection == "Center" || lineData.speakDirection == "Middle") ? Color.white : Color.gray;
+            }
+        }
+        else
+        {
+            if (_imgStandingMiddle != null) _imgStandingMiddle.gameObject.SetActive(false);
+        }
+
+        // 우측 스탠딩 처리
+        if (!string.IsNullOrEmpty(lineData.standingRight) && lineData.standingRight != "-")
+        {
+            if (_imgStandingRight != null)
+            {
+                _imgStandingRight.gameObject.SetActive(true);
+                // 예시: _imgStandingRight.sprite = Resources.Load<Sprite>(lineData.standingRight);
+                _imgStandingRight.color = (lineData.speakDirection == "Right") ? Color.white : Color.gray;
+            }
+        }
+        else
+        {
+            _imgStandingRight.gameObject.SetActive(false);
+        }
+    }
     private void SetupChoiceButton(Button btn, TextMeshProUGUI txt, string choiceTextKey, potential stat, float statChange, Position pos, changeType posChange, int nextId)
     {
         // 선택지 데이터가 비어있으면 버튼 비활성화
@@ -447,4 +564,5 @@ public class MatchUIManager : MonoBehaviour
         // ResultState에서 넘겨줬던 ReturnToLobby 함수를 여기서 실행
         _onResultConfirmAction?.Invoke();
     }
+
 }

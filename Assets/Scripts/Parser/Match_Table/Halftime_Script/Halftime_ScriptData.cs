@@ -5,11 +5,14 @@ using UnityEngine;
 public struct Halftime_ScriptData
 {
     public int index;
-    public int scriptId;
+    public string scriptId;
     public int currentId;
     public int nextId;
     public string textKey;
     public textType textType;
+    public string speakDirection;
+    public string playerName;
+    public string standingMiddle;
     public string standingRight;
     public string standingLeft;
     public string background;
@@ -41,11 +44,14 @@ public struct Halftime_ScriptData
     public string startEffectId;
 
     public Halftime_ScriptData(int index,
-int scriptId,
+string scriptId,
 int currentId,
 int nextId,
 string textKey,
 textType textType,
+string speakDirection,
+string playerName,
+string standingMiddle,
 string standingRight,
 string standingLeft,
 string background,
@@ -82,6 +88,9 @@ string startEffectId)
         this.nextId = nextId;
         this.textKey = textKey;
         this.textType = textType;
+        this.speakDirection = speakDirection;
+        this.playerName = playerName;
+        this.standingMiddle = standingMiddle;
         this.standingRight = standingRight;
         this.standingLeft = standingLeft;
         this.background = background;
