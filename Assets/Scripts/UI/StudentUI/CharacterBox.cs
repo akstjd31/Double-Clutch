@@ -17,7 +17,7 @@ public class CharacterBox : MonoBehaviour
     {        
         _nameText.text = student.Name;        
         _gradeText.text = student.Grade.ToString();                
-        Student target = student;                
+        _target = student;                
     }
 
 
