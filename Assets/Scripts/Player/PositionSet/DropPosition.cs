@@ -27,12 +27,10 @@ public class DropPosition : MonoBehaviour, IDropHandler
         // 포지션 슬롯인지 아닌지에 따라 포함될 리스트 위치도 다름
         if (isPositionSlot)
         {
-            _charList.RemoveOnPosition(card);
             _charList.AddOnPosition(card);
         }
         else
         {
-            _charList.AddOnPosition(card);
             _charList.RemoveOnPosition(card);
         }
 
