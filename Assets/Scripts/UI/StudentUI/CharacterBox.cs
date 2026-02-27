@@ -20,6 +20,5 @@ public class CharacterBox : MonoBehaviour
         _target = student;                
     }
 
-
     public Button GetSelectButton() => _selectButton;
 }

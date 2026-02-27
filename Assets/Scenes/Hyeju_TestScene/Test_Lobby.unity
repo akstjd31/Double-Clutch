@@ -16751,52 +16751,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 764248396}
   m_CullTransparentMesh: 1
---- !u!1 &773499408
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 773499410}
-  - component: {fileID: 773499409}
-  m_Layer: 0
-  m_Name: StringManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &773499409
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 773499408}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 66e9d5e6ca907264da329ffb9c2ea67a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::StringManager
-  dontDestroyOnLoad: 1
-  _stringDB: {fileID: 11400000, guid: 3d7ca27fff3aac04fa55cabfa1a34912, type: 2}
---- !u!4 &773499410
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 773499408}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &782343156
 GameObject:
   m_ObjectHideFlags: 0
@@ -28835,11 +28789,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1227146827}
-  - component: {fileID: 1227146826}
-  - component: {fileID: 1227146825}
   - component: {fileID: 1227146824}
   m_Layer: 0
-  m_Name: StudentManager
+  m_Name: StudentUIManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -28870,42 +28822,6 @@ MonoBehaviour:
   _startFosterButton: {fileID: 510923063}
   _startFosterButtonCount: {fileID: 718833923}
   _costWarningPopUp: {fileID: 1073168487}
---- !u!114 &1227146825
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1227146823}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 224cc0baa6a92c242b182a51f057bbcf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::StudentFactory
-  _speciesDataReader: {fileID: 11400000, guid: 04ba9e4fabbddf74fa3740152f0f15f4, type: 2}
-  _personalityDataReader: {fileID: 11400000, guid: 97c148d90ae67ef4b83da16ab1d0e2d8, type: 2}
-  _traitDataReader: {fileID: 11400000, guid: bb5bafbe9b70f7543b03e2e6f01e1924, type: 2}
-  _passiveDataReader: {fileID: 11400000, guid: b915f593ddc22774a9b6db72867720b9, type: 2}
-  _nameDataReader: {fileID: 11400000, guid: 4df5de6baf6874445a6090f7ef94976e, type: 2}
-  _visualDataReader: {fileID: 11400000, guid: 2aa9eada2bc6b5345af6c126c5e21446, type: 2}
-  _startingStateDataReader: {fileID: 11400000, guid: 7efe3c951acc8604d99a5b2a85d29345, type: 2}
-  _maxPotentialDataReader: {fileID: 11400000, guid: 0f3b55f1a7ec312478342fa7591dee7f, type: 2}
-  _growthRateDataReader: {fileID: 11400000, guid: 708221a0b03602549aedd908f595b50e, type: 2}
---- !u!114 &1227146826
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1227146823}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0dbcf18e5c4cee04fa9f00f4dd14c33e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::StudentManager
-  _studentFactory: {fileID: 1227146825}
-  _fosterManager: {fileID: 1236158703}
-  _myStudents: []
 --- !u!4 &1227146827
 Transform:
   m_ObjectHideFlags: 0
@@ -48511,4 +48427,3 @@ SceneRoots:
   - {fileID: 23823417}
   - {fileID: 1227146827}
   - {fileID: 1236158704}
-  - {fileID: 773499410}

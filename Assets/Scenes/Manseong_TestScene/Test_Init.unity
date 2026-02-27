@@ -149,6 +149,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   dontDestroyOnLoad: 1
+  saveData:
+    schoolName: 
+    coachName: 
+    honor: 0
+    money: 0
+    weekId: 0
 --- !u!4 &400084808
 Transform:
   m_ObjectHideFlags: 0
@@ -209,6 +215,52 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &775522536
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 775522538}
+  - component: {fileID: 775522537}
+  m_Layer: 0
+  m_Name: StringManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &775522537
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 775522536}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 66e9d5e6ca907264da329ffb9c2ea67a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StringManager
+  dontDestroyOnLoad: 1
+  _stringDB: {fileID: 11400000, guid: 3d7ca27fff3aac04fa55cabfa1a34912, type: 2}
+--- !u!4 &775522538
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 775522536}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &979961055
 GameObject:
   m_ObjectHideFlags: 0
@@ -240,6 +292,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::InfraManager
   dontDestroyOnLoad: 1
   _reader: {fileID: 11400000, guid: ebb2227aff3db674b9ce488ad7b00ae3, type: 2}
+  MaxLevelData:
+    _serializedList: []
 --- !u!4 &979961057
 Transform:
   m_ObjectHideFlags: 0
@@ -293,6 +347,74 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1468292850}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1721351876
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1721351879}
+  - component: {fileID: 1721351878}
+  - component: {fileID: 1721351877}
+  m_Layer: 0
+  m_Name: studentManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1721351877
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1721351876}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 224cc0baa6a92c242b182a51f057bbcf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StudentFactory
+  _speciesDataReader: {fileID: 11400000, guid: 04ba9e4fabbddf74fa3740152f0f15f4, type: 2}
+  _personalityDataReader: {fileID: 11400000, guid: 97c148d90ae67ef4b83da16ab1d0e2d8, type: 2}
+  _traitDataReader: {fileID: 11400000, guid: bb5bafbe9b70f7543b03e2e6f01e1924, type: 2}
+  _passiveDataReader: {fileID: 11400000, guid: b915f593ddc22774a9b6db72867720b9, type: 2}
+  _nameDataReader: {fileID: 11400000, guid: 4df5de6baf6874445a6090f7ef94976e, type: 2}
+  _visualDataReader: {fileID: 11400000, guid: 2aa9eada2bc6b5345af6c126c5e21446, type: 2}
+  _startingStateDataReader: {fileID: 11400000, guid: 7efe3c951acc8604d99a5b2a85d29345, type: 2}
+  _maxPotentialDataReader: {fileID: 11400000, guid: 0f3b55f1a7ec312478342fa7591dee7f, type: 2}
+  _growthRateDataReader: {fileID: 11400000, guid: 708221a0b03602549aedd908f595b50e, type: 2}
+--- !u!114 &1721351878
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1721351876}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0dbcf18e5c4cee04fa9f00f4dd14c33e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StudentManager
+  _studentFactory: {fileID: 1721351877}
+  _myStudents: []
+--- !u!4 &1721351879
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1721351876}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -402,3 +524,5 @@ SceneRoots:
   - {fileID: 756173928}
   - {fileID: 1468292852}
   - {fileID: 979961057}
+  - {fileID: 775522538}
+  - {fileID: 1721351879}
