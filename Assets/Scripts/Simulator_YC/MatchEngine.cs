@@ -79,12 +79,11 @@ public class MatchEngine : MonoBehaviour
         // 하프타임 이벤트 패널 대기
         if (uiManager != null)
         {
-            uiManager.ShowHalfTimeEvent();
-            // 유저가 선택지 버튼을 누를 때까지 무한 대기
-            yield return new WaitUntil(() => uiManager.IsEventSelected);
+            // 스크립트 ID를 넘겨주며 비주얼 노벨 시작
+            uiManager.StartHalftimeEvent(state.CurrentHalftimeScriptId);
 
-            // 선택한 효과 적용
-            state.ApplyHalfTimeEffect(uiManager.SelectedEventIndex);
+            // 유저가 대사를 모두 읽고 최종 End를 누를 때까지(IsEventFinished == true) 무한 대기
+            yield return new WaitUntil(() => uiManager.IsEventFinished);
         }
         // 후반전 재생 시작 전에 CourtPanel 자식 전부 즉시 삭제
         foreach (Transform child in replayer.CourtPanel)

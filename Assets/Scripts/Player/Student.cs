@@ -37,7 +37,7 @@ public class Student
     Dictionary<potential, Stat> _statDict = new Dictionary<potential, Stat>(); //스탯(잠재력)목록
     int _attack;
     int _defense;
-
+    ITraining _currentTraining;
     
 
 
@@ -62,7 +62,12 @@ public class Student
     public StudentState State => _state;
     public int Condition => _condition;
     public int CureCount => _cureCount;
+    public ITraining CurrentTraining => _currentTraining;
 
+    public void SetCurrentTraining(ITraining training)
+    {
+        _currentTraining = training;
+    }
     public int GetCurrentStat(potential type) //현재 스탯 수치 반환(바로가기) 매서드
     {
         return _statDict[type].Current;

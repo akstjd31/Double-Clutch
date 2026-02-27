@@ -33,8 +33,9 @@ public class ResultState : IState
             matchState.HomeTeam.Score,
             matchState.AwayTeam.TeamName,
             matchState.AwayTeam.Score,
-            rewardAmount
-        );
+            rewardAmount,
+            () => ReturnToLobby() // <--- 콜백 전달!
+         );
         //  리그 보관소에 현재 경기 기록 저장!
         // (참고: matchId는 나중에 대진표 시스템이 나오면 그 번호를 넘겨주면 됩니다. 임시로 1번 경기라고 가정)
         if (LeagueRecordManager.Instance != null)
@@ -50,4 +51,12 @@ public class ResultState : IState
     }
 
     public void Update() { }
+    public void ReturnToLobby()
+    {
+        // GameManager에 다음 씬(LOBBY)과 다음 상태(LobbyState)를 세팅
+        _gm.SetNextFlow(SceneName.LOBBY, _sm.Get<LobbyState>());
+
+        // 로딩 상태로 전환하여 자연스럽게 씬 이동 처리
+        _sm.ChangeState<LoadingState>();
+    }
 }

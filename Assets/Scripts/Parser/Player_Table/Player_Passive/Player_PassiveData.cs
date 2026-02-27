@@ -21,7 +21,7 @@ public struct Player_PassiveData
     public effectType effectType;
     public float effectValue;
     public int effectDuration;
-    public int CoolTime;
+    public int coolTime;
     public string passiveDesc;
 
     public Player_PassiveData
@@ -39,7 +39,7 @@ public struct Player_PassiveData
         effectType = _effectType;
         effectValue = _effectValue;
         effectDuration = _effectDuration;
-        CoolTime = _CoolTime;
+        coolTime = _CoolTime;
         passiveDesc = _passiveDesc;
     }
 }

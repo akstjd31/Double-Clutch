@@ -5,9 +5,9 @@ using UnityEngine.UI;
 public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
     [SerializeField] private Canvas _rootCanvas;
-    [SerializeField] private CharacterList _charList;
     private Transform _currentParent;
     private RectTransform _rect;
+    private CanvasGroup _canvasGroup;
     private bool _droppedSuccessfully;
     private Vector2 _pointerOffset;
     private PlayerCard _playerCard;
@@ -17,7 +17,7 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
     {
         _rootCanvas = GameObject.FindAnyObjectByType<Canvas>();
         _currentParent = this.transform.parent;
-        _charList = _currentParent.GetComponent<CharacterList>();
+        _canvasGroup = this.GetComponent<CanvasGroup>();
         _playerCard = this.GetComponent<PlayerCard>();
         _rect = (RectTransform)this.transform;
     }
@@ -25,6 +25,7 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
     public void OnBeginDrag(PointerEventData eventData)
     {
         _droppedSuccessfully = false;
+        _canvasGroup.blocksRaycasts = false;
 
         if (_rootCanvas != null)
             this.transform.SetParent(_rootCanvas.transform, true);
@@ -57,13 +58,13 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
 
     public void OnEndDrag(PointerEventData eventData)
     {
+        _canvasGroup.blocksRaycasts = true;
+
         // 드랍 실패 시
         if (!_droppedSuccessfully)
         {
             this.transform.SetParent(_currentParent, false);
             _rect.anchoredPosition = Vector2.zero;
-
-            _charList.ReFresh();
         }
     }
 
@@ -74,11 +75,14 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
         _droppedSuccessfully = true;
 
         // 새 부모로 적용
-        transform.SetParent(newParent, false);
-        _rect.anchoredPosition = Vector2.zero;
+        transform.SetParent(newParent, true);
+        _rect.anchorMin = new Vector2(0.5f, 0.5f);
+        _rect.anchorMax = new Vector2(0.5f, 0.5f);
+        _rect.pivot = new Vector2(0.5f, 0.5f);
+        _rect.anchoredPosition = Vector2.zero; // 부모 기준 정확히 중앙
 
         // 기존 부모 변경
         _currentParent = newParent;
-        _charList = newParent.GetComponent<CharacterList>();
+        //_charList = newParent.GetComponent<CharacterList>();
     }
 }
