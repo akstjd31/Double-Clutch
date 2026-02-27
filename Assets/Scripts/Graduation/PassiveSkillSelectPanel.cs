@@ -23,7 +23,7 @@ public class PassiveSkillSelectPanel : MonoBehaviour
             gameObject.SetActive(false);
             _graduationManager.Turn++;
             Debug.Log($"다음 : {_graduationManager.Turn}번 학생");
-            _guideBox.SetActive(false);
+            //_guideBox.SetActive(false);
             _afterGuideBox.SetActive(true);
             _graduationManager.PromotionPanel.IsSkillChoise = false;
         }

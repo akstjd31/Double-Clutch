@@ -801,7 +801,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PromotionPanel
   _graduationManager: {fileID: 1250110583}
-  _beforeChoice: {fileID: 99592951}
+  _beforeGuideBox: {fileID: 1432873719}
   _afterChoice: {fileID: 1310172951}
   _guideBoxName: {fileID: 1147248494}
   _name: {fileID: 776609430}
@@ -1969,6 +1969,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5079545921828719574, guid: 41fde5626b818a14493b378aa5cdcd39, type: 3}
+      propertyPath: m_Colors.m_ColorMultiplier
+      value: 2.63
+      objectReference: {fileID: 0}
+    - target: {fileID: 5079545921828719574, guid: 41fde5626b818a14493b378aa5cdcd39, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
       value: 3
       objectReference: {fileID: 0}
@@ -2018,7 +2022,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5079545921828719574, guid: 41fde5626b818a14493b378aa5cdcd39, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_MethodName
-      value: UpdateProfile
+      value: OnClickSkillSelected
       objectReference: {fileID: 0}
     - target: {fileID: 5079545921828719574, guid: 41fde5626b818a14493b378aa5cdcd39, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
@@ -6174,6 +6178,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: df05dfa6257b8e44db4f2531e097b6a0, type: 3}
+--- !u!1 &1432873719 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3336421149942633222, guid: 41fde5626b818a14493b378aa5cdcd39, type: 3}
+  m_PrefabInstance: {fileID: 5151633532056395103}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1517109292
 GameObject:
   m_ObjectHideFlags: 0
@@ -10111,7 +10120,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5079545921828719574, guid: 41fde5626b818a14493b378aa5cdcd39, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
-      value: 3
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5079545921828719574, guid: 41fde5626b818a14493b378aa5cdcd39, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
@@ -10119,7 +10128,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5079545921828719574, guid: 41fde5626b818a14493b378aa5cdcd39, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Mode
-      value: 6
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5079545921828719574, guid: 41fde5626b818a14493b378aa5cdcd39, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Mode
@@ -10132,7 +10141,7 @@ PrefabInstance:
     - target: {fileID: 5079545921828719574, guid: 41fde5626b818a14493b378aa5cdcd39, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
       value: 
-      objectReference: {fileID: 99592951}
+      objectReference: {fileID: 149642756}
     - target: {fileID: 5079545921828719574, guid: 41fde5626b818a14493b378aa5cdcd39, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Target
       value: 
@@ -10155,7 +10164,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5079545921828719574, guid: 41fde5626b818a14493b378aa5cdcd39, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
-      value: SetActive
+      value: OnClickNextButton
       objectReference: {fileID: 0}
     - target: {fileID: 5079545921828719574, guid: 41fde5626b818a14493b378aa5cdcd39, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_MethodName
@@ -10167,7 +10176,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5079545921828719574, guid: 41fde5626b818a14493b378aa5cdcd39, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
-      value: UnityEngine.GameObject, UnityEngine
+      value: PromotionPanel, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 5079545921828719574, guid: 41fde5626b818a14493b378aa5cdcd39, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_TargetAssemblyTypeName

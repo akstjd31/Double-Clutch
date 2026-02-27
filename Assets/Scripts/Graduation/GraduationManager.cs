@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GraduationManager : MonoBehaviour
 {
@@ -61,5 +62,10 @@ public class GraduationManager : MonoBehaviour
                 Debug.Log($"{_myStudents[i].Name} : {_myStudents[i].Grade} 학년 진급생");
             }
         }
+    }
+
+    public void NextScene()
+    {
+        SceneManager.LoadScene("Test_Main");
     }
 }

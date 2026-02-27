@@ -6,8 +6,9 @@ public class PromotionPanel : MonoBehaviour
 {
     [SerializeField] private GraduationManager _graduationManager;
 
-    [SerializeField] private GameObject _beforeChoice;
+    [SerializeField] private GameObject _beforeGuideBox;
     [SerializeField] private GameObject _afterChoice;
+    [SerializeField] private GameObject _passiveSkillSelectPanel;
 
     [SerializeField] private TextMeshProUGUI _guideBoxName;
 
@@ -46,13 +47,13 @@ public class PromotionPanel : MonoBehaviour
 
         if (_isSkillChoise == false)
         {
-            _beforeChoice.SetActive(true);
+            _beforeGuideBox.SetActive(true);
             _afterChoice.SetActive(false);
             _guideBoxName.text = $"{student.Name} 학생이 진급 하였습니다.\r\n패시브 스킬을 선택해주세요!";
         }
         else if(_isSkillChoise == true)
         {
-            _beforeChoice.SetActive(false);
+            //_beforeChoice.SetActive(false);
             _afterChoice.SetActive(true);
         }
 
@@ -70,12 +71,14 @@ public class PromotionPanel : MonoBehaviour
 
     public void OnClickNextButton()
     {
-        Debug.Log($"{_graduationManager.Turn}=={_promotionStudentList.Count-1}");
-        if (_graduationManager.Turn == _promotionStudentList.Count-1)
+        Debug.Log($"{_graduationManager.Turn+1}>{_promotionStudentList.Count}");
+        if (_graduationManager.Turn + 1 > _promotionStudentList.Count)
         {
-            Debug.Log("메인 씬으로 넘어가야 함.");
+            Debug.Log("메인 씬으로");
+            _graduationManager.NextScene();
             return;
         }
+        _passiveSkillSelectPanel.SetActive(true);
         //스킬 선택 상태 초기화
         _isSkillChoise = false;
         Debug.Log($"스킬 선택 상태{_isSkillChoise}/{IsSkillChoise}");
@@ -84,4 +87,12 @@ public class PromotionPanel : MonoBehaviour
 
     }
 
+    public void OnClickSkillSelected()
+    {
+        UpdateProfile();
+        if (_graduationManager.Turn + 1 > _promotionStudentList.Count)
+        {
+            _beforeGuideBox.SetActive(false);
+        }
+    }
 }
