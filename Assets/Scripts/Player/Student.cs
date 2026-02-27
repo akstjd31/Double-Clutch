@@ -37,6 +37,8 @@ public class Student
     Dictionary<potential, Stat> _statDict = new Dictionary<potential, Stat>(); //스탯(잠재력)목록
     int _attack;
     int _defense;
+    int _attackChange;
+    int _defenseChange;
     ITraining _currentTraining;
     
 
@@ -58,23 +60,37 @@ public class Student
     public int Grade => _grade;
     public int Attack => _attack;
     public int Defense => _defense;
+    public int AttackChange => _attackChange;
+    public int DefenseChange => _defenseChange;
     public Position Position => _position;
     public StudentState State => _state;
     public int Condition => _condition;
     public int CureCount => _cureCount;
     public ITraining CurrentTraining => _currentTraining;
-
+    public void ResetTrainingSchedule()
+    {
+        _currentTraining = null;
+    }
     public void SetCurrentTraining(ITraining training)
     {
         _currentTraining = training;
     }
     public int GetCurrentStat(potential type) //현재 스탯 수치 반환(바로가기) 매서드
     {
+        if (type == potential.None || !_statDict.ContainsKey(type))
+        {
+            return 0;
+        }
         return _statDict[type].Current;
     }
 
     public Stat GetStat(potential type) //원하는 타입의 스탯 반환
     {
+        if (type == potential.None || !_statDict.ContainsKey(type))
+        {
+            Debug.LogWarning("potential이 None으로 설정된 데이터가 있습니다. 데이터를 확인해주세요.");
+            return null;
+        }
         return _statDict[type];
     }
 
@@ -237,10 +253,16 @@ public class Student
         OnStatChanged(); //공격력 & 방어력 계산
     }
 
+    public void PrepareStatChange()
+    {
+        _attackChange = _attack;  // 현재 공격력을 임시 저장
+        _defenseChange = _defense; // 현재 수비력을 임시 저장
+    }
+
     private void OnStatChanged() //스탯 기반 공격력 & 방어력 계산
     {
-        int attack = 0;
-        int defense = 0;
+        int newAttack = 0;
+        int newDefense = 0;
         foreach (var stat in _stats)
         {
             switch (stat.Type)
@@ -250,17 +272,17 @@ public class Student
                 case potential.Stat2pt:
                 case potential.Stat3pt:
                 case potential.StatPass:
-                    attack += stat.Current;
+                    newAttack += stat.Current;
                     break;
                 case potential.StatBlock:
                 case potential.StatSteal:
                 case potential.StatRebound:
-                    defense += stat.Current;
+                    newDefense += stat.Current;
                     break;
             }
-        }            
-        _attack = attack;
-        _defense = defense;
+        }
+        _attackChange = newAttack - _attackChange;
+        _defenseChange = newDefense - _defenseChange;        
     }
 
     private void InitSpecies(Player_SpeciesDataReader db)

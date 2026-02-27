@@ -22,16 +22,13 @@ public class TrainingCharacterBox : MonoBehaviour
     public void Init(Student student)
     {
         _student = student;
+        _button.onClick.RemoveAllListeners();
         _button.onClick.AddListener(()=> StudentUIManager.Instance.OnTrainingCharacterBoxClick(_student));
         _nameText.text = _student.Name;
+        SetStudentState();
     }
 
-    public Button GetSelectButton() => _button;
-
-    private void OnDestroy()
-    {
-        _button.onClick.RemoveAllListeners();
-    }
+    public Button GetSelectButton() => _button;    
 
     //private void SetStudentImage(Student target)
     //{
@@ -40,18 +37,27 @@ public class TrainingCharacterBox : MonoBehaviour
 
     public void SetStudentState()
     {
+        var cv = _stateBackGround.GetComponent<CanvasGroup>();
+        cv.alpha = 0f;
+        _stateText.text = "";
         if (_student.State == StudentState.OverWorked)
         {
+            cv.alpha = 1f;
             _stateText.text = "과로";
+            _stateBackGround.color = Color.yellow;
             return;
         }
         if (_student.State == StudentState.Injured)
         {
+            cv.alpha = 1f;
+            _stateBackGround.color = Color.red;
             _stateText.text = "부상";
             return;
         }
         if (_student.CurrentTraining != null)
         {
+            cv.alpha = 1f;
+            _stateBackGround.color = Color.green;
             _stateText.text = StringManager.Instance.GetString(_student.CurrentTraining.GetNameKey());
             return;
         }

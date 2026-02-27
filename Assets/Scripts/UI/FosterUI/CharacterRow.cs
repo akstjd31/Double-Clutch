@@ -16,8 +16,8 @@ public class CharacterRow : MonoBehaviour
     public void Init(Student target)
     {
         _name.text = target.Name;
-        _attack.text = target.Attack.ToString();
-        _guard.text = target.Defense.ToString();
+        _attack.text = $"공격 : + {target.AttackChange}";
+        _guard.text = $"공격 : + {target.DefenseChange}";
         _condition.text = target.Condition.ToString();
         _state.text = GetStateString(target.State);
     }

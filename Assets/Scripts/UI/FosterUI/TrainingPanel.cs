@@ -44,4 +44,15 @@ public class TrainingPanel : MonoBehaviour
             _boxList.Add(newBox);
         }
     }
+
+    public void RefreshAllBoxesState()
+    {
+        foreach (var box in _boxList)
+        {
+            if (box != null)
+            {
+                box.SetStudentState();
+            }
+        }
+    }
 }
