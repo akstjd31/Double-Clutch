@@ -292,7 +292,10 @@ public class Student
             }
         }
         _attackChange = newAttack - _attackChange;
-        _defenseChange = newDefense - _defenseChange;        
+        _defenseChange = newDefense - _defenseChange;      
+        
+        _attack = newAttack;
+        _defense = newDefense;
     }
 
     private void InitSpecies(Player_SpeciesDataReader db)
