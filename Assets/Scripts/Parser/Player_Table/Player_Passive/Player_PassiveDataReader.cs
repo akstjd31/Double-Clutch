@@ -20,7 +20,7 @@ public class Player_PassiveDataReader : DataReaderBase
         effectType effectType = default;
         float effectValue = 0;
         int effectDuration = 0;
-        int CoolTime = 0;
+        int coolTime = 0;
         string passiveDesc = "";
 
         for (int i = 0; i < list.Count; i++)
@@ -79,8 +79,8 @@ public class Player_PassiveDataReader : DataReaderBase
                     int.TryParse(val, out effectDuration);
                     break;
 
-                case "CoolTime":
-                    int.TryParse(val, out CoolTime);
+                case "coolTime":
+                    int.TryParse(val, out coolTime);
                     break;
 
                 case "passiveDesc":
@@ -95,7 +95,7 @@ public class Player_PassiveDataReader : DataReaderBase
 
         DataList.Add(new Player_PassiveData(
             skillId, skillName, category, triggerCond, triggerValue, effectType,
-            effectValue, effectDuration, CoolTime, passiveDesc
+            effectValue, effectDuration, coolTime, passiveDesc
         ));
     }
 

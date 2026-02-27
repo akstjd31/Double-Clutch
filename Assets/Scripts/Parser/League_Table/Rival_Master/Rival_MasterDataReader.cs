@@ -14,6 +14,7 @@ public class Rival_MasterDataReader : DataReaderBase
     {
         string teamId = null, desc = null, teamNameKey = null;
         teamSector teamSector = default;
+        nation nation = default;
         string teamArchetypeId = null;
         teamTier teamTier = default;
         int minHumanoidCount = 0, minHumanCount = 0, minAnimalCount = 0, minCountSum = 0, weightHumanoid = 0, weightHuman = 0, weightAnimal = 0, weightSum = 0;
@@ -45,6 +46,15 @@ public class Rival_MasterDataReader : DataReaderBase
                         // 숫자(enum int)도 대응
                         if (int.TryParse(val, out var eInt)) teamSector = (teamSector)eInt;
                         else if (Enum.TryParse(val, true, out teamSector e)) teamSector = e;
+                    }
+                    break;
+                case "nation":
+                    // "Event", "League", "Training" 같은 문자열이 들어오는 형태
+                    if (!string.IsNullOrEmpty(val))
+                    {
+                        // 숫자(enum int)도 대응
+                        if (int.TryParse(val, out var eInt)) nation = (nation)eInt;
+                        else if (Enum.TryParse(val, true, out nation e)) nation = e;
                     }
                     break;
                 case "teamArchetypeId":
@@ -86,7 +96,7 @@ public class Rival_MasterDataReader : DataReaderBase
             }
         }
         DataList.Add(new Rival_MasterData(
-            teamId,desc,teamNameKey,teamSector,
+            teamId,desc,teamNameKey,teamSector,nation,
             teamArchetypeId,teamTier, minHumanoidCount,
             minHumanCount,minAnimalCount,minCountSum,
             weightHumanoid, weightHuman,weightAnimal,weightSum

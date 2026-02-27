@@ -2,7 +2,7 @@ using System;
 
 public enum nation
 {
-    None, Korea, America
+    None, Kr, Us
 }
 
 public enum namePart
@@ -13,15 +13,15 @@ public enum namePart
 [Serializable]
 public struct Player_NameData
 {
-    public string ID;
+    public string nameId;
     public nation nation;
     public namePart namePart;
     public string nameKey;
     public string desc;
 
-    public Player_NameData(string ID, nation nation, namePart namePart, string nameKey,string desc)
+    public Player_NameData(string nameId, nation nation, namePart namePart, string nameKey,string desc)
     {
-        this.ID = ID;
+        this.nameId = nameId;
         this.nation = nation;
         this.namePart = namePart;
         this.nameKey = nameKey;
