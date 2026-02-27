@@ -21,15 +21,15 @@ public class PlayerCard : MonoBehaviour, IPointerClickHandler
     {
         _player = student;
         _playerName.text = student.Name;
-        _playerPosition.text = _playerPosition.ToString();        
+        _playerPosition.text = student.Position.ToString();   
         if (student.State == StudentState.OverWorked)
         {
-            _playerState.text = "�Ƿ�";
+            _playerState.text = "OverWorked";
             _isAvailable = false;
         }
         else if (student.State == StudentState.Injured)
         {
-            _playerState.text = "�λ�";
+            _playerState.text = "Injured";
             _isAvailable = false;
         }
         else

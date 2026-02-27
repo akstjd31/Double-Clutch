@@ -59,6 +59,7 @@ public class CharacterList : MonoBehaviour
         {
             PlayerCard newCard = _playerCardPool.Get();
             // newCard.SetImageColor(GetNextColor());
+
             newCard.Init(student);
             CardList.Add(newCard);
         }
