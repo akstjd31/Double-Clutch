@@ -12,7 +12,7 @@ public class StringManager : Singleton<StringManager>
     protected override void Awake()
     {
         base.Awake();
-        SetLanguage(nation.Korea);
+        SetLanguage(nation.Kr);
         InitDict();
     }
 
@@ -51,7 +51,7 @@ public class StringManager : Singleton<StringManager>
         {
             switch (_nation)
             {
-                case nation.Korea:
+                case nation.Kr:
                     return data.ko;
                 default: //기본 설정은 한국어로
                     return data.ko;

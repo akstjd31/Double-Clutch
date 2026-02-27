@@ -4,6 +4,7 @@ using DG.Tweening;
 using TMPro; 
 using UnityEngine;
 using UnityEngine.UI;
+using System;
 
 public class MatchUIManager : MonoBehaviour
 {
@@ -30,8 +31,17 @@ public class MatchUIManager : MonoBehaviour
     [Header("Quarter End Popup")]
     [SerializeField] private GameObject _quarterEndPanel; // "2쿼터 종료" 팝업 전체
 
-    [Header("Event Popup")]
-    [SerializeField] private GameObject _eventPanel; // 하프타임 이벤트 패널 (유니티에서 연결)
+    [Header("Halftime Event Visual Novel UI")]
+    [SerializeField] private GameObject _halftimeVNPanel; // 비주얼 노벨 전체 패널
+    [SerializeField] private TextMeshProUGUI _txtDialogue; // 대사 출력 텍스트
+    [SerializeField] private Button _btnNext; // 일반 대화(Desc/End) 넘기기용 전체 화면 버튼
+    [SerializeField] private GameObject _choiceGroup; // 선택지 버튼들을 묶어둔 부모 객체
+    [SerializeField] private Button _btnChoice1;
+    [SerializeField] private TextMeshProUGUI _txtChoice1;
+    [SerializeField] private Button _btnChoice2;
+    [SerializeField] private TextMeshProUGUI _txtChoice2;
+    [SerializeField] private Button _btnChoice3;
+    [SerializeField] private TextMeshProUGUI _txtChoice3;
 
     [Header("Cut-In Effect")]
     [SerializeField] private GameObject _cutInPanel;      // 컷인 전체 패널 (Canvas 내 Panel)
@@ -58,12 +68,16 @@ public class MatchUIManager : MonoBehaviour
     private float[] _speedSteps = { 1.0f, 2.0f, 4.0f, 8.0f };
     private int _currentSpeedIndex = 0; // 현재 선택된 배속의 인덱스
 
+    private int _currentScriptId;
+    private int _currentLineId;
+    public bool IsEventFinished { get; private set; } = false;
+
     // 쿼터 종료 확인 버튼을 눌렀는지 체크하는 프로퍼티
     public bool IsQuarterEndConfirmed { get; private set; } = false;
 
-    // 이벤트 선택 상태 확인용 프로퍼티
-    public bool IsEventSelected { get; private set; } = false;
-    public int SelectedEventIndex { get; private set; } = -1;
+
+    // 확인 버튼을 눌렀을 때 실행할 함수를 담아둘 변수 추가
+    private Action _onResultConfirmAction;
 
     // 점수판 갱신 (시간, 점수)
     public void UpdateScoreBoard(MatchState state)
@@ -192,8 +206,9 @@ public class MatchUIManager : MonoBehaviour
 
 
     // 경기 종료 시 호출할 함수
-    public void ShowResultPopup(string homeName, int homeScore, string awayName, int awayScore, int rewardAmount = 0)
+    public void ShowResultPopup(string homeName, int homeScore, string awayName, int awayScore, int rewardAmount = 0, Action onConfirm = null)
     {
+        _onResultConfirmAction = onConfirm;
         // 패널 켜기
         if (_resultPanel != null)
         {
@@ -232,32 +247,104 @@ public class MatchUIManager : MonoBehaviour
             _resultPanel.transform.DOScale(1f, 0.5f).SetEase(Ease.OutBack);
         }
     }
-    //  하프타임 패널 열기
-    public void ShowHalfTimeEvent()
+    public void StartHalftimeEvent(int scriptId)
     {
-        if (_eventPanel != null)
-        {
-            _eventPanel.SetActive(true);
-            IsEventSelected = false; // 선택 대기 상태로 초기화
-            SelectedEventIndex = -1;
+        _currentScriptId = scriptId;
+        _currentLineId = 1; // 스크립트의 첫 번째 줄(currentId = 1)부터 시작
+        IsEventFinished = false;
 
-            // 등장 연출
-            _eventPanel.transform.localScale = Vector3.zero;
-            _eventPanel.transform.DOScale(1f, 0.5f).SetEase(Ease.OutBack);
+        if (_halftimeVNPanel != null)
+        {
+            _halftimeVNPanel.SetActive(true);
+            _halftimeVNPanel.transform.localScale = Vector3.zero;
+            _halftimeVNPanel.transform.DOScale(1f, 0.5f).SetEase(Ease.OutBack);
+        }
+
+        ShowScriptLine(_currentLineId);
+    }
+
+    private void ShowScriptLine(int lineId)
+    {
+        MatchState matchState = UnityEngine.Object.FindFirstObjectByType<MatchState>();
+
+        // 현재 스크립트 ID와 라인 ID가 일치하는 데이터를 테이블에서 검색
+        var lineData = matchState.HalftimeScriptReader.DataList.Find(x => x.scriptId == _currentScriptId && x.currentId == lineId);
+
+        // 데이터를 못 찾거나 0이면 이벤트 강제 종료 (안전장치)
+        if (lineData.scriptId == 0)
+        {
+            EndHalftimeEvent();
+            return;
+        }
+
+        // 대사 출력 (StringManager 연동)
+        if (_txtDialogue != null)
+            _txtDialogue.text = StringManager.Instance.GetString(lineData.textKey);
+
+        // 타입에 따른 버튼 및 선택지 활성화 처리
+        _btnNext.gameObject.SetActive(false);
+        _choiceGroup.SetActive(false);
+
+        if (lineData.textType == textType.Desc)
+        {
+            // 일반 대화: 화면(또는 Next버튼) 클릭 시 다음 줄로 이동
+            _btnNext.gameObject.SetActive(true);
+            _btnNext.onClick.RemoveAllListeners();
+            _btnNext.onClick.AddListener(() =>
+            {
+                if (lineData.nextId == 0) EndHalftimeEvent();
+                else ShowScriptLine(lineData.nextId);
+            });
+        }
+        else if (lineData.textType == textType.Choice)
+        {
+            // 선택지 표시
+            _choiceGroup.SetActive(true);
+            SetupChoiceButton(_btnChoice1, _txtChoice1, lineData.choice01, lineData.choiceStat01, lineData.changeStat01, lineData.choicePosition01, lineData.changePosition01, lineData.nextId01);
+            SetupChoiceButton(_btnChoice2, _txtChoice2, lineData.choice02, lineData.choiceStat02, lineData.changeStat02, lineData.choicePosition02, lineData.changePosition02, lineData.nextId02);
+            SetupChoiceButton(_btnChoice3, _txtChoice3, lineData.choice03, lineData.choiceStat03, lineData.changeStat03, lineData.choicePosition03, lineData.changePosition03, lineData.nextId03);
+        }
+        else if (lineData.textType == textType.End)
+        {
+            // 이벤트 종료
+            _btnNext.gameObject.SetActive(true);
+            _btnNext.onClick.RemoveAllListeners();
+            _btnNext.onClick.AddListener(EndHalftimeEvent);
         }
     }
-    // 버튼 클릭 시 호출할 함수 (유니티 버튼 OnClick에 연결)
-    public void OnClickEventButton(int index)
-    {
-        SelectedEventIndex = index;
-        IsEventSelected = true; // 선택 완료 플래그 켜기
 
-        // 패널 닫기
-        if (_eventPanel != null)
+    private void SetupChoiceButton(Button btn, TextMeshProUGUI txt, string choiceTextKey, potential stat, float statChange, Position pos, changeType posChange, int nextId)
+    {
+        // 선택지 데이터가 비어있으면 버튼 비활성화
+        if (string.IsNullOrEmpty(choiceTextKey) || choiceTextKey == "-")
         {
-            _eventPanel.SetActive(false);
+            btn.gameObject.SetActive(false);
+            return;
         }
+
+        btn.gameObject.SetActive(true);
+        txt.text = StringManager.Instance.GetString(choiceTextKey);
+
+        btn.onClick.RemoveAllListeners();
+        btn.onClick.AddListener(() =>
+        {
+            // 선택지에 따른 효과를 즉시 적용
+            MatchState matchState = UnityEngine.Object.FindFirstObjectByType<MatchState>();
+            matchState.ApplyHalfTimeEffectDirectly(stat, statChange, pos, posChange);
+
+            // 결과 대사(다음 줄)로 이동
+            if (nextId == 0) EndHalftimeEvent();
+            else ShowScriptLine(nextId);
+        });
     }
+
+    private void EndHalftimeEvent()
+    {
+        if (_halftimeVNPanel != null) _halftimeVNPanel.SetActive(false);
+        IsEventFinished = true; // MatchEngine 코루틴에 신호 전달
+    }
+
+
     public void OnClickSpeedButton()
     {
         if (_replayer == null)
@@ -348,5 +435,16 @@ public class MatchUIManager : MonoBehaviour
         {
             _quarterEndPanel.SetActive(false); // 팝업 닫기
         }
+    }
+    // 버튼 클릭 함수
+    public void OnClickResultConfirmButton()
+    {
+        if (_resultPanel != null)
+        {
+            _resultPanel.SetActive(false);
+        }
+
+        // ResultState에서 넘겨줬던 ReturnToLobby 함수를 여기서 실행
+        _onResultConfirmAction?.Invoke();
     }
 }

@@ -20,6 +20,7 @@ public struct Rival_MasterData
     public string desc;
     public string teamNameKey;
     public teamSector teamsector;
+    public nation nation;
     public string teamArchetypeId;
     public teamTier teamTier;
     public int minHumanoidCount;
@@ -33,7 +34,7 @@ public struct Rival_MasterData
 
     public Rival_MasterData(
         string teamId, string desc, string teamNameKey, 
-        teamSector teamsector, string teamArchetypeId, teamTier teamTier, 
+        teamSector teamsector, nation nation, string teamArchetypeId, teamTier teamTier, 
         int minHumanoidCount,int minHumanCount, int minAnimalCount, int minCountSum,
         int weightHumanoid, int weightHuman, int weightAnimal, int weightSum)
     {
@@ -41,6 +42,7 @@ public struct Rival_MasterData
         this.desc = desc;
         this.teamNameKey = teamNameKey;
         this.teamsector = teamsector;
+        this.nation = nation;
         this.teamArchetypeId = teamArchetypeId;
         this.teamTier = teamTier;
         this.minHumanoidCount = minHumanoidCount;

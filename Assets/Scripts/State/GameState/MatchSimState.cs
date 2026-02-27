@@ -111,6 +111,9 @@ public class MatchSimState : IState
         stats.Add(MatchStatType.Rebound, s.GetCurrentStat(potential.StatRebound));
         stats.Add(MatchStatType.Dribble, 50);
 
-        return new MatchPlayer(id, s.Name, pos, stats, "Student_Resource");
+        string actualVisualKey = s.VisualData.playerImageResource;
+        if (string.IsNullOrEmpty(actualVisualKey)) actualVisualKey = "Default_Player_Sprite";
+
+        return new MatchPlayer(id, s.Name, pos, stats, actualVisualKey, s.Passive);
     }
 }

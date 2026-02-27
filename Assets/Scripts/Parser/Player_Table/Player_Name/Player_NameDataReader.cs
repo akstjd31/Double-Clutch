@@ -12,7 +12,7 @@ public class Player_NameDataReader : DataReaderBase
     // ✅ ItemData처럼 List<GSTU_Cell> 한 줄을 받아서 파싱
     internal void UpdateStats(List<GSTU_Cell> list, int rowIndex)
     {
-        string ID = null;
+        string nameId = null;
         nation nation = default;
         namePart namePart = default;
         string nameKey = null;
@@ -28,8 +28,8 @@ public class Player_NameDataReader : DataReaderBase
 
             switch (col)
             {
-                case "ID":
-                    ID = val;
+                case "nameId":
+                    nameId = val;
                     break;
                 case "nation":
                     if (!string.IsNullOrEmpty(val))
@@ -58,9 +58,9 @@ public class Player_NameDataReader : DataReaderBase
         }
 
         // ✅ weekId가 없으면 스킵 (타입행/빈행 방지)
-        if (string.IsNullOrEmpty(ID)) return;
+        if (string.IsNullOrEmpty(nameId)) return;
 
-        DataList.Add(new Player_NameData(ID, nation, namePart, nameKey, desc
+        DataList.Add(new Player_NameData(nameId, nation, namePart, nameKey, desc
         ));
     }
 

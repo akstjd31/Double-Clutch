@@ -24,6 +24,7 @@ public class MatchState : MonoBehaviour
     // 경기 로그 (텍스트)
     private List<string> _matchLogs = new List<string>();
 
+    public Halftime_ScriptDataReader HalftimeScriptReader => _halftimeScriptReader;
     public int CurrentQuarter => _currentQuarter;
     public float RemainTime => _remainTime;
     public TeamSide BallPossession => _ballPossession;
@@ -61,53 +62,30 @@ public class MatchState : MonoBehaviour
     }
 
     //  하프타임 이벤트 효과 적용 함수 (껍데기)
-    public void ApplyHalfTimeEffect(int choiceIndex)
+    public void ApplyHalfTimeEffectDirectly(potential stat, float statAmount, Position targetPos, changeType posChange)
     {
-        if (_halftimeScriptReader == null) return;
+        // 효과가 없는 선택지라면 바로 종료
+        if (stat == potential.None && posChange == changeType.None) return;
 
-        // 현재 진행 중인 하프타임 이벤트 스크립트 로드
-        var script = _halftimeScriptReader.DataList.Find(x => x.scriptId == CurrentHalftimeScriptId);
-        if (script.scriptId == 0) return;
-
-        potential choiceStat = default;
-        Position choicePosition = default;
-        float changeStat = 0;
-        changeType changePosType = default;
-
-        // 선택지 버튼(0, 1, 2)에 따라 1번, 2번, 3번 효과 매핑
-        if (choiceIndex == 0)
-        {
-            choiceStat = script.choiceStat01; choicePosition = script.choicePosition01;
-            changeStat = script.changeStat01; changePosType = script.changePosition01;
-        }
-        else if (choiceIndex == 1)
-        {
-            choiceStat = script.choiceStat02; choicePosition = script.choicePosition02;
-            changeStat = script.changeStat02; changePosType = script.changePosition02;
-        }
-        else if (choiceIndex == 2)
-        {
-            choiceStat = script.choiceStat03; choicePosition = script.choicePosition03;
-            changeStat = script.changeStat03; changePosType = script.changePosition03;
-        }
-
-        // 유저 팀(HomeTeam) 선수들에게 효과 적용
         foreach (var player in _homeTeam.Roster)
         {
-            // 대상 포지션이 일치하거나, 특정 포지션 지목이 없는 경우(None)
-            if (choicePosition == Position.None || player.MainPosition == choicePosition)
+            // 대상 포지션이 일치하거나, 특정 포지션 지목이 없는 경우(None)에만 적용
+            if (targetPos == Position.None || player.MainPosition == targetPos)
             {
                 // 포지션(진형) 변경
-                if (changePosType != changeType.None)
-                    player.TempPositionChange = changePosType;
+                if (posChange != changeType.None)
+                    player.TempPositionChange = posChange;
 
                 // 스탯 버프 적용
-                MatchStatType statType = ConvertPotentialToMatchStat(choiceStat);
-                player.AddTempStatBuff(statType, changeStat);
+                if (stat != potential.None)
+                {
+                    MatchStatType matchStat = ConvertPotentialToMatchStat(stat);
+                    player.AddTempStatBuff(matchStat, statAmount);
+                }
             }
         }
 
-        AddLog($"<color=orange>=== 하프타임 전술 지시 완료! (스탯 변화: {changeStat}, 진형: {changePosType}) ===</color>");
+        AddLog($"<color=orange>=== 하프타임 전술 지시 적용 완료! ===</color>");
     }
 
     // 잠재력 Enum을 MatchStat Enum으로 변환해주는 헬퍼 함수
