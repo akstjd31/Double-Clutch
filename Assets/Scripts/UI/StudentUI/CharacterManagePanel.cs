@@ -40,6 +40,7 @@ public class CharacterManagePanel : MonoBehaviour
             var btn = newBox.GetSelectButton(); // 뒤로가기 버튼 설정
             btn.onClick.RemoveAllListeners();
             btn.onClick.AddListener(() => { _backButtonObj.SetActive(false); });
+            btn.onClick.AddListener(() => StudentUIManager.Instance.OnCharacterBoxClick(newBox.Target));
 
             _boxList.Add(newBox);
         }
