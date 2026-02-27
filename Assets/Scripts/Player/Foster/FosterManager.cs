@@ -90,24 +90,31 @@ public class FosterManager : MonoBehaviour
 
     public void UpdateScheduleState()
     {
-        int maxStudentCount = StudentManager.Instance.MyStudents.Count;
+        if (StudentManager.Instance == null || StudentUIManager.Instance == null) return;
+
+        // 2. 학생 목록 가져오기
+        var students = StudentManager.Instance.MyStudents;
+        int maxStudentCount = (students != null) ? students.Count : 0;
         int currentReservedCount = 0;
         bool canStart = false;
 
+        // 디버깅: 현재 학생 수가 몇 명으로 찍히는지 확인 (0이 나온다면 데이터 로드 순서 문제)
+        Debug.Log($"[FosterManager] 현재 학생 수: {maxStudentCount}, 예약된 수: {_schedules.Count}");
+
         if (_teamSchedule != null)
         {
-            // 팀 스케줄이 있으면 무조건 꽉 찬 것으로 간주
             currentReservedCount = maxStudentCount;
-            canStart = true;
+            // 학생이 최소 1명은 있어야 팀 훈련 시작 가능
+            canStart = (maxStudentCount > 0);
         }
         else
         {
-            // 개인 스케줄은 딕셔너리에 담긴 학생 수
             currentReservedCount = _schedules.Count;
-            canStart = (currentReservedCount == maxStudentCount);
+            // 개인 훈련은 예약된 수와 전체 학생 수가 같아야 하며, 학생 수가 0보다 커야 함
+            canStart = (maxStudentCount > 0 && currentReservedCount == maxStudentCount);
         }
 
-        // UI 매니저에게 전달
+        // 3. UI 매니저에게 전달
         StudentUIManager.Instance.RefreshStartFosterButton(canStart, currentReservedCount, maxStudentCount);
     }
 
@@ -181,6 +188,7 @@ public class FosterManager : MonoBehaviour
         target.SetCurrentTraining(command);
         _scheduleCost = nextTotalCost; // 최종 비용 업데이트
         UpdateScheduleState(); //버튼 표시 및 활성화 여부 갱신
+        StudentUIManager.Instance.OnTrainingReserved();
     }
 
     public void ReserveTeamTraining(ITraining command)
@@ -207,6 +215,7 @@ public class FosterManager : MonoBehaviour
         _scheduleCost = nextTotalCost;
 
         UpdateScheduleState(); //버튼 표시 및 활성화 여부 갱신
+        StudentUIManager.Instance.OnTrainingReserved();
     }
 
 

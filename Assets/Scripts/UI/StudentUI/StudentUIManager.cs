@@ -55,7 +55,8 @@ public class StudentUIManager : MonoBehaviour
     public void OnTrainingButtonClick() //로비 화면의 육성버튼 온클릭에서 호출
     {
         _trainingPanel.gameObject.SetActive(true);
-        FosterManager.Instance.UpdateScheduleState();
+
+        FosterManager.Instance.UpdateScheduleState();       
     }
 
     public void OnTrainingCharacterBoxClick(Student target) //플레이어 박스 온클릭에서 호출
@@ -68,6 +69,11 @@ public class StudentUIManager : MonoBehaviour
     {
         _individualTrainingCommandPopUp.gameObject.SetActive(false);
         _teamTrainingCommandPopUp.gameObject.SetActive(false);
+    }
+
+    public void OnTrainingReserved()
+    {
+        _trainingPanel.RefreshAllBoxesState();
     }
 
     public void OnTeamTrainingButtonClick() //단순 활성화라 인스펙터 연결로 해도 OK

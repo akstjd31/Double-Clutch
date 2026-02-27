@@ -67,7 +67,10 @@ public class Student
     public int Condition => _condition;
     public int CureCount => _cureCount;
     public ITraining CurrentTraining => _currentTraining;
-
+    public void ResetTrainingSchedule()
+    {
+        _currentTraining = null;
+    }
     public void SetCurrentTraining(ITraining training)
     {
         _currentTraining = training;

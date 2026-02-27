@@ -61,6 +61,7 @@ public class IndividualRest : ITraining
                 _target.ChangeState(StudentState.None);
                 break;
         }
+        _target.ResetTrainingSchedule();
     }
 
     public string GetNameKey()

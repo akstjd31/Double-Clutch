@@ -22,16 +22,13 @@ public class TrainingCharacterBox : MonoBehaviour
     public void Init(Student student)
     {
         _student = student;
+        _button.onClick.RemoveAllListeners();
         _button.onClick.AddListener(()=> StudentUIManager.Instance.OnTrainingCharacterBoxClick(_student));
         _nameText.text = _student.Name;
+        SetStudentState();
     }
 
-    public Button GetSelectButton() => _button;
-
-    private void OnDestroy()
-    {
-        _button.onClick.RemoveAllListeners();
-    }
+    public Button GetSelectButton() => _button;    
 
     //private void SetStudentImage(Student target)
     //{
