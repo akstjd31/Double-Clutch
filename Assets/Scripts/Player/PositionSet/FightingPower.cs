@@ -11,7 +11,7 @@ public class FightingPower : MonoBehaviour
     [SerializeField] TextMeshProUGUI _fightingPowerText;
     [SerializeField] CharacterPowerBox[] _fightingList = new CharacterPowerBox[5];
     [SerializeField] CharacterList _characterList;
-    int _totalFightingPower = 0;
+    int _totalFightingPower = 0;    
 
     public void Init()
     {
