@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using static UnityEditor.AddressableAssets.Build.Layout.BuildLayout;
 
 public class GraduationManager : MonoBehaviour
 {
@@ -22,31 +21,26 @@ public class GraduationManager : MonoBehaviour
 
 
     public List<Student> GraduationStudentList => _graduationStudentList;
+    public PromotionPanel PromotionPanel => _promotionPanel;
     public List<Student> PromotionStudentList => _promotionStudentList;
     public List<Student> MyStudents => _myStudents;
-
-    //public List<TestStudent> TestGraduationStudentList => _testGraduationStudentList;
-    //public List<TestStudent> TestPromotionStudentList => _testPromotionStudentList;
-    public int Turn => _turn;
+    public int Turn { get { return _turn; } set { _turn = value; } }
     public int TotalHonor => _totalHonor;
-    private void OnEnable()
+
+    private void Start()
     {
-        
-        //var test = new TestStudent(0, "테스트1", 0, 100);
-        //_myTestStudents.Add(test);
-        //test = new TestStudent(1, "테스트2", 1, 200);
-        //_myTestStudents.Add(test);
-        //test = new TestStudent(2, "테스트3", 2, 300);
-        //_myTestStudents.Add(test);
-        //test = new TestStudent(3, "테스트4", 2, 400);
-        //_myTestStudents.Add(test);
-        //test = new TestStudent(4, "테스트5", 2, 500);
-        //_myTestStudents.Add(test);
+        _turn = 0;
+        _myStudents = StudentManager.Instance.MyStudents;
+        if( _myStudents == null )
+        {
+            Debug.Log("학생 리스트없음");
+        }
         ListCreat();
 
         _turn = 0;
         //처음 학생 프로필 띄우기
-        //_promotionPanel.Profile(_promotionStudentList[_turn]);
+        _promotionPanel.GetList();
+        _promotionPanel.UpdateProfile();
     }
 
     private void ListCreat()
@@ -55,21 +49,8 @@ public class GraduationManager : MonoBehaviour
 
         for (int i = 0; i < _myStudents.Count; i++)
         {
-            //테스트용_3학년이면 졸업생 리스트에 추가
-            //if (_myTestStudents[i].Grade == 2)
-            //{
-            //    _testGraduationStudentList.Add(_myTestStudents[i]);
-            //    _totalHonor += _myTestStudents[i].Honor;
-            //    Debug.Log(_myTestStudents[i].Name + "추가");
-            //}
-            //else
-            //{
-            //    _testPromotionStudentList.Add(_myTestStudents[i]);
-            //    Debug.Log($"{_myTestStudents[i].Name} : {_myTestStudents[i].Grade} 학년 진급생");
-            //}
-
             //3학년이면 졸업생 리스트에 추가
-            if (_myStudents[i].Grade == 2)
+            if (_myStudents[i].Grade == 3)
             {
                 _graduationStudentList.Add(_myStudents[i]);
                 Debug.Log(_myStudents[i].Name + "추가");
@@ -81,5 +62,4 @@ public class GraduationManager : MonoBehaviour
             }
         }
     }
-
 }

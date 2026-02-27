@@ -19,7 +19,7 @@ public class GraduationListPanel : MonoBehaviour
     List<Student> _myStudents;
     List<Student> _graduationStudentList;
 
-    private void Start()
+    private void OnEnable()
     {
         _myStudents = _graduationManager.MyStudents;
         _graduationStudentList = _graduationManager.GraduationStudentList;
