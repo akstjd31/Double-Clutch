@@ -5,7 +5,6 @@ using UnityEngine.UI;
 public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
     [SerializeField] private Canvas _rootCanvas;
-    [SerializeField] private CharacterList _charList;
     private Transform _currentParent;
     private RectTransform _rect;
     private CanvasGroup _canvasGroup;
@@ -19,7 +18,6 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
         _rootCanvas = GameObject.FindAnyObjectByType<Canvas>();
         _currentParent = this.transform.parent;
         _canvasGroup = this.GetComponent<CanvasGroup>();
-        _charList = _currentParent.GetComponent<CharacterList>();
         _playerCard = this.GetComponent<PlayerCard>();
         _rect = (RectTransform)this.transform;
     }
@@ -67,8 +65,6 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
         {
             this.transform.SetParent(_currentParent, false);
             _rect.anchoredPosition = Vector2.zero;
-
-            _charList.ReFresh();
         }
     }
 
@@ -79,9 +75,11 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
         _droppedSuccessfully = true;
 
         // 새 부모로 적용
-        transform.SetParent(newParent, false);
-        _rect.anchoredPosition = Vector2.zero;
-        _rect.localScale = Vector3.one;
+        transform.SetParent(newParent, true);
+        _rect.anchorMin = new Vector2(0.5f, 0.5f);
+        _rect.anchorMax = new Vector2(0.5f, 0.5f);
+        _rect.pivot = new Vector2(0.5f, 0.5f);
+        _rect.anchoredPosition = Vector2.zero; // 부모 기준 정확히 중앙
 
         // 기존 부모 변경
         _currentParent = newParent;
