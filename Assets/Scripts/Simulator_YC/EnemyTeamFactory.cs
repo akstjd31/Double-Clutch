@@ -193,7 +193,7 @@ public class EnemyTeamFactory : MonoBehaviour
     private string GenerateRivalName(teamSector sector)
     {
         // DOM(국내)이면 한국 이름, OS(해외)이거나 NA(안드로이드)면 외국 이름 사용
-        nation targetNation = (sector == teamSector.DOM) ? nation.Korea : nation.America;
+        nation targetNation = (sector == teamSector.DOM) ? nation.Kr : nation.Us;
 
         List<string> firsts = new List<string>();
         List<string> middles = new List<string>();
@@ -218,7 +218,7 @@ public class EnemyTeamFactory : MonoBehaviour
         string l = lasts.Count > 0 ? lasts[Random.Range(0, lasts.Count)] : "";
 
         // 한국은 "성+가운데+끝", 미국은 "First Name + Last Name" 조합
-        if (targetNation == nation.Korea)
+        if (targetNation == nation.Kr)
             return $"{f}{m}{l}";
         else
             return $"{f} {l}";
