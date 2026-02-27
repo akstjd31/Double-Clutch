@@ -37,6 +37,12 @@ public class PlayerCard : MonoBehaviour, IPointerClickHandler
             _isAvailable = true;
         }
 
+        // 참여하지 못하는 선수는 레이캐스트 꺼버림
+        if (!_isAvailable)
+        {
+            this.GetComponent<Image>().raycastTarget = false;
+        }
+
         if (_outline != null)
             _outline.enabled = false;
     }
