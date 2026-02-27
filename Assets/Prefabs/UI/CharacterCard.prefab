@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 8934900536845486016}
   - component: {fileID: 3666038086555184242}
   - component: {fileID: 6905289655230804431}
+  - component: {fileID: 118376490046522245}
   m_Layer: 5
   m_Name: CharacterCard
   m_TagString: Untagged
@@ -140,10 +141,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 35a0326951e6f9e4c8cea4ef576a31c0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerCard
+  _outline: {fileID: 118376490046522245}
   _playerImage: {fileID: 7843508669498026196}
   _playerName: {fileID: 7096972599931828481}
   _playerPosition: {fileID: 8883657025028434308}
   _playerState: {fileID: 1876441338508144909}
+--- !u!114 &118376490046522245
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2429963354507587159}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e19747de3f5aca642ab2be37e372fb86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Outline
+  m_EffectColor: {r: 0, g: 1, b: 0, a: 0.5}
+  m_EffectDistance: {x: 5, y: -5}
+  m_UseGraphicAlpha: 1
 --- !u!1 &3150595240292408118
 GameObject:
   m_ObjectHideFlags: 0

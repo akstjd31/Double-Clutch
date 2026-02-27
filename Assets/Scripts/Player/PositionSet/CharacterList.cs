@@ -25,6 +25,8 @@ public class CharacterList : MonoBehaviour
     public PlayerCard[] PositionCards => _positionCards;
 
     [SerializeField] private DropPosition[] _dropPositions;
+    private PlayerCard _selectedCard;
+    private DropPosition _selectedPosition;
 
 
     private int _colorIndex;
@@ -47,7 +49,6 @@ public class CharacterList : MonoBehaviour
         _positionCards = new PlayerCard[MAX_BATCH_COUNT];
     }
 
-
     private void OnEnable()
     {
         ClearAllCards();
@@ -61,6 +62,83 @@ public class CharacterList : MonoBehaviour
             newCard.Init(student);
             CardList.Add(newCard);
         }
+    }
+
+    public void OnClickPosition(DropPosition dPos)
+    {
+        if (dPos == null) return;
+
+        if (_selectedPosition == dPos)
+        {
+            ClearSelectedCards();
+            TryPlaceSelected();
+            return;
+        }
+
+        ClearSelectedPosition();
+
+        _selectedPosition = dPos;
+        _selectedPosition.SetSelected(true);
+
+        TryPlaceSelected();
+    }
+
+    public void OnClickCard(PlayerCard card)
+    {
+        if (card == null) return;
+
+        if (_selectedCard == card)
+        {
+            ClearSelectedCards();
+            TryPlaceSelected();
+            return;
+        }
+
+        ClearSelectedCards();
+
+        _selectedCard = card;
+        _selectedCard.SetSelected(true);
+
+        TryPlaceSelected();
+    }
+
+    private void TryPlaceSelected()
+    {
+        if (_selectedCard == null || _selectedPosition == null) return;
+
+        // 선택된 카드가 이미 다른 포지션에 배치된 상태여도
+        // AddOnPosition 내부에서 already 처리 + 교체 처리함
+        bool placed = AddOnPosition(_selectedCard, _selectedPosition);
+
+        // 배치가 성공하면 선택 해제
+        if (placed)
+        {
+            ClearSelectedCards();
+            ClearSelectedPosition();
+        }
+        // 실패 경우
+        else
+        {
+            ClearSelectedCards();
+        }
+    }
+
+    // 선택된 포지션 null 처리
+    private void ClearSelectedPosition()
+    {
+        if (_selectedPosition != null)
+            _selectedPosition.SetSelected(false);
+
+        _selectedPosition = null;
+    }
+
+    // 선택된 카드 null 처리
+    private void ClearSelectedCards()
+    {
+        if (_selectedCard != null)
+            _selectedCard.SetSelected(false);
+
+        _selectedCard = null;
     }
 
     public Color GetNextColor()
@@ -105,16 +183,36 @@ public class CharacterList : MonoBehaviour
         // 교체
         var prev = _positionCards[idx];
         if (prev != null && prev != card)
-            _cardList.Add(prev);
+        {
+            if (!_cardList.Contains(prev)) _cardList.Add(prev);
+            prev.transform.SetParent(_cardContainer, false);
+            prev.transform.SetAsLastSibling();
+        }
+        ;
 
         // 배치
         _positionCards[idx] = card;
 
         _cardList.Remove(card);
 
+        card.transform.SetParent(_dropPositions[idx].transform, false);
+        card.transform.SetAsLastSibling();
+
+        card.transform.SetParent(dPos.transform, true);
+        var rect = (RectTransform)card.transform;
+        SetAnchor(rect);
+
         // 포지셔닝이 완료되었다면 버튼 활성화
         _matchStartPanelObj.SetActive(CheckMaxPositionBatch());
         return true;
+    }
+
+    public void SetAnchor(RectTransform rect)
+    {
+        rect.anchorMin = new Vector2(0.5f, 0.5f);
+        rect.anchorMax = new Vector2(0.5f, 0.5f);
+        rect.pivot = new Vector2(0.5f, 0.5f);
+        rect.anchoredPosition = Vector2.zero; // 부모 기준 정확히 중앙
     }
 
     public PlayerCard RemoveOnPosition(PlayerCard card)
@@ -135,6 +233,9 @@ public class CharacterList : MonoBehaviour
         // 리스트에 없으면 복귀
         if (!_cardList.Contains(card))
             _cardList.Add(card);
+
+        card.transform.SetParent(_cardContainer, false);
+        card.transform.SetAsLastSibling();
 
         return card;
     }
