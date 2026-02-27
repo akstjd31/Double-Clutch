@@ -15,10 +15,14 @@ public class Event_ChoiceDataReader : DataReaderBase
         string index = null;
         string scriptId = null;
         int currentId = 0;
+        textType textType = default;
         string textKey = null;
 
-        textType textType = default;
+        string speakDirection = null;
+        string playerName = null;
+
         string standingRight = null;
+        string standingMiddle = null;
         string standingLeft = null;
         string background = null;
         string cg = null;
@@ -65,9 +69,20 @@ public class Event_ChoiceDataReader : DataReaderBase
                 case "textKey":
                     textKey = val;
                     break;
+                case "speakDirection":
+                    speakDirection = val;
+                    break;
+                case "playerName":
+                    playerName = val;
+                    break;
+
                 case "standingLeft":
                     standingLeft = val;
                     break;
+                case "standMiddle":
+                    standingMiddle = val;
+                    break;
+
                 case "standingRight":
                     standingRight = val;
                     break;
@@ -118,7 +133,7 @@ public class Event_ChoiceDataReader : DataReaderBase
         var synergyData = new Event_ChoiceData
         (
             index, scriptId, currentId, 
-            textType, textKey,  standingLeft, standingRight, background, cg,
+            textType, textKey, speakDirection, playerName, standingLeft, standingMiddle, standingRight, background, cg,
             choice01, choice02, choice03,
             bgm, sfx, buttonEffectId, hoverSeId,
             textSpeed, cameraEffectId, startEffectId

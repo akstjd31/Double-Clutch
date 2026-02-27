@@ -15,7 +15,12 @@ public struct Event_ChoiceData
     public textType textType;
 
     public string textKey;
+
+    public string speakDirection;
+    public string playerName;
+
     public string standingLeft;
+    public string standMiddle;
     public string standingRight;
     public string background;
     public string cg;
@@ -37,7 +42,8 @@ public struct Event_ChoiceData
     public Event_ChoiceData
         (
         string index, string scriptId, int currentId,
-        textType textType, string textKey, string standingLeft, string standingRight, string background, string cg,
+        textType textType, string textKey, string speakDirection, string playerName,
+        string standingLeft, string standMiddle, string standingRight, string background, string cg,
         string choice01, string choice02, string choice03,
         string bgm, string sfx, string buttonEffectId, string hoverSeId,
         float textSpeed, string cameraEffectId, string startEffectId
@@ -50,7 +56,11 @@ public struct Event_ChoiceData
         this.textType = textType;
 
         this.textKey = textKey;
+        this.speakDirection = speakDirection;
+        this.playerName = playerName;
+
         this.standingLeft = standingLeft;
+        this.standMiddle = standMiddle;
         this.standingRight = standingRight;
         this.background = background;
         this.cg = cg;
