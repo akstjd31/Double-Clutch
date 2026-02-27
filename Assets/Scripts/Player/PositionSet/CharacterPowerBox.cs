@@ -1,7 +1,9 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-
+ /// <summary>
+ /// 전력 비교창 UI 표시용(학생 한 명에 해당)
+ /// </summary>
 public class CharacterPowerBox : MonoBehaviour
 {
     //[SerializeField] Image _characterImage;

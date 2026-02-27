@@ -1214,8 +1214,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 568505876}
   m_HandleRect: {fileID: 568505875}
   m_Direction: 2
-  m_Value: 0.9999845
-  m_Size: 0.60413456
+  m_Value: 0.9999985
+  m_Size: 0.6041344
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -6098,6 +6098,7 @@ GameObject:
   - component: {fileID: 249836318}
   - component: {fileID: 249836317}
   - component: {fileID: 249836316}
+  - component: {fileID: 249836319}
   m_Layer: 5
   m_Name: CharacterBox (1)
   m_TagString: Untagged
@@ -6191,6 +6192,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 249836314}
   m_CullTransparentMesh: 1
+--- !u!114 &249836319
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 249836314}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3af23bdfd6014094ea36add7734b9d11, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CharacterPowerBox
+  _characterName: {fileID: 116315572}
+  _characterPosition: {fileID: 1218560398}
+  _characterAttack: {fileID: 1851174413}
+  _characterDefense: {fileID: 1068381672}
 --- !u!1 &252784484
 GameObject:
   m_ObjectHideFlags: 0
@@ -9246,6 +9263,7 @@ GameObject:
   - component: {fileID: 432924906}
   - component: {fileID: 432924905}
   - component: {fileID: 432924904}
+  - component: {fileID: 432924907}
   m_Layer: 5
   m_Name: CharacterBox
   m_TagString: Untagged
@@ -9339,6 +9357,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 432924902}
   m_CullTransparentMesh: 1
+--- !u!114 &432924907
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 432924902}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3af23bdfd6014094ea36add7734b9d11, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CharacterPowerBox
+  _characterName: {fileID: 982464141}
+  _characterPosition: {fileID: 64143566}
+  _characterAttack: {fileID: 617813861}
+  _characterDefense: {fileID: 2097712517}
 --- !u!1 &434063817
 GameObject:
   m_ObjectHideFlags: 0
@@ -11844,8 +11878,8 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1205930628}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0.3958593}
-  m_AnchorMax: {x: 1, y: 0.99999386}
+  m_AnchorMin: {x: 0, y: 0.39586502}
+  m_AnchorMax: {x: 1, y: 0.9999994}
   m_AnchoredPosition: {x: 0.00004196167, y: 0}
   m_SizeDelta: {x: 0.000026703, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -16901,6 +16935,7 @@ GameObject:
   - component: {fileID: 789648480}
   - component: {fileID: 789648479}
   - component: {fileID: 789648478}
+  - component: {fileID: 789648481}
   m_Layer: 5
   m_Name: CharacterBox (3)
   m_TagString: Untagged
@@ -16994,6 +17029,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 789648476}
   m_CullTransparentMesh: 1
+--- !u!114 &789648481
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 789648476}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3af23bdfd6014094ea36add7734b9d11, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CharacterPowerBox
+  _characterName: {fileID: 1916349209}
+  _characterPosition: {fileID: 99434199}
+  _characterAttack: {fileID: 12962988}
+  _characterDefense: {fileID: 1638055983}
 --- !u!1 &791229383
 GameObject:
   m_ObjectHideFlags: 0
@@ -20129,6 +20180,7 @@ GameObject:
   - component: {fileID: 931367940}
   - component: {fileID: 931367939}
   - component: {fileID: 931367938}
+  - component: {fileID: 931367941}
   m_Layer: 5
   m_Name: CharacterBox (4)
   m_TagString: Untagged
@@ -20222,6 +20274,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 931367936}
   m_CullTransparentMesh: 1
+--- !u!114 &931367941
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 931367936}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3af23bdfd6014094ea36add7734b9d11, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CharacterPowerBox
+  _characterName: {fileID: 277356206}
+  _characterPosition: {fileID: 1112515889}
+  _characterAttack: {fileID: 1687560838}
+  _characterDefense: {fileID: 1357925552}
 --- !u!1 &933887647
 GameObject:
   m_ObjectHideFlags: 0
@@ -30214,7 +30282,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1569291558}
   m_HandleRect: {fileID: 1569291557}
   m_Direction: 2
-  m_Value: 0.9999998
+  m_Value: 1
   m_Size: 0.604135
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -41010,6 +41078,7 @@ GameObject:
   - component: {fileID: 1833337334}
   - component: {fileID: 1833337333}
   - component: {fileID: 1833337332}
+  - component: {fileID: 1833337335}
   m_Layer: 5
   m_Name: CharacterBox (2)
   m_TagString: Untagged
@@ -41103,6 +41172,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1833337330}
   m_CullTransparentMesh: 1
+--- !u!114 &1833337335
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1833337330}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3af23bdfd6014094ea36add7734b9d11, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CharacterPowerBox
+  _characterName: {fileID: 1469913911}
+  _characterPosition: {fileID: 1465798728}
+  _characterAttack: {fileID: 118732438}
+  _characterDefense: {fileID: 475238916}
 --- !u!1 &1840097371
 GameObject:
   m_ObjectHideFlags: 0
@@ -47013,16 +47098,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1c4272b2b498c7543bb93f391aadc1c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FightingPower
+  _characterList: {fileID: 1108288567}
   _mercenaryMaker: {fileID: 2135459789}
-  _schoolName: {fileID: 1469105399}
-  _fightingPowerText: {fileID: 1037271817}
+  _mySchoolName: {fileID: 1469105399}
+  _myFightingPowerText: {fileID: 1037271817}
+  _rivalSchoolName: {fileID: 615702300}
+  _rivalFightingPowerText: {fileID: 246157802}
   _fightingList:
   - {fileID: 906543074}
   - {fileID: 1557960418}
   - {fileID: 1932521106}
   - {fileID: 1842233418}
   - {fileID: 1604712807}
-  _characterList: {fileID: 1108288567}
+  _rivalList:
+  - {fileID: 432924907}
+  - {fileID: 249836319}
+  - {fileID: 1833337335}
+  - {fileID: 789648481}
+  - {fileID: 931367941}
 --- !u!1 &2139294215
 GameObject:
   m_ObjectHideFlags: 0
