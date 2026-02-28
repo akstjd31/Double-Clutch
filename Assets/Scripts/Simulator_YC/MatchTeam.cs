@@ -10,6 +10,8 @@ public class MatchTeam
     private List<MatchPlayer> _roster; // 현재 출전 중인 5명
     private int _score;
 
+    public int SimulatedScore;
+
     public int ReboundCount { get; set; }
     public int Try2pt { get; set; }
     public int Succ2pt { get; set; }

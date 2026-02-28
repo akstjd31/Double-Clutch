@@ -197,7 +197,7 @@ public class MatchState : MonoBehaviour
                     isConditionMet = true;
                     break;
                 case triggerCond.ScoreGap: // 점수가 지고 있을 때 (유저 점수 - 상대 점수 <= 기준값)
-                    isConditionMet = (_homeTeam.Score - _awayTeam.Score) <= data.triggerValue;
+                    isConditionMet = (_homeTeam.SimulatedScore - _awayTeam.SimulatedScore) <= data.triggerValue;
                     break;
                 case triggerCond.ReboundDiff: // 리바운드가 밀릴 때
                     isConditionMet = (_homeTeam.ReboundCount - _awayTeam.ReboundCount) <= data.triggerValue;

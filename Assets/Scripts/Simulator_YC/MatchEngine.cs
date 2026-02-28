@@ -146,7 +146,7 @@ public class MatchEngine : MonoBehaviour
         // 연장전 처리 (4쿼터가 끝났는데 동점일 때만)
         if (targetQuarter >= 4)
         {
-            while (_homeTeam.Score == _awayTeam.Score)
+            while (_homeTeam.SimulatedScore == _awayTeam.SimulatedScore)
             {
                 RecordLog("GameStart");
 
@@ -276,6 +276,7 @@ public class MatchEngine : MonoBehaviour
 
         if (success)
         {
+            attackTeam.SimulatedScore += score;
             SwitchPossession(false);
             _ballHolder = defendTeam.GetPlayerByPosition(Position.PG) ?? defendTeam.Roster[0];
             Vector2 ourHoop = (_currentPossession == TeamSide.Home) ? new Vector2(0.5f, 0.05f) : new Vector2(0.5f, 0.95f);

@@ -240,7 +240,7 @@ public static class MatchCalculator
         switch (p.triggerCond)
         {
             case triggerCond.ScoreGap: // 우리 팀이 특정 점수차 이상 지고 있을 때 발동
-                return (enemyTeam.Score - myTeam.Score) >= p.triggerValue;
+                return (enemyTeam.SimulatedScore - myTeam.SimulatedScore) >= p.triggerValue;
 
             case triggerCond.Random: // 만약 0보다 큰 값이 들어온다면 해당 값을 확률(%)로 취급
                 if (p.triggerValue == 0) return true;
