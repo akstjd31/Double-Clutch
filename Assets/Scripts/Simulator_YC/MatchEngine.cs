@@ -118,6 +118,9 @@ public class MatchEngine : MonoBehaviour
         _simTime = 600f; // 10분
         _currentPossession = TeamSide.Home;
         FullMatchLogs.Clear(); // 새 경기 시작 시 전체 로그 초기화
+
+        _homeTeam.SimulatedScore = 0;
+        _awayTeam.SimulatedScore = 0;
     }
 
     public void CalculateUntilQuarter(int targetQuarter)
