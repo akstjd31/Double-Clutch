@@ -54,9 +54,13 @@ public class StudentUIManager : MonoBehaviour
 
     public void OnTrainingButtonClick() //로비 화면의 육성버튼 온클릭에서 호출
     {
-        _trainingPanel.gameObject.SetActive(true);
+        // 테스트를 위한 임시 주석
+        //_trainingPanel.gameObject.SetActive(true);
 
-        FosterManager.Instance.UpdateScheduleState();       
+        //FosterManager.Instance.UpdateScheduleState();
+
+        // 임시로 전력 배치(MatchPrep)로 바로 넘어가게 수정
+        GameManager.Instance.ChangeState<MatchPrepState>();
     }
 
     public void OnTrainingCharacterBoxClick(Student target) //플레이어 박스 온클릭에서 호출

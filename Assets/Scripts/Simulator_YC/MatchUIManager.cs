@@ -365,6 +365,14 @@ public class MatchUIManager : MonoBehaviour
 
         text = text.Replace("{ME}", GameManager.Instance.SaveData.coachName); // 감독 이름
 
+        // 팀 이름 (주로 유저 팀을 지칭하는 경우가 많으므로 HomeTeam 기준 처리)
+        // 상대팀을 칭할 경우를 대비해 {AwayTeamName} 도 예약해 둡니다.
+        text = text.Replace("{TeamName}", state.HomeTeam.TeamName);
+        text = text.Replace("{AwayTeamName}", state.AwayTeam.TeamName);
+
+        // 현재 쿼터
+        text = text.Replace("{Quarter}", state.CurrentQuarter.ToString());
+
         // 출전 중인 유저(Home) 팀 선수의 이름으로 치환
         if (text.Contains("{PG}")) text = text.Replace("{PG}", state.HomeTeam.GetPlayerByPosition(Position.PG)?.PlayerName ?? "가드");
         if (text.Contains("{SG}")) text = text.Replace("{SG}", state.HomeTeam.GetPlayerByPosition(Position.SG)?.PlayerName ?? "가드");

@@ -223,7 +223,8 @@ public class MatchState : MonoBehaviour
         }
         else
         {
-            CurrentHalftimeScriptId = "Script_Halftime_001"; // 만족하는 게 없으면 기본 이벤트
+            var defaultEvent = _halftimeListReader.DataList.Find(x => x.triggerCond == triggerCond.Random);
+            CurrentHalftimeScriptId = defaultEvent.scriptId ?? "Script_Halftime_001"; // 만족하는 게 없으면 기본 이벤트
         }
 
         AddLog($"[시스템] 하프타임 이벤트 결정됨 (Script ID: {CurrentHalftimeScriptId})");
