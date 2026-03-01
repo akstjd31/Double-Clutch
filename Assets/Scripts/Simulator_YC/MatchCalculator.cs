@@ -118,6 +118,13 @@ public static class MatchCalculator
         scorePass = Mathf.Max(0, scorePass);
         scoreDribble = Mathf.Max(0, scoreDribble);
 
+        if (distToHoop <= 0.35f)
+        {
+            scoreShoot += 50f;
+            scorePass *= 0.1f;
+            scoreDribble *= 0.1f;
+        }
+
         LastShootScore = scoreShoot;
         LastPassScore = scorePass;
         LastDribbleScore = scoreDribble;
@@ -145,7 +152,7 @@ public static class MatchCalculator
         {
             blockStat = nearestEnemy.GetStat(MatchStatType.Block, defendTactics.bonusBlock);
         }
-
+        Debug.Log($"[수비 체크] 공격수 위치: {attacker.LogicPosition} | 수비수 위치: {nearestEnemy.LogicPosition} | 최단거리: {minEnemyDist:F4} | 수비발동?: {minEnemyDist <= 0.05f}");
         // 거리 페널티 (멀수록 분모 증가)
         float distPenalty = 1.0f + distance;
 
@@ -153,6 +160,8 @@ public static class MatchCalculator
         if (denominator <= 0) denominator = 1f;
 
         float prob = (shootStat / denominator) * 100f;
+
+
         effectType targetEffect = (distance > 0.35f) ? effectType.Prob3pt : effectType.Prob2pt;
         if (distance <= 0.05f) targetEffect = effectType.ProbDunk;
 

@@ -273,7 +273,7 @@ public class MatchEngine : MonoBehaviour
         {
             log.SfxType = "CHEER";
         }
-
+        SavePositionsToLog(log);
         MatchLogs.Add(log);
         FullMatchLogs.Add(log);
 
@@ -502,6 +502,7 @@ public class MatchEngine : MonoBehaviour
         {
             x = UnityEngine.Random.Range(preset.offenseXMin, preset.offenseXMax);
             y = UnityEngine.Random.Range(preset.offenseYMin, preset.offenseYMax);
+
         }
 
         // 어웨이팀은 공격 방향이 반대(아래)이므로 y 반전

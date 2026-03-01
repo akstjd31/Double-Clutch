@@ -209,6 +209,7 @@ public class Student
     {        
         _stats.Clear();
         _stats.AddRange(stat);
+        InitStat();
     }
 
     public void SetPosition(Position position)

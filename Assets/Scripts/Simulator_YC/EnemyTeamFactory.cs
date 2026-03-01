@@ -117,6 +117,7 @@ public class EnemyTeamFactory : MonoBehaviour
                 }
             }
 
+            Debug.Log($"[라이벌 생성] {playerName}({pos}) | 2점:{stats[MatchStatType.TwoPoint]}, 3점:{stats[MatchStatType.ThreePoint]}, 블록:{stats[MatchStatType.Block]}, 스틸:{stats[MatchStatType.Steal]}, 리바:{stats[MatchStatType.Rebound]} | 적용된 티어 배율: {tierWeight}");
 
             MatchPlayer player = new MatchPlayer(
                 id: 20000 + i,

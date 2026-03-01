@@ -73,6 +73,12 @@ public class MatchPlayer
     {
         float baseStat = _stats.ContainsKey(type) ? _stats[type] : 0;
         float buff = _tempStatBuffs.ContainsKey(type) ? _tempStatBuffs[type] : 0;
+
+        if (tacticBonus <= 0f)
+        {
+            tacticBonus = 1.0f;
+        }
+
         return Mathf.RoundToInt((baseStat + buff) * tacticBonus);
     }
 

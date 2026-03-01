@@ -85,6 +85,7 @@ public class MatchSimState : IState
     private MatchPlayer ConvertStudentToMatchPlayer(Student s, int id, Position pos)
     {
         Dictionary<MatchStatType, int> stats = new Dictionary<MatchStatType, int>();
+
         stats.Add(MatchStatType.TwoPoint, s.GetCurrentStat(potential.Stat2pt));
         stats.Add(MatchStatType.ThreePoint, s.GetCurrentStat(potential.Stat3pt));
         stats.Add(MatchStatType.Pass, s.GetCurrentStat(potential.StatPass));

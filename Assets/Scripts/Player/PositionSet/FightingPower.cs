@@ -68,6 +68,8 @@ public class FightingPower : MonoBehaviour
                 _myTotalFightingPower += (_fightingList[i].Attack + _fightingList[i].Defense);
 
                 _myMatchingStudentList.Add(targetStudent);
+
+                Debug.Log($"[아군 생성] {targetStudent.Name}({targetStudent.Position}) | 2점:{targetStudent.GetCurrentStat(potential.Stat2pt)}, 3점:{targetStudent.GetCurrentStat(potential.Stat3pt)}, 블록:{targetStudent.GetCurrentStat(potential.StatBlock)}, 스틸:{targetStudent.GetCurrentStat(potential.StatSteal)}, 리바:{targetStudent.GetCurrentStat(potential.StatRebound)}");
             }
         }
 
@@ -88,8 +90,8 @@ public class FightingPower : MonoBehaviour
             Debug.LogError("적 팀 생성 실패!");
             return;
         }
+        Debug.Log($"[팩토리 확인] 적군 1번 선수 2점슛 스탯: {generatedAwayTeam.Roster[0].GetStat(MatchStatType.TwoPoint)}");
 
-        // 2. 생성된 MatchPlayer(시뮬레이터용) 데이터를 Student(UI 표시용)로 포장
         for (int i = 0; i < _rivalList.Length; i++)
         {
             MatchPlayer mp = generatedAwayTeam.Roster[i];
