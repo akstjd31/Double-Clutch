@@ -18,7 +18,7 @@ public struct Mercenary_Data
     public int passiveId3;
     public int stat2ptValue;
     public int stat3ptValue;
-    public int statAssistValue;
+    public int statPassValue;
     public int statBlockValue;
     public int statStealValue;
     public int statReboundValue;
@@ -37,7 +37,7 @@ public struct Mercenary_Data
         int passiveId3,
         int stat2ptValue,
         int stat3ptValue,
-        int statAssistValue,
+        int statPassValue,
         int statBlockValue,
         int statStealValue,
         int statReboundValue,
@@ -59,7 +59,7 @@ public struct Mercenary_Data
 
         this.stat2ptValue = stat2ptValue;
         this.stat3ptValue = stat3ptValue;
-        this.statAssistValue = statAssistValue;
+        this.statPassValue = statPassValue;
         this.statBlockValue = statBlockValue;
         this.statStealValue = statStealValue;
         this.statReboundValue = statReboundValue;
