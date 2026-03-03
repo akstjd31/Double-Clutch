@@ -31,6 +31,9 @@ public class MatchUIManager : MonoBehaviour
     [Header("Quarter End Popup")]
     [SerializeField] private GameObject _quarterEndPanel; // "2쿼터 종료" 팝업 전체
 
+    [Header("League Calculate UI")]
+    [SerializeField] private LeagueCalculatePanel _leagueCalculatePanel;
+
     [Header("Halftime Event Visual Novel UI")]
     [SerializeField] private GameObject _halftimeVNPanel; // 비주얼 노벨 전체 패널
     [SerializeField] private Button _btnNext; // 일반 대화(Desc/End) 넘기기용 전체 화면 버튼
@@ -572,5 +575,12 @@ public class MatchUIManager : MonoBehaviour
         // ResultState에서 넘겨줬던 ReturnToLobby 함수를 여기서 실행
         _onResultConfirmAction?.Invoke();
     }
-
+    public void ShowLeagueCalculatePanel(int round, Action onConfirm)
+    {
+        if (_leagueCalculatePanel != null)
+        {
+            _leagueCalculatePanel.gameObject.SetActive(true);
+            _leagueCalculatePanel.Init(round, onConfirm);
+        }
+    }
 }

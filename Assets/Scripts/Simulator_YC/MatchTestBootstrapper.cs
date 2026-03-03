@@ -66,7 +66,6 @@ public class MatchTestBootstrapper : MonoBehaviour
                     { MatchStatType.Steal, 50 },
                     { MatchStatType.Block, 50 },
                     { MatchStatType.Rebound, 50 },
-                    { MatchStatType.Dribble, 50 }
                 };
                 MatchPlayer player = new MatchPlayer(i, $"{teamName}_{positions[i]}", positions[i], stats, "test_res");
                 team.AddPlayer(player);
@@ -84,7 +83,6 @@ public class MatchTestBootstrapper : MonoBehaviour
         stats.Add(MatchStatType.Steal, s.GetCurrentStat(potential.StatSteal));
         stats.Add(MatchStatType.Block, s.GetCurrentStat(potential.StatBlock));
         stats.Add(MatchStatType.Rebound, s.GetCurrentStat(potential.StatRebound));
-        stats.Add(MatchStatType.Dribble, 50);
 
         return new MatchPlayer(id, s.Name, pos, stats, "Student_Resource", s.Passive);
     }

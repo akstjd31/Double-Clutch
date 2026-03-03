@@ -30,16 +30,16 @@ public class CalendarManager : Singleton<CalendarManager>
 
     private void Start()
     {
-        if (GameManager.Instance != null)
-        {
-            int weekId = GameManager.Instance.SaveData.weekId;
-            var data = _calReader.DataList[weekId - 1];
+        if (GameManager.Instance == null) return;
+        if (GameManager.Instance.SaveData == null) return;
 
-            calendar.month = data.month;
-            calendar.week = data.weekNo;
+        int weekId = GameManager.Instance.SaveData.weekId;
+        var data = _calReader.DataList[weekId - 1];
 
-            OnWeekChanged?.Invoke(calendar);
-        }
+        calendar.month = data.month;
+        calendar.week = data.weekNo;
+
+        OnWeekChanged?.Invoke(calendar);
     }
 
     public void NextTurn()

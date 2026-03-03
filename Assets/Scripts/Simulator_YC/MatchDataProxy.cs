@@ -40,7 +40,7 @@ public class MatchDataProxy : MonoBehaviour
     [SerializeField] private float Pen_Def_Block = 1f;   // 105: 수비 블록 페널티 계수
     [SerializeField] private float Pen_Def_Steal = 1f;   // 106: 수비 스틸 페널티 계수
     [SerializeField] private int W_Default = 1;       // 107: 기본값
-
+    [SerializeField] private float Pen_Intercept_Dist = 0.03f; // 패스 차단 판정 거리 변수 (기본값 기획서대로 0.03f)
 
     [Header("Data Readers")]
     [SerializeField] private Team_ArchetypeDataReader _archetypeReader;
@@ -61,6 +61,7 @@ public class MatchDataProxy : MonoBehaviour
             case "Pen_Def_Block": return Pen_Def_Block;
             case "Pen_Def_Steal": return Pen_Def_Steal;
             case "W_Default": return W_Default;
+            case "Pen_Intercept_Dist": return Pen_Intercept_Dist;
             default:
                 Debug.LogError($"[MatchDataProxy] 알 수 없는 키값: {key}");
                 return 0f;

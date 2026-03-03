@@ -23,6 +23,12 @@ public class ResultState : IState
             Debug.LogError("[ResultState] MatchState, matchEngine 또는 MatchUIManager를 찾을 수 없습니다.");
             return;
         }
+        int currentMatchId = 1; // 임시 매치 ID (라운드 번호)
+        // 리그 보관소에 현재 경기 기록 저장 
+        if (LeagueRecordManager.Instance != null)
+        {
+            LeagueRecordManager.Instance.SaveMatchRecord(currentMatchId, matchState, matchEngine.FullMatchLogs);
+        }
 
         // 임시 지원금 (추후 보상 시스템 연동할 때 이 변수를 수정하시면 됩니다)
         int rewardAmount = 50;
@@ -34,15 +40,13 @@ public class ResultState : IState
             matchState.AwayTeam.TeamName,
             matchState.AwayTeam.Score,
             rewardAmount,
-            () => ReturnToLobby() // <--- 콜백 전달!
+            () =>
+            {
+                // MVP를 위해 ReturnToLobby() 대신 리그 결산 패널을 띄웁니다.
+                // 이전 채팅에서 추가하신 LeagueCalculatePanel을 호출하며, 풀 로그 데이터를 넘겨줍니다.
+                uiManager.ShowLeagueCalculatePanel(currentMatchId, () => ReturnToLobby());
+            }
          );
-        //  리그 보관소에 현재 경기 기록 저장!
-        // (참고: matchId는 나중에 대진표 시스템이 나오면 그 번호를 넘겨주면 됩니다. 임시로 1번 경기라고 가정)
-        if (LeagueRecordManager.Instance != null)
-        {
-            int currentMatchId = 1; // 임시 매치 ID
-            LeagueRecordManager.Instance.SaveMatchRecord(currentMatchId, matchState, matchEngine.FullMatchLogs);
-        }
     }
 
     public void Exit()
