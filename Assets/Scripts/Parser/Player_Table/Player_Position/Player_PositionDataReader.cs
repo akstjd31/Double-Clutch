@@ -10,7 +10,7 @@ public class Player_PositionDataReader : DataReaderBase
 
     internal void UpdateStats(List<GSTU_Cell> list, int rowIndex)
     {
-        string recommendId = null;
+        Position recommendId = default;
         potential stat1 = default, stat2 = default, stat3 = default;
         int recommendation1 = 0, recommendation2 = 0,recommendation3 = 0;
 
@@ -25,7 +25,11 @@ public class Player_PositionDataReader : DataReaderBase
             switch (col)
             {
                 case "recommendId":
-                    recommendId = val;
+                    if (!string.IsNullOrEmpty(val))
+                    {
+                        if (int.TryParse(val, out var eInt)) recommendId = (Position)eInt;
+                        else if (Enum.TryParse(val, true, out Position e)) recommendId = e;
+                    }
                     break;
 
                 case "stat1":

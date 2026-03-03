@@ -5,7 +5,7 @@ using Unity.VisualScripting.Antlr3.Runtime.Misc;
 
 public struct Player_PositionData
 {
-    public string recommendId;
+    public Position recommendId;
     public potential stat1;
     public int recommendation1;
     public potential stat2;
@@ -13,7 +13,7 @@ public struct Player_PositionData
     public potential stat3;
     public int recommendation3;
 
-    public Player_PositionData(string recommendId, potential stat1, int recommendation1, potential stat2, int recommendation2, potential stat3, int recommendation3)
+    public Player_PositionData(Position recommendId, potential stat1, int recommendation1, potential stat2, int recommendation2, potential stat3, int recommendation3)
     {
         this.recommendId = recommendId;
         this.stat1 = stat1;

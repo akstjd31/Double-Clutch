@@ -34,6 +34,7 @@ public class Student
     Player_PersonalityData _personalityData; //성격
     List<Player_PassiveData> _passiveDataList = new List<Player_PassiveData>(); //패시브 스킬
     Player_TraitData _traitData; //특성
+    List<Player_PositionData> _positionDataList = new List<Player_PositionData>();
     Dictionary<potential, Stat> _statDict = new Dictionary<potential, Stat>(); //스탯(잠재력)목록
     int _attack;
     int _defense;
@@ -96,14 +97,22 @@ public class Student
         return _statDict[type];
     }
 
-    public float GetPositionScore(Position position)
-    {
-        PositionOfferData offer = new PositionOfferData(position);
-        int m1 = GetCurrentStat(offer.MainPotential1);
-        int m2 = GetCurrentStat(offer.MainPotential2);
-        int sub = GetCurrentStat(offer.SubPotential);
+    public int GetPositionScore(Position position)
+    {        
+        Player_PositionData data = _positionDataList.Find(d => d.recommendId == position);        
+        
+        if (data.recommendId == Position.None && data.stat1 == potential.None)// 데이터를 찾지 못했을 경우 예외 처리 (기본값 0 반환 및 경고)
+        {
+            Debug.LogWarning($"{position}에 대한 포지션 추천도 가중치 데이터가 없거나, enum의 값이 None으로 할당되어 있습니다.");
+            return 0;
+        }
+        
+        int score = 0;
+        score += GetCurrentStat(data.stat1) * data.recommendation1;
+        score += GetCurrentStat(data.stat2) * data.recommendation2;
+        score += GetCurrentStat(data.stat3) * data.recommendation3;
 
-        return (m1 * 3f) + (m2 * 3f) + (sub * 1f);
+        return score;
     }
 
 
@@ -245,13 +254,14 @@ public class Student
 
 
 
-    public void Init(Player_SpeciesDataReader specieDb, Player_PersonalityDataReader personalityDb, Player_PassiveDataReader passiveDb, Player_TraitDataReader traitDb) //Id 기반으로 데이터 연결하기
+    public void Init(Player_SpeciesDataReader specieDb, Player_PersonalityDataReader personalityDb, Player_PassiveDataReader passiveDb, Player_TraitDataReader traitDb, Player_PositionDataReader positionDb) //Id 기반으로 데이터 연결하기
     {
         InitStat();
         InitSpecies(specieDb);
         InitPersonality(personalityDb);
         InitPassive(passiveDb);
         InitTrait(traitDb);
+        InitPositionData(positionDb);
     }
 
     private void InitStat()
@@ -262,6 +272,12 @@ public class Student
             _statDict[stat.Type] = stat;
         }
         OnStatChanged(); //공격력 & 방어력 계산
+    }
+
+    public void InitPositionData(Player_PositionDataReader db)
+    {
+        _positionDataList.Clear();
+        _positionDataList.AddRange(db.DataList);
     }
 
     public void PrepareStatChange()
