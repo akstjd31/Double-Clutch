@@ -12,9 +12,11 @@ public class Halftime_ScriptDataReader : DataReaderBase
     // ✅ ItemData처럼 List<GSTU_Cell> 한 줄을 받아서 파싱
     internal void UpdateStats(List<GSTU_Cell> list, int rowIndex)
     {
-        int index = 0, scriptId = 0, currentId = 0, nextId = 0;
+        int index = 0, currentId = 0, nextId = 0;
+        string scriptId = null;
         string textKey = null;
         textType textType = default;
+        string speakDirection = null, playerName = null, standingMiddle = null;
         string standingRight = null, standingLeft = null, background = null, cg = null, choice01 = null;
         potential choiceStat01 = default;
         Position choicePosition01 = default;   
@@ -53,7 +55,7 @@ public class Halftime_ScriptDataReader : DataReaderBase
                     break;
 
                 case "scriptId":
-                    int.TryParse(val, out scriptId);
+                    scriptId = val;
                     break;
                 case "currentId":
                     int.TryParse(val, out currentId);
@@ -71,6 +73,16 @@ public class Halftime_ScriptDataReader : DataReaderBase
                         else if (Enum.TryParse(val, true, out textType e)) textType = e;
                     }
                     break;
+                case "speakDirection": 
+                    speakDirection = val; 
+                    break;
+                case "playerName": 
+                    playerName = val; 
+                    break;
+                case "standingMiddle": 
+                    standingMiddle = val; 
+                    break;
+
                 case "standingRight":
                     standingRight = val;
                     break;
@@ -198,7 +210,7 @@ public class Halftime_ScriptDataReader : DataReaderBase
         }
 
         DataList.Add(new Halftime_ScriptData(index, scriptId, currentId,nextId,textKey,
-            textType,standingRight,standingLeft,background,cg,
+            textType, speakDirection, playerName, standingMiddle, standingRight,standingLeft,background,cg,
             choice01,choiceStat01,choicePosition01,changeStat01,changePosition01,nextId01,
             choice02,choiceStat02,choicePosition02,changeStat02,changePosition02,nextId02,
             choice03,choiceStat03,choicePosition03,changeStat03,changePosition03,nextId03,

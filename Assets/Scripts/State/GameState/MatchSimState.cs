@@ -10,40 +10,42 @@ public class MatchSimState : IState
     private MatchEngine _engine;
     private MatchState _state;
 
+    // 데이터 보관용 변수
+    private List<Student> _homeRoster;
+    private List<Student> _awayRoster;
     public MatchSimState(GameManager gm, StateMachine sm)
     {
         _sm = sm;
         _gm = gm;
     }
+    public void SetRosters(List<Student> home, List<Student> away)
+    {
+        _homeRoster = home;
+        _awayRoster = away;
+    }
 
     public void Enter()
     {
-        // 씬에 있는 MatchEngine과 MatchState 찾기
+        // 씬에 있는 매니저들 찾기
         _engine = Object.FindFirstObjectByType<MatchEngine>();
         _state = Object.FindFirstObjectByType<MatchState>();
 
         if (_engine == null || _state == null)
         {
-            Debug.LogError("MatchEngine 또는 MatchState를 찾을 수 없습니다!");
+            Debug.LogError("MatchEngine 또는 MatchState를 찾을 수 없습니다! (경기 씬에 매니저가 있는지 확인하세요)");
             return;
         }
 
-        // 팀 생성 및 데이터 연동 (MatchDebugSetup 로직 이식)
-        MatchTeam homeTeam = CreateTeam(TeamSide.Home, "상북 고등학교", "TC_BAL_Base");
-        MatchTeam awayTeam = EnemyTeamFactory.Instance.CreateEnemyTeam("Team_DOM_03", "LV_Swiss_03");
+        // 저장된 '출전 명단' 5명씩을 가져옵니다.
+        MatchTeam homeTeam = ConvertToTeam(TeamSide.Home, GameManager.Instance.SaveData.schoolName, "TC_BAL_Base", _homeRoster);
+        MatchTeam awayTeam = ConvertToTeam(TeamSide.Away, "라이벌 고교", "TC_DEF_Base", _awayRoster);
 
-        // 만약 팩토리 준비가 안 됐을 경우를 대비한 안전 장치
-        if (awayTeam == null)
-        {
-            awayTeam = CreateTeam(TeamSide.Away, "진공 고등학교", "TC_DEF_Base");
-        }
         // 초기화 및 시작
         _state.InitializeMatch(homeTeam, awayTeam);
 
         // 경기 종료 시 ResultState로 넘어가도록 이벤트 연결
         _engine.OnMatchEnded = () =>
         {
-            // 경기가 끝나면 2초 뒤에 결과 상태로 전환 (코루틴 사용)
             _gm.StartCoroutine(CoGoToResult());
         };
 
@@ -64,45 +66,26 @@ public class MatchSimState : IState
     }
 
     public void Update() { }
-    private MatchTeam CreateTeam(TeamSide side, string teamName, string tactic)
+
+    private MatchTeam ConvertToTeam(TeamSide side, string teamName, string tactic, List<Student> students)
     {
         MatchTeam team = new MatchTeam(side, teamName, tactic);
-        Position[] positions = { Position.PG, Position.SG, Position.SF, Position.PF, Position.C };
 
-        List<Student> students = null;
-        if (StudentManager.Instance != null)
-            students = StudentManager.Instance.GetAllStudents();
+        // 홈팀은 10000번대, 어웨이팀은 20000번대 고유 ID 임시 부여
+        int startId = side == TeamSide.Home ? 10000 : 20000;
 
-        if (side == TeamSide.Home && students != null && students.Count >= 5)
+        for (int i = 0; i < students.Count; i++)
         {
-            for (int i = 0; i < 5; i++)
-            {
-                MatchPlayer player = ConvertStudentToMatchPlayer(students[i], i, positions[i]);
-                team.AddPlayer(player);
-            }
+            team.AddPlayer(ConvertStudentToMatchPlayer(students[i], startId + i, students[i].Position));
         }
-        else
-        {
-            // 가짜 데이터 (적 팀 테스트용) 
-            for (int i = 0; i < 5; i++)
-            {
-                var stats = new Dictionary<MatchStatType, int>
-                {
-                    { MatchStatType.TwoPoint, 50 }, { MatchStatType.ThreePoint, 50 },
-                    { MatchStatType.Pass, 50 }, { MatchStatType.Steal, 50 },
-                    { MatchStatType.Block, 50 }, { MatchStatType.Rebound, 50 },
-                    { MatchStatType.Dribble, 50 }
-                };
-                MatchPlayer player = new MatchPlayer(i, $"{teamName}_{positions[i]}", positions[i], stats, "test_res");
-                team.AddPlayer(player);
-            }
-        }
+
         return team;
     }
 
     private MatchPlayer ConvertStudentToMatchPlayer(Student s, int id, Position pos)
     {
         Dictionary<MatchStatType, int> stats = new Dictionary<MatchStatType, int>();
+
         stats.Add(MatchStatType.TwoPoint, s.GetCurrentStat(potential.Stat2pt));
         stats.Add(MatchStatType.ThreePoint, s.GetCurrentStat(potential.Stat3pt));
         stats.Add(MatchStatType.Pass, s.GetCurrentStat(potential.StatPass));

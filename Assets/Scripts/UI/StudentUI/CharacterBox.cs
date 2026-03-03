@@ -2,27 +2,22 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-/// <summary>
-/// ���� : ���� ĳ���� �ڽ��� �����Ͽ� ���� �� ���� ������ �����ϰ� ǥ��. ��ư Ŭ���� ������ �г� Ȱ��ȭ.
-/// </summary>
+
 public class CharacterBox : MonoBehaviour
 {
     [SerializeField] TextMeshProUGUI _nameText;
     [SerializeField] TextMeshProUGUI _gradeText;
     [SerializeField] Button _selectButton;
 
+    Student _target;
+
+    public Student Target => _target;
+
     public void Init(Student student)
     {        
-        _nameText.text = student.Name;
-        _gradeText.text = student.Grade.ToString();        
-        _selectButton.onClick?.RemoveAllListeners();
-        Student target = student;
-        _selectButton.onClick.AddListener(() => StudentUIManager.Instance.OnCharacterBoxClick(target));
-    }
-
-    private void OnDestroy()
-    {
-        _selectButton.onClick.RemoveAllListeners();
+        _nameText.text = student.Name;        
+        _gradeText.text = student.Grade.ToString();                
+        _target = student;                
     }
 
     public Button GetSelectButton() => _selectButton;

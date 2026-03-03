@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -172,5 +173,19 @@ public class GameManager : Singleton<GameManager>
     {
         saveData.honor = honor;
         OnDataChanged?.Invoke();
+    }
+    public void ChangeState<T>() where T : class, IState
+    {
+        _sm.ChangeState<T>();
+    }
+    public void LoadMatchSceneWithData(string sceneName, List<Student> homeRoster, List<Student> awayRoster)
+    {
+        // 상태 머신에서 MatchSimState를 미리 꺼내서 데이터를 주입
+        var matchState = _sm.Get<MatchSimState>();
+        matchState.SetRosters(homeRoster, awayRoster);
+
+        // 다음 넘어갈 씬과 상태를 세팅하고 로딩 씬으로 이동
+        SetNextFlow(sceneName, matchState);
+        _sm.ChangeState<LoadingState>();
     }
 }

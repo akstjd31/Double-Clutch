@@ -118,6 +118,9 @@ public class MatchEngine : MonoBehaviour
         _simTime = 600f; // 10분
         _currentPossession = TeamSide.Home;
         FullMatchLogs.Clear(); // 새 경기 시작 시 전체 로그 초기화
+
+        _homeTeam.SimulatedScore = 0;
+        _awayTeam.SimulatedScore = 0;
     }
 
     public void CalculateUntilQuarter(int targetQuarter)
@@ -146,7 +149,7 @@ public class MatchEngine : MonoBehaviour
         // 연장전 처리 (4쿼터가 끝났는데 동점일 때만)
         if (targetQuarter >= 4)
         {
-            while (_homeTeam.Score == _awayTeam.Score)
+            while (_homeTeam.SimulatedScore == _awayTeam.SimulatedScore)
             {
                 RecordLog("GameStart");
 
@@ -270,12 +273,13 @@ public class MatchEngine : MonoBehaviour
         {
             log.SfxType = "CHEER";
         }
-
+        SavePositionsToLog(log);
         MatchLogs.Add(log);
         FullMatchLogs.Add(log);
 
         if (success)
         {
+            attackTeam.SimulatedScore += score;
             SwitchPossession(false);
             _ballHolder = defendTeam.GetPlayerByPosition(Position.PG) ?? defendTeam.Roster[0];
             Vector2 ourHoop = (_currentPossession == TeamSide.Home) ? new Vector2(0.5f, 0.05f) : new Vector2(0.5f, 0.95f);
@@ -498,6 +502,7 @@ public class MatchEngine : MonoBehaviour
         {
             x = UnityEngine.Random.Range(preset.offenseXMin, preset.offenseXMax);
             y = UnityEngine.Random.Range(preset.offenseYMin, preset.offenseYMax);
+
         }
 
         // 어웨이팀은 공격 방향이 반대(아래)이므로 y 반전

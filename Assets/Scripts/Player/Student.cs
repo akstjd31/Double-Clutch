@@ -39,6 +39,7 @@ public class Student
     int _defense;
     int _attackChange;
     int _defenseChange;
+    Position _matchPosition;
     ITraining _currentTraining;
     
 
@@ -63,6 +64,7 @@ public class Student
     public int AttackChange => _attackChange;
     public int DefenseChange => _defenseChange;
     public Position Position => _position;
+    public Position MatchPosition => _matchPosition;
     public StudentState State => _state;
     public int Condition => _condition;
     public int CureCount => _cureCount;
@@ -103,6 +105,8 @@ public class Student
 
         return (m1 * 3f) + (m2 * 3f) + (sub * 1f);
     }
+
+
 
     #region 데이터 할당용 함수
 
@@ -205,6 +209,7 @@ public class Student
     {        
         _stats.Clear();
         _stats.AddRange(stat);
+        InitStat();
     }
 
     public void SetPosition(Position position)
@@ -231,6 +236,11 @@ public class Student
         _cureCount = count;
     }
 
+    public void SetMatchPosition(Position position)
+    {
+        _matchPosition = position;
+    }
+
     #endregion
 
 
@@ -246,6 +256,7 @@ public class Student
 
     private void InitStat()
     {
+        _statDict.Clear();
         foreach (var stat in _stats) //스탯 리스트를 딕셔너리에 할당(조회 편의성)
         {
             _statDict[stat.Type] = stat;
@@ -259,7 +270,7 @@ public class Student
         _defenseChange = _defense; // 현재 수비력을 임시 저장
     }
 
-    private void OnStatChanged() //스탯 기반 공격력 & 방어력 계산
+    public void OnStatChanged() //스탯 기반 공격력 & 방어력 계산
     {
         int newAttack = 0;
         int newDefense = 0;
@@ -282,7 +293,10 @@ public class Student
             }
         }
         _attackChange = newAttack - _attackChange;
-        _defenseChange = newDefense - _defenseChange;        
+        _defenseChange = newDefense - _defenseChange;      
+        
+        _attack = newAttack;
+        _defense = newDefense;
     }
 
     private void InitSpecies(Player_SpeciesDataReader db)

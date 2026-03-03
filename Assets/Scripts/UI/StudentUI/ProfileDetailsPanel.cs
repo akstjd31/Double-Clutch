@@ -20,8 +20,9 @@ public class ProfileDetailsPanel : MonoBehaviour
 
     public void Init(Student student)
     {
+        Debug.Log("Profile Details Panel Init!");
         _nameText.text = student.Name;
-        _gradeText.text = student.Grade.ToString() + "�г�";
+        _gradeText.text = student.Grade.ToString() + "학년";
         _attackText.text = student.Attack.ToString();
         _defenseText.text = student.Defense.ToString();
         _personalityText.text = StringManager.Instance.GetString(student.PersonalityData.personalityName);

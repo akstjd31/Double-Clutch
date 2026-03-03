@@ -8,12 +8,12 @@ public enum triggerCond
 
 public struct Halftime_ListData
 {
-    public int scriptId;
+    public string scriptId;
     public string desc;
     public triggerCond triggerCond;
     public int triggerValue;
 
-    public Halftime_ListData(int scriptId, string desc, triggerCond triggerCond, int triggerValue)
+    public Halftime_ListData(string scriptId, string desc, triggerCond triggerCond, int triggerValue)
     {
         this.scriptId = scriptId;
         this.desc = desc;

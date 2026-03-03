@@ -8,7 +8,7 @@ public class MatchState : MonoBehaviour
     [SerializeField] private Halftime_ScriptDataReader _halftimeScriptReader;
     [SerializeField] private Halftime_ListDataReader _halftimeListReader;
 
-    public int CurrentHalftimeScriptId;
+    public string CurrentHalftimeScriptId;
 
     public const int MAX_QUARTER = 4;
     public const float SECONDS_PER_QUARTER = 600f; // 10분
@@ -197,7 +197,7 @@ public class MatchState : MonoBehaviour
                     isConditionMet = true;
                     break;
                 case triggerCond.ScoreGap: // 점수가 지고 있을 때 (유저 점수 - 상대 점수 <= 기준값)
-                    isConditionMet = (_homeTeam.Score - _awayTeam.Score) <= data.triggerValue;
+                    isConditionMet = (_homeTeam.SimulatedScore - _awayTeam.SimulatedScore) <= data.triggerValue;
                     break;
                 case triggerCond.ReboundDiff: // 리바운드가 밀릴 때
                     isConditionMet = (_homeTeam.ReboundCount - _awayTeam.ReboundCount) <= data.triggerValue;
@@ -223,7 +223,8 @@ public class MatchState : MonoBehaviour
         }
         else
         {
-            CurrentHalftimeScriptId = 1001; // 만족하는 게 없으면 기본 이벤트
+            var defaultEvent = _halftimeListReader.DataList.Find(x => x.triggerCond == triggerCond.Random);
+            CurrentHalftimeScriptId = defaultEvent.scriptId ?? "Script_Halftime_001"; // 만족하는 게 없으면 기본 이벤트
         }
 
         AddLog($"[시스템] 하프타임 이벤트 결정됨 (Script ID: {CurrentHalftimeScriptId})");

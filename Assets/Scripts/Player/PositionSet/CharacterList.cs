@@ -13,6 +13,7 @@ public class CharacterList : MonoBehaviour
     [SerializeField] Transform _cardContainer; //????? ??? ???
     [SerializeField] Transform _positionTrf;
     [SerializeField] GameObject _matchStartPanelObj;
+    [SerializeField] FightingPower _fightingPower;
 
 
     GenericObjectPool<PlayerCard> _playerCardPool;
@@ -59,6 +60,7 @@ public class CharacterList : MonoBehaviour
         {
             PlayerCard newCard = _playerCardPool.Get();
             // newCard.SetImageColor(GetNextColor());
+
             newCard.Init(student);
             CardList.Add(newCard);
         }
@@ -158,12 +160,45 @@ public class CharacterList : MonoBehaviour
 
     public bool CheckMaxPositionBatch()
     {
-        for (int i = 0; i < MAX_BATCH_COUNT; i++)
+        // 남은 카드가 없다?
+        if (_cardList == null || _cardList.Count == 0)
+            return true;
+
+        // 배치 가능한 카드가 하나도 없으면(경기 참가 불가능 플레이어 존재) 더 배치할 수 없음
+        bool hasAvailableCard = false;
+        for (int i = 0; i < _cardList.Count; i++)
         {
-            if (_positionCards[i] == null) return false;
+            var card = _cardList[i];
+            if (card != null && card.IsAvailable)
+            {
+                hasAvailableCard = true;
+                break;
+            }
+        }
+        if (!hasAvailableCard)
+            return true;
+
+        // 포지션 슬롯이 없거나 길이가 0이면 꽉 찬 것으로
+        if (_positionCards == null || _positionCards.Length == 0)
+            return true;
+
+        // 슬롯이 하나라도 비어있으면 아직 최대 아님
+        int limit = Mathf.Min(MAX_BATCH_COUNT, _positionCards.Length);
+        for (int i = 0; i < limit; i++)
+        {
+            if (_positionCards[i] == null)
+                return false;
         }
 
+        // 여기까지 왔으면 limit 범위 내 슬롯이 다 참
         return true;
+    }
+
+    public void OnMatchStartButtonClick()
+    {
+        _fightingPower.gameObject.SetActive(true);
+        _fightingPower.Init();
+        gameObject.SetActive(false);
     }
 
     public bool AddOnPosition(PlayerCard card, DropPosition dPos)
@@ -202,7 +237,7 @@ public class CharacterList : MonoBehaviour
         var rect = (RectTransform)card.transform;
         SetAnchor(rect);
 
-        // 포지셔닝이 완료되었다면 버튼 활성화
+        // 포지셔닝이 완료되었다면 버튼 활성화 (용병 테스트는 해당 액티브를 true로 하면 됨)
         _matchStartPanelObj.SetActive(CheckMaxPositionBatch());
         return true;
     }
