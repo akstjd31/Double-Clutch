@@ -90,6 +90,7 @@ public class CharacterList : MonoBehaviour
                 {
                     // 뒤로 가기 버튼 비활성화까지 넣어놓기
                     _matchStartPanelObj.SetActive(true);
+                    return;
                 }
 
                 _fightingPower.gameObject.SetActive(true);
