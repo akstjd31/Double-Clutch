@@ -77,7 +77,6 @@ public class EnemyTeamFactory : MonoBehaviour
             stats[MatchStatType.Block] = Mathf.RoundToInt(Random.Range(minStat, maxStat + 1) * archetypeData.weightBlock);
             stats[MatchStatType.Steal] = Mathf.RoundToInt(Random.Range(minStat, maxStat + 1) * archetypeData.weightSteal);
             stats[MatchStatType.Rebound] = Mathf.RoundToInt(Random.Range(minStat, maxStat + 1) * archetypeData.weightRebound);
-            stats[MatchStatType.Dribble] = Mathf.RoundToInt(Random.Range(minStat, maxStat + 1));
 
 
             // 외형(Visual) 데이터 추첨 (종족에 맞춰서)

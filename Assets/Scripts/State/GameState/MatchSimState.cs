@@ -92,7 +92,6 @@ public class MatchSimState : IState
         stats.Add(MatchStatType.Steal, s.GetCurrentStat(potential.StatSteal));
         stats.Add(MatchStatType.Block, s.GetCurrentStat(potential.StatBlock));
         stats.Add(MatchStatType.Rebound, s.GetCurrentStat(potential.StatRebound));
-        stats.Add(MatchStatType.Dribble, 50);
 
         string actualVisualKey = s.VisualData.playerImageResource;
         if (string.IsNullOrEmpty(actualVisualKey)) actualVisualKey = "Default_Player_Sprite";

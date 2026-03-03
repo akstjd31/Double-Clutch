@@ -387,7 +387,7 @@ public class MatchEngine : MonoBehaviour
         string timeStr = GetLogTimeStr();
 
         // 텍스트 치환
-        string finalText = config.textTemplate;
+        string finalText = StringManager.Instance != null ? StringManager.Instance.GetString(config.textTemplate) : config.textTemplate;
         if (actor != null) finalText = finalText.Replace("{PlayerName}", actor.PlayerName);
         if (target != null) finalText = finalText.Replace("{TargetName}", target.PlayerName); // 패스 대상 이름 치환
         // 5쿼터 이상이면 '연장 1', 아니면 원래 숫자 유지

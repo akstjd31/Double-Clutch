@@ -23,7 +23,6 @@ public enum MatchStatType
     TwoPoint = 0,  // 2점 슛
     ThreePoint,    // 3점 슛
     Pass,          // 패스
-    Dribble,       // 드리블 
     Block,         // 블록
     Steal,         // 스틸
     Rebound,       // 리바운드

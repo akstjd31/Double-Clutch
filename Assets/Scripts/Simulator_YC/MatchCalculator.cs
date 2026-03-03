@@ -78,6 +78,8 @@ public static class MatchCalculator
                          - (enemyBlock * (1f / (nearestEnemyDist + penBlock)) * wShoot);
 
         // 패스 점수 공식
+
+        float interceptDist = MatchDataProxy.Instance.GetBalance("Pen_Intercept_Dist");
         float maxPassScore = -999f;
         foreach (var mate in teammates)
         {
@@ -90,7 +92,7 @@ public static class MatchCalculator
             float pathEnemySteal = 0f;
             foreach (var e in enemies)
             {
-                if (DistancePointToLineSegment(e.LogicPosition, player.LogicPosition, mate.LogicPosition) < 0.03f)
+                if (DistancePointToLineSegment(e.LogicPosition, player.LogicPosition, mate.LogicPosition) < interceptDist)
                 {
                     hasEnemyOnPath = 1;
                     pathEnemySteal = e.GetStat(MatchStatType.Steal);
@@ -233,7 +235,7 @@ public static class MatchCalculator
 
         if (nearestEnemy == null || minEnemyDist > 0.1f) return true; // 주변에 없으면 성공
 
-        float dribbleStat = dribbler.GetStat(MatchStatType.Dribble, attackTactics.bonusDribble);
+        float dribbleStat = dribbler.GetStat(MatchStatType.Pass, attackTactics.bonusDribble);
         float stealStat = nearestEnemy.GetStat(MatchStatType.Steal, defendTactics.bonusSteal);
 
         float prob = (dribbleStat / (dribbleStat + stealStat)) * 100f;
