@@ -21,9 +21,9 @@ public class FightingPower : MonoBehaviour
     [SerializeField] TextMeshProUGUI _rivalSchoolName;//UI(상대 편 학교 이름)
     [SerializeField] TextMeshProUGUI _rivalFightingPowerText;//UI(상대 편 학교 이름)
 
-    
+
     [SerializeField] CharacterPowerBox[] _fightingList = new CharacterPowerBox[5]; //우리편 전력 비교창 UI(각각 학생 한 명)
-    [SerializeField] CharacterPowerBox[] _rivalList  = new CharacterPowerBox[5]; //상대편 전력 비교창 UI(각각 학생 한 명)
+    [SerializeField] CharacterPowerBox[] _rivalList = new CharacterPowerBox[5]; //상대편 전력 비교창 UI(각각 학생 한 명)
 
     int _myTotalFightingPower = 0; //우리편 전력 계산용
     int _rivalTotalFightingPower = 0; //상대편 전력 계산용
@@ -33,53 +33,74 @@ public class FightingPower : MonoBehaviour
     public List<Student> MyMatchingStudentList => _myMatchingStudentList; // 경기에 참여하는 우리 학생 리스트 프로퍼티(외부 호출용)
     public List<Student> RivalMatchingStudentList => _rivalMatchingStudentList; // 경기에 참여하는 상대편 학생 리스트 프로퍼티(외부 호출용)
 
-
-    
-
     public void Init()
     {
-        _myTotalFightingPower = 0;
-
-        // CharacterList에서 현재 배치된 카드 배열을 가져옴
-        PlayerCard[] placedCards = _characterList.PositionCards;
-
-        for (int i = 0; i < _fightingList.Length; i++)
+        // 만약 기존 데이터가 존재한다면?
+        if (SaveLoadManager.Instance != null)
         {
-            Student targetStudent = null;
+            var myData = new StudentSaveData();
+            if (SaveLoadManager.Instance.TryLoad<StudentSaveData>(FilePath.MY_STUDENT_MATCHING_PATH, out myData))
+                _myMatchingStudentList = myData.studentList;
 
-            // 1. 해당 슬롯에 유저가 배치한 카드가 있는지 확인
-            if (placedCards[i] != null && placedCards[i].Player != null)
+            var rivalData = new StudentSaveData();
+            if (SaveLoadManager.Instance.TryLoad<StudentSaveData>(FilePath.RIVAL_STUDENT_MATCHING_PATH, out rivalData))
+                _rivalMatchingStudentList = rivalData.studentList;
+        }
+        
+        _myTotalFightingPower = 0;
+        // 데이터가 제대로 로드되었다면 아래 작업을 할 필요 없음.
+        if (_myMatchingStudentList.Count > 0 && _myMatchingStudentList != null)
+        {
+            for (int i = 0; i < Mathf.Min(_myMatchingStudentList.Count, _fightingList.Length); i++)
             {
-                targetStudent = placedCards[i].Player;
-            }
-            // 2. 카드가 없다면 용병 생성
-            else
-            {
-                // 인덱스 i를 포지션으로 변환 (0:PG, 1:SG, 2:SF, 3:PF, 4:C 라고 가정)
-                Position targetPos = (Position)i + 1;
-                targetStudent = _mercenaryMaker.MakeMercenary(targetPos);
-                targetStudent.OnStatChanged();                
-            }
-
-            // 3. CharacterPowerBox에 정보 주입 (용병 포함)
-            if (targetStudent != null)
-            {
-                _fightingList[i].Init(targetStudent);
-                _myTotalFightingPower += (_fightingList[i].Attack + _fightingList[i].Defense);
-
-                _myMatchingStudentList.Add(targetStudent);
-
-                Debug.Log($"[아군 생성] {targetStudent.Name}({targetStudent.Position}) | 2점:{targetStudent.GetCurrentStat(potential.Stat2pt)}, 3점:{targetStudent.GetCurrentStat(potential.Stat3pt)}, 블록:{targetStudent.GetCurrentStat(potential.StatBlock)}, 스틸:{targetStudent.GetCurrentStat(potential.StatSteal)}, 리바:{targetStudent.GetCurrentStat(potential.StatRebound)}");
+                var s = _myMatchingStudentList[i];
+                s.OnStatChanged();
+                _fightingList[i].Init(s);
+                _myTotalFightingPower += (s.Attack + s.Defense);
             }
         }
+        // 데이터가 없을 시
+        // else
+        // {
+        //     // CharacterList에서 현재 배치된 카드 배열을 가져옴
+        //     PlayerCard[] placedCards = _characterList.PositionCards;
+
+        //     for (int i = 0; i < _fightingList.Length; i++)
+        //     {
+        //         Student targetStudent = null;
+
+        //         // 1. 해당 슬롯에 유저가 배치한 카드가 있는지 확인
+        //         if (placedCards[i] != null && placedCards[i].Player != null)
+        //         {
+        //             targetStudent = placedCards[i].Player;
+        //         }
+        //         // 2. 카드가 없다면 용병 생성
+        //         else
+        //         {
+        //             // 인덱스 i를 포지션으로 변환 (0:PG, 1:SG, 2:SF, 3:PF, 4:C 라고 가정)
+        //             Position targetPos = (Position)i + 1;
+        //             targetStudent = _mercenaryMaker.MakeMercenary(targetPos);
+        //             targetStudent.OnStatChanged();
+        //         }
+
+        //         // 3. CharacterPowerBox에 정보 주입 (용병 포함)
+        //         if (targetStudent != null)
+        //         {
+        //             _rivalList[i].Init(targetStudent);
+        //             _myTotalFightingPower += (_rivalList[i].Attack + _rivalList[i].Defense);
+
+        //             _myMatchingStudentList.Add(targetStudent);
+
+        //             Debug.Log($"[아군 생성] {targetStudent.Name}({targetStudent.Position}) | 2점:{targetStudent.GetCurrentStat(potential.Stat2pt)}, 3점:{targetStudent.GetCurrentStat(potential.Stat3pt)}, 블록:{targetStudent.GetCurrentStat(potential.StatBlock)}, 스틸:{targetStudent.GetCurrentStat(potential.StatSteal)}, 리바:{targetStudent.GetCurrentStat(potential.StatRebound)}");
+        //         }
+        //     }
+        // }
+
 
         //여기서 _rivalList 배열 내 모든 CharacterBox를 상대편 학생(Student 클래스)으로 Init해주시면 됩니다.
         //시뮬레이터에 가져가려면 Init 후 _rivalMatchingStudentList에 Add도 해주시면 됩니다.
 
         //시뮬레이터에서 경기에 실제로 참여하는 학생 정보를 가져가기 위해서는 MyMatchingStudentList 와 RivalMatchingStudentList를 각각 참조하시면 됩니다.
-
-        _rivalMatchingStudentList.Clear();
-        _rivalTotalFightingPower = 0;
 
         // 적 팀 생성 (테스트용 ID 입력)
         MatchTeam generatedAwayTeam = EnemyTeamFactory.Instance.CreateEnemyTeam("Team_DOM_03", "LV_Swiss_03");
@@ -92,16 +113,28 @@ public class FightingPower : MonoBehaviour
         }
         Debug.Log($"[팩토리 확인] 적군 1번 선수 2점슛 스탯: {generatedAwayTeam.Roster[0].GetStat(MatchStatType.TwoPoint)}");
 
-        for (int i = 0; i < _rivalList.Length; i++)
+        if (_rivalMatchingStudentList != null && _rivalMatchingStudentList.Count > 0)
         {
-            MatchPlayer mp = generatedAwayTeam.Roster[i];
-            Student rivalStudent = new Student();
+            for (int i = 0; i < _rivalMatchingStudentList.Count; i++)
+            {
+                var r = _rivalMatchingStudentList[i];
+                r.OnStatChanged();
+                _rivalList[i].Init(r);
+                _rivalTotalFightingPower += (r.Attack + r.Defense);
+            }
+        }
+        else
+        {
+            for (int i = 0; i < _rivalList.Length; i++)
+            {
+                MatchPlayer mp = generatedAwayTeam.Roster[i];
+                Student rivalStudent = new Student();
 
-            rivalStudent.SetName(mp.PlayerName);
-            rivalStudent.SetPosition(mp.MainPosition);
+                rivalStudent.SetName(mp.PlayerName);
+                rivalStudent.SetPosition(mp.MainPosition);
 
-            // 팩토리에서 뽑힌 스탯 그대로 이식
-            var mappedStats = new List<Stat>
+                // 팩토리에서 뽑힌 스탯 그대로 이식
+                var mappedStats = new List<Stat>
         {
             new Stat(potential.Stat2pt, mp.GetStat(MatchStatType.TwoPoint), 99, 1),
             new Stat(potential.Stat3pt, mp.GetStat(MatchStatType.ThreePoint), 99, 1),
@@ -111,14 +144,15 @@ public class FightingPower : MonoBehaviour
             new Stat(potential.StatRebound, mp.GetStat(MatchStatType.Rebound), 99, 1)
         };
 
-            rivalStudent.SetStat(mappedStats);
-            rivalStudent.OnStatChanged(); // 공격력, 방어력 갱신
+                rivalStudent.SetStat(mappedStats);
+                rivalStudent.OnStatChanged(); // 공격력, 방어력 갱신
 
-            // UI에 정보 주입
-            _rivalList[i].Init(rivalStudent);
-            _rivalMatchingStudentList.Add(rivalStudent);
+                // UI에 정보 주입
+                _rivalList[i].Init(rivalStudent);
+                _rivalMatchingStudentList.Add(rivalStudent);
 
-            _rivalTotalFightingPower += (rivalStudent.Attack + rivalStudent.Defense);
+                _rivalTotalFightingPower += (rivalStudent.Attack + rivalStudent.Defense);
+            }
         }
 
         _rivalSchoolName.text = generatedAwayTeam.TeamName;
@@ -131,6 +165,20 @@ public class FightingPower : MonoBehaviour
         _mySchoolName.text = GameManager.Instance.SaveData.schoolName;
         _myFightingPowerText.text = _myTotalFightingPower.ToString();
     }
+
+    // 라이벌에 배치된 내 선수 목록들을 저장하는 메서드
+    public void SaveRivalMachingStudentData()
+    {
+        if (_rivalMatchingStudentList.Count < 1 || _rivalMatchingStudentList == null) return;
+
+        int rivalCnt = _rivalMatchingStudentList.Count;
+
+        var rivalData = new StudentSaveData(rivalCnt, _rivalMatchingStudentList);
+
+        if (SaveLoadManager.Instance == null) return;
+        SaveLoadManager.Instance.Save(FilePath.RIVAL_STUDENT_MATCHING_PATH, rivalData);
+    }
+
     public void OnClickStartMatch()
     {
         GameManager.Instance.LoadMatchSceneWithData("Test_Simul", MyMatchingStudentList, RivalMatchingStudentList);

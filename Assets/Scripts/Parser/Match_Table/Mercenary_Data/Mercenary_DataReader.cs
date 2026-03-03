@@ -15,7 +15,7 @@ public class Mercenary_DataReader : DataReaderBase
         int playerUId = 0;
         Position positionType = default;
         string mercName = null;
-        int traitId = 0, passiveId1 = 0, passiveId2 = 0, passiveId3 = 0, stat2ptValue = 0, stat3ptValue = 0, statAssistValue = 0, statBlockValue = 0, statStealValue = 0, statReboundValue = 0, currentCondition = 0;
+        int traitId = 0, passiveId1 = 0, passiveId2 = 0, passiveId3 = 0, stat2ptValue = 0, stat3ptValue = 0, statPassValue = 0, statBlockValue = 0, statStealValue = 0, statReboundValue = 0, currentCondition = 0;
         handicapState handicapState = default;
         string playerImageResource = null, portraitResource = null;
 
@@ -61,8 +61,8 @@ public class Mercenary_DataReader : DataReaderBase
                 case "stat3ptValue":
                     int.TryParse(val, out stat3ptValue);
                     break;
-                case "statAssistValue":
-                    int.TryParse(val, out statAssistValue);
+                case "statPassValue":
+                    int.TryParse(val, out statPassValue);
                     break;
                 case "statBlockValue":
                     int.TryParse(val, out statBlockValue);
@@ -95,7 +95,7 @@ public class Mercenary_DataReader : DataReaderBase
         DataList.Add(new Mercenary_Data(
             playerUId,positionType,mercName,traitId,passiveId1,
             passiveId2,passiveId3,stat2ptValue,stat3ptValue,
-            statAssistValue,statBlockValue,statStealValue,
+            statPassValue,statBlockValue,statStealValue,
             statReboundValue,currentCondition,handicapState,
             playerImageResource,portraitResource
         ));

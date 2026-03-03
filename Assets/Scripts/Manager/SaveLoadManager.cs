@@ -23,7 +23,7 @@ public class SaveLoadManager : Singleton<SaveLoadManager>
         if (File.Exists(path)) File.Delete(path);
         File.Move(tmpPath, path);
 
-        Debug.Log("파일 저장 성공!");
+        Debug.Log($"{fileName} 파일 저장 성공!");
     }
 
     public bool TryLoad<T> (string fileName, out T data) where T : SaveBase, new()

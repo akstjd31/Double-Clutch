@@ -17,8 +17,8 @@ using UnityEngine.SceneManagement;
 // }
 public static class PrefKeys
 {
-    public const string KEY_FIRST_RUN_DONE = "FIRST_RUN_DONE";
-    public const string CURRENCY_SUBSIDY = "CURRENCY_SUBSIDY";
+    public const string KEY_FIRST_RUN_DONE = "FIRST_RUN_DONE";          // 튜토리얼 여부 결정
+    public const string MATCH_PREP_UI_INDEX = "MATCH_PREP_UI_INDEX";    // 경기 준비 단계 UI 인덱스
 }
 
 public static class SceneName
@@ -32,6 +32,8 @@ public static class SceneName
 public static class FilePath
 {
     public const string PLAYER_PATH = "PlayerSaveData.json";
+    public const string MY_STUDENT_MATCHING_PATH = "MyStudentMatchingData.json";
+    public const string RIVAL_STUDENT_MATCHING_PATH = "RivalStudentMatchingData.json";
 }
 
 public class GameManager : Singleton<GameManager>

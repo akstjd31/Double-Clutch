@@ -25904,6 +25904,7 @@ GameObject:
   - component: {fileID: 1108288566}
   - component: {fileID: 1108288565}
   - component: {fileID: 1108288567}
+  - component: {fileID: 1108288568}
   m_Layer: 5
   m_Name: PositionSet
   m_TagString: Untagged
@@ -25999,6 +26000,20 @@ MonoBehaviour:
   - {fileID: 186579995}
   - {fileID: 1039411599}
   - {fileID: 550827089}
+  _mercenaryMaker: {fileID: 1108288568}
+--- !u!114 &1108288568
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1108288563}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bad24b799c321cd44a4c5e0d95f825f4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MercenaryMaker
+  _mercenaryDB: {fileID: 11400000, guid: 34a73672d87b99a44b7e79e3cea5fcae, type: 2}
 --- !u!1 &1112515887
 GameObject:
   m_ObjectHideFlags: 0
@@ -47066,7 +47081,6 @@ GameObject:
   - component: {fileID: 2135459788}
   - component: {fileID: 2135459787}
   - component: {fileID: 2135459790}
-  - component: {fileID: 2135459789}
   m_Layer: 5
   m_Name: FightingPower
   m_TagString: Untagged
@@ -47137,19 +47151,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2135459785}
   m_CullTransparentMesh: 1
---- !u!114 &2135459789
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2135459785}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bad24b799c321cd44a4c5e0d95f825f4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MercenaryMaker
-  _mercenaryDB: {fileID: 11400000, guid: 34a73672d87b99a44b7e79e3cea5fcae, type: 2}
 --- !u!114 &2135459790
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -47163,7 +47164,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FightingPower
   _characterList: {fileID: 1108288567}
-  _mercenaryMaker: {fileID: 2135459789}
+  _mercenaryMaker: {fileID: 0}
   _mySchoolName: {fileID: 1469105399}
   _myFightingPowerText: {fileID: 1037271817}
   _rivalSchoolName: {fileID: 615702300}
