@@ -10,11 +10,11 @@ public class PassiveSkillSelectPanel : MonoBehaviour
     [SerializeField] private GameObject _afterGuideBox;
     [SerializeField] private GameObject _warningBox;
 
-    private List<Student> _promotionStudentList;
+    //private List<Student> _promotionStudentList;
 
     private void Start()
     {
-        _promotionStudentList = _graduationManager.PromotionStudentList;
+        //_promotionStudentList = _graduationManager.PromotionStudentList;
     }
     public void OnClickOKButton()
     {
@@ -22,7 +22,13 @@ public class PassiveSkillSelectPanel : MonoBehaviour
         {
             gameObject.SetActive(false);
             _graduationManager.Turn++;
-            Debug.Log($"다음 : {_graduationManager.Turn}번 학생");
+
+            if (_graduationManager.Turn < _graduationManager.PromotionStudentList.Count)
+            {
+                var student = _graduationManager.PromotionStudentList[_graduationManager.Turn];
+                Debug.Log($"순서: {student.Name} 학생");
+            }
+
             //_guideBox.SetActive(false);
             _afterGuideBox.SetActive(true);
             _graduationManager.PromotionPanel.IsSkillChoise = false;
@@ -32,10 +38,5 @@ public class PassiveSkillSelectPanel : MonoBehaviour
         {
             _warningBox.SetActive(true);
         }
-    }
-
-    public void OnClickCloseButton()
-    {
-        _warningBox.SetActive(false);
     }
 }

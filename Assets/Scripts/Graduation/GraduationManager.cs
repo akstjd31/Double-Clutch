@@ -66,6 +66,6 @@ public class GraduationManager : MonoBehaviour
 
     public void NextScene()
     {
-        SceneManager.LoadScene("Test_Main");
+        SceneManager.LoadScene("Test_Lobby");
     }
 }
