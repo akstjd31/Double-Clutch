@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Cryptography;
 using UnityEngine;
 
@@ -28,6 +29,7 @@ public class CharacterList : MonoBehaviour
     [SerializeField] private DropPosition[] _dropPositions;
     private PlayerCard _selectedCard;
     private DropPosition _selectedPosition;
+    [SerializeField] MercenaryMaker _mercenaryMaker; // 용병 생성기
 
 
     private int _colorIndex;
@@ -52,6 +54,7 @@ public class CharacterList : MonoBehaviour
 
     private void OnEnable()
     {
+        CheckSaveData();
         ClearAllCards();
 
         _colorIndex = 0;
@@ -63,6 +66,31 @@ public class CharacterList : MonoBehaviour
 
             newCard.Init(student);
             CardList.Add(newCard);
+        }
+    }
+
+    private void CheckSaveData()
+    {
+        if (SaveLoadManager.Instance != null)
+        {
+            bool hasData = SaveLoadManager.Instance.TryLoad<StudentSaveData>(FilePath.MY_STUDENT_MATCHING_PATH, out var data);
+
+            int idx = PlayerPrefs.GetInt(PrefKeys.MATCH_PREP_UI_INDEX);
+
+            if (idx == 1)
+            {
+                // 뒤로 가기 버튼 비활성화
+                _matchStartPanelObj.SetActive(true);
+                return;
+            }
+
+            if (hasData)
+            {
+                _fightingPower.gameObject.SetActive(true);
+                _fightingPower.Init();
+                this.gameObject.SetActive(false);
+                return;
+            }
         }
     }
 
@@ -196,8 +224,10 @@ public class CharacterList : MonoBehaviour
 
     public void OnMatchStartButtonClick()
     {
+        PlayerPrefs.SetInt(PrefKeys.MATCH_PREP_UI_INDEX, 2);
         _fightingPower.gameObject.SetActive(true);
         _fightingPower.Init();
+        _fightingPower.SaveRivalMachingStudentData();
         gameObject.SetActive(false);
     }
 
@@ -238,8 +268,46 @@ public class CharacterList : MonoBehaviour
         SetAnchor(rect);
 
         // 포지셔닝이 완료되었다면 버튼 활성화 (용병 테스트는 해당 액티브를 true로 하면 됨)
-        _matchStartPanelObj.SetActive(CheckMaxPositionBatch());
+        if (CheckMaxPositionBatch())
+        {
+            // 배치된 선수 저장 및 새로운 UI 인덱스 갱신
+            SaveBatchStudentData();
+            PlayerPrefs.SetInt(PrefKeys.MATCH_PREP_UI_INDEX, 1);
+            _matchStartPanelObj.SetActive(true);
+        }
+        
         return true;
+    }
+
+    // 배치한 학생 정보 저장
+    public void SaveBatchStudentData()
+    {
+        if (_positionCards == null || _positionCards.Length < 1) return;
+
+        var sList = new List<Student>();
+
+        for (int i = 0; i < _positionCards.Length; i++)
+        {
+            // 용병 생성
+            if (_positionCards[i] == null)
+            {
+                Position targetPos = (Position)i + 1;
+                if (_mercenaryMaker != null)
+                {
+                    var mercenary = _mercenaryMaker.MakeMercenary(targetPos);
+                    mercenary.OnStatChanged();
+                    sList.Add(mercenary);
+                    continue;
+                }
+            }
+
+            sList.Add(_positionCards[i].Player);
+        }
+
+        var batchData = new StudentSaveData(MAX_BATCH_COUNT, sList);
+
+        if (SaveLoadManager.Instance == null) return;
+        SaveLoadManager.Instance.Save(FilePath.MY_STUDENT_MATCHING_PATH, batchData);
     }
 
     public void SetAnchor(RectTransform rect)
