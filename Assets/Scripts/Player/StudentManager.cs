@@ -12,7 +12,8 @@ public class StudentManager : Singleton<StudentManager>
 
     int _idCount = 0; //???? ???? ?? ?��??? ???? id ?????(????/?��? ???)
     int _recruitLimit = 5; //???? ???? ????
-    public bool CanRecruit => _recruitLimit > _myStudents.Count;
+    public int RecruitLimit => _recruitLimit;
+    public bool IsStable => _recruitLimit == _myStudents.Count;
     // public static StudentManager Instance { get; private set; }
     [SerializeField] StudentFactory _studentFactory; //???? ?????? ????
     [SerializeField] private List<Student> _myStudents = new List<Student>(); //???? ???
@@ -46,6 +47,11 @@ public class StudentManager : Singleton<StudentManager>
         return newTeam;        
     }
 
+    public Student MakeRandomStudent()
+    {
+        return _studentFactory.MakeRandomStudent();
+    }
+
     public void MakeTestStudents(int n) //?????? ??????? n?? ?????? ?????(??????)
     {
         for (int i = 0; i < n; i++)
@@ -55,12 +61,7 @@ public class StudentManager : Singleton<StudentManager>
     }    
 
     public void RecruitNewStudent(Student newStudent)
-    {
-        if (!CanRecruit)
-        {
-            Debug.Log("���� �ִ�ġ�� ���� ���� �Ұ�!");
-            return;
-        }
+    {        
         _myStudents.Add(newStudent);
 
         newStudent.SetStudentId(_idCount++);
@@ -107,8 +108,9 @@ public class StudentManager : Singleton<StudentManager>
         }
     }
 
-    private void OnApplicationQuit()
+    protected override void OnApplicationQuit()
     {
+        base.OnApplicationQuit();
         SaveGame();
     }
 }
