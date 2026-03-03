@@ -22,9 +22,10 @@ public class CharacterList : MonoBehaviour
     [SerializeField] private List<PlayerCard> _cardList = new List<PlayerCard>();
     public List<PlayerCard> CardList => _cardList;
 
-
+    
     [SerializeField] private PlayerCard[] _positionCards;
     public PlayerCard[] PositionCards => _positionCards;
+    [SerializeField] private int[] _batchIds;
 
     [SerializeField] private DropPosition[] _dropPositions;
     private PlayerCard _selectedCard;
@@ -50,6 +51,12 @@ public class CharacterList : MonoBehaviour
         _playerCardPool = new GenericObjectPool<PlayerCard>(_playerCardPrefab, _cardContainer, 5, 20);
 
         _positionCards = new PlayerCard[MAX_BATCH_COUNT];
+        _batchIds = new int[MAX_BATCH_COUNT];
+
+        for (int i = 0; i < MAX_BATCH_COUNT; i++)
+        {
+            _batchIds[i] = 999;
+        }
     }
 
     private void OnEnable()
@@ -73,23 +80,43 @@ public class CharacterList : MonoBehaviour
     {
         if (SaveLoadManager.Instance != null)
         {
-            bool hasData = SaveLoadManager.Instance.TryLoad<StudentSaveData>(FilePath.MY_STUDENT_MATCHING_PATH, out var data);
+            bool hasMyStdData = SaveLoadManager.Instance.TryLoad<StudentSaveData>(FilePath.MY_STUDENT_MATCHING_PATH, out var stdData);
 
             int idx = PlayerPrefs.GetInt(PrefKeys.MATCH_PREP_UI_INDEX);
 
-            if (idx == 1)
+            if (hasMyStdData)
             {
-                // 뒤로 가기 버튼 비활성화
-                _matchStartPanelObj.SetActive(true);
-                return;
-            }
+                if (idx == 1)
+                {
+                    // 뒤로 가기 버튼 비활성화까지 넣어놓기
+                    _matchStartPanelObj.SetActive(true);
+                }
 
-            if (hasData)
-            {
                 _fightingPower.gameObject.SetActive(true);
                 _fightingPower.Init();
                 this.gameObject.SetActive(false);
-                return;
+
+                // bool hasBatchIdData = SaveLoadManager.Instance.TryLoad<BatchIdData>("BatchIdSaveData.json", out var batchIdData);
+
+                // if (hasBatchIdData)
+                // {
+                //     var stdMgr = StudentManager.Instance;
+                //     if (stdMgr == null) return;
+
+                //     for (int i = 0; i < MAX_BATCH_COUNT; i++)
+                //     {
+                //         int id = batchIdData.batchIds[i];
+                //         if (id == 999) continue;
+                        
+                //         // 보유 중인 학생 중에 ID로 찾기
+                //         var std = stdMgr.FindStudentById(id);
+                        
+                //         var playerCard = new PlayerCard();
+                //         playerCard.Init(std);
+
+                //         _positionCards[i] = playerCard;
+                //     }
+                // }
             }
         }
     }
@@ -214,6 +241,7 @@ public class CharacterList : MonoBehaviour
         int limit = Mathf.Min(MAX_BATCH_COUNT, _positionCards.Length);
         for (int i = 0; i < limit; i++)
         {
+            
             if (_positionCards[i] == null)
                 return false;
         }
@@ -243,7 +271,10 @@ public class CharacterList : MonoBehaviour
         // 같은 카드가 다른 슬롯에 이미 있으면 제거
         int already = IndexOfCard(card);
         if (already >= 0 && already != idx)
+        {
             _positionCards[already] = null;
+            _batchIds[already] = 999;
+        }
 
         // 교체
         var prev = _positionCards[idx];
@@ -253,10 +284,10 @@ public class CharacterList : MonoBehaviour
             prev.transform.SetParent(_cardContainer, false);
             prev.transform.SetAsLastSibling();
         }
-        ;
 
         // 배치
         _positionCards[idx] = card;
+        _batchIds[idx] = card.Player.StudentId;
 
         _cardList.Remove(card);
 
@@ -305,9 +336,11 @@ public class CharacterList : MonoBehaviour
         }
 
         var batchData = new StudentSaveData(MAX_BATCH_COUNT, sList);
+        var batchIdData = new BatchIdData(_batchIds);
 
         if (SaveLoadManager.Instance == null) return;
         SaveLoadManager.Instance.Save(FilePath.MY_STUDENT_MATCHING_PATH, batchData);
+        SaveLoadManager.Instance.Save("BatchIdSaveData.json", batchIdData);
     }
 
     public void SetAnchor(RectTransform rect)
