@@ -18,19 +18,12 @@ public class PromotionPanel : MonoBehaviour
 
     [SerializeField] private TextMeshProUGUI[] _passiveNameText = new TextMeshProUGUI[3];
 
-    private List<Student> _promotionStudentList;
+    private List<int> _promotionStudentList;
 
     private bool _isSkillChoise = false;
+    Student _currentStudent;
 
     public bool IsSkillChoise { get { return _isSkillChoise; } set { _isSkillChoise = value; } }
-
-    private void OnEnable()
-    {
-        for (int i = 0; i < _passiveNameText.Length; i++)
-        {
-            _passiveNameText[i].text = "";
-        }
-    }
 
     public void GetList()
     {
@@ -43,24 +36,40 @@ public class PromotionPanel : MonoBehaviour
         {
             return;
         }
-        var student = _promotionStudentList[_graduationManager.Turn];
-        Debug.Log($"순서: {student.Name} 학생");
+
+        int studentNum = _promotionStudentList[_graduationManager.Turn];
+
+        for (int i = 0; i < _graduationManager.MyStudents.Count; i++)
+        {
+            if(studentNum == _graduationManager.MyStudents[i].StudentId)
+            {
+                _currentStudent = _graduationManager.MyStudents[i];
+            }
+        }
+        Debug.Log($"순서: {_currentStudent.Name} 학생");
 
         if (_isSkillChoise == false)
         {
-            _guideBoxName.text = $"{student.Name} 학생이 진급 하였습니다.\r\n패시브 스킬을 선택해주세요!";
+            _guideBoxName.text = $"{_currentStudent.Name} 학생이 진급 하였습니다.\r\n패시브 스킬을 선택해주세요!";
         }
         else if (_isSkillChoise == true)
         {
             _afterChoice.SetActive(true);
         }
 
-        _name.text = student.Name;
-        _gradeUp.text = $"{student.Grade}학년 → {student.Grade + 1}학년";
+        _name.text = _currentStudent.Name;
+        _gradeUp.text = $"{_currentStudent.Grade}학년 → {_currentStudent.Grade + 1}학년";
 
-        for (int i = 0; i < student.PassiveId.Count; i++)
+        for (int i = 0; i < 3; i++)
         {
-            _passiveNameText[i].text = student.PassiveId[i];
+            if(i < _currentStudent.PassiveId.Count)
+            {
+                _passiveNameText[i].text = _currentStudent.PassiveId[i];
+            }
+            else
+            {
+                _passiveNameText[i].text = "";
+            }
         }
 
         _isSkillChoise = false;
@@ -86,7 +95,7 @@ public class PromotionPanel : MonoBehaviour
 
         var student = _promotionStudentList[_graduationManager.Turn];
         _passiveSkillSelectPanel.SetActive(true);
-        _passiveBox.GetSkill(student);
+        _passiveBox.GetSkillList(_currentStudent);
         //스킬 선택 상태 초기화
         _isSkillChoise = false;
         Debug.Log($"스킬 선택 상태{_isSkillChoise}/{IsSkillChoise}");
@@ -109,6 +118,5 @@ public class PromotionPanel : MonoBehaviour
         {
             _beforeGuideBox.SetActive(false);
         }
-
     }
 }

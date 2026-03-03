@@ -14,7 +14,11 @@ public class PassiveBox : MonoBehaviour
 
     [SerializeField] private Player_PassiveDataReader _passiveDataReader;
 
-    [SerializeField] private List<Player_PassiveData> passiveDataList;
+    private List<Player_PassiveData> _passiveDataList;
+    private List<Player_PassiveData> _selectSkillList = new List<Player_PassiveData>();
+    private Player_PassiveData _selectSkill;
+
+    public Player_PassiveData SelectSkill => _selectSkill;
 
 
     private void Awake()
@@ -40,18 +44,21 @@ public class PassiveBox : MonoBehaviour
     {
     }
 
-    public void GetSkill(Student student)
+    public void GetSkillList(Student student)
     {
         //패시브 스킬 리스트 가져오기
-        passiveDataList = student.GetAvailablePassives(_passiveDataReader.DataList);
+        _passiveDataList = student.GetAvailablePassives(_passiveDataReader.DataList);
 
         for (int i = 0; i < 3; i++)
         {
-            int randomN = Random.Range(0, passiveDataList.Count);
-            _skillName[i].text = passiveDataList[randomN].skillName;
-            _skillDetail[i].text = passiveDataList[randomN].passiveDesc;
+            int randomN = Random.Range(0, _passiveDataList.Count);
+            _skillName[i].text = _passiveDataList[randomN].skillName;
+            _skillDetail[i].text = _passiveDataList[randomN].passiveDesc;
 
-            passiveDataList.RemoveAt(randomN);
+            _selectSkillList.Add(_passiveDataList[randomN]);
+            Debug.Log($"{_passiveDataList[randomN].skillName}추가");
+
+            _passiveDataList.RemoveAt(randomN);
         }
     }
 
@@ -66,6 +73,9 @@ public class PassiveBox : MonoBehaviour
             if (button == _buttons[i])
             {
                 _buttons[i].targetGraphic.color = _buttons[i].colors.normalColor;
+                //선택한 스킬 저장
+                _selectSkill = _selectSkillList[i];
+                Debug.Log($"{_selectSkill.skillName}");
                 Debug.Log($"{gameObject.name} 버튼 활성화 색상");
             }
             else
