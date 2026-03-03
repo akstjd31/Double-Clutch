@@ -29,8 +29,7 @@ public class TutorialUI : MonoBehaviour
 
         this.gameObject.SetActive(false);
 
-        // 튜토리얼 수행 완료
-        PlayerPrefs.SetInt(PrefKeys.KEY_FIRST_RUN_DONE, 1);
-        PlayerPrefs.Save();
+        var weekId = GameManager.Instance.SaveData.weekId;
+        CalendarManager.Instance.CalcWeek(weekId);
     }
 }
