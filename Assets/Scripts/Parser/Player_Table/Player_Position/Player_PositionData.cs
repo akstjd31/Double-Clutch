@@ -6,21 +6,21 @@ using Unity.VisualScripting.Antlr3.Runtime.Misc;
 public struct Player_PositionData
 {
     public string recommendId;
-    public potential state1;
+    public potential stat1;
     public int recommendation1;
-    public potential state2;
+    public potential stat2;
     public int recommendation2;
-    public potential state3;
+    public potential stat3;
     public int recommendation3;
 
-    public Player_PositionData(string recommendId, potential state1, int recommendation1, potential state2, int recommendation2, potential state3, int recommendation3)
+    public Player_PositionData(string recommendId, potential stat1, int recommendation1, potential stat2, int recommendation2, potential stat3, int recommendation3)
     {
         this.recommendId = recommendId;
-        this.state1 = state1;
+        this.stat1 = stat1;
         this.recommendation1 = recommendation1;
-        this.state2 = state2;
+        this.stat2 = stat2;
         this.recommendation2 = recommendation2;
-        this.state3 = state3;
+        this.stat3 = stat3;
         this.recommendation3 = recommendation3;
     }
 }

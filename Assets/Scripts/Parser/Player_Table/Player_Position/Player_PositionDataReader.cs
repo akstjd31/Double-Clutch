@@ -11,7 +11,7 @@ public class Player_PositionDataReader : DataReaderBase
     internal void UpdateStats(List<GSTU_Cell> list, int rowIndex)
     {
         string recommendId = null;
-        potential state1 = default, state2 = default, state3 = default;
+        potential stat1 = default, stat2 = default, stat3 = default;
         int recommendation1 = 0, recommendation2 = 0,recommendation3 = 0;
 
         for (int i = 0; i < list.Count; i++)
@@ -28,32 +28,32 @@ public class Player_PositionDataReader : DataReaderBase
                     recommendId = val;
                     break;
 
-                case "state1":
+                case "stat1":
                     if (!string.IsNullOrEmpty(val))
                     {
-                        if (int.TryParse(val, out var eInt)) state1 = (potential)eInt;
-                        else if (Enum.TryParse(val, true, out potential e)) state1 = e;
+                        if (int.TryParse(val, out var eInt)) stat1 = (potential)eInt;
+                        else if (Enum.TryParse(val, true, out potential e)) stat1 = e;
                     }
                     break;
                 case "recommendation1":
                     int.TryParse(val, out recommendation1 );
                     break;
 
-                case "state2":
+                case "stat2":
                     if (!string.IsNullOrEmpty(val))
                     {
-                        if (int.TryParse(val, out var eInt)) state2 = (potential)eInt;
-                        else if (Enum.TryParse(val, true, out potential e)) state2 = e;
+                        if (int.TryParse(val, out var eInt)) stat2 = (potential)eInt;
+                        else if (Enum.TryParse(val, true, out potential e)) stat2 = e;
                     }
                     break;
                 case "recommendation2":
                     int.TryParse(val, out recommendation2);
                     break;
-                case "state3":
+                case "stat3":
                     if (!string.IsNullOrEmpty(val))
                     {
-                        if (int.TryParse(val, out var eInt)) state3 = (potential)eInt;
-                        else if (Enum.TryParse(val, true, out potential e)) state3 = e;
+                        if (int.TryParse(val, out var eInt)) stat3 = (potential)eInt;
+                        else if (Enum.TryParse(val, true, out potential e)) stat3 = e;
                     }
                     break;
                 case "recommendation3":
@@ -64,7 +64,7 @@ public class Player_PositionDataReader : DataReaderBase
 
         var positionData = new Player_PositionData
         (
-            recommendId,state1,recommendation1,state2,recommendation2,state3,recommendation3
+            recommendId,stat1,recommendation1,stat2,recommendation2,stat3,recommendation3
         );
 
         DataList.Add(positionData);
