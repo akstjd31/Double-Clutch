@@ -13,7 +13,7 @@ public class GraduationManager : MonoBehaviour
     //[SerializeField] private List<TestStudent> _testGraduationStudentList = new List<TestStudent>();
 
     //진급학생 리스트
-    [SerializeField] private List<Student> _promotionStudentList = new List<Student>();
+    [SerializeField] private List<int> _promotionStudentList = new List<int>();
 
     //[SerializeField] private List<TestStudent> _myTestStudents = new List<TestStudent>();
 
@@ -23,7 +23,7 @@ public class GraduationManager : MonoBehaviour
 
     public List<Student> GraduationStudentList => _graduationStudentList;
     public PromotionPanel PromotionPanel => _promotionPanel;
-    public List<Student> PromotionStudentList => _promotionStudentList;
+    public List<int> PromotionStudentList => _promotionStudentList;
     public List<Student> MyStudents => _myStudents;
     public int Turn { get { return _turn; } set { _turn = value; } }
     public int TotalHonor => _totalHonor;
@@ -58,7 +58,7 @@ public class GraduationManager : MonoBehaviour
             }
             else
             {
-                _promotionStudentList.Add(_myStudents[i]);
+                _promotionStudentList.Add(_myStudents[i].StudentId);
                 Debug.Log($"{_myStudents[i].Name} : {_myStudents[i].Grade} 학년 진급생");
             }
         }
@@ -66,6 +66,6 @@ public class GraduationManager : MonoBehaviour
 
     public void NextScene()
     {
-        SceneManager.LoadScene("Test_Main");
+        SceneManager.LoadScene("Test_Lobby");
     }
 }
