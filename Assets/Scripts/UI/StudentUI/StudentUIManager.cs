@@ -11,12 +11,12 @@ using static UnityEngine.GraphicsBuffer;
 public class StudentUIManager : MonoBehaviour
 {
     public static StudentUIManager Instance;
-    [Header("���� ����â ���� UI")]
+    [Header("선수 관련 UI")]
     [SerializeField] ProfileDetailsPanel _profileDetailsPanel;
     [SerializeField] PassiveExplainBox _passiveExplainBox;
     [SerializeField] Button _backBotton;
 
-    [Header("���� ����â ���� UI")]
+    [Header("육성 관련 UI")]
     [SerializeField] TrainingPanel _trainingPanel;
     [SerializeField] IndividualTrainingCommandPopUp _individualTrainingCommandPopUp;
     [SerializeField] TeamTrainingCommandPopUp _teamTrainingCommandPopUp;
@@ -29,6 +29,16 @@ public class StudentUIManager : MonoBehaviour
     [SerializeField] Button _startFosterButton;    
     [SerializeField] TextMeshProUGUI _startFosterButtonCount;
     [SerializeField] GameObject _costWarningPopUp;
+
+    [Header("영입 & 방출 관련 UI")]
+    [SerializeField] CharacterRecruitPanel _characterRecruitPanel;
+    [SerializeField] RecruitWarningPopUp _recruitWarningPopUp;
+    [SerializeField] RecruitConfirmPopUp _recruitConfirmPopUp;
+    [SerializeField] CharacterOutPanel _characterOutPanel;
+    [SerializeField] OutWarningPopUp _outWarningPopUp;
+    [SerializeField] GameObject _cantOutWarningPopUp;
+    [SerializeField] OutConfirmPopUp _outConfirmPopUp;
+
     private void Awake()
     {
         Instance = this;
@@ -128,5 +138,47 @@ public class StudentUIManager : MonoBehaviour
     {
         _weeklyTrainingReportPopUp.gameObject.SetActive(true);
         _weeklyTrainingReportPopUp.Init(students);
+    }
+
+
+
+    public void OpenRecruitPanel()
+    {
+        _characterRecruitPanel.gameObject.SetActive(true);
+        _characterRecruitPanel.Init();
+    }
+
+    public void OpenRecruitWarningPopUp(int number)
+    {
+        _recruitWarningPopUp.gameObject.SetActive(true);
+        _recruitWarningPopUp.Init(number);
+    }
+
+    public void OpenRecruitConfirmPopUp(int number)
+    {
+        _recruitConfirmPopUp.gameObject.SetActive(true);
+        _recruitConfirmPopUp.Init(number);
+    }
+
+    public void OpenCharacterOutPanel()
+    {
+        _characterOutPanel.gameObject.SetActive(true);
+        _characterOutPanel.Init();
+    }
+
+    public void OpenOutWarningPopUp(int number)
+    {
+        _outWarningPopUp.gameObject.SetActive(true);
+        _outWarningPopUp.Init(number);
+    }
+
+    public void OpenCantOutWarningPopUp()
+    {
+        _cantOutWarningPopUp.gameObject.SetActive(true);        
+    }
+    public void OpenOutConfirmPopUp(int number)
+    {
+        _outConfirmPopUp.gameObject.SetActive(true);
+        _outConfirmPopUp.Init(number);
     }
 }
