@@ -38,27 +38,33 @@ public class PassiveBox : MonoBehaviour
         }
     }
 
-    private void OnEnable()
-    {
-        for (int i = 0; i < 3; i++)
-        {
-            _buttons[i].interactable = true;
-            _buttons[i].targetGraphic.color = _buttons[i].colors.normalColor;
-            Debug.Log($"버튼 상태 초기화");
-        }
-    }
+    //private void OnEnable()
+    //{
+    //    Debug.Log($"버튼 상태 초기화");
+    //    for (int i = 0; i < 3; i++)
+    //    {
+    //        _buttons[i].interactable = true;
+    //        _buttons[i].targetGraphic.color = _buttons[i].colors.normalColor;
+    //    }
+    //}
 
-    private void Start()
+    private void ButtonInit()
     {
         for (int i = 0; i < 3; i++)
         {
-            if(_skillName[i].text == $"")
-            {
-                _buttons[i].interactable = false;
-            }
-            else 
+            Debug.Log($"버튼 : {_selectSkillList.Count}개");
+            if (i < _selectSkillList.Count)
             {
                 _buttons[i].interactable = true;
+                _buttons[i].targetGraphic.color = _buttons[i].colors.normalColor;
+                Debug.Log($"{i + 1}버튼 활성화");
+
+            }
+            else
+            {
+                _buttons[i].interactable = false;
+                _buttons[i].targetGraphic.color = _buttons[i].colors.disabledColor;
+                Debug.Log($"{i + 1}버튼 비활성화");
             }
         }
     }
@@ -87,6 +93,7 @@ public class PassiveBox : MonoBehaviour
                 if (_passiveDataList.Count == 0)
                 {
                     Debug.Log($"새로 가질 수 있는 스킬 : {_passiveDataList.Count}개");
+                    ButtonInit();
                     return;
                 }
 
@@ -102,6 +109,7 @@ public class PassiveBox : MonoBehaviour
             }
             _selectSkillSave[_graduationManager.PromotionStudentList[_graduationManager.Turn]] = new List<Player_PassiveData>(_selectSkillList);
         }
+        ButtonInit();
     }
 
 
