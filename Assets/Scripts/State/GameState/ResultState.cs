@@ -44,7 +44,7 @@ public class ResultState : IState
             {
                 // MVP를 위해 ReturnToLobby() 대신 리그 결산 패널을 띄웁니다.
                 // 이전 채팅에서 추가하신 LeagueCalculatePanel을 호출하며, 풀 로그 데이터를 넘겨줍니다.
-                uiManager.ShowLeagueCalculatePanel(currentMatchId, () => ReturnToLobby());
+                uiManager.ShowLeagueCalculatePanel(currentMatchId, () => GoToGraduation());
             }
          );
     }
@@ -55,10 +55,10 @@ public class ResultState : IState
     }
 
     public void Update() { }
-    public void ReturnToLobby()
+    public void GoToGraduation()
     {
         // GameManager에 다음 씬(LOBBY)과 다음 상태(LobbyState)를 세팅
-        _gm.SetNextFlow(SceneName.LOBBY, _sm.Get<LobbyState>());
+        _gm.SetNextFlow(SceneName.GRADUATION, _sm.Get<GraduationState>());
 
         // 로딩 상태로 전환하여 자연스럽게 씬 이동 처리
         _sm.ChangeState<LoadingState>();
