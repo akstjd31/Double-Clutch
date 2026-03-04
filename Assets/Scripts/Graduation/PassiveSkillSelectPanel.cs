@@ -21,7 +21,17 @@ public class PassiveSkillSelectPanel : MonoBehaviour
     }
     public void OnClickOKButton()
     {
-        var student = _graduationManager.MyStudents[_graduationManager.PromotionStudentList[_graduationManager.Turn]];
+        Student student = null;
+
+        for (int i = 0; i < _graduationManager.MyStudents.Count; i++)
+        {
+            if (_graduationManager.MyStudents[i].StudentId ==
+                _graduationManager.PromotionStudentList[_graduationManager.Turn])
+            {
+                student = _graduationManager.MyStudents[i];
+                break;
+            }
+        }
 
         if (_graduationManager.PromotionPanel.IsSkillChoise == true)
         {

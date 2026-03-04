@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using static UnityEngine.GraphicsBuffer;
 
 public class GraduationManager : MonoBehaviour
 {
@@ -56,11 +57,13 @@ public class GraduationManager : MonoBehaviour
             if (_myStudents[i].Grade == 3)
             {
                 _graduationStudentList.Add(_myStudents[i]);
+                StudentManager.Instance.ReleaseStudent(_myStudents[i]);
                 Debug.Log(_myStudents[i].Name + "추가");
             }
             else
             {
                 _promotionStudentList.Add(_myStudents[i].StudentId);
+                _myStudents[i].SetGrade(_myStudents[i].Grade+1);
                 Debug.Log($"{_myStudents[i].Name} : {_myStudents[i].Grade} 학년 진급생");
             }
         }
@@ -75,7 +78,10 @@ public class GraduationManager : MonoBehaviour
     {
         _isGraduationSkip = false;
         _passiveBox.SelectSkillSave.Clear();
-        
+
+        //초기화 하기 전에 명예의전당에 전달
+        _graduationStudentList.Clear();
+
         CalendarManager.Instance.NextTurn();
         GameManager.Instance.GoToLobby();
     }

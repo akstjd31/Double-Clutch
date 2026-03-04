@@ -58,7 +58,7 @@ public class PromotionPanel : MonoBehaviour
         }
 
         _name.text = _currentStudent.Name;
-        _gradeUp.text = $"{_currentStudent.Grade}학년 → {_currentStudent.Grade + 1}학년";
+        _gradeUp.text = $"{_currentStudent.Grade-1}학년 → {_currentStudent.Grade}학년";
 
         for (int i = 0; i < 3; i++)
         {
