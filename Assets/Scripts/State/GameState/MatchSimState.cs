@@ -37,8 +37,8 @@ public class MatchSimState : IState
         }
 
         // 저장된 '출전 명단' 5명씩을 가져옵니다.
-        MatchTeam homeTeam = ConvertToTeam(TeamSide.Home, GameManager.Instance.SaveData.schoolName, "TC_BAL_Base", _homeRoster);
-        MatchTeam awayTeam = ConvertToTeam(TeamSide.Away, "라이벌 고교", "TC_DEF_Base", _awayRoster);
+        MatchTeam homeTeam = ConvertToTeam(TeamSide.Home, GameManager.Instance.SaveData.schoolName, "BAL_Base", _homeRoster);
+        MatchTeam awayTeam = ConvertToTeam(TeamSide.Away, "라이벌 고교", "OFF_Base", _awayRoster);
 
         // 초기화 및 시작
         _state.InitializeMatch(homeTeam, awayTeam);
@@ -46,6 +46,9 @@ public class MatchSimState : IState
         // 경기 종료 시 ResultState로 넘어가도록 이벤트 연결
         _engine.OnMatchEnded = () =>
         {
+            int currentMatchId = GameManager.Instance.SaveData.weekId;
+            LeagueRecordManager.Instance.SaveMatchRecord(currentMatchId, _state, _engine.FullMatchLogs);
+
             _gm.StartCoroutine(CoGoToResult());
         };
 
@@ -76,7 +79,9 @@ public class MatchSimState : IState
 
         for (int i = 0; i < students.Count; i++)
         {
-            team.AddPlayer(ConvertStudentToMatchPlayer(students[i], startId + i, students[i].Position));
+            Position finalPos = students[i].MatchPosition != Position.None ? students[i].MatchPosition : students[i].Position;
+
+            team.AddPlayer(ConvertStudentToMatchPlayer(students[i], startId + i, finalPos));
         }
 
         return team;

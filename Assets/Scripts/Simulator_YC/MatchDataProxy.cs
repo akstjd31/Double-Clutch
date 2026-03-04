@@ -72,7 +72,7 @@ public class MatchDataProxy : MonoBehaviour
     {
         if (_archetypeReader == null || _archetypeReader.DataList.Count == 0)
         {
-            return new TeamTactics(); // 리더가 없으면 기본값 반환
+            return new TeamTactics(1f, 1f, 1f, 1f, 1f, 1f, 1f);
         }
 
         // 테이블에서 일치하는 전술 아키타입 검색
@@ -80,7 +80,7 @@ public class MatchDataProxy : MonoBehaviour
 
         if (string.IsNullOrEmpty(archetype.teamArchetypeId))
         {
-            return new TeamTactics(); // 데이터를 못 찾으면 기본값 반환
+            return new TeamTactics(1f, 1f, 1f, 1f, 1f, 1f, 1f);
         }
 
         // 테이블 데이터 기반으로 가중치 적용 (드리블은 테이블에 없으므로 기본값 1.0f)
