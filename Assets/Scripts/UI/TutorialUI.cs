@@ -23,7 +23,7 @@ public class TutorialUI : MonoBehaviour
 
         data.schoolName = _schoolNameField.text;
         data.coachName = _playerNameField.text;
-        data.weekId = 1;
+        data.weekId = 9;
 
         gm.InitData(data);
 

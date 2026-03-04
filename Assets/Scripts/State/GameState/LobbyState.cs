@@ -13,7 +13,12 @@ public class LobbyState : IState
 
     public void Enter()
     {
+        if (CheckGraduationDay())
+        {
+            GoToGraduation();
+        }
 
+        
     }
 
     public void Exit()
@@ -28,5 +33,21 @@ public class LobbyState : IState
             Debug.Log(">>> [Lobby] 경기 시작 요청 (MatchSimState로 전환)");
             _sm.ChangeState<MatchSimState>();
         }
+    }
+
+    public bool CheckGraduationDay()
+    {
+        if (CalendarManager.Instance == null) return false;
+
+        var cal = CalendarManager.Instance.GetCalendar();
+
+        return cal.month == 2 && cal.week == 4;
+    }
+
+    private void GoToGraduation()
+    {
+        _gm.SetNextFlow(SceneName.GRADUATION, _sm.Get<GraduationState>());
+
+        _sm.ChangeState<LoadingState>();
     }
 }

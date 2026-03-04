@@ -46,10 +46,12 @@ public class StudentUIManager : MonoBehaviour
 
     private void Start()
     {
-        if (StudentManager.Instance.MyStudents.Count == 0)
-        {
+        if (CalendarManager.Instance == null) return;
+
+        var cal = CalendarManager.Instance.GetCalendar();
+        
+        if (cal.month == 3 && cal.week == 1)
             OpenRecruitPanel();
-        }
     }
 
     public void OnCharacterBoxClick(Student student) //ĳ���� �ڽ� ��ư ��Ŭ������ ȣ��
