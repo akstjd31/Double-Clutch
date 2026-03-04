@@ -51,10 +51,16 @@ public class StudentUIManager : MonoBehaviour
         _profileDetailsPanel.Init(student);
     }
 
-    public void OnPassiveBoxMouseOverStart(Player_PassiveData data) //�нú� ������ �ڽ��� OnPointerEnter���� ȣ��
+    public void OnPassiveBoxMouseOverStart(Player_PassiveData? data) //�нú� ������ �ڽ��� OnPointerEnter���� ȣ��
     {        
+        if (!data.HasValue)
+        {
+            _passiveExplainBox.gameObject.SetActive(false);
+            return;
+        }
+
         _passiveExplainBox.gameObject.SetActive(true);        
-        _passiveExplainBox.Init(data);
+        _passiveExplainBox.Init(data.Value);
     }
 
     public void OnPassiveBoxMouseOverEnd() //�нú� ������ �ڽ� OnPointerExit���� ȣ��
