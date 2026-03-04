@@ -57,7 +57,6 @@ public class GraduationManager : MonoBehaviour
             if (_myStudents[i].Grade == 3)
             {
                 _graduationStudentList.Add(_myStudents[i]);
-                StudentManager.Instance.ReleaseStudent(_myStudents[i]);
                 Debug.Log(_myStudents[i].Name + "추가");
             }
             else
@@ -71,6 +70,16 @@ public class GraduationManager : MonoBehaviour
         if (_graduationStudentList.Count == 0)
         {
             _isGraduationSkip = true;
+        }
+
+        ReleaseStudent();
+    }
+
+    private void ReleaseStudent()
+    {
+        for (int i = 0; i < _graduationStudentList.Count; i++)
+        {
+            StudentManager.Instance.ReleaseStudent(_graduationStudentList[i]);
         }
     }
 
