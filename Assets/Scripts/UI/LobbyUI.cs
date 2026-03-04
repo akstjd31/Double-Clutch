@@ -15,7 +15,10 @@ public class LobbyUI : MonoBehaviour
     private void OnEnable()
     {
         if (CalendarManager.Instance != null)
+        {
             CalendarManager.Instance.OnWeekChanged += UpdateCalendarText;
+            CalendarManager.Instance.OnWeekChanged += SetButtonActivate;
+        }
 
         if (GameManager.Instance != null)
         {
@@ -24,8 +27,13 @@ public class LobbyUI : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
     private void Start()
+    {
+        Init();
+    }
+
+    // Update is called once per frame
+    private void Init()
     {
         // 데이터 로드하면서 값 받아오기
         var gameMgr = GameManager.Instance;
@@ -38,13 +46,17 @@ public class LobbyUI : MonoBehaviour
         if (calMgr == null) return;
 
         UpdateCalendarText(calMgr.GetCalendar());
-        SetButtonActivate(calMgr.GetPhaseType(gameMgr.SaveData.weekId));
+        SetButtonActivate(calMgr.GetCalendar());
     }
 
     private void OnDisable()
     {
         if (CalendarManager.Instance != null)
+        {
             CalendarManager.Instance.OnWeekChanged -= UpdateCalendarText;
+            CalendarManager.Instance.OnWeekChanged -= SetButtonActivate;
+        }
+            
             
         if (GameManager.Instance != null)
         {
@@ -74,17 +86,20 @@ public class LobbyUI : MonoBehaviour
         
         CalendarManager.Instance.IsEndPhase = true;
         CalendarManager.Instance.NextTurn();
+
+        if (GameManager.Instance == null) return;
     }
 
     // 육성 or 경기 시작 버튼
-    public void SetButtonActivate(phaseType type)
+    public void SetButtonActivate(Calendar calendar)
     {
+        var type = CalendarManager.Instance.CurrentGetPhaseType();
         if (type.Equals(phaseType.League))
         {
             _matchButton.gameObject.SetActive(true);
             _trainingButton.gameObject.SetActive(false);
         }
-        else    //else if (type.Equals(phaseType.Training))
+        else if (type.Equals(phaseType.Training) || type.Equals(phaseType.Event))
         {
             _matchButton.gameObject.SetActive(false);
             _trainingButton.gameObject.SetActive(true);
