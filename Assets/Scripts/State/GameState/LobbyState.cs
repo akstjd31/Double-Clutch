@@ -13,10 +13,10 @@ public class LobbyState : IState
 
     public void Enter()
     {
-        if (CalendarManager.Instance == null) return;
+        // if (CalendarManager.Instance == null) return;
 
-        if (CalendarManager.Instance.CheckGraduationDay())
-            _gm.GoToGraduation();
+        // if (CalendarManager.Instance.CheckEventDay())
+        //     _gm.GoToGraduation();
     }
 
     public void Exit()

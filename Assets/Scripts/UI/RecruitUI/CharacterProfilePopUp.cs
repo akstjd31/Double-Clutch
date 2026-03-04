@@ -7,9 +7,9 @@ public class CharacterProfilePopUp : MonoBehaviour
     [SerializeField] TextMeshProUGUI _attack;
     [SerializeField] TextMeshProUGUI _defense;
     [SerializeField] TextMeshProUGUI _personality;
-    [SerializeField] TextMeshProUGUI _passive1;
-    [SerializeField] TextMeshProUGUI _passive2;
-    [SerializeField] TextMeshProUGUI _passive3;
+    [SerializeField] CharacterPassiveProfileRow _passive1;
+    [SerializeField] CharacterPassiveProfileRow _passive2;
+    [SerializeField] CharacterPassiveProfileRow _passive3;
 
     Student _student;
 
@@ -30,17 +30,15 @@ public class CharacterProfilePopUp : MonoBehaviour
         _attack.text = _student.Attack.ToString();
         _defense.text = _student.Defense.ToString();
         _personality.text = StringManager.Instance.GetString(_student.PersonalityData.personalityName);
-        _passive1.text = StringManager.Instance.GetString(_student.Passive[0].skillName);
-        _passive2.text = "비어 있음";
-        _passive3.text = "비어 있음";
+        _passive1.Init(_student.Passive[0]);        
 
         if (_student.Passive.Count >= 2)
         {
-            _passive2.text = StringManager.Instance.GetString(_student.Passive[1].skillName);
+            _passive2.Init(_student.Passive[1]);
         }
         if (_student.Passive.Count == 3)
         {
-            _passive2.text = StringManager.Instance.GetString(_student.Passive[2].skillName);
+            _passive2.Init(_student.Passive[2]);
         }
     }
 }

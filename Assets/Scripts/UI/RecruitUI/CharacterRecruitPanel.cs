@@ -60,6 +60,10 @@ public class CharacterRecruitPanel : MonoBehaviour
             //방출 창 팝업 호출
             StudentUIManager.Instance.OpenCharacterOutPanel();
         }
+        else
+        {
+            CalendarManager.Instance.NextTurn();
+        }
 
         this.gameObject.SetActive(false);
     }

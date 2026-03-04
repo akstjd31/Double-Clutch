@@ -39,6 +39,7 @@ public class StudentUIManager : MonoBehaviour
     [SerializeField] GameObject _cantOutWarningPopUp;
     [SerializeField] OutConfirmPopUp _outConfirmPopUp;
     [SerializeField] CharacterProfilePopUp _characterProfilePopUp;
+    [SerializeField] PassiveExplainBox _passiveProfileBox;
 
     private void Awake()
     {
@@ -206,5 +207,17 @@ public class StudentUIManager : MonoBehaviour
             _characterProfilePopUp.Init(student);
         }
     }
-    
+
+    public void OnPassiveProfilePopUpStart(Player_PassiveData data)
+    {
+        _passiveProfileBox.gameObject.SetActive(true);
+        _passiveProfileBox.Init(data);
+    }
+
+    public void OnPassiveProfilePopUpEnd()
+    {
+        _passiveProfileBox.gameObject.SetActive(false);
+    }
+
+
 }

@@ -126,15 +126,17 @@ public class CalendarManager : Singleton<CalendarManager>
 
         GameManager.Instance.SetWeekId(weekId);
 
-        if (CheckGraduationDay())
+        // 이벤트 페이즈면서 어떤 날인지 구분하는게 필요함. (ex. 졸업, 영입 등)
+        if (CheckEventDay(weekId))
         {
-            GameManager.Instance.GoToGraduation();
+            if (calendar.month == 2 && calendar.week == 4)
+                GameManager.Instance.GoToGraduation();
         }
 
         OnWeekChanged?.Invoke(calendar);
     }
 
-    public bool CheckGraduationDay() => calendar.month == 2 && calendar.week == 4;
+    public bool CheckEventDay(int weekId) => _calReader.DataList[weekId - 1].phase.Equals(phaseType.Event);
    
 
     // 일단 컷신 부분은 패스(-)

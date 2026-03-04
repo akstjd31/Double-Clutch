@@ -40,6 +40,13 @@ public class TrainingCharacterBox : MonoBehaviour
         var cv = _stateBackGround.GetComponent<CanvasGroup>();
         cv.alpha = 0f;
         _stateText.text = "";
+        if (_student.CurrentTraining != null)
+        {
+            cv.alpha = 1f;
+            _stateBackGround.color = Color.green;
+            _stateText.text = StringManager.Instance.GetString(_student.CurrentTraining.GetNameKey());
+            return;
+        }
         if (_student.State == StudentState.OverWorked)
         {
             cv.alpha = 1f;
@@ -53,13 +60,6 @@ public class TrainingCharacterBox : MonoBehaviour
             _stateBackGround.color = Color.red;
             _stateText.text = "ºÎ»ó";
             return;
-        }
-        if (_student.CurrentTraining != null)
-        {
-            cv.alpha = 1f;
-            _stateBackGround.color = Color.green;
-            _stateText.text = StringManager.Instance.GetString(_student.CurrentTraining.GetNameKey());
-            return;
-        }
+        }        
     }
 }
