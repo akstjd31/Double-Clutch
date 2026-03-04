@@ -26,7 +26,7 @@ public class Player_GrowthRateDataReader : DataReaderBase
 
             switch (col)
             {
-                case "key":
+                case "Grade":
                     int.TryParse(val, out key);
                     break;
                 case "minGrowthRate":
