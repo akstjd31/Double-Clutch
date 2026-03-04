@@ -31,16 +31,16 @@ public class IndividualTrainingCommandPopUp : MonoBehaviour
 
         // 개인 훈련 데이터 생성 및 배치
         var trainingDB = FosterManager.Instance.IndividualTrainingDB.DataList;
-        foreach (var data in trainingDB)
+        for (int i = 0; i < trainingDB.Count; i++)
         {
-            CreateBox(new IndividualTraining(data));
+            CreateBox(new IndividualTraining(trainingDB[i]));
         }
 
         // 개인 휴식 데이터 생성 및 배치
         var restDB = FosterManager.Instance.IndividualRestDB.DataList;
-        foreach (var data in restDB)
+        for (int i = 0; i < restDB.Count; i++)
         {
-            CreateBox(new IndividualRest(data));
+            CreateBox(new IndividualRest(restDB[i]));
         }
 
         _nameText.text = _selectedStudent.Name + " 육성 커맨드";
