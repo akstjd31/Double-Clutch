@@ -4,7 +4,7 @@ using System;
 [Serializable]
 public struct Player_GrowthRateData
 {
-    public int key;
+    public int Grade;
     public int minGrowthRate;
     public int maxGrowthRate;
 
@@ -12,7 +12,7 @@ public struct Player_GrowthRateData
 
     public Player_GrowthRateData(int key, int minGrowthRate, int maxGrowthRate)
     {
-        this.key = key;
+        this.Grade = key;
         this.minGrowthRate = minGrowthRate;
         this.maxGrowthRate = maxGrowthRate;
     }
