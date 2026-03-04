@@ -29,10 +29,10 @@ public class StudentManager : Singleton<StudentManager>
         if (_studentFactory != null) 
             _studentFactory.InitDatas();
 
-        if (_myStudents.Count == 0)
-        {
-            MakeTestStudents(3);
-        }
+        //if (_myStudents.Count == 0)
+        //{
+        //    MakeTestStudents(3);
+        //}
         
         LoadGame();
     }

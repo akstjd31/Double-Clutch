@@ -10,7 +10,8 @@ public class CharacterRecruitBox : MonoBehaviour
     [SerializeField] TextMeshProUGUI _nameText;
     [SerializeField] TextMeshProUGUI _attackText;
     [SerializeField] TextMeshProUGUI _defenseText;    
-    [SerializeField] Toggle _toggleButton;    
+    [SerializeField] Toggle _toggleButton;
+    [SerializeField] Outline _outLine;
 
     private Student _student;
     private bool isSelected = false;
@@ -46,10 +47,12 @@ public class CharacterRecruitBox : MonoBehaviour
         if (isOn)
         {
             isSelected = true;
+            _outLine.enabled = true;
         }
         else
         {
             isSelected = false;
+            _outLine.enabled = false;
         }
     }
 

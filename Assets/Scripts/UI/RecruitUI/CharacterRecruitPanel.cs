@@ -7,7 +7,12 @@ public class CharacterRecruitPanel : MonoBehaviour
     [SerializeField] CharacterRecruitBox[] characterRecruitBoxList = new CharacterRecruitBox[5];
     [SerializeField] Button _recruitConfirmButton; //영입하기 버튼
     List<Student> _selectedStudents = new List<Student>(); // 영입 선택된 선수 목록
-    int _selectCount = 0;    
+    int _selectCount = 0;
+
+    private void OnEnable()
+    {
+        Init();
+    }
 
     public void Init()
     {
@@ -55,6 +60,8 @@ public class CharacterRecruitPanel : MonoBehaviour
             //방출 창 팝업 호출
             StudentUIManager.Instance.OpenCharacterOutPanel();
         }
+
+        this.gameObject.SetActive(false);
     }
     
 }
