@@ -1,8 +1,10 @@
-using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
 
 public class LogHistoryPanel : MonoBehaviour
 {
@@ -10,9 +12,8 @@ public class LogHistoryPanel : MonoBehaviour
     [SerializeField] private Button _btnPrev;
     [SerializeField] private Button _btnNext;
 
-    [Header("로그 리스트 UI")]
-    [SerializeField] private Transform _logContainer;       // 로그들이 생성될 부모 (Scroll View의 Content)
-    [SerializeField] private MatchLogItem _logItemPrefab;   // 로그 프리팹 연결
+    [Header("로그 출력용 텍스트")]
+    [SerializeField] private TextMeshProUGUI _textLogContent;
 
     [Header("텍스트 UI 연결")]
     [SerializeField] private TextMeshProUGUI _textLeagueName; // {LeagueName}
@@ -67,33 +68,44 @@ public class LogHistoryPanel : MonoBehaviour
 
     private void UpdateLogView()
     {
-        // 첫 쿼터면 왼쪽 화살표 끄기, 마지막 쿼터면 오른쪽 화살표 끄기
         if (_btnPrev != null) _btnPrev.interactable = (_currentQuarter > 1);
         if (_btnNext != null) _btnNext.interactable = (_currentQuarter < _maxQuarter);
 
-        // 텍스트 UI 갱신
         if (_textLeagueName != null) _textLeagueName.text = "테스트 리그";
         if (_textRoundTitle != null) _textRoundTitle.text = $"{_currentRound}라운드 경기 로그";
         if (_textQuarter != null) _textQuarter.text = $"{_currentQuarter}쿼터";
 
-        if (_logContainer == null || _logItemPrefab == null) return;
+        if (_textLogContent == null) return;
 
-        // 기존에 생성되어 있던 로그 프리팹 지우기
-        foreach (Transform child in _logContainer)
+        if (_currentMatchLogs == null || _currentMatchLogs.Count == 0)
         {
-            Destroy(child.gameObject);
+            _textLogContent.text = "로그가 없습니다.";
+            return;
         }
 
-        if (_currentMatchLogs == null || _currentMatchLogs.Count == 0) return;
-
-        // 전체 로그 중 현재 쿼터 번호와 일치하는 것만 뽑기
         var quarterLogs = _currentMatchLogs.Where(log => log.Quarter == _currentQuarter).ToList();
 
-        // 프리팹을 찍어내고 데이터 밀어 넣기
+        StringBuilder sb = new StringBuilder();
+
         foreach (var log in quarterLogs)
         {
-            MatchLogItem newItem = Instantiate(_logItemPrefab, _logContainer);
-            newItem.Init(log);
+            string fullText = log.LogText;
+
+            if (!string.IsNullOrEmpty(fullText) && fullText.Length >= 5)
+            {
+                string time = fullText.Substring(0, 5);
+                string message = fullText.Length > 6 ? fullText.Substring(6).Trim() : "";
+
+                sb.AppendLine($"{time}<pos=100>{message}");
+            }
+            else
+            {
+                // 길이가 짧은 예외 데이터는 그대로 줄바꿈해서 출력
+                sb.AppendLine(fullText);
+            }
         }
+
+        _textLogContent.text = sb.ToString();
     }
+
 }
