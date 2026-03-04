@@ -102,9 +102,11 @@ public class FightingPower : MonoBehaviour
 
         //시뮬레이터에서 경기에 실제로 참여하는 학생 정보를 가져가기 위해서는 MyMatchingStudentList 와 RivalMatchingStudentList를 각각 참조하시면 됩니다.
 
+        _rivalTotalFightingPower = 0;
+
         // 적 팀 생성 (테스트용 ID 입력)
         MatchTeam generatedAwayTeam = EnemyTeamFactory.Instance.CreateEnemyTeam("Team_DOM_03", "LV_Swiss_03");
-
+        
         // 만약 데이터 오류 등으로 팀 생성이 안됐다면 중지
         if (generatedAwayTeam == null)
         {
