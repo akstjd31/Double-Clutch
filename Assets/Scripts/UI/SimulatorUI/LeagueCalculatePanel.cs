@@ -48,13 +48,11 @@ public class LeagueCalculatePanel : MonoBehaviour
             return;
         }
 
-        // 기존에 생성되어 있던 줄이 있다면 깔끔하게 다 지워줍니다.
         foreach (Transform child in _historyContainer)
         {
             Destroy(child.gameObject);
         }
 
-        // 1라운드부터 현재 진행된 라운드까지 쭈욱 돌면서 프리팹을 찍어냅니다.
         for (int i = 1; i <= currentRound; i++)
         {
             var record = LeagueRecordManager.Instance.GetMatchRecord(i);

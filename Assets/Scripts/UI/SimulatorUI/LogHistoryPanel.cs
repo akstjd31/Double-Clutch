@@ -9,7 +9,10 @@ public class LogHistoryPanel : MonoBehaviour
     [SerializeField] private Button _btnClose;
     [SerializeField] private Button _btnPrev;
     [SerializeField] private Button _btnNext;
-    [SerializeField] private TextMeshProUGUI _textLogMessage;
+
+    [Header("로그 리스트 UI")]
+    [SerializeField] private Transform _logContainer;       // 로그들이 생성될 부모 (Scroll View의 Content)
+    [SerializeField] private MatchLogItem _logItemPrefab;   // 로그 프리팹 연결
 
     [Header("텍스트 UI 연결")]
     [SerializeField] private TextMeshProUGUI _textLeagueName; // {LeagueName}
@@ -73,20 +76,24 @@ public class LogHistoryPanel : MonoBehaviour
         if (_textRoundTitle != null) _textRoundTitle.text = $"{_currentRound}라운드 경기 로그";
         if (_textQuarter != null) _textQuarter.text = $"{_currentQuarter}쿼터";
 
-        if (_currentMatchLogs == null || _currentMatchLogs.Count == 0)
+        if (_logContainer == null || _logItemPrefab == null) return;
+
+        // 기존에 생성되어 있던 로그 프리팹 지우기
+        foreach (Transform child in _logContainer)
         {
-            if (_textLogMessage != null) _textLogMessage.text = "기록이 없습니다.";
-            return;
+            Destroy(child.gameObject);
         }
 
-        // 전체 로그 중 현재 쿼터 번호와 일치하는 것만 뽑아서 문자열로 합침
+        if (_currentMatchLogs == null || _currentMatchLogs.Count == 0) return;
+
+        // 전체 로그 중 현재 쿼터 번호와 일치하는 것만 뽑기
         var quarterLogs = _currentMatchLogs.Where(log => log.Quarter == _currentQuarter).ToList();
-        string logText = "";
+
+        // 프리팹을 찍어내고 데이터 밀어 넣기
         foreach (var log in quarterLogs)
         {
-            logText += $"{log.LogText}\n";
+            MatchLogItem newItem = Instantiate(_logItemPrefab, _logContainer);
+            newItem.Init(log);
         }
-
-        if (_textLogMessage != null) _textLogMessage.text = logText;
     }
 }
