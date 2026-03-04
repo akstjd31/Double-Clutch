@@ -1156,6 +1156,8 @@ GameObject:
   - component: {fileID: 4557666601357241353}
   - component: {fileID: 407767512909034345}
   - component: {fileID: 8621832325708235199}
+  - component: {fileID: -2539855745446241768}
+  - component: {fileID: 2187445588557789526}
   m_Layer: 5
   m_Name: CharacterRecruitBox
   m_TagString: Untagged
@@ -1297,3 +1299,38 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_IsOn: 0
+--- !u!114 &-2539855745446241768
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8315626521085275675}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f47ad341ed1c2f0498f6793dac24b4a4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CharacterRecruitBox
+  _characterImage: {fileID: 7307184122907980282}
+  _positionText: {fileID: 4210235984078489164}
+  _gradeText: {fileID: 1170830563499003215}
+  _nameText: {fileID: 6246811152483564976}
+  _attackText: {fileID: 2592151731001563899}
+  _defenseText: {fileID: 6951986180544482530}
+  _toggleButton: {fileID: 8621832325708235199}
+  _outLine: {fileID: 2187445588557789526}
+--- !u!114 &2187445588557789526
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8315626521085275675}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e19747de3f5aca642ab2be37e372fb86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Outline
+  m_EffectColor: {r: 0.008588195, g: 1, b: 0, a: 1}
+  m_EffectDistance: {x: 1, y: -1}
+  m_UseGraphicAlpha: 1

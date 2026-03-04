@@ -5,13 +5,19 @@ using UnityEngine.UI;
 public class CharacterOutPanel : MonoBehaviour
 {    
     [SerializeField] Button _outConfirmButton;
-
+    [SerializeField] CharacterRecruitBox _characterRecruitBoxPrefab;
+    [SerializeField] Transform _characterBoxContainer;
     GenericObjectPool<CharacterRecruitBox> _characterRecruitBoxPool;
     List<CharacterRecruitBox> _boxList = new List<CharacterRecruitBox>();
 
     List<Student> _outList = new List<Student>();
 
     int _selectCount = 0;
+
+    private void Awake()
+    {
+        _characterRecruitBoxPool = new GenericObjectPool<CharacterRecruitBox>(_characterRecruitBoxPrefab, _characterBoxContainer, 8, 12);
+    }
 
     public void Init()
     {
@@ -72,6 +78,7 @@ public class CharacterOutPanel : MonoBehaviour
         {
             StudentManager.Instance.ReleaseStudent(target);
         }
+        this.gameObject.SetActive(false);
     }
 
     private void OnDestroy()

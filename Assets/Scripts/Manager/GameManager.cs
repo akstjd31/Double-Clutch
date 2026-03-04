@@ -27,6 +27,7 @@ public static class SceneName
     public const string LOBBY = "Test_Lobby";
     public const string LOADING = "Test_Loading";
     public const string EVENT = "Test_Event";
+    public const string GRADUATION = "Test_Graduation";
 }
 
 public static class FilePath
@@ -94,6 +95,7 @@ public class GameManager : Singleton<GameManager>
         _sm.Register(new MatchSimState(this, _sm));
         _sm.Register(new ResultState(this, _sm));
         _sm.Register(new TutorialState(this, _sm));
+        _sm.Register(new GraduationState(this, _sm));
     }
 
     public void InitData(PlayerSaveData data)

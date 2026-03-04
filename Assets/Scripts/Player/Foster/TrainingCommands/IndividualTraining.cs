@@ -56,18 +56,19 @@ public class IndividualTraining : ITraining
     }
     private void GetInjuryOrOverwork(Student target)
     {
-        int rate = UnityEngine.Random.Range(0, 100);
+        target.ChangeState(StudentState.OverWorked);
+        // int rate = UnityEngine.Random.Range(0, 100);
 
-        if (rate < 60) // 60% 확률 (0~59)
-        {
-            target.ChangeState(StudentState.OverWorked);
-            Debug.Log($"{target.Name} 학생이 과로 상태가 되었습니다.");
-        }
-        else // 40% 확률 (60~99)
-        {
-            target.ChangeState(StudentState.Injured);
-            Debug.Log($"{target.Name} 학생이 부상 상태가 되었습니다.");
-        }
+        // if (rate < 60) // 60% 확률 (0~59)
+        // {
+        //     target.ChangeState(StudentState.OverWorked);
+        //     Debug.Log($"{target.Name} 학생이 과로 상태가 되었습니다.");
+        // }
+        // else // 40% 확률 (60~99)
+        // {
+        //     target.ChangeState(StudentState.Injured);
+        //     Debug.Log($"{target.Name} 학생이 부상 상태가 되었습니다.");
+        // }
     }
 
     public string GetNameKey()

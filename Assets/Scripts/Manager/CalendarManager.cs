@@ -149,5 +149,8 @@ public class CalendarManager : Singleton<CalendarManager>
     }
 
     public Calendar GetCalendar() => this.calendar;
-    public phaseType GetPhaseType(int weekId) => _calReader.DataList[weekId - 1].phase;
+    public phaseType CurrentGetPhaseType()
+    {
+        return _calReader.DataList[GameManager.Instance.SaveData.weekId - 1].phase;
+    }
 }

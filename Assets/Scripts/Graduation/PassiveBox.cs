@@ -51,7 +51,15 @@ public class PassiveBox : MonoBehaviour
 
         for (int i = 0; i < 3; i++)
         {
+
+            if(_passiveDataList.Count == 0)
+            {
+                Debug.Log($"새로 가질 수 있는 스킬 : {_passiveDataList.Count}개");
+                return;
+            }
+
             int randomN = Random.Range(0, _passiveDataList.Count);
+
             _skillName[i].text = _passiveDataList[randomN].skillName;
             _skillDetail[i].text = _passiveDataList[randomN].passiveDesc;
 

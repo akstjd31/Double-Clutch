@@ -44,6 +44,13 @@ public class StudentUIManager : MonoBehaviour
         Instance = this;
     }
 
+    private void Start()
+    {
+        if (StudentManager.Instance.MyStudents.Count == 0)
+        {
+            OpenRecruitPanel();
+        }
+    }
 
     public void OnCharacterBoxClick(Student student) //ĳ���� �ڽ� ��ư ��Ŭ������ ȣ��
     {
@@ -51,10 +58,16 @@ public class StudentUIManager : MonoBehaviour
         _profileDetailsPanel.Init(student);
     }
 
-    public void OnPassiveBoxMouseOverStart(Player_PassiveData data) //�нú� ������ �ڽ��� OnPointerEnter���� ȣ��
+    public void OnPassiveBoxMouseOverStart(Player_PassiveData? data) //�нú� ������ �ڽ��� OnPointerEnter���� ȣ��
     {        
+        if (!data.HasValue)
+        {
+            _passiveExplainBox.gameObject.SetActive(false);
+            return;
+        }
+
         _passiveExplainBox.gameObject.SetActive(true);        
-        _passiveExplainBox.Init(data);
+        _passiveExplainBox.Init(data.Value);
     }
 
     public void OnPassiveBoxMouseOverEnd() //�нú� ������ �ڽ� OnPointerExit���� ȣ��
@@ -142,10 +155,10 @@ public class StudentUIManager : MonoBehaviour
 
 
 
-    public void OpenRecruitPanel()
+    public void OpenRecruitPanel() //영입 시작하려면 이거 호출!
     {
         _characterRecruitPanel.gameObject.SetActive(true);
-        _characterRecruitPanel.Init();
+        //_characterRecruitPanel.Init();
     }
 
     public void OpenRecruitWarningPopUp(int number)
