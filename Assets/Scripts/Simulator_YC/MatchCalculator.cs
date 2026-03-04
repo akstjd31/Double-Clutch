@@ -38,7 +38,12 @@ public static class MatchCalculator
     private static MatchPlayer GetNearestPlayer(MatchPlayer target, List<MatchPlayer> enemies, out float minDistance)
     {
         MatchPlayer nearest = null;
+        minDistance = 10f;
+
+        if (enemies == null || enemies.Count == 0)
+            return null;
         minDistance = float.MaxValue;
+
         foreach (var e in enemies)
         {
             float dist = CalculateDistance(target.LogicPosition, e.LogicPosition);
@@ -48,6 +53,8 @@ public static class MatchCalculator
                 nearest = e;
             }
         }
+        if (nearest == null) minDistance = 10f;
+
         return nearest;
     }
 
@@ -119,13 +126,6 @@ public static class MatchCalculator
         scoreShoot = Mathf.Max(0, scoreShoot);
         scorePass = Mathf.Max(0, scorePass);
         scoreDribble = Mathf.Max(0, scoreDribble);
-
-        if (distToHoop <= 0.35f)
-        {
-            scoreShoot += 50f;
-            scorePass *= 0.1f;
-            scoreDribble *= 0.1f;
-        }
 
         LastShootScore = scoreShoot;
         LastPassScore = scorePass;

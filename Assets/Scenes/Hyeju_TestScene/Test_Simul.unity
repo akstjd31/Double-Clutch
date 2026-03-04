@@ -5172,6 +5172,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4766694038565045833, guid: ffc97d5f5bad7f14d8f0c1f0efad2ce3, type: 3}
+      propertyPath: W_Shot_Base
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 5439698907434560977, guid: ffc97d5f5bad7f14d8f0c1f0efad2ce3, type: 3}
       propertyPath: m_Name
       value: MatchDataProxy
@@ -10396,6 +10400,26 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MatchLogItem
   _textTime: {fileID: 1466655181}
   _textMessage: {fileID: 5707716000757433314}
+--- !u!114 &1466655184
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1466655182}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.LayoutElement
+  m_IgnoreLayout: 0
+  m_MinWidth: -1
+  m_MinHeight: 60
+  m_PreferredWidth: -1
+  m_PreferredHeight: -1
+  m_FlexibleWidth: -1
+  m_FlexibleHeight: -1
+  m_LayoutPriority: 1
 --- !u!1 &1471813572
 GameObject:
   m_ObjectHideFlags: 0
@@ -14924,6 +14948,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 3181345763557769894, guid: 89f5e8214a985f9488c13adc2c4b33ee, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1466655183}
+    - targetCorrespondingSourceObject: {fileID: 3181345763557769894, guid: 89f5e8214a985f9488c13adc2c4b33ee, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1466655184}
   m_SourcePrefab: {fileID: 100100000, guid: 89f5e8214a985f9488c13adc2c4b33ee, type: 3}
 --- !u!224 &5707716000757433311 stripped
 RectTransform:
