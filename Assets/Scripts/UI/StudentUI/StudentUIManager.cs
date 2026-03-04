@@ -38,6 +38,7 @@ public class StudentUIManager : MonoBehaviour
     [SerializeField] OutWarningPopUp _outWarningPopUp;
     [SerializeField] GameObject _cantOutWarningPopUp;
     [SerializeField] OutConfirmPopUp _outConfirmPopUp;
+    [SerializeField] CharacterProfilePopUp _characterProfilePopUp;
 
     private void Awake()
     {
@@ -124,7 +125,7 @@ public class StudentUIManager : MonoBehaviour
     public void RefreshStartFosterButton(bool isInteractable, int currentCount, int maxCount)
     {
         _startFosterButton.interactable = isInteractable;
-        _startFosterButtonCount.text = $"���� ���� {currentCount} / {maxCount}";
+        _startFosterButtonCount.text = $"육성 시작 {currentCount} / {maxCount}";
     }
 
     public void OpenConditionWarningPopUp(List<Student> targets, int cost)
@@ -196,4 +197,14 @@ public class StudentUIManager : MonoBehaviour
         _outConfirmPopUp.gameObject.SetActive(true);
         _outConfirmPopUp.Init(number);
     }
+    
+    public void OpenProfilePopUp(Student student)// 2초 누르면 호출될 함수
+    {
+        if (_characterProfilePopUp != null)
+        {
+            _characterProfilePopUp.gameObject.SetActive(true);
+            _characterProfilePopUp.Init(student);
+        }
+    }
+    
 }

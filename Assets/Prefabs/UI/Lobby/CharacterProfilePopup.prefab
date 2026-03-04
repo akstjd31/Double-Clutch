@@ -1045,7 +1045,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 9210456701386744680}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 4884053422771848209}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &4178701183339022452
 GameObject:
   m_ObjectHideFlags: 0
@@ -1471,6 +1483,7 @@ GameObject:
   - component: {fileID: 9101276086819593786}
   - component: {fileID: 2539857759609901846}
   - component: {fileID: 8828149246060458451}
+  - component: {fileID: 3670850279140274993}
   m_Layer: 5
   m_Name: CharacterProfilePopup
   m_TagString: Untagged
@@ -1537,6 +1550,25 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &3670850279140274993
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4884053422771848209}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dacf90bef3991854a8cc4e1ff0054666, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CharacterProfilePopUp
+  _characterBox: {fileID: 453272830426155744}
+  _attack: {fileID: 4303264403811588018}
+  _defense: {fileID: 65782637646351133}
+  _personality: {fileID: 7042602842612376241}
+  _passive1: {fileID: 5733971474529436903}
+  _passive2: {fileID: 1764335696277508323}
+  _passive3: {fileID: 2281388959583919045}
 --- !u!1 &5077674020344492490
 GameObject:
   m_ObjectHideFlags: 0
@@ -3218,6 +3250,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cca5381185aff744b99ae37e50c7a84e, type: 3}
+--- !u!114 &453272830426155744 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5183507129923668656, guid: cca5381185aff744b99ae37e50c7a84e, type: 3}
+  m_PrefabInstance: {fileID: 4730430498238431312}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99f81563dd9b92b4db25f27243d8cd9f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CharacterBox
 --- !u!224 &7224247289915519631 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2730434661864125151, guid: cca5381185aff744b99ae37e50c7a84e, type: 3}
