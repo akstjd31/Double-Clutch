@@ -4,9 +4,10 @@ using UnityEngine.SceneManagement;
 
 public class GraduationManager : MonoBehaviour
 {
-    [SerializeField] private bool _isGraduationSkip;
+    [SerializeField] private bool _isGraduationSkip = false;
 
     [SerializeField] private PromotionPanel _promotionPanel;
+    [SerializeField] private PassiveBox _passiveBox;
 
     [SerializeField] private List<Student> _myStudents;
 
@@ -72,6 +73,8 @@ public class GraduationManager : MonoBehaviour
 
     public void NextScene()
     {
+        _isGraduationSkip = false;
+        _passiveBox.SelectSkillSave.Clear();
         SceneManager.LoadScene("Test_Lobby");
     }
 }
