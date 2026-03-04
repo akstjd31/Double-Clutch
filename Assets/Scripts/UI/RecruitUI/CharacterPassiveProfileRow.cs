@@ -3,11 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-/// <summary>
-/// �� ���� ��Ŭ���� ���� ������ �г��� �нú�0, 1, 2�� ���� ����
-/// �� ������ PassiveExplainBox���� ����
-/// </summary>
-public class PassiveProfileBox : MonoBehaviour, IPointerUpHandler, IPointerDownHandler
+public class CharacterPassiveProfileRow : MonoBehaviour, IPointerUpHandler, IPointerDownHandler
 {
     Player_PassiveData _data;
     [SerializeField] TextMeshProUGUI _passiveText;
@@ -19,17 +15,17 @@ public class PassiveProfileBox : MonoBehaviour, IPointerUpHandler, IPointerDownH
     }
 
     public void SetPassiveText()
-    {        
+    {
         _passiveText.text = StringManager.Instance.GetString(_data.skillName);
     }
 
     public void OnPointerUp(PointerEventData eventData)
-    {        
-        StudentUIManager.Instance.OnPassiveBoxMouseOverEnd();
+    {
+        StudentUIManager.Instance.OnPassiveProfilePopUpEnd();
     }
 
     public void OnPointerDown(PointerEventData eventData)
-    {
-        StudentUIManager.Instance.OnPassiveBoxMouseOverStart(_data);
+    {        
+        StudentUIManager.Instance.OnPassiveProfilePopUpStart(_data);
     }
 }
