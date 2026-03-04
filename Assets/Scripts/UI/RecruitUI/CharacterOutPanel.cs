@@ -72,6 +72,7 @@ public class CharacterOutPanel : MonoBehaviour
 
     }
 
+    // 버튼 클릭 시 방출
     public void OnConfirmOutButtonClick()
     {
         foreach (var target in _outList)
@@ -79,6 +80,8 @@ public class CharacterOutPanel : MonoBehaviour
             StudentManager.Instance.ReleaseStudent(target);
         }
         this.gameObject.SetActive(false);
+
+        CalendarManager.Instance.NextTurn();
     }
 
     private void OnDestroy()
