@@ -13,10 +13,10 @@ public class LobbyState : IState
 
     public void Enter()
     {
-        if (CheckGraduationDay())
-        {
-            GoToGraduation();
-        }
+        if (CalendarManager.Instance == null) return;
+
+        if (CalendarManager.Instance.CheckGraduationDay())
+            _gm.GoToGraduation();
     }
 
     public void Exit()
@@ -26,21 +26,5 @@ public class LobbyState : IState
 
     public void Update()
     {
-    }
-
-    public bool CheckGraduationDay()
-    {
-        if (CalendarManager.Instance == null) return false;
-
-        var cal = CalendarManager.Instance.GetCalendar();
-
-        return cal.month == 2 && cal.week == 4;
-    }
-
-    private void GoToGraduation()
-    {
-        _gm.SetNextFlow(SceneName.GRADUATION, _sm.Get<GraduationState>());
-
-        _sm.ChangeState<LoadingState>();
     }
 }

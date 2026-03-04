@@ -67,7 +67,10 @@ public class LobbyUI : MonoBehaviour
 
     public void UpdateCalendarText(Calendar calendar)
     {
-        _calendarText.text = $"{calendar.year}년차 {calendar.month}월 {calendar.week}주";
+        if (GameManager.Instance == null) return;
+        if (GameManager.Instance.SaveData == null) return;
+        
+        _calendarText.text = $"{GameManager.Instance.SaveData.year}년차 {calendar.month}월 {calendar.week}주";
     }
 
     public void UpdateMoneyText()

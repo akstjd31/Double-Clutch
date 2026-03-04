@@ -57,6 +57,10 @@ public class ResultState : IState
     public void Update() { }
     public void GoToLobby()
     {
+        // 껍데기 데이터 저장
+        var data = new StudentSaveData();
+        SaveLoadManager.Instance.Save<StudentSaveData>(FilePath.MY_STUDENT_MATCHING_PATH, data);
+
         CalendarManager.Instance.NextTurn();
         
         // GameManager에 다음 씬(LOBBY)과 다음 상태(LobbyState)를 세팅

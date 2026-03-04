@@ -72,6 +72,8 @@ public class GraduationManager : MonoBehaviour
 
     public void NextScene()
     {
-        SceneManager.LoadScene("Test_Lobby");
+        CalendarManager.Instance.NextTurn();
+        GameManager.Instance.GoToLobby();
+        // SceneManager.LoadScene("Test_Lobby");
     }
 }

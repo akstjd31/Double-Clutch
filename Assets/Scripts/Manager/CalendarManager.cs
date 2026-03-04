@@ -5,13 +5,11 @@ using UnityEngine.PlayerLoop;
 
 public struct Calendar
 {
-    public int year;
     public int month;
     public int week;
 
-    public Calendar(int y = 0, int m = 0, int w = 0)
+    public Calendar(int m = 0, int w = 0)
     {
-        year = y;
         month = m;
         week = w;
     }
@@ -34,6 +32,7 @@ public class CalendarManager : Singleton<CalendarManager>
         if (GameManager.Instance.SaveData == null) return;
 
         int weekId = GameManager.Instance.SaveData.weekId;
+        
         var data = _calReader.DataList[weekId - 1];
 
         calendar.month = data.month;
@@ -53,7 +52,7 @@ public class CalendarManager : Singleton<CalendarManager>
         // 만약 전체 일정이 끝나게 된다면
         if (weekId >= _calReader.DataList.Count)
         {
-            calendar.year++;
+            GameManager.Instance.SaveData.year++;
             weekId = 0;
         }
 
@@ -106,6 +105,11 @@ public class CalendarManager : Singleton<CalendarManager>
                 }
                 else
                 {
+                    if (data.targetidSpecial == 1)
+                    {
+                        GameManager.Instance.SaveData.year++;
+                    }
+
                     weekId = data.targetidSpecial;
                 }
             }
@@ -122,8 +126,16 @@ public class CalendarManager : Singleton<CalendarManager>
 
         GameManager.Instance.SetWeekId(weekId);
 
+        if (CheckGraduationDay())
+        {
+            GameManager.Instance.GoToGraduation();
+        }
+
         OnWeekChanged?.Invoke(calendar);
     }
+
+    public bool CheckGraduationDay() => calendar.month == 2 && calendar.week == 4;
+   
 
     // 일단 컷신 부분은 패스(-)
     public bool HasExistStartCutscene(int weekId) => _calReader.DataList[weekId - 1].startCutscene.Equals("");

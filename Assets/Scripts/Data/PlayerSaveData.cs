@@ -9,4 +9,5 @@ public class PlayerSaveData : SaveBase
     public int honor;           // 명성
     public int money;
     public int weekId;          // 테이블 주 ID
+    public int year;            // 연차
 }

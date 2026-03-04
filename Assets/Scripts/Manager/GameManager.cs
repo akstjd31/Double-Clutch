@@ -149,6 +149,20 @@ public class GameManager : Singleton<GameManager>
         StartCoroutine(LoadNextScene_Coroutine());
     }
 
+    public void GoToGraduation()
+    {
+        SetNextFlow(SceneName.GRADUATION, _sm.Get<GraduationState>());
+
+        _sm.ChangeState<LoadingState>();
+    }
+
+    public void GoToLobby()
+    {
+        SetNextFlow(SceneName.LOBBY, _sm.Get<LobbyState>());
+
+        _sm.ChangeState<LoadingState>();
+    }
+
     private IEnumerator LoadNextScene_Coroutine()
     {
         var target = NextSceneName;
@@ -178,6 +192,13 @@ public class GameManager : Singleton<GameManager>
         saveData.honor = honor;
         OnDataChanged?.Invoke();
     }
+
+    public void SetYear(int year)
+    {
+        saveData.year = year;
+        OnDataChanged?.Invoke();
+    }
+    
     public void ChangeState<T>() where T : class, IState
     {
         _sm.ChangeState<T>();

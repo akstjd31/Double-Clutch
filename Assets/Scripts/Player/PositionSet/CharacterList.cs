@@ -84,7 +84,7 @@ public class CharacterList : MonoBehaviour
 
             int idx = PlayerPrefs.GetInt(PrefKeys.MATCH_PREP_UI_INDEX);
 
-            if (hasMyStdData)
+            if (hasMyStdData && stdData.studentList.Count > 0)
             {
                 if (idx == 1)
                 {
@@ -118,6 +118,11 @@ public class CharacterList : MonoBehaviour
                 //         _positionCards[i] = playerCard;
                 //     }
                 // }
+            }
+            else
+            {
+                _fightingPower.gameObject.SetActive(false);
+                _matchStartPanelObj.SetActive(false);
             }
         }
     }
@@ -429,6 +434,7 @@ public class CharacterList : MonoBehaviour
             {
                 if (position.transform.childCount > 0) _playerCardPool.Release(position.GetComponentInChildren<PlayerCard>());
             }
+
         }
 
         for (int i = 0; i < _positionCards.Length; i++)
