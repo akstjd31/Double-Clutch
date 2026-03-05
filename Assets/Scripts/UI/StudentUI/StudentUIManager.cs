@@ -56,10 +56,10 @@ public class StudentUIManager : MonoBehaviour
             OpenRecruitPanel();
     }
 
-    public void OnCharacterBoxClick(Student student) //ĳ���� �ڽ� ��ư ��Ŭ������ ȣ��
+    public void OnCharacterBoxClick(CharacterBox box) //ĳ���� �ڽ� ��ư ��Ŭ������ ȣ��
     {
         _profileDetailsPanel.gameObject.SetActive(true);
-        _profileDetailsPanel.Init(student);
+        _profileDetailsPanel.Init(box.Target);        
     }
 
     public void OnPassiveBoxMouseOverStart(Player_PassiveData? data) //�нú� ������ �ڽ��� OnPointerEnter���� ȣ��
