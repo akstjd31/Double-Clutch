@@ -11,6 +11,8 @@ public class ProfileDetailsPanel : MonoBehaviour
     [SerializeField] TextMeshProUGUI _nameText;
     [SerializeField] TextMeshProUGUI _gradeText;
     [SerializeField] TMP_Dropdown _positionDropdown;
+    [SerializeField] Slider _conditionSlider;
+
 
     [SerializeField] TextMeshProUGUI _attackText;
     [SerializeField] TextMeshProUGUI _defenseText;
@@ -20,6 +22,8 @@ public class ProfileDetailsPanel : MonoBehaviour
     [SerializeField] PassiveProfileBox _profileBox0;
     [SerializeField] PassiveProfileBox _profileBox1;
     [SerializeField] PassiveProfileBox _profileBox2;
+
+
 
     Student _student;
 
@@ -34,6 +38,7 @@ public class ProfileDetailsPanel : MonoBehaviour
         _defenseText.text = student.Defense.ToString();
         _personalityText.text = StringManager.Instance.GetString(student.PersonalityData.personalityName);
         _traitText.text = StringManager.Instance.GetString(student.TraitData.traitName);
+        _conditionSlider.value = NormalizeConditionValue(student.Condition);
         SetPassiveText(student);
     }
 
@@ -82,5 +87,10 @@ public class ProfileDetailsPanel : MonoBehaviour
             case 4: return Position.PG;
             default: return Position.C;
         }
+    }    
+
+    public float NormalizeConditionValue(int condition)
+    {        
+        return (float)condition / 100;
     }
 }
