@@ -50,6 +50,7 @@ public class IndividualTrainingCommandPopUp : MonoBehaviour
     {
         // 풀에서 박스 생성
         TrainingBox box = _pool.Get();
+        box.transform.SetAsLastSibling();
 
         // 데이터 주입 (학생 설정 후 Init 호출)
         box.Init(command);

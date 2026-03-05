@@ -50,6 +50,7 @@ public class TeamTrainingCommandPopUp : MonoBehaviour
     private void CreateBox(ITraining command)
     {        
         TrainingBox box = _teamTrainingPool.Get();
+        box.transform.SetAsLastSibling();
         box.Init(command);        
 
         _boxList.Add(box);

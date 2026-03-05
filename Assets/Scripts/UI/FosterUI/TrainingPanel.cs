@@ -40,9 +40,9 @@ public class TrainingPanel : MonoBehaviour
         for (int i = 0; i < students.Count; i++)
         {            
             TrainingCharacterBox newBox = _trainingBoxPool.Get(); //박스 채우기
-            
+            newBox.transform.SetAsLastSibling();
             newBox.Init(students[i]); //박스에 선수 정보 주입            
-
+            
             _boxList.Add(newBox);
         }
     }
