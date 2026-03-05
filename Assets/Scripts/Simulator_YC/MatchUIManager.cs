@@ -1,10 +1,11 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
 using TMPro; 
 using UnityEngine;
 using UnityEngine.UI;
-using System;
+using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class MatchUIManager : MonoBehaviour
 {
@@ -17,6 +18,7 @@ public class MatchUIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _textAwayName;
 
     [Header("Result Popup")]
+    [SerializeField] private NormalResultPanel _normalResultPanel; 
     [SerializeField] private GameObject _resultPanel;              // 결과 패널 전체
     [SerializeField] private TextMeshProUGUI _textResultHomeScore; // 아군 점수 (ex: 10)
     [SerializeField] private TextMeshProUGUI _textResultHomeName;  // 아군 이름 (ex: 플레고)
@@ -127,6 +129,8 @@ public class MatchUIManager : MonoBehaviour
     // 중계 로그 표시 (타자기 효과 or 그냥 텍스트)
     public void UpdateLogText(string message)
     {
+        // 텍스트가 비어있으면(적군 행동이면) UI에 빈 줄을 추가하지 않고 무시함
+        if (string.IsNullOrEmpty(message)) return;
         // 새 메시지를 리스트에 추가
         _logHistory.Add(message);
 
@@ -224,7 +228,7 @@ public class MatchUIManager : MonoBehaviour
 
 
     // 경기 종료 시 호출할 함수
-    public void ShowResultPopup(string homeName, int homeScore, string awayName, int awayScore, int rewardAmount = 0, Action onConfirm = null)
+    public void ShowResultPopup(string homeName, int homeScore, string awayName, int awayScore, int rewardAmount = 0, List<MatchPlayerData> players = null, Action onConfirm = null)
     {
         _onResultConfirmAction = onConfirm;
         // 패널 켜기
@@ -263,6 +267,10 @@ public class MatchUIManager : MonoBehaviour
             // 등장 연출
             _resultPanel.transform.localScale = Vector3.zero;
             _resultPanel.transform.DOScale(1f, 0.5f).SetEase(Ease.OutBack);
+        }
+        if (_normalResultPanel != null && players != null)
+        {
+            _normalResultPanel.OpenPanel(players);
         }
     }
     public void StartHalftimeEvent(string scriptId)

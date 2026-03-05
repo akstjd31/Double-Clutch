@@ -149,8 +149,16 @@ public class MatchEngine : MonoBehaviour
         // 연장전 처리 (4쿼터가 끝났는데 동점일 때만)
         if (targetQuarter >= 4)
         {
+            int maxOvertime = 20; // 최대 연장전 횟수 (20번)
+            int currentOvertime = 0;
+
             while (_homeTeam.SimulatedScore == _awayTeam.SimulatedScore)
             {
+                if (currentOvertime >= maxOvertime)
+                {
+                    Debug.LogWarning("연장전 20회 돌파! 무승부로 강제 종료하여 프리징을 방지합니다.");
+                    break; // 무한 루프 탈출!
+                }
                 RecordLog("GameStart");
 
                 _simTime = 300f;
@@ -164,6 +172,7 @@ public class MatchEngine : MonoBehaviour
 
                 _simQuarter++;
                 _currentPossession = (_currentPossession == TeamSide.Home) ? TeamSide.Away : TeamSide.Home;
+                currentOvertime++;
             }
 
             RecordLog("GameEnd");
@@ -244,34 +253,46 @@ public class MatchEngine : MonoBehaviour
         log.ScoreAdded = success ? score : 0;
 
         // 슛 결과 텍스트 (시간 + 내용)
-        log.LogText = success ? $"{timeStr} {shooter.PlayerName}이(가) 득점에 성공합니다!" : $"{timeStr} {shooter.PlayerName}의 슛이 빗나갑니다.";
         log.BallPos = shooter.LogicPosition;
+        // 아군(Home)일 때만 로그 텍스트, 컷인, 사운드를 적용
+        if (_currentPossession == TeamSide.Home)
+        {
+            log.LogText = success ? $"{timeStr} {shooter.PlayerName}이(가) 득점에 성공합니다!" : $"{timeStr} {shooter.PlayerName}의 슛이 빗나갑니다.";
 
-        // 버저비터를 먼저 체크하고, 아닐 때만 덩크/3점 체크
-        if (isBuzzerBeater && success)
-        {
-            log.IsCutIn = true;
-            log.CutInType = "BUZZER";
-        }
-        else if (success && isDunk)
-        {
-            log.IsCutIn = true;
-            log.CutInType = "DUNK";
-        }
-        else if (success && isThree)
-        {
-            log.IsCutIn = true;
-            log.CutInType = "3PT";
+            // 버저비터를 먼저 체크하고, 아닐 때만 덩크/3점 체크
+            if (isBuzzerBeater && success)
+            {
+                log.IsCutIn = true;
+                log.CutInType = "BUZZER";
+            }
+            else if (success && isDunk)
+            {
+                log.IsCutIn = true;
+                log.CutInType = "DUNK";
+            }
+            else if (success && isThree)
+            {
+                log.IsCutIn = true;
+                log.CutInType = "3PT";
+            }
+            else
+            {
+                log.IsCutIn = false;
+                log.CutInType = "";
+            }
+
+            if (success && !isThree && !isDunk && _simTime > 0)
+            {
+                log.SfxType = "CHEER";
+            }
         }
         else
         {
+            // 적군(Away)일 경우 텍스트, 컷인, 사운드를 모두 비워버림 (기록 안 띄움)
+            log.LogText = "";
             log.IsCutIn = false;
             log.CutInType = "";
-        }
-
-        if (success && !isThree && !isDunk && _simTime > 0)
-        {
-            log.SfxType = "CHEER";
+            log.SfxType = "";
         }
         SavePositionsToLog(log);
         MatchLogs.Add(log);
@@ -280,6 +301,7 @@ public class MatchEngine : MonoBehaviour
         if (success)
         {
             attackTeam.SimulatedScore += score;
+            shooter.Score += score;
             SwitchPossession(false);
             _ballHolder = defendTeam.GetPlayerByPosition(Position.PG) ?? defendTeam.Roster[0];
             Vector2 ourHoop = (_currentPossession == TeamSide.Home) ? new Vector2(0.5f, 0.05f) : new Vector2(0.5f, 0.95f);
@@ -454,6 +476,15 @@ public class MatchEngine : MonoBehaviour
         log.CutInType = config.cutInResourceId == "-" ? "" : config.cutInResourceId;
 
         if (_ballHolder != null) log.BallPos = _ballHolder.LogicPosition;
+
+        // 행동 주체가 적군(Away) 소속일 경우 모든 연출과 로그 텍스트 삭제
+        if (actor != null && _awayTeam.Roster.Contains(actor))
+        {
+            log.LogText = "";
+            log.IsCutIn = false;
+            log.CutInType = "";
+            log.SfxType = "";
+        }
 
         SavePositionsToLog(log);
         MatchLogs.Add(log);

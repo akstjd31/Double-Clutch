@@ -54,7 +54,8 @@ public class FightingPower : MonoBehaviour
             for (int i = 0; i < Mathf.Min(_myMatchingStudentList.Count, _fightingList.Length); i++)
             {
                 var s = _myMatchingStudentList[i];
-                s.OnStatChanged();
+                // s.OnStatChanged();
+                s.RebuildStatDict();
                 _fightingList[i].Init(s);
                 _myTotalFightingPower += (s.Attack + s.Defense);
             }
@@ -120,7 +121,7 @@ public class FightingPower : MonoBehaviour
             for (int i = 0; i < _rivalMatchingStudentList.Count; i++)
             {
                 var r = _rivalMatchingStudentList[i];
-                r.OnStatChanged();
+                r.RebuildStatDict();
                 _rivalList[i].Init(r);
                 _rivalTotalFightingPower += (r.Attack + r.Defense);
             }
@@ -185,7 +186,14 @@ public class FightingPower : MonoBehaviour
     {
         // // �׽�Ʈ ��
         // CalendarManager.Instance.NextTurn();
-        
+
+        // [디버그] GameManager로 넘기기 직전에 스탯이 살아있는지 확인
+        if (MyMatchingStudentList != null && MyMatchingStudentList.Count > 0)
+        {
+            var testStd = MyMatchingStudentList[0];
+            Debug.Log($"<color=yellow>[씬 전환 직전 확인]</color> {testStd.Name} 선수를 시뮬레이터로 보냅니다! 현재 2점슛 스탯: {testStd.GetCurrentStat(potential.Stat2pt)}");
+        }
+
         GameManager.Instance.LoadMatchSceneWithData("Test_Simul", MyMatchingStudentList, RivalMatchingStudentList);
     }
 }

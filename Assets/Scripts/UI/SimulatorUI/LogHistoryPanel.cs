@@ -91,7 +91,13 @@ public class LogHistoryPanel : MonoBehaviour
         {
             string fullText = log.LogText;
 
-            if (!string.IsNullOrEmpty(fullText) && fullText.Length >= 5)
+            // 텍스트가 아예 비어있거나 공백뿐이라면 아무것도 하지 않고 다음 로그로
+            if (string.IsNullOrWhiteSpace(fullText))
+            {
+                continue;
+            }
+
+            if (fullText.Length >= 5) // null이나 empty 체크는 위에서 끝났으므로 길이만 확인
             {
                 string time = fullText.Substring(0, 5);
                 string message = fullText.Length > 6 ? fullText.Substring(6).Trim() : "";

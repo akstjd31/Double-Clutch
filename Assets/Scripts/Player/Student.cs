@@ -84,6 +84,14 @@ public class Student
         {
             return 0;
         }
+
+        // [디버그] 딕셔너리 자체가 비어있는지 체크
+        if (_statDict == null || _statDict.Count == 0)
+        {
+            Debug.LogError($"<color=red>[스탯 증발 에러]</color> {Name} 선수의 _statDict가 텅 비어있습니다! (RebuildStatDict 호출 누락 의심)");
+            return 0;
+        }
+
         return _statDict[type].Current;
     }
 
@@ -337,5 +345,15 @@ public class Student
     private void InitTrait(Player_TraitDataReader db)
     {
         _traitData = db.DataList.Find(data => data.traitId == TraitId);
+    }
+
+    public void RebuildStatDict()
+    {
+        _statDict.Clear();
+        foreach (var stat in _stats)
+        {
+            _statDict[stat.Type] = stat;
+        }
+        OnStatChanged(); // 공격력/수비력 계산도 같이 갱신
     }
 }

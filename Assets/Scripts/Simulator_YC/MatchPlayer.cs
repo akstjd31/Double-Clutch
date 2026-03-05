@@ -15,7 +15,7 @@ public class MatchPlayer
     public List<Player_PassiveData> Passives { get; private set; }
     // 시뮬레이션은 이 좌표로 계산하고, 리플레이어는 이걸 월드 좌표로 변환해서 보여줌.
     public Vector2 LogicPosition { get; set; }
-
+    public int Score { get; set; } = 0;
     // 비주얼 오브젝트 (리플레이어에서 사용)
     public GameObject VisualObject { get; set; }
 
@@ -47,6 +47,8 @@ public class MatchPlayer
         ResourceKey = resourceKey;
         // 초기 위치 설정
         InitDefaultPosition();
+        // [디버그] 초기화 완료 직후 들어온 스탯 확인
+        Debug.Log($"<color=#00FF00>[MatchPlayer 변환 완료]</color> {_playerName} 생성됨. 전달받은 2점슛 스탯: {_stats[MatchStatType.TwoPoint]}");
     }
 
     private void InitDefaultPosition()

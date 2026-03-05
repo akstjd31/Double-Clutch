@@ -18,19 +18,27 @@ public class NormalResultPanel : MonoBehaviour
     {
         this.gameObject.SetActive(true);
 
+        // 데이터가 제대로 넘어왔는지 콘솔 창에 확인
+        if (players == null)
+        {
+            Debug.LogError("에러: 넘겨받은 players 리스트가 Null입니다!");
+            return;
+        }
+        Debug.Log($"득점 정보 패널 열림! 전달받은 선수 명단 수: {players.Count}명");
+
         // 초기화
         foreach (Transform child in _scoreContainer)
         {
             Destroy(child.gameObject);
         }
-
+        _scoreContainer.DetachChildren();
         // 프리팹 생성
         foreach (var player in players)
         {
+            PlayerScoreRow newRow = Instantiate(_scoreRowPrefab, _scoreContainer, false);
+            newRow.transform.localScale = Vector3.one;
 
-            PlayerScoreRow newRow = Instantiate(_scoreRowPrefab, _scoreContainer);
-
-            newRow.Init(player.Position.ToString(), player.Name, player.Score);
+            newRow.Init(player.Position, player.Name, player.Score);
         }
     }
 }

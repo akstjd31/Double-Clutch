@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class ResultState : IState
@@ -33,6 +34,22 @@ public class ResultState : IState
         // 임시 지원금 (추후 보상 시스템 연동할 때 이 변수를 수정하시면 됩니다)
         int rewardAmount = 50;
 
+        // 현재 경기 뛰었던 팀(HomeTeam)의 선수 득점 기록을 List로 만들기
+        List<MatchPlayerData> matchPlayers = new List<MatchPlayerData>();
+
+        // 홈 팀의 Roster 리스트를 순회하며 데이터 변환
+        if (matchState.HomeTeam != null && matchState.HomeTeam.Roster != null)
+        {
+            foreach (var player in matchState.HomeTeam.Roster)
+            {
+                matchPlayers.Add(new MatchPlayerData
+                {
+                    Position = player.MainPosition.ToString(), // 선수의 주 포지션
+                    Name = player.PlayerName,                  // 선수 이름
+                    Score = player.Score                       // 선수의 득점 (MatchPlayer 스크립트에 Score 프로퍼티가 있다고 가정)
+                });
+            }
+        }
         // 결과창 띄우기
         uiManager.ShowResultPopup(
             matchState.HomeTeam.TeamName,
@@ -40,6 +57,7 @@ public class ResultState : IState
             matchState.AwayTeam.TeamName,
             matchState.AwayTeam.Score,
             rewardAmount,
+            matchPlayers,
             () =>
             {
                 // MVP를 위해 ReturnToLobby() 대신 리그 결산 패널을 띄웁니다.
