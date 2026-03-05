@@ -59,4 +59,6 @@ public class DropPosition : MonoBehaviour, IDropHandler, IPointerClickHandler
         if (_charList != null)
             _charList.OnClickPosition(this);
     }
+
+    public Position GetPosition() => _position;
 }

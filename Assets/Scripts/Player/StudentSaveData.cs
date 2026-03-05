@@ -3,8 +3,8 @@ using UnityEngine;
 
 public class StudentSaveData : SaveBase
 {
-    public int lastIdCount; // StudentManagerÀÇ _idCount ÀúÀå
-    public List<Student> studentList; // ³» ÇĞ»ı ¸ñ·Ï ÀüÃ¼ ÀúÀå
+    public int lastIdCount; // StudentManagerï¿½ï¿½ _idCount ï¿½ï¿½ï¿½ï¿½
+    public List<Student> studentList; // ï¿½ï¿½ ï¿½Ğ»ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½Ã¼ ï¿½ï¿½ï¿½ï¿½
 
     public StudentSaveData(int idCount, List<Student> students)
     {
@@ -12,7 +12,7 @@ public class StudentSaveData : SaveBase
         this.studentList = students;
     }
 
-    // ±âº» »ı¼ºÀÚ (JsonUtility ·Îµå¿ë)
+    // ï¿½âº» ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ (JsonUtility ï¿½Îµï¿½ï¿½)
     public StudentSaveData()
     {
 
