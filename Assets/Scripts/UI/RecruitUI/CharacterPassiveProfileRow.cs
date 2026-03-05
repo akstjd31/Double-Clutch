@@ -5,13 +5,20 @@ using UnityEngine.EventSystems;
 
 public class CharacterPassiveProfileRow : MonoBehaviour, IPointerUpHandler, IPointerDownHandler
 {
+    const string DEFAULT_TEXT = "비어 있음";
     Player_PassiveData _data;
     [SerializeField] TextMeshProUGUI _passiveText;
 
     public void Init(Player_PassiveData data)
     {
         _data = data;
-        SetPassiveText();
+        SetPassiveText();        
+    }
+
+    public void Init()
+    {
+        _data = default;
+        _passiveText.text = DEFAULT_TEXT;
     }
 
     public void SetPassiveText()

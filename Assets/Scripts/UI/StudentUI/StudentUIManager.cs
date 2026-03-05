@@ -69,7 +69,11 @@ public class StudentUIManager : MonoBehaviour
             _passiveExplainBox.gameObject.SetActive(false);
             return;
         }
-
+        if (string.IsNullOrEmpty(data.Value.skillId))
+        {
+            _passiveExplainBox.gameObject.SetActive(false);
+            return;
+        }
         _passiveExplainBox.gameObject.SetActive(true);        
         _passiveExplainBox.Init(data.Value);
     }
@@ -210,6 +214,11 @@ public class StudentUIManager : MonoBehaviour
 
     public void OnPassiveProfilePopUpStart(Player_PassiveData data)
     {
+        if (string.IsNullOrEmpty(data.skillId))
+        {
+            _passiveExplainBox.gameObject.SetActive(false);
+            return;
+        }
         _passiveProfileBox.gameObject.SetActive(true);
         _passiveProfileBox.Init(data);
     }

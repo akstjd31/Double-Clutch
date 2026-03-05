@@ -9,6 +9,7 @@ using UnityEngine.EventSystems;
 /// </summary>
 public class PassiveProfileBox : MonoBehaviour, IPointerUpHandler, IPointerDownHandler
 {
+    const string DEFAULT_TEXT = "비어 있음";
     Player_PassiveData _data;
     [SerializeField] TextMeshProUGUI _passiveText;
 
@@ -16,6 +17,12 @@ public class PassiveProfileBox : MonoBehaviour, IPointerUpHandler, IPointerDownH
     {
         _data = data;
         SetPassiveText();
+    }
+
+    public void Init()
+    {
+        _data = default;
+        _passiveText.text = DEFAULT_TEXT;
     }
 
     public void SetPassiveText()

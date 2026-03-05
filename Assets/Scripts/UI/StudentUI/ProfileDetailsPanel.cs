@@ -39,8 +39,10 @@ public class ProfileDetailsPanel : MonoBehaviour
 
     private void SetPassiveText(Student student)
     {
-        _profileBox0.Init(student.Passive[0]);        
-        
+        _profileBox0.Init(student.Passive[0]);
+        _profileBox1.Init();
+        _profileBox2.Init();
+
         if (student.Grade >= 2)
         {
             _profileBox1.Init(student.Passive[1]);
