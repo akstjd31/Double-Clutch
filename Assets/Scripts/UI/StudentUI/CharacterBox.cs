@@ -6,7 +6,6 @@ using TMPro;
 public class CharacterBox : MonoBehaviour
 {
     [SerializeField] TextMeshProUGUI _nameText;
-    [SerializeField] TextMeshProUGUI _gradeText;
     [SerializeField] Button _selectButton;
 
     Student _target;
@@ -15,8 +14,7 @@ public class CharacterBox : MonoBehaviour
 
     public void Init(Student student)
     {        
-        _nameText.text = student.Name;        
-        _gradeText.text = student.Grade.ToString();                
+        _nameText.text = student.Name;                     
         _target = student;                
     }
 
