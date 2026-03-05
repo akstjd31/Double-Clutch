@@ -62,6 +62,8 @@ public class PassiveBox : MonoBehaviour
             }
             else
             {
+                _skillName[i].text = "";
+                _skillDetail[i].text = "";
                 _buttons[i].interactable = false;
                 _buttons[i].targetGraphic.color = _buttons[i].colors.disabledColor;
                 Debug.Log($"{i + 1}버튼 비활성화");
