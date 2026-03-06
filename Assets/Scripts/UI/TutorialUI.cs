@@ -32,5 +32,7 @@ public class TutorialUI : MonoBehaviour
 
         var weekId = GameManager.Instance.SaveData.weekId;
         CalendarManager.Instance.CalcWeek(weekId);
+
+        GameManager.Instance.Dispatch(UIAction.Main_Start); 
     }
 }

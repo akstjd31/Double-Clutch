@@ -12,11 +12,6 @@ public class MainUI : MonoBehaviour
             _startButton.onClick.AddListener(OnClickGameStart);
     }
 
-    private void Start()
-    {
-        tutorialObj.SetActive(IsFirstRun());
-    }
-
     private void OnDisable()
     {
         if (_startButton != null)
@@ -52,6 +47,16 @@ public class MainUI : MonoBehaviour
     // 처음 실행하는건지?
     private bool IsFirstRun() => PlayerPrefs.GetInt(PrefKeys.KEY_FIRST_RUN_DONE, 0) == 0;
 
-    public void OnClickGameStart() => GameManager.Instance.Dispatch(UIAction.Main_Start);
+    public void OnClickGameStart() 
+    {
+        if (IsFirstRun())
+        {
+            tutorialObj.SetActive(true);
+        }
+        else
+        {
+            GameManager.Instance.Dispatch(UIAction.Main_Start); 
+        }
+    }
     public void OnClickQuitButton() => GameManager.Instance.Dispatch(UIAction.Main_Quit);
 }
