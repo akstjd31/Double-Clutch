@@ -24877,6 +24877,8 @@ MonoBehaviour:
   _nameText: {fileID: 434063821}
   _levelText: {fileID: 436421962}
   _effectDescText: {fileID: 93621630}
+  _upgradeButton: {fileID: 1258429150}
+  _reconfirmUI: {fileID: 1176377794}
 --- !u!1 &1102840819
 GameObject:
   m_ObjectHideFlags: 0
@@ -26605,7 +26607,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InfraUI
   _infraUpgradeUI: {fileID: 1095720668}
-  _reconfirmPanelObj: {fileID: 1176377790}
 --- !u!1 &1176377790
 GameObject:
   m_ObjectHideFlags: 0
@@ -26617,6 +26618,7 @@ GameObject:
   - component: {fileID: 1176377791}
   - component: {fileID: 1176377793}
   - component: {fileID: 1176377792}
+  - component: {fileID: 1176377794}
   m_Layer: 5
   m_Name: ReconfirmPanel
   m_TagString: Untagged
@@ -26682,6 +26684,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1176377790}
   m_CullTransparentMesh: 1
+--- !u!114 &1176377794
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1176377790}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4eb1938029d2f9f479e6c06fed687211, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ReconfirmUI
+  prompt: {fileID: 69424203}
+  _okButton: {fileID: 1382943905}
 --- !u!1 &1184706008
 GameObject:
   m_ObjectHideFlags: 0
@@ -28600,17 +28616,17 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1176377790}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
-        m_Mode: 6
+      - m_Target: {fileID: 1095720668}
+        m_TargetAssemblyTypeName: InfraUpgradeUI, Assembly-CSharp
+        m_MethodName: OnClickUpgradeButton
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
-          m_BoolArgument: 1
+          m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &1258429151
 MonoBehaviour:

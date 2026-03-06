@@ -1,4 +1,5 @@
 using UnityEngine;
+using System;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using AYellowpaper.SerializedCollections;
@@ -18,10 +19,12 @@ public class Infra : MonoBehaviour
     private string _desc;
     public string Desc => _desc;
     private int _maxLevel = -1;                  // 최대 레벨
+    public int MaxLevel => _maxLevel;
     private int _groupId;
     private List<int> _needCost;
-    [SerializeField] private List<int> _infraEffectValue;  // 인프라 이펙트 벨류 
-    private bool initComplete = false;                  // 초기 세팅이 완료되었는지 여부 확인
+    [SerializeField] private List<int> _infraEffectValue;  // 레벨(인덱스)에 따른 인프라 이펙트 벨류 
+    public event Action<int> Upgraded;
+    private bool initComplete = false;                     // 초기 세팅이 완료되었는지 여부 확인
 
     private void Awake()
     {
@@ -36,6 +39,10 @@ public class Infra : MonoBehaviour
     private void OnEnable() 
     {
         Init();
+    }
+
+    private void OnDisable()
+    {
     }
 
     // 본인의 그룹 ID랑 최대 레벨 세팅
@@ -70,41 +77,28 @@ public class Infra : MonoBehaviour
         _infraUi.SetInfraUpgradePanelUI(this);
     }
 
-    public bool CanUpgrade()
+    public void Upgrade()
     {
-        if (_maxLevel == -1) return false;
-        return _currentLevel < _maxLevel;
-    }
-
-    public void Upgrade(int money)
-    {
-        var infraMgr = InfraManager.Instance;
-        if (infraMgr == null) return;
-
-        if (!CanUpgrade())
-        {
-            Debug.Log("이미 최대 레벨에 도달했습니다!");
-            return;
-        }
-
-        OnUpgrade(infraMgr, money);
-        _currentLevel++;
-    }
-
-    public void OnUpgrade(InfraManager infraMgr, int money)
-    {
-        if (GameManager.Instance == null) return;
         var gameMgr = GameManager.Instance;
+        if (gameMgr == null) return;
 
-        if (gameMgr.SaveData.money < money)
-        {
-            Debug.Log("업그레이드를 하기 위한 비용이 부족합니다!");
-            return;
-        }
+        gameMgr.SetMoney(gameMgr.SaveData.money - GetCostByNextLevel());
 
-        gameMgr.SetMoney(gameMgr.SaveData.money - money);
+        _currentLevel++;
+        Upgraded?.Invoke(_currentLevel);
     }
+
+
 
     public int GetValueByLevel() => _infraEffectValue[_currentLevel];
-    public int GetCostByLevel() => _needCost[_currentLevel];
+    public int GetCostByNextLevel() => _currentLevel + 1 < _maxLevel ? _needCost[_currentLevel + 1] : _needCost[_maxLevel];
+
+    public bool IsReachedMaxLevel() => _currentLevel >= _maxLevel;
+    public bool HasEnoughUpgradeCost()
+    {
+        if (GameManager.Instance == null) return false;
+        
+        var money = GameManager.Instance.SaveData.money;
+        return money > GetCostByNextLevel(); 
+    }
 }
