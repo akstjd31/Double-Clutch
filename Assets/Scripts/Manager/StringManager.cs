@@ -63,7 +63,5 @@ public class StringManager : Singleton<StringManager>
             Debug.LogWarning($"stringKey [{key}]가 stringTable에 없습니다. ");
             return key; //테이블에 없으면 대신 키라도 반환
         }
-
-        
     }
 }
