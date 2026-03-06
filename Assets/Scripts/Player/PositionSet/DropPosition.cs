@@ -8,45 +8,49 @@ public class DropPosition : MonoBehaviour, IDropHandler, IPointerClickHandler
     [SerializeField] private bool allowOnlyOne = false;
     [SerializeField] private bool isPositionSlot = false;
     [SerializeField] private CharacterList _charList;
-    [SerializeField] Position _position;
+    [SerializeField] private Position _position;
+
     private void OnEnable()
     {
-        if (isPositionSlot)
-        {
-            if (_outline == null)
-                _outline = this.GetComponent<Outline>();
+        if (!isPositionSlot) return;
 
+        if (_outline == null)
+            _outline = GetComponent<Outline>();
+
+        if (_outline != null)
             _outline.enabled = false;
-        }
     }
 
-    public void OnDrop(PointerEventData eventData)
+public void OnDrop(PointerEventData eventData)
+{
+    var draggedObj = eventData.pointerDrag;
+    if (draggedObj == null) return;
+
+    var draggable = draggedObj.GetComponent<Draggable>();
+    if (draggable == null) return;
+
+    var card = draggedObj.GetComponent<PlayerCard>();
+    if (card == null) return;
+
+    bool success = false;
+
+    if (isPositionSlot)
     {
-        var draggedObj = eventData.pointerDrag;
-        if (draggedObj == null) return;
+        success = _charList.AddOnPosition(card, this);
 
-        var draggable = draggedObj.GetComponent<Draggable>();
-        if (draggable == null) return;
-
-        // 이 스크립트를 재사용하는 부분이 있어 위 포지션 배치는 allowOnlyOne을 체크한 상태로 할 것!
-        if (allowOnlyOne && this.transform.childCount > 1) return;
-
-        draggable.HandleDroppedSuccessfully(this.transform);
-
-        var card = draggedObj.GetComponent<PlayerCard>();
-        if (card == null) return;
-
-        // 포지션 슬롯인지 아닌지에 따라 포함될 리스트 위치도 다름
-        if (isPositionSlot)
-        {
-            _charList.AddOnPosition(card, this);
-        }
-        else
-        {
-            _charList.RemoveOnPosition(card);
-        }
-        card.Player.SetMatchPosition(_position);
+        if (success)
+            card.Player.SetMatchPosition(_position);
     }
+    else
+    {
+        success = _charList.MoveToCardList(card);
+        if (success)
+            card.Player.SetMatchPosition(Position.None);
+    }
+
+    if (success)
+        draggable.SetDroppedSuccessfully();
+}
 
     public void SetSelected(bool on)
     {
