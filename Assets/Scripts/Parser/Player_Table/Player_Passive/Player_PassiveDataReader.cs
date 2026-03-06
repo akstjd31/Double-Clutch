@@ -14,13 +14,9 @@ public class Player_PassiveDataReader : DataReaderBase
     {
         string skillId = null;
         string skillName = "";
-        skillCategory category = default;
-        triggerCond triggerCond = default;
-        int triggerValue = 0;
+        int grade = 0;
         effectType effectType = default;
         float effectValue = 0;
-        int effectDuration = 0;
-        int coolTime = 0;
         string passiveDesc = "";
 
         for (int i = 0; i < list.Count; i++)
@@ -40,26 +36,8 @@ public class Player_PassiveDataReader : DataReaderBase
                 case "skillName":
                     skillName = val;
                     break;
-
-                case "skillCategory":
-                    if (!string.IsNullOrEmpty(val))
-                    {
-                        // 숫자(enum int)도 대응
-                        if (int.TryParse(val, out var eInt)) category = (skillCategory)eInt;
-                        else if (Enum.TryParse(val, true, out skillCategory e)) category = e;
-                    }
-                    break;
-
-                case "triggerCond":
-                    if (!string.IsNullOrEmpty(val))
-                    {
-                        if (int.TryParse(val, out var eInt)) triggerCond = (triggerCond)eInt;
-                        else if (Enum.TryParse(val, true, out triggerCond e)) triggerCond = e;
-                    }
-                    break;
-
-                case "triggerValue":
-                    int.TryParse(val, out triggerValue);
+                case "grade":
+                    int.TryParse(val, out grade);
                     break;
 
                 case "effectType":
@@ -75,14 +53,6 @@ public class Player_PassiveDataReader : DataReaderBase
                     float.TryParse(val, out effectValue);
                     break;
 
-                case "effectDuration":
-                    int.TryParse(val, out effectDuration);
-                    break;
-
-                case "coolTime":
-                    int.TryParse(val, out coolTime);
-                    break;
-
                 case "passiveDesc":
                     passiveDesc = val;
                     break;
@@ -94,8 +64,8 @@ public class Player_PassiveDataReader : DataReaderBase
         if (string.IsNullOrEmpty(skillId)) return;
 
         DataList.Add(new Player_PassiveData(
-            skillId, skillName, category, triggerCond, triggerValue, effectType,
-            effectValue, effectDuration, coolTime, passiveDesc
+            skillId, skillName, grade, effectType,
+            effectValue, passiveDesc
         ));
     }
 
