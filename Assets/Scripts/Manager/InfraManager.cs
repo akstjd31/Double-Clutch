@@ -6,12 +6,12 @@ using System.Collections.Generic;
 public class InfraManager : Singleton<InfraManager>
 {
     [SerializeField] private Infra_DataReader _reader;
-    public SerializedDictionary<infraEffectType, int> MaxLevelData;  // 그룹 Id, 최대 레벨
+    [SerializeField] private SerializedDictionary<infraEffectType, string> _infraDescData; // 시설 효과 설명 관련 딕셔너리
 
     protected override void Awake()
     {
         base.Awake();
-        MaxLevelData = new SerializedDictionary<infraEffectType, int>();
+        _infraDescData = new SerializedDictionary<infraEffectType, string>();
     }
 
     private void Start()
@@ -21,12 +21,24 @@ public class InfraManager : Singleton<InfraManager>
 
     private void Init()
     {
-        foreach (Infra_Data data in _reader.DataList)
+        if (_reader == null) return;
+
+        var stringMgr = StringManager.Instance;
+        if (stringMgr == null) return;
+
+        foreach (var data in _reader.DataList)
         {
-            if (MaxLevelData.ContainsKey(data.infraEffectType)) continue;
-            MaxLevelData.Add(data.infraEffectType, GetMaxLevelByEffectType(data.infraEffectType));
+            if (_infraDescData.ContainsKey(data.infraEffectType)) continue;
+            string desc = stringMgr.GetString(data.infraDescKey);
+            _infraDescData[data.infraEffectType] = desc;
+
+            // var valueStr = TextParser.GetKeys(desc);
+            //FormatInfraDescText(desc, valueStr[0], data.infraEffectValue);
         }
     }
+
+    // 중괄호로 되어있는 부분을 처리 및 전체 문자열을 반환
+    // private string FormatInfraDescText(string desc, string target, int infraEffectValue) => desc.Replace(target, infraEffectValue.ToString());
 
     // public int GetCostByEffectTypeAndLevel(infraEffectType infraET, int level)
     // {
@@ -88,4 +100,6 @@ public class InfraManager : Singleton<InfraManager>
 
         return null;
     }
+
+    public string GetInfraDescByEffectType(infraEffectType infraET) => _infraDescData[infraET];
 }

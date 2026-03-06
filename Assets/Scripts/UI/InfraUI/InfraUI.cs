@@ -1,15 +1,15 @@
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class InfraUI : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
+    [Header("UpgradePanel")]
+    [SerializeField] private GameObject _upgradePanelObj;
 
-    // Update is called once per frame
-    void Update()
+    [SerializeField] private GameObject _reconfirmPanelObj;
+
+    public void UpgradePanelInit()
     {
         
     }

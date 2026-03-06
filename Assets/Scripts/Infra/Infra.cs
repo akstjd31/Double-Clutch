@@ -1,15 +1,21 @@
 using UnityEngine;
 using System.Collections.Generic;
 
+public struct UpgradeData
+{
+    
+}
+
 /// <summary>
 /// 인프라 관련 클래스 (해당 스크립트 추가 시 infraEffectType은 시설에 맞게 지정해줘야 함.)
 /// </summary>
 public class Infra : MonoBehaviour
 {
-    [SerializeField] private string _name;
+    private InfraUI _infraUi;
     [SerializeField] private infraEffectType _infraEffectType;
     [SerializeField] private int _currentLevel = 0;               // 현재 레벨
     public int CurrentLevel => _currentLevel;
+    private string _name;
     private int _maxLevel = -1;                  // 최대 레벨
     private int _groupId;
     private List<int> _needCostByLevel;
@@ -18,6 +24,7 @@ public class Infra : MonoBehaviour
     private void Awake()
     {
         _needCostByLevel = new List<int>();
+        _infraUi = this.transform.parent.GetComponent<InfraUI>();
     }
     
     private void OnEnable() 
@@ -46,6 +53,13 @@ public class Infra : MonoBehaviour
         Debug.Log($"[{_name}] 기초 세팅 완료!");
         initComplete = true;
     }     
+
+    public void OnClickInfraButton()
+    {
+        if (_infraUi == null) return;
+
+        // _infraUi.
+    }
 
     public bool CanUpgrade()
     {

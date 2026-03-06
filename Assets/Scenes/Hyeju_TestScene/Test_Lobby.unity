@@ -1929,7 +1929,7 @@ GameObject:
   - component: {fileID: 93621629}
   - component: {fileID: 93621630}
   m_Layer: 5
-  m_Name: Text
+  m_Name: EffectText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2050,7 +2050,7 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
-  m_hasFontAssetChanged: 1
+  m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!1 &99434197
@@ -3535,7 +3535,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dadb733e528a5d4449f3fbf5a4bbe059, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Infra
-  _name: 
   _infraEffectType: 3
   _currentLevel: 0
 --- !u!1 &149908916
@@ -4771,7 +4770,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dadb733e528a5d4449f3fbf5a4bbe059, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Infra
-  _name: 
   _infraEffectType: 2
   _currentLevel: 0
 --- !u!1 &204269171
@@ -7137,7 +7135,7 @@ GameObject:
   - component: {fileID: 365811182}
   - component: {fileID: 365811183}
   m_Layer: 5
-  m_Name: Text
+  m_Name: TitleText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7258,7 +7256,7 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
-  m_hasFontAssetChanged: 1
+  m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!1 &366783433
@@ -8537,7 +8535,7 @@ GameObject:
   - component: {fileID: 434063820}
   - component: {fileID: 434063821}
   m_Layer: 5
-  m_Name: Name
+  m_Name: NameText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8658,7 +8656,7 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
-  m_hasFontAssetChanged: 1
+  m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!1 &436421958
@@ -8673,7 +8671,7 @@ GameObject:
   - component: {fileID: 436421961}
   - component: {fileID: 436421962}
   m_Layer: 5
-  m_Name: Level
+  m_Name: LevelText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8794,7 +8792,7 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
-  m_hasFontAssetChanged: 1
+  m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!1 &443431148
@@ -11809,7 +11807,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dadb733e528a5d4449f3fbf5a4bbe059, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Infra
-  _name: 
   _infraEffectType: 5
   _currentLevel: 0
 --- !u!1 &585036111
@@ -16921,7 +16918,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dadb733e528a5d4449f3fbf5a4bbe059, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Infra
-  _name: 
   _infraEffectType: 4
   _currentLevel: 0
 --- !u!1 &794780990
@@ -22854,7 +22850,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dadb733e528a5d4449f3fbf5a4bbe059, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Infra
-  _name: 
   _infraEffectType: 1
   _currentLevel: 0
 --- !u!1 &1024233263
@@ -24466,7 +24461,7 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
-  m_hasFontAssetChanged: 1
+  m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!1 &1073168487
@@ -24792,6 +24787,7 @@ GameObject:
   - component: {fileID: 1095720665}
   - component: {fileID: 1095720667}
   - component: {fileID: 1095720666}
+  - component: {fileID: 1095720668}
   m_Layer: 5
   m_Name: InfraUpgradePanel
   m_TagString: Untagged
@@ -24858,6 +24854,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1095720664}
   m_CullTransparentMesh: 1
+--- !u!114 &1095720668
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1095720664}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00dcd915c52f6d848bdde0ebf5e4e73a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InfraUpgradeUI
+  _title: {fileID: 365811183}
+  _nameText: {fileID: 434063821}
+  _levelText: {fileID: 436421962}
+  _effectText: {fileID: 93621630}
 --- !u!1 &1102840819
 GameObject:
   m_ObjectHideFlags: 0
@@ -26585,6 +26597,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e8e7e1a36654584c84ae07044b72a98, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InfraUI
+  _upgradePanelObj: {fileID: 1095720664}
+  _reconfirmPanelObj: {fileID: 1176377790}
 --- !u!1 &1176377790
 GameObject:
   m_ObjectHideFlags: 0
@@ -33477,7 +33491,7 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
-  m_hasFontAssetChanged: 1
+  m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!1 &1492594229
@@ -35431,7 +35445,7 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
-  m_hasFontAssetChanged: 1
+  m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!1 &1569291556
@@ -36018,7 +36032,7 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
-  m_hasFontAssetChanged: 1
+  m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!1 &1587103647
@@ -42534,7 +42548,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1921010255}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1176377790}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1921010255
 MonoBehaviour:
   m_ObjectHideFlags: 0
