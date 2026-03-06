@@ -172,23 +172,20 @@ public static class MatchCalculator
         float prob = (shootStat / denominator) * 100f;
 
         float penDistHoop = MatchDataProxy.Instance.GetBalance("Pen_Dist_Hoop");
-        prob -= (distance * penDistHoop);
+        prob -= (distance * penDistHoop) * 100f;
 
 
         effectType targetEffect = (distance > 0.35f) ? effectType.Prob3pt : effectType.Prob2pt;
         if (distance <= 0.05f) targetEffect = effectType.ProbDunk;
 
         float passiveBonus = 0f;
-        //foreach (var p in attacker.Passives)
-        //{
-        //    if (p.effectType == targetEffect)
-        //    {
-        //        if (CheckPassiveCondition(p, attackTeam, defendTeam))
-        //        {
-        //            passiveBonus += (p.effectValue * 100f);
-        //        }
-        //    }
-        //}
+        foreach (var p in attacker.Passives)
+        {
+            if (p.effectType == targetEffect)
+            {
+                passiveBonus += (p.effectValue * 100f);
+            }
+        }
         prob += passiveBonus; // 최종 확률에 패시브 더하기
         float dice = Random.Range(0f, 100f);
         bool isSuccess = dice <= prob;
@@ -196,7 +193,7 @@ public static class MatchCalculator
         string eName = nearestEnemy != null ? nearestEnemy.PlayerName : "없음";
         Debug.Log($"<color=#FF8C00>[슛 디버그]</color> {attacker.PlayerName} 슛 시도 (거리:{distance:F2})\n" +
                   $"▶ 공격 슛스탯: {shootStat} | 수비({eName}) 블록스탯: {blockStat} (거리:{minEnemyDist:F2})\n" +
-                  $"▶ 공식: ({shootStat} / {denominator:F2}) * 100 - ({distance:F2} * {penDistHoop}) = {prob - passiveBonus:F2}% | 패시브: +{passiveBonus}%\n" +
+                  $"▶ 공식: ({shootStat} / {denominator:F2}) * 100 - ({distance:F2} * {penDistHoop} * 100) = {prob - passiveBonus:F2}% | 패시브: +{passiveBonus}%\n" +
                   $"▶ <color=#00FF00>최종확률: {prob:F2}%</color> | 주사위: {dice:F2} => {(isSuccess ? "<b>골!</b>" : "<b>노골</b>")}");
 
         return isSuccess;
@@ -223,19 +220,16 @@ public static class MatchCalculator
         float passStat = passer.GetStat(MatchStatType.Pass, attackTactics.bonusPass);
         float stealStat = pathEnemy.GetStat(MatchStatType.Steal, defendTactics.bonusSteal);
 
-        // 스틸 패시브 로직 추가!
+        // 스틸 패시브 로직 추가
         float stealPassiveBonus = 0f;
-        //foreach (var p in pathEnemy.Passives)
-        //{
-        //    if (p.effectType == effectType.ProbSteal)
-        //    {
-        //        // 수비수(pathEnemy) 입장이므로 내 팀이 defendTeam, 적 팀이 attackTeam
-        //        if (CheckPassiveCondition(p, defendTeam, attackTeam))
-        //        {
-        //            stealPassiveBonus += (p.effectValue * 100f);
-        //        }
-        //    }
-        //}
+        foreach (var p in pathEnemy.Passives)
+        {
+            // 적 수비수의 패시브가 스틸 확률 증가라면 무조건 발동
+            if (p.effectType == effectType.ProbSteal)
+            {
+                stealPassiveBonus += (p.effectValue * 100f);
+            }
+        }
 
         float prob = (passStat / (passStat + stealStat)) * 100f;
         prob -= stealPassiveBonus;
@@ -275,38 +269,7 @@ public static class MatchCalculator
         return success;
 
     }
-    // 패시브 발동 조건을 범용적으로 검사하는 함수 (triggerCond,triggerValue가 사라짐)
-    //public static bool CheckPassiveCondition(Player_PassiveData p, MatchTeam myTeam, MatchTeam enemyTeam)
-    //{
-    //    // triggerCond는 Enum이므로 None일 때 상시 발동으로 처리합니다.
-    //    if (p.triggerCond == triggerCond.None)
-    //        return true;
-
-    //    switch (p.triggerCond)
-    //    {
-    //        case triggerCond.ScoreGap: // 우리 팀이 특정 점수차 이상 지고 있을 때 발동
-    //            return (enemyTeam.SimulatedScore - myTeam.SimulatedScore) >= p.triggerValue;
-
-    //        case triggerCond.Random: // 만약 0보다 큰 값이 들어온다면 해당 값을 확률(%)로 취급
-    //            if (p.triggerValue == 0) return true;
-    //            return UnityEngine.Random.Range(0, 100) < p.triggerValue;
-
-    //        case triggerCond.ReboundDiff: // 리바운드가 특정 수치 이상 밀릴 때
-    //            return (myTeam.ReboundCount - enemyTeam.ReboundCount) <= p.triggerValue;
-
-    //        case triggerCond.Stat2ptLow: // 2점슛 성공률이 낮을 때
-    //            float pt2Rate = myTeam.Try2pt == 0 ? 0 : ((float)myTeam.Succ2pt / myTeam.Try2pt) * 100f;
-    //            return myTeam.Try2pt > 0 && pt2Rate <= p.triggerValue;
-
-    //        case triggerCond.Stat3ptLow: // 3점슛 성공률이 낮을 때
-    //            float pt3Rate = myTeam.Try3pt == 0 ? 0 : ((float)myTeam.Succ3pt / myTeam.Try3pt) * 100f;
-    //            return myTeam.Try3pt > 0 && pt3Rate <= p.triggerValue;
-
-    //        default:
-    //            return true;
-    //    }
-    //}
-
+    
     // 리바운드 가중치 추첨
     public static MatchPlayer CalculateReboundWinner(Vector2 ballDropPos, List<MatchPlayer> allPlayers)
     {

@@ -74,14 +74,17 @@ public class MatchSimState : IState
     {
         MatchTeam team = new MatchTeam(side, teamName, tactic);
 
-        // 홈팀은 10000번대, 어웨이팀은 20000번대 고유 ID 임시 부여
+        // 용병이나 적군을 위한 임시 ID 시작 번호
         int startId = side == TeamSide.Home ? 10000 : 20000;
 
         for (int i = 0; i < students.Count; i++)
         {
             Position finalPos = students[i].MatchPosition != Position.None ? students[i].MatchPosition : students[i].Position;
 
-            team.AddPlayer(ConvertStudentToMatchPlayer(students[i], startId + i, finalPos));
+            // 정식 학생(ID 0 이상)이면 고유 ID 사용, 용병(ID -1)이나 적군이면 임시 ID 부여
+            int matchPlayerId = (students[i].StudentId >= 0) ? students[i].StudentId : (startId + i);
+
+            team.AddPlayer(ConvertStudentToMatchPlayer(students[i], matchPlayerId, finalPos));
         }
 
         return team;

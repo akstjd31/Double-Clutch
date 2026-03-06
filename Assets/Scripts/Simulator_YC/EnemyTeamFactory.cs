@@ -98,15 +98,18 @@ public class EnemyTeamFactory : MonoBehaviour
 
             //  패시브(Passive) 데이터 추첨 (리그 레벨 설정에 따라)
             List<Player_PassiveData> assignedPassives = new List<Player_PassiveData>();
-            //if (levelData.isRivalPassiveApplied && _passiveReader != null)
-            //{
-            //    // 경기용(Match) 패시브만 필터링해서 1개 쥐어줌
-            //    var matchPassives = _passiveReader.DataList.FindAll(p => p.skillCategory == skillCategory.Match);
-            //    if (matchPassives.Count > 0)
-            //    {
-            //        assignedPassives.Add(matchPassives[Random.Range(0, matchPassives.Count)]);
-            //    }
-            //}
+            if (levelData.isRivalPassiveApplied && _passiveReader != null)
+            {
+                var matchPassives = _passiveReader.DataList.FindAll(p =>
+                    p.effectType.ToString().StartsWith("Prob") ||
+                    p.effectType.ToString().StartsWith("Rate")
+                );
+
+                if (matchPassives.Count > 0)
+                {
+                    assignedPassives.Add(matchPassives[UnityEngine.Random.Range(0, matchPassives.Count)]);
+                }
+            }
 
             //  특성(Trait) 데이터 추첨 (추후 시너지 연산을 위해)
             string assignedTraitId = string.Empty;
