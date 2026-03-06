@@ -48,7 +48,7 @@ public class InfraManager : Singleton<InfraManager>
         if (infraET.Equals(infraEffectType.None)) return -1;
 
         int maxLv = 0;
-        foreach (Infra_Data data in _reader.DataList)
+        foreach (var data in _reader.DataList)
         {
             if (!infraET.Equals(data.infraEffectType)) continue;
             if (maxLv < data.infraLevel) maxLv = data.infraLevel;
@@ -57,13 +57,14 @@ public class InfraManager : Singleton<InfraManager>
         return maxLv;
     }
 
+    // 같은 타입 중에 비용 관련된 리스트 반환
     public List<int> GetCostListByEffectType(infraEffectType infraET)
     {
         if (_reader == null) return null;
         if (infraET.Equals(infraEffectType.None)) return null;
 
         var costList = new List<int>();
-        foreach (Infra_Data data in _reader.DataList)
+        foreach (var data in _reader.DataList)
         {
             if (!infraET.Equals(data.infraEffectType)) continue;
             costList.Add(data.infraCost);
@@ -71,5 +72,20 @@ public class InfraManager : Singleton<InfraManager>
         }
 
         return costList;
+    }
+
+    // 해당 데이터 반환 (구조체라 Nullable로 바꿔줌)
+    public Infra_Data? GetDataByEffectType(infraEffectType infraET)
+    {
+        if (_reader == null) return null;
+        if (infraET.Equals(infraEffectType.None)) return null;
+
+        foreach (var data in _reader.DataList)
+        {
+            if (!infraET.Equals(data.infraEffectType)) continue;
+            return data;
+        }
+
+        return null;
     }
 }

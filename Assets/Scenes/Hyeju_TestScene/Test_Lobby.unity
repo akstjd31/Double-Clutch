@@ -3523,7 +3523,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dadb733e528a5d4449f3fbf5a4bbe059, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Infra
-  _infraEffectType: 0
+  _infraEffectType: 3
   groupId: 0
   _currentLevel: 0
   _maxLevel: -1
@@ -4736,7 +4736,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dadb733e528a5d4449f3fbf5a4bbe059, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Infra
-  _infraEffectType: 0
+  _infraEffectType: 2
   groupId: 0
   _currentLevel: 0
   _maxLevel: -1
@@ -11763,7 +11763,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dadb733e528a5d4449f3fbf5a4bbe059, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Infra
-  _infraEffectType: 0
+  _infraEffectType: 5
   groupId: 0
   _currentLevel: 0
   _maxLevel: -1
@@ -15761,7 +15761,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 745974139}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1175224186}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
 --- !u!114 &745974139
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16852,7 +16864,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dadb733e528a5d4449f3fbf5a4bbe059, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Infra
-  _infraEffectType: 0
+  _infraEffectType: 4
   groupId: 0
   _currentLevel: 0
   _maxLevel: -1
@@ -26429,7 +26441,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1175224187
 RectTransform:
   m_ObjectHideFlags: 0
