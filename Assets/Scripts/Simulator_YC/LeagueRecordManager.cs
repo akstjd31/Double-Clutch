@@ -51,8 +51,10 @@ public class LeagueRecordManager : MonoBehaviour
     // 나중에 지난 경기 로그를 불러올 때 쓸 함수
     public MatchResultRecord GetMatchRecord(int matchId)
     {
+        Debug.Log($"[로그 확인] 결산창에서 요청한 ID: {matchId}");
         if (_leagueRecords.ContainsKey(matchId))
             return _leagueRecords[matchId];
+        Debug.LogWarning($"[로그 에러] {matchId}번 기록이 없습니다! 현재 저장된 ID 목록: {string.Join(", ", _leagueRecords.Keys)}");
         return null;
     }
 

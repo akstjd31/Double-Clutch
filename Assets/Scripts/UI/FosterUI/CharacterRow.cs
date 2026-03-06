@@ -16,8 +16,8 @@ public class CharacterRow : MonoBehaviour
     public void Init(Student target)
     {
         _name.text = target.Name;
-        _attack.text = $"공격 : + {target.AttackChange}";
-        _guard.text = $"공격 : + {target.DefenseChange}";
+        _attack.text = $"+{target.AttackChange}";
+        _guard.text = $"+{target.DefenseChange}";
         _condition.text = target.Condition.ToString();
         _state.text = GetStateString(target.State);
     }
@@ -25,7 +25,7 @@ public class CharacterRow : MonoBehaviour
     private string GetStateString(StudentState state)
     {
         if (state == StudentState.Injured) return "부상";
-        else if (state == StudentState.OverWorked) return "피로";
-        else return ("건강");
+        else if (state == StudentState.OverWorked) return "과로";
+        else return ("정상");
     }
 }

@@ -51,12 +51,14 @@ public class EnemyTeamFactory : MonoBehaviour
         MatchTeam enemyTeam = new MatchTeam(TeamSide.Away, teamName, archetypeData.teamArchetypeId);
 
         //  아키타입에 명시된 포지션 인원수만큼 5명 구성
-        List<Position> teamPositions = new List<Position>();
-        for (int i = 0; i < archetypeData.countPG; i++) teamPositions.Add(Position.PG);
-        for (int i = 0; i < archetypeData.countSG; i++) teamPositions.Add(Position.SG);
-        for (int i = 0; i < archetypeData.countSF; i++) teamPositions.Add(Position.SF);
-        for (int i = 0; i < archetypeData.countPF; i++) teamPositions.Add(Position.PF);
-        for (int i = 0; i < archetypeData.countC; i++) teamPositions.Add(Position.C);
+        List<Position> teamPositions = new List<Position>()
+        {
+            Position.PG,
+            Position.SG,
+            Position.SF,
+            Position.PF,
+            Position.C
+        };
 
         //  종족 배정 (기획서 4.2.2: 최소 인원 + 가중치 추첨)
         List<speciesType> teamSpecies = GenerateSpeciesList(rivalData);
@@ -77,7 +79,6 @@ public class EnemyTeamFactory : MonoBehaviour
             stats[MatchStatType.Block] = Mathf.RoundToInt(Random.Range(minStat, maxStat + 1) * archetypeData.weightBlock);
             stats[MatchStatType.Steal] = Mathf.RoundToInt(Random.Range(minStat, maxStat + 1) * archetypeData.weightSteal);
             stats[MatchStatType.Rebound] = Mathf.RoundToInt(Random.Range(minStat, maxStat + 1) * archetypeData.weightRebound);
-            stats[MatchStatType.Dribble] = Mathf.RoundToInt(Random.Range(minStat, maxStat + 1));
 
 
             // 외형(Visual) 데이터 추첨 (종족에 맞춰서)

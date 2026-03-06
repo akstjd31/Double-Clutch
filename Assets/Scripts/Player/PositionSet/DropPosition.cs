@@ -29,7 +29,7 @@ public class DropPosition : MonoBehaviour, IDropHandler, IPointerClickHandler
         if (draggable == null) return;
 
         // 이 스크립트를 재사용하는 부분이 있어 위 포지션 배치는 allowOnlyOne을 체크한 상태로 할 것!
-        if (allowOnlyOne && this.transform.childCount > 0) return;
+        if (allowOnlyOne && this.transform.childCount > 1) return;
 
         draggable.HandleDroppedSuccessfully(this.transform);
 
@@ -59,4 +59,6 @@ public class DropPosition : MonoBehaviour, IDropHandler, IPointerClickHandler
         if (_charList != null)
             _charList.OnClickPosition(this);
     }
+
+    public Position GetPosition() => _position;
 }

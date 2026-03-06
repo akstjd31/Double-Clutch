@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class ResultState : IState
@@ -23,10 +24,32 @@ public class ResultState : IState
             Debug.LogError("[ResultState] MatchState, matchEngine 또는 MatchUIManager를 찾을 수 없습니다.");
             return;
         }
+        int currentMatchId = 1; // 임시 매치 ID (라운드 번호)
+        // 리그 보관소에 현재 경기 기록 저장 
+        if (LeagueRecordManager.Instance != null)
+        {
+            LeagueRecordManager.Instance.SaveMatchRecord(currentMatchId, matchState, matchEngine.FullMatchLogs);
+        }
 
         // 임시 지원금 (추후 보상 시스템 연동할 때 이 변수를 수정하시면 됩니다)
         int rewardAmount = 50;
 
+        // 현재 경기 뛰었던 팀(HomeTeam)의 선수 득점 기록을 List로 만들기
+        List<MatchPlayerData> matchPlayers = new List<MatchPlayerData>();
+
+        // 홈 팀의 Roster 리스트를 순회하며 데이터 변환
+        if (matchState.HomeTeam != null && matchState.HomeTeam.Roster != null)
+        {
+            foreach (var player in matchState.HomeTeam.Roster)
+            {
+                matchPlayers.Add(new MatchPlayerData
+                {
+                    Position = player.MainPosition.ToString(), // 선수의 주 포지션
+                    Name = player.PlayerName,                  // 선수 이름
+                    Score = player.Score                       // 선수의 득점 (MatchPlayer 스크립트에 Score 프로퍼티가 있다고 가정)
+                });
+            }
+        }
         // 결과창 띄우기
         uiManager.ShowResultPopup(
             matchState.HomeTeam.TeamName,
@@ -34,15 +57,14 @@ public class ResultState : IState
             matchState.AwayTeam.TeamName,
             matchState.AwayTeam.Score,
             rewardAmount,
-            () => ReturnToLobby() // <--- 콜백 전달!
+            matchPlayers,
+            () =>
+            {
+                // MVP를 위해 ReturnToLobby() 대신 리그 결산 패널을 띄웁니다.
+                // 이전 채팅에서 추가하신 LeagueCalculatePanel을 호출하며, 풀 로그 데이터를 넘겨줍니다.
+                uiManager.ShowLeagueCalculatePanel(currentMatchId, () => GoToLobby());
+            }
          );
-        //  리그 보관소에 현재 경기 기록 저장!
-        // (참고: matchId는 나중에 대진표 시스템이 나오면 그 번호를 넘겨주면 됩니다. 임시로 1번 경기라고 가정)
-        if (LeagueRecordManager.Instance != null)
-        {
-            int currentMatchId = 1; // 임시 매치 ID
-            LeagueRecordManager.Instance.SaveMatchRecord(currentMatchId, matchState, matchEngine.FullMatchLogs);
-        }
     }
 
     public void Exit()
@@ -51,8 +73,14 @@ public class ResultState : IState
     }
 
     public void Update() { }
-    public void ReturnToLobby()
+    public void GoToLobby()
     {
+        // 껍데기 데이터 저장
+        var data = new StudentSaveData();
+        SaveLoadManager.Instance.Save<StudentSaveData>(FilePath.MY_STUDENT_MATCHING_PATH, data);
+
+        CalendarManager.Instance.NextTurn();
+        
         // GameManager에 다음 씬(LOBBY)과 다음 상태(LobbyState)를 세팅
         _gm.SetNextFlow(SceneName.LOBBY, _sm.Get<LobbyState>());
 

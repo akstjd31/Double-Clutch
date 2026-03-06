@@ -5,13 +5,11 @@ using UnityEngine.PlayerLoop;
 
 public struct Calendar
 {
-    public int year;
     public int month;
     public int week;
 
-    public Calendar(int y = 0, int m = 0, int w = 0)
+    public Calendar(int m = 0, int w = 0)
     {
-        year = y;
         month = m;
         week = w;
     }
@@ -33,8 +31,14 @@ public class CalendarManager : Singleton<CalendarManager>
         if (GameManager.Instance == null) return;
         if (GameManager.Instance.SaveData == null) return;
 
-        var weekId = GameManager.Instance.SaveData.weekId;
-        CalcWeek(weekId);
+        int weekId = GameManager.Instance.SaveData.weekId;
+        
+        var data = _calReader.DataList[weekId - 1];
+
+        calendar.month = data.month;
+        calendar.week = data.weekNo;
+
+        OnWeekChanged?.Invoke(calendar);
     }
 
     public void NextTurn()
@@ -45,29 +49,26 @@ public class CalendarManager : Singleton<CalendarManager>
         // 임시 테스트용
         var weekId = GameManager.Instance.SaveData.weekId;
 
-        // 만약 전체 일정이 끝나게 된다면
+        // 만약 전체 일정이 끝나게 된다면 weekId 0으로 시작(1월 1일)
         if (weekId >= _calReader.DataList.Count)
-        {
-            calendar.year++;
             weekId = 0;
-        }
 
         // 1. 주차 시작(주차 계산)
         CalcWeek(weekId);
-        
+
         // 2. 시작 컷신 체크
         if (HasExistStartCutscene(weekId))
         {
-            
+
         }
-        
+
         // 3. 페이즈 체크
         if (!CheckPhaseType(weekId)) return;
 
         // 4. 종료 컷신 체크
         if (HasExistEndCutscene(weekId))
         {
-            
+
         }
 
         // 5. 턴 종료 시
@@ -79,35 +80,61 @@ public class CalendarManager : Singleton<CalendarManager>
         IsEndPhase = false;
     }
 
-    private void CalcWeek(int weekId)
+    public void CalcWeek(int weekId)
     {
-        var preData = _calReader.DataList[weekId - 1];
+        var data = _calReader.DataList[weekId - 1];
 
-        // 1. 특수 이동 유무 확인
-        if (preData.isSpecialWeek)
+        if (PlayerPrefs.GetInt(PrefKeys.KEY_FIRST_RUN_DONE) == 0)
         {
-            // 2. 시즌 아웃 조건 유무 확인
-            if (preData.hasSeasonOut)
-            {
-                // 경기 결과 정보 받기
-            }
-            else
-            {
-                weekId = preData.targetidSpecial;
-            }
+            // 튜토리얼 수행 완료
+            PlayerPrefs.SetInt(PrefKeys.KEY_FIRST_RUN_DONE, 1);
+            PlayerPrefs.Save();
         }
         else
         {
-            weekId = preData.targetidDefault;
+            // 1. 특수 이동 유무 확인
+            if (data.isSpecialWeek)
+            {
+                // 2. 시즌 아웃 조건 유무 확인
+                if (data.hasSeasonOut)
+                {
+                    // 경기 결과 정보 받기
+                }
+                else
+                {
+                    if (data.targetidSpecial == 1)
+                    {
+                        GameManager.Instance.SaveData.year++;
+                    }
+
+                    weekId = data.targetidSpecial;
+                }
+            }
+            else
+            {
+                weekId = data.targetidDefault;
+            }
+
+            data = _calReader.DataList[weekId - 1];
         }
 
-        var newData = _calReader.DataList[weekId - 1];
-        
-        calendar.month = newData.month;
-        calendar.week = newData.weekNo;
+        calendar.month = data.month;
+        calendar.week = data.weekNo;
+
+        GameManager.Instance.SetWeekId(weekId);
+
+        // 이벤트 페이즈면서 어떤 날인지 구분하는게 필요함. (ex. 졸업, 영입 등)
+        if (CheckEventDay(weekId))
+        {
+            if (calendar.month == 2 && calendar.week == 4)
+                GameManager.Instance.GoToGraduation();
+        }
 
         OnWeekChanged?.Invoke(calendar);
     }
+
+    public bool CheckEventDay(int weekId) => _calReader.DataList[weekId - 1].phase.Equals(phaseType.Event);
+   
 
     // 일단 컷신 부분은 패스(-)
     public bool HasExistStartCutscene(int weekId) => _calReader.DataList[weekId - 1].startCutscene.Equals("");
@@ -116,7 +143,7 @@ public class CalendarManager : Singleton<CalendarManager>
     public bool CheckPhaseType(int weekId)
     {
         // var curPhaseType = _calReader.DataList[weekId].phase;
-        
+
         // 페이즈 타입에 따른 시스템 시작
         // switch (curPhaseType)
         // {
@@ -133,5 +160,8 @@ public class CalendarManager : Singleton<CalendarManager>
     }
 
     public Calendar GetCalendar() => this.calendar;
-    public phaseType GetPhaseType(int weekId) => _calReader.DataList[weekId].phase;
+    public phaseType CurrentGetPhaseType()
+    {
+        return _calReader.DataList[GameManager.Instance.SaveData.weekId - 1].phase;
+    }
 }

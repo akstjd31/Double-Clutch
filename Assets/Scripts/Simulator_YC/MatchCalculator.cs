@@ -38,7 +38,12 @@ public static class MatchCalculator
     private static MatchPlayer GetNearestPlayer(MatchPlayer target, List<MatchPlayer> enemies, out float minDistance)
     {
         MatchPlayer nearest = null;
+        minDistance = 10f;
+
+        if (enemies == null || enemies.Count == 0)
+            return null;
         minDistance = float.MaxValue;
+
         foreach (var e in enemies)
         {
             float dist = CalculateDistance(target.LogicPosition, e.LogicPosition);
@@ -48,6 +53,8 @@ public static class MatchCalculator
                 nearest = e;
             }
         }
+        if (nearest == null) minDistance = 10f;
+
         return nearest;
     }
 
@@ -61,6 +68,7 @@ public static class MatchCalculator
         float wShotBase = MatchDataProxy.Instance.GetBalance("W_Shot_Base");
         float wPassBase = MatchDataProxy.Instance.GetBalance("W_Pass_Base");
         float wDribBase = MatchDataProxy.Instance.GetBalance("W_Dribble_Base");
+        float minShootScore = MatchDataProxy.Instance.GetBalance("Min_Shoot_Score");
 
         float nearestEnemyDist;
         MatchPlayer nearestEnemy = GetNearestPlayer(player, enemies, out nearestEnemyDist);
@@ -78,6 +86,8 @@ public static class MatchCalculator
                          - (enemyBlock * (1f / (nearestEnemyDist + penBlock)) * wShoot);
 
         // 패스 점수 공식
+
+        float interceptDist = MatchDataProxy.Instance.GetBalance("Pen_Intercept_Dist");
         float maxPassScore = -999f;
         foreach (var mate in teammates)
         {
@@ -90,7 +100,7 @@ public static class MatchCalculator
             float pathEnemySteal = 0f;
             foreach (var e in enemies)
             {
-                if (DistancePointToLineSegment(e.LogicPosition, player.LogicPosition, mate.LogicPosition) < 0.03f)
+                if (DistancePointToLineSegment(e.LogicPosition, player.LogicPosition, mate.LogicPosition) < interceptDist)
                 {
                     hasEnemyOnPath = 1;
                     pathEnemySteal = e.GetStat(MatchStatType.Steal);
@@ -114,16 +124,16 @@ public static class MatchCalculator
                            + (distToHoop * penDistHoop * tactics.bonusDribble)
                            - (enemySteal * (1f / (nearestEnemyDist + penSteal)) * tactics.bonusDribble);
 
-        scoreShoot = Mathf.Max(0, scoreShoot);
+        if (distToHoop > 0.5f)
+        {
+            scoreShoot = -999f; // 거리가 0.5(하프라인) 밖이면 슛 점수를 마이너스로 고정해 절대 안 쏘게 만듦 ( 역습이나 공수전환중에 노마크 발생으로 인한 확정 골 오류 방지 )
+        }
+        else
+        {
+            scoreShoot = Mathf.Max(minShootScore, scoreShoot);
+        }
         scorePass = Mathf.Max(0, scorePass);
         scoreDribble = Mathf.Max(0, scoreDribble);
-
-        if (distToHoop <= 0.35f)
-        {
-            scoreShoot += 50f;
-            scorePass *= 0.1f;
-            scoreDribble *= 0.1f;
-        }
 
         LastShootScore = scoreShoot;
         LastPassScore = scorePass;
@@ -145,21 +155,24 @@ public static class MatchCalculator
         float shootStat = (distance > 0.35f) ? attacker.GetStat(MatchStatType.ThreePoint, attackTactics.bonusThreePoint) : attacker.GetStat(MatchStatType.TwoPoint, attackTactics.bonusTwoPoint);
 
         // 반경 0.05 내 가장 가까운 수비수의 블록 스탯 적용
+        float blockDist = MatchDataProxy.Instance.GetBalance("Def_Block_Dist");
+        if (blockDist <= 0f) blockDist = 0.15f;
         float blockStat = 0f;
         float minEnemyDist;
         MatchPlayer nearestEnemy = GetNearestPlayer(attacker, defendTeam.Roster, out minEnemyDist);
-        if (nearestEnemy != null && minEnemyDist <= 0.05f)
+        if (nearestEnemy != null && minEnemyDist <= blockDist)
         {
             blockStat = nearestEnemy.GetStat(MatchStatType.Block, defendTactics.bonusBlock);
         }
-        Debug.Log($"[수비 체크] 공격수 위치: {attacker.LogicPosition} | 수비수 위치: {nearestEnemy.LogicPosition} | 최단거리: {minEnemyDist:F4} | 수비발동?: {minEnemyDist <= 0.05f}");
-        // 거리 페널티 (멀수록 분모 증가)
-        float distPenalty = 1.0f + distance;
+        Debug.Log($"[수비 체크] 공격수 위치: {attacker.LogicPosition} | 수비수 위치: {nearestEnemy.LogicPosition} | 최단거리: {minEnemyDist:F4} | 수비발동?: {minEnemyDist <= blockDist}");
 
-        float denominator = shootStat + (blockStat * distPenalty);
+        float denominator = shootStat + blockStat;
         if (denominator <= 0) denominator = 1f;
 
         float prob = (shootStat / denominator) * 100f;
+
+        float penDistHoop = MatchDataProxy.Instance.GetBalance("Pen_Dist_Hoop");
+        prob -= (distance * penDistHoop);
 
 
         effectType targetEffect = (distance > 0.35f) ? effectType.Prob3pt : effectType.Prob2pt;
@@ -177,8 +190,16 @@ public static class MatchCalculator
             }
         }
         prob += passiveBonus; // 최종 확률에 패시브 더하기
+        float dice = Random.Range(0f, 100f);
+        bool isSuccess = dice <= prob;
 
-        return Random.Range(0f, 100f) <= prob;
+        string eName = nearestEnemy != null ? nearestEnemy.PlayerName : "없음";
+        Debug.Log($"<color=#FF8C00>[슛 디버그]</color> {attacker.PlayerName} 슛 시도 (거리:{distance:F2})\n" +
+                  $"▶ 공격 슛스탯: {shootStat} | 수비({eName}) 블록스탯: {blockStat} (거리:{minEnemyDist:F2})\n" +
+                  $"▶ 공식: ({shootStat} / {denominator:F2}) * 100 - ({distance:F2} * {penDistHoop}) = {prob - passiveBonus:F2}% | 패시브: +{passiveBonus}%\n" +
+                  $"▶ <color=#00FF00>최종확률: {prob:F2}%</color> | 주사위: {dice:F2} => {(isSuccess ? "<b>골!</b>" : "<b>노골</b>")}");
+
+        return isSuccess;
     }
 
     // 패스 성공 확률
@@ -219,7 +240,14 @@ public static class MatchCalculator
         float prob = (passStat / (passStat + stealStat)) * 100f;
         prob -= stealPassiveBonus;
 
-        bool success = Random.Range(0f, 100f) <= prob;
+
+        float dice = Random.Range(0f, 100f);
+        bool success = dice <= prob;
+
+        Debug.Log($"<color=#00BFFF>패스 디버그</color> {passer.PlayerName}->{receiver.PlayerName} (차단시도:{pathEnemy.PlayerName})\n" +
+                  $"▶ 공격 패스스탯: {passStat} | 수비 스틸스탯: {stealStat}\n" +
+                  $"▶ 공식: ({passStat} / {passStat + stealStat}) * 100 = {prob + stealPassiveBonus:F2}% | 수비패시브: -{stealPassiveBonus}%\n" +
+                  $"▶ <color=#00FF00>최종확률: {prob:F2}%</color> | 주사위: {dice:F2} => {(success ? "<b>성공</b>" : "<b>차단당함</b>")}");
 
         if (!success) interceptor = pathEnemy;
         return success;
@@ -233,11 +261,19 @@ public static class MatchCalculator
 
         if (nearestEnemy == null || minEnemyDist > 0.1f) return true; // 주변에 없으면 성공
 
-        float dribbleStat = dribbler.GetStat(MatchStatType.Dribble, attackTactics.bonusDribble);
+        float dribbleStat = dribbler.GetStat(MatchStatType.Pass, attackTactics.bonusDribble);
         float stealStat = nearestEnemy.GetStat(MatchStatType.Steal, defendTactics.bonusSteal);
 
         float prob = (dribbleStat / (dribbleStat + stealStat)) * 100f;
-        return Random.Range(0f, 100f) <= prob;
+        float dice = Random.Range(0f, 100f);
+        bool success = dice <= prob;
+
+        Debug.Log($"<color=#DA70D6>드리블 디버그</color> {dribbler.PlayerName} (수비수:{nearestEnemy.PlayerName}, 거리:{minEnemyDist:F2})\n" +
+                  $"▶ 공격 드리블(패스)스탯: {dribbleStat} | 수비 스틸스탯: {stealStat}\n" +
+                  $"▶ <color=#00FF00>최종확률: ({dribbleStat}/{dribbleStat + stealStat})*100 = {prob:F2}%</color> | 주사위: {dice:F2} => {(success ? "<b>성공</b>" : "<b>스틸당함</b>")}");
+
+        return success;
+
     }
     // 패시브 발동 조건을 범용적으로 검사하는 함수
     public static bool CheckPassiveCondition(Player_PassiveData p, MatchTeam myTeam, MatchTeam enemyTeam)

@@ -149,8 +149,16 @@ public class MatchEngine : MonoBehaviour
         // 연장전 처리 (4쿼터가 끝났는데 동점일 때만)
         if (targetQuarter >= 4)
         {
+            int maxOvertime = 20; // 최대 연장전 횟수 (20번)
+            int currentOvertime = 0;
+
             while (_homeTeam.SimulatedScore == _awayTeam.SimulatedScore)
             {
+                if (currentOvertime >= maxOvertime)
+                {
+                    Debug.LogWarning("연장전 20회 돌파! 무승부로 강제 종료하여 프리징을 방지합니다.");
+                    break; // 무한 루프 탈출!
+                }
                 RecordLog("GameStart");
 
                 _simTime = 300f;
@@ -164,6 +172,7 @@ public class MatchEngine : MonoBehaviour
 
                 _simQuarter++;
                 _currentPossession = (_currentPossession == TeamSide.Home) ? TeamSide.Away : TeamSide.Home;
+                currentOvertime++;
             }
 
             RecordLog("GameEnd");
@@ -244,34 +253,46 @@ public class MatchEngine : MonoBehaviour
         log.ScoreAdded = success ? score : 0;
 
         // 슛 결과 텍스트 (시간 + 내용)
-        log.LogText = success ? $"{timeStr} {shooter.PlayerName}이(가) 득점에 성공합니다!" : $"{timeStr} {shooter.PlayerName}의 슛이 빗나갑니다.";
         log.BallPos = shooter.LogicPosition;
+        // 아군(Home)일 때만 로그 텍스트, 컷인, 사운드를 적용
+        if (_currentPossession == TeamSide.Home)
+        {
+            log.LogText = success ? $"{timeStr} {shooter.PlayerName}이(가) 득점에 성공합니다!" : $"{timeStr} {shooter.PlayerName}의 슛이 빗나갑니다.";
 
-        // 버저비터를 먼저 체크하고, 아닐 때만 덩크/3점 체크
-        if (isBuzzerBeater && success)
-        {
-            log.IsCutIn = true;
-            log.CutInType = "BUZZER";
-        }
-        else if (success && isDunk)
-        {
-            log.IsCutIn = true;
-            log.CutInType = "DUNK";
-        }
-        else if (success && isThree)
-        {
-            log.IsCutIn = true;
-            log.CutInType = "3PT";
+            // 버저비터를 먼저 체크하고, 아닐 때만 덩크/3점 체크
+            if (isBuzzerBeater && success)
+            {
+                log.IsCutIn = true;
+                log.CutInType = "BUZZER";
+            }
+            else if (success && isDunk)
+            {
+                log.IsCutIn = true;
+                log.CutInType = "DUNK";
+            }
+            else if (success && isThree)
+            {
+                log.IsCutIn = true;
+                log.CutInType = "3PT";
+            }
+            else
+            {
+                log.IsCutIn = false;
+                log.CutInType = "";
+            }
+
+            if (success && !isThree && !isDunk && _simTime > 0)
+            {
+                log.SfxType = "CHEER";
+            }
         }
         else
         {
+            // 적군(Away)일 경우 텍스트, 컷인, 사운드를 모두 비워버림 (기록 안 띄움)
+            log.LogText = "";
             log.IsCutIn = false;
             log.CutInType = "";
-        }
-
-        if (success && !isThree && !isDunk && _simTime > 0)
-        {
-            log.SfxType = "CHEER";
+            log.SfxType = "";
         }
         SavePositionsToLog(log);
         MatchLogs.Add(log);
@@ -280,6 +301,7 @@ public class MatchEngine : MonoBehaviour
         if (success)
         {
             attackTeam.SimulatedScore += score;
+            shooter.Score += score;
             SwitchPossession(false);
             _ballHolder = defendTeam.GetPlayerByPosition(Position.PG) ?? defendTeam.Roster[0];
             Vector2 ourHoop = (_currentPossession == TeamSide.Home) ? new Vector2(0.5f, 0.05f) : new Vector2(0.5f, 0.95f);
@@ -312,19 +334,64 @@ public class MatchEngine : MonoBehaviour
 
     private void DoPass(MatchPlayer passer, MatchTeam attackTeam, MatchTeam defendTeam, TeamTactics attackTactics, TeamTactics defendTactics)
     {
-        MatchPlayer receiver = attackTeam.Roster.Find(p => p != passer);
-        if (receiver == null) return;
+        MatchPlayer bestReceiver = null;
+        float maxPassScore = -999f;
+
+        float interceptDist = MatchDataProxy.Instance.GetBalance("Pen_Intercept_Dist");
+        float penDistHoop = MatchDataProxy.Instance.GetBalance("Pen_Dist_Hoop");
+        float wPassBase = MatchDataProxy.Instance.GetBalance("W_Pass_Base");
+
+        // 모든 아군에 대해 계산하여 최적의 패스 대상 판단
+        foreach (var mate in attackTeam.Roster)
+        {
+            if (mate == passer) continue;
+
+            float mateNearestEnemyDist = float.MaxValue;
+            foreach (var e in defendTeam.Roster)
+            {
+                float dist = MatchCalculator.CalculateDistance(mate.LogicPosition, e.LogicPosition);
+                if (dist < mateNearestEnemyDist) mateNearestEnemyDist = dist;
+            }
+
+            int hasEnemyOnPath = 0;
+            float pathEnemySteal = 0f;
+            foreach (var e in defendTeam.Roster)
+            {
+                if (MatchCalculator.DistancePointToLineSegment(e.LogicPosition, passer.LogicPosition, mate.LogicPosition) < interceptDist)
+                {
+                    hasEnemyOnPath = 1;
+                    pathEnemySteal = e.GetStat(MatchStatType.Steal);
+                    break;
+                }
+            }
+
+            float currentPassScore = (mate.GetStat(MatchStatType.Pass) * attackTactics.bonusPass * wPassBase)
+                                   + (mateNearestEnemyDist * penDistHoop)
+                                   - (hasEnemyOnPath * pathEnemySteal * attackTactics.bonusPass);
+
+            if (currentPassScore > maxPassScore)
+            {
+                maxPassScore = currentPassScore;
+                bestReceiver = mate;
+            }
+        }
+
+        if (bestReceiver == null) return;
 
         MatchPlayer interceptor;
-        bool success = MatchCalculator.CalculatePassSuccess(passer, receiver, attackTeam, defendTeam, attackTactics, defendTactics, out interceptor);
+        bool success = MatchCalculator.CalculatePassSuccess(passer, bestReceiver, attackTeam, defendTeam, attackTactics, defendTactics, out interceptor);
 
-        // 패스 성공 시 타겟(receiver)도 같이 RecordLog로 넘겨줍니다.
-        if (success) { RecordLog("PassSucc", passer, receiver); _ballHolder = receiver; }
+        // 로그 기록 전 공 소유자 갱신
+        if (success)
+        {
+            _ballHolder = bestReceiver;
+            RecordLog("PassSucc", passer, bestReceiver);
+        }
         else
         {
+            _ballHolder = interceptor;
             RecordLog("Steal", interceptor);
             SwitchPossession();
-            _ballHolder = interceptor;
         }
     }
 
@@ -387,7 +454,7 @@ public class MatchEngine : MonoBehaviour
         string timeStr = GetLogTimeStr();
 
         // 텍스트 치환
-        string finalText = config.textTemplate;
+        string finalText = StringManager.Instance != null ? StringManager.Instance.GetString(config.textTemplate) : config.textTemplate;
         if (actor != null) finalText = finalText.Replace("{PlayerName}", actor.PlayerName);
         if (target != null) finalText = finalText.Replace("{TargetName}", target.PlayerName); // 패스 대상 이름 치환
         // 5쿼터 이상이면 '연장 1', 아니면 원래 숫자 유지
@@ -409,6 +476,15 @@ public class MatchEngine : MonoBehaviour
         log.CutInType = config.cutInResourceId == "-" ? "" : config.cutInResourceId;
 
         if (_ballHolder != null) log.BallPos = _ballHolder.LogicPosition;
+
+        // 행동 주체가 적군(Away) 소속일 경우 모든 연출과 로그 텍스트 삭제
+        if (actor != null && _awayTeam.Roster.Contains(actor))
+        {
+            log.LogText = "";
+            log.IsCutIn = false;
+            log.CutInType = "";
+            log.SfxType = "";
+        }
 
         SavePositionsToLog(log);
         MatchLogs.Add(log);
@@ -481,39 +557,62 @@ public class MatchEngine : MonoBehaviour
 
     private Vector2 GetPreferredPosition(MatchPlayer player, bool isAttacking, TeamSide side)
     {
-        //  무조건 Default가 아닌, 선수의 TempPositionChange를 읽어옵니다.
-        var preset = _positionPresetReader.DataList.Find(x =>
-        x.positionType == player.MainPosition && 
-        x.changeType == player.TempPositionChange);
-
-        // 만약 해당 진형 데이터가 없다면 안전하게 Default로 폴백(Fallback)
-        if (preset.presetId == 0)
-        {
-            preset = _positionPresetReader.DataList.Find(x =>
-                x.positionType == (Position)(player.MainPosition + 1) &&
-                x.changeType == changeType.Default);
-        }
-
         float x = 0.5f;
         float y = 0.5f;
+        bool isDataFound = false;
 
-        // 테이블 데이터를 기반으로 랜덤 좌표 생성
-        if (preset.presetId > 0)
+        // 데이터 리더가 있는지 확인
+        if (_positionPresetReader != null && _positionPresetReader.DataList != null && _positionPresetReader.DataList.Count > 0)
         {
-            x = UnityEngine.Random.Range(preset.offenseXMin, preset.offenseXMax);
-            y = UnityEngine.Random.Range(preset.offenseYMin, preset.offenseYMax);
+            // 포지션(TempPositionChange)이 있는지 먼저 검색
+            int targetIndex = _positionPresetReader.DataList.FindIndex(data =>
+                data.positionType == player.MainPosition &&
+                data.changeType == player.TempPositionChange);
 
+            // 빈 데이터인지 체크
+            if (targetIndex < 0)
+            {
+                targetIndex = _positionPresetReader.DataList.FindIndex(data =>
+                    data.positionType == player.MainPosition &&
+                    data.changeType == changeType.Default);
+            }
+
+            // 데이터를 최종적으로 찾았다면 엑셀 범위 내에서 랜덤 지정
+            if (targetIndex >= 0)
+            {
+                var preset = _positionPresetReader.DataList[targetIndex];
+                x = UnityEngine.Random.Range(preset.offenseXMin, preset.offenseXMax);
+                y = UnityEngine.Random.Range(preset.offenseYMin, preset.offenseYMax);
+                isDataFound = true;
+            }
         }
 
-        // 어웨이팀은 공격 방향이 반대(아래)이므로 y 반전
+        // 방어 로직
+        if (!isDataFound)
+        {
+            Debug.LogWarning($"[위치 데이터 누락] {player.PlayerName}({player.MainPosition})의 위치 데이터를 엑셀에서 못 찾았습니다! 기본 포메이션으로 임시 배치합니다.");
+            switch (player.MainPosition)
+            {
+                case Position.PG: x = 0.5f; y = 0.65f; break; // 탑
+                case Position.SG: x = 0.8f; y = 0.75f; break; // 우측 45도
+                case Position.SF: x = 0.2f; y = 0.75f; break; // 좌측 45도
+                case Position.PF: x = 0.65f; y = 0.85f; break; // 하이 포스트
+                case Position.C: x = 0.5f; y = 0.9f; break;  // 골밑
+                default: x = 0.5f; y = 0.5f; break;
+            }
+        }
+
+        // 진영(Home/Away) 및 공수(공격/수비) 전환에 따른 Y좌표 대칭 반전
         if (side == TeamSide.Away)
             y = 1.0f - y;
 
-        // 수비 시 추가로 y 반전
         if (!isAttacking)
             y = 1.0f - y;
 
-        return new Vector2(x, y);
+        x += UnityEngine.Random.Range(-0.03f, 0.03f);
+        y += UnityEngine.Random.Range(-0.03f, 0.03f);
+
+        return new Vector2(Mathf.Clamp01(x), Mathf.Clamp01(y));
     }
     private string GetLogTimeStr()
     {

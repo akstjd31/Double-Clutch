@@ -34,20 +34,23 @@ public class TeamTrainingCommandPopUp : MonoBehaviour
 
 
         var trainingDB = FosterManager.Instance.Team_TrainingDB.DataList;
-        foreach (var data in trainingDB)
+        for (int i = 0; i < trainingDB.Count; i++)
         {
-            CreateBox(new TeamTraining(data));
+            CreateBox(new TeamTraining(trainingDB[i]));
         }
-        var restDB = FosterManager.Instance.Team_RestDB.DataList;
-        foreach (var data in restDB)
+        
+
+        var restDB = FosterManager.Instance.Team_RestDB.DataList;        
+        for (int i = 0; i < restDB.Count; i++)
         {
-            CreateBox(new Team_Rest(data));
+            CreateBox(new Team_Rest(restDB[i]));
         }
 
     }
     private void CreateBox(ITraining command)
     {        
         TrainingBox box = _teamTrainingPool.Get();
+        box.transform.SetAsLastSibling();
         box.Init(command);        
 
         _boxList.Add(box);

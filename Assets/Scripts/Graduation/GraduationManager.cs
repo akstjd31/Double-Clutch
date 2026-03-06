@@ -1,21 +1,23 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using static UnityEngine.GraphicsBuffer;
 
 public class GraduationManager : MonoBehaviour
 {
+    [SerializeField] private bool _isGraduationSkip = false;
+
     [SerializeField] private PromotionPanel _promotionPanel;
+    [SerializeField] private PassiveBox _passiveBox;
 
     [SerializeField] private List<Student> _myStudents;
 
     //졸업생 리스트
     [SerializeField] private List<Student> _graduationStudentList = new List<Student>();
-    //[SerializeField] private List<TestStudent> _testGraduationStudentList = new List<TestStudent>();
 
     //진급학생 리스트
-    [SerializeField] private List<Student> _promotionStudentList = new List<Student>();
+    [SerializeField] private List<int> _promotionStudentList = new List<int>();
 
-    //[SerializeField] private List<TestStudent> _myTestStudents = new List<TestStudent>();
 
     private int _turn;
     private int _totalHonor;
@@ -23,10 +25,11 @@ public class GraduationManager : MonoBehaviour
 
     public List<Student> GraduationStudentList => _graduationStudentList;
     public PromotionPanel PromotionPanel => _promotionPanel;
-    public List<Student> PromotionStudentList => _promotionStudentList;
+    public List<int> PromotionStudentList => _promotionStudentList;
     public List<Student> MyStudents => _myStudents;
     public int Turn { get { return _turn; } set { _turn = value; } }
     public int TotalHonor => _totalHonor;
+    public bool IsGraduationSkip => _isGraduationSkip;
 
     private void Start()
     {
@@ -37,7 +40,7 @@ public class GraduationManager : MonoBehaviour
             Debug.Log("학생 리스트없음");
         }
         ListCreat();
-
+        
         _turn = 0;
         //처음 학생 프로필 띄우기
         _promotionPanel.GetList();
@@ -58,14 +61,37 @@ public class GraduationManager : MonoBehaviour
             }
             else
             {
-                _promotionStudentList.Add(_myStudents[i]);
+                _promotionStudentList.Add(_myStudents[i].StudentId);
+                _myStudents[i].SetGrade(_myStudents[i].Grade+1);
                 Debug.Log($"{_myStudents[i].Name} : {_myStudents[i].Grade} 학년 진급생");
             }
+        }
+
+        if (_graduationStudentList.Count == 0)
+        {
+            _isGraduationSkip = true;
+        }
+
+        ReleaseStudent();
+    }
+
+    private void ReleaseStudent()
+    {
+        for (int i = 0; i < _graduationStudentList.Count; i++)
+        {
+            StudentManager.Instance.ReleaseStudent(_graduationStudentList[i]);
         }
     }
 
     public void NextScene()
     {
-        SceneManager.LoadScene("Test_Main");
+        _isGraduationSkip = false;
+        _passiveBox.SelectSkillSave.Clear();
+
+        //초기화 하기 전에 명예의전당에 전달
+        _graduationStudentList.Clear();
+
+        CalendarManager.Instance.NextTurn();
+        GameManager.Instance.GoToLobby();
     }
 }

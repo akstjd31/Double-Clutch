@@ -9,25 +9,27 @@ using UnityEngine;
 /// </summary>
 public class StudentFactory : MonoBehaviour
 {
-    [Header("<size=18>������ ���� SO ����</size>")]
-    [Header("Player_SpeciesDataReader(���� ������)")]
-    [SerializeField] Player_SpeciesDataReader _speciesDataReader; //���� ������
-    [Header("Player_PersonalityDataReader(���� ������)")]
-    [SerializeField] Player_PersonalityDataReader _personalityDataReader; //���� ������
-    [Header("Player_TraitDataReader(Ư�� ������)")]
-    [SerializeField] Player_TraitDataReader _traitDataReader; //Ư�� ������
-    [Header("Player_PassiveDataReader(�нú� ������)")]
-    [SerializeField] Player_PassiveDataReader _passiveDataReader; //�нú� ������
-    [Header("Player_NameDataReader(�̸� ������)")]
-    [SerializeField] Player_NameDataReader _nameDataReader; //�̸� ������
-    [Header("Player_VisualDataReader(���� ������)")]
-    [SerializeField] Player_VisualDataReader _visualDataReader; //���� ������
-    [Header("Player_StartingStateDataReader(�ɷ�ġ ���� ���� ������)")]
-    [SerializeField] Player_StartingStateDataReader _startingStateDataReader; //�ɷ�ġ ���� ���� ������
-    [Header("Player_MaxPotentialDataReader(�ɷ�ġ ���� �ִ밪 ������)")]
-    [SerializeField] Player_MaxPotentialDataReader _maxPotentialDataReader; //�ɷ�ġ ���� �ִ밪 ������
-    [Header("Player_GrowthRateDataReader(�ɷ�ġ ����� ������)")]
-    [SerializeField] Player_GrowthRateDataReader _growthRateDataReader; //�ɷ�ġ ����� ������
+    [Header("<size=18>Player Data SO 모음</size>")]
+    [Header("Player_SpeciesDataReader(종족 데이터")]
+    [SerializeField] Player_SpeciesDataReader _speciesDataReader; 
+    [Header("Player_PersonalityDataReader(성격 데이터)")]
+    [SerializeField] Player_PersonalityDataReader _personalityDataReader; 
+    [Header("Player_TraitDataReader(특성 데이터)")]
+    [SerializeField] Player_TraitDataReader _traitDataReader; 
+    [Header("Player_PassiveDataReader(패시브 스킬 데이터)")]
+    [SerializeField] Player_PassiveDataReader _passiveDataReader; 
+    [Header("Player_NameDataReader(이름 데이터)")]
+    [SerializeField] Player_NameDataReader _nameDataReader; 
+    [Header("Player_VisualDataReader(비주얼 데이터)")]
+    [SerializeField] Player_VisualDataReader _visualDataReader; 
+    [Header("Player_StartingStateDataReader(시작 능력치 데이터)")]
+    [SerializeField] Player_StartingStateDataReader _startingStateDataReader; 
+    [Header("Player_MaxPotentialDataReader(최대 능력치 데이터)")]
+    [SerializeField] Player_MaxPotentialDataReader _maxPotentialDataReader; 
+    [Header("Player_GrowthRateDataReader(성장률 데이터)")]
+    [SerializeField] Player_GrowthRateDataReader _growthRateDataReader;
+    [Header("Player_PositionData(포지션 추천 가중치 데이터)")]
+    [SerializeField] Player_PositionDataReader _player_PositionDataReader;
 
     const float FIRST_GRADE_RATE = 0.6f;
     const float SECOND_GRADE_RATE = 0.2f;
@@ -44,14 +46,8 @@ public class StudentFactory : MonoBehaviour
     //���־� ������ ������(string specie) �з� ����
     Dictionary<string, List<Player_VisualData>> _visualDataDict = new Dictionary<string, List<Player_VisualData>>();
 
-    private List<PositionOfferData> _positionOffers = new List<PositionOfferData>() //������ �� ����ġ ����
-    {
-        new PositionOfferData(Position.C),
-        new PositionOfferData(Position.PF),
-        new PositionOfferData(Position.SF),
-        new PositionOfferData(Position.SG),
-        new PositionOfferData(Position.PG)
-    };
+    
+    
 
     public Student MakeRandomStudent()
     {
@@ -73,7 +69,7 @@ public class StudentFactory : MonoBehaviour
 
     public void InitStudent(Student target) //���� ������ & ���� ������ �ҷ����� �� ȣ��
     {
-        target.Init(_speciesDataReader, _personalityDataReader, _passiveDataReader, _traitDataReader);
+        target.Init(_speciesDataReader, _personalityDataReader, _passiveDataReader, _traitDataReader, _player_PositionDataReader);
         Position bestPosition = DecideBestPosition(target);
         target.SetPosition(bestPosition);
     }
@@ -122,19 +118,18 @@ public class StudentFactory : MonoBehaviour
         Position bestPos = Position.C;
         float maxScore = -1f;
 
-        foreach (var offer in _positionOffers)
-        {
-            // ����: (����1 * 3) + (����2 * 3) + (���� * 1)
-            int m1 = student.GetCurrentStat(offer.MainPotential1);
-            int m2 = student.GetCurrentStat(offer.MainPotential2);
-            int sub = student.GetCurrentStat(offer.SubPotential);
+        foreach (var data in _player_PositionDataReader.DataList)
+        {            
+            int m1 = student.GetCurrentStat(data.stat1);
+            int m2 = student.GetCurrentStat(data.stat2);
+            int sub = student.GetCurrentStat(data.stat3);
 
-            float currentScore = (m1 * 3f) + (m2 * 3f) + (sub * 1f);
+            float currentScore = (m1 * data.recommendation1) + (m2 * data.recommendation2) + (sub * data.recommendation3);
 
             if (currentScore > maxScore)
             {
                 maxScore = currentScore;
-                bestPos = offer.Position;
+                bestPos = data.recommendId;
             }
         }
 

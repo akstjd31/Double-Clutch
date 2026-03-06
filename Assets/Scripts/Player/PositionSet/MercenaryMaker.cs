@@ -12,6 +12,7 @@ public class MercenaryMaker : MonoBehaviour
         Student robot = new Student();
         robot.SetName(StringManager.Instance.GetString(data.mercName));
         robot.SetPosition(position);
+        robot.SetMatchPosition(position);
         robot.SetStat(MakeMercenaryStats(data));
         robot.ChangeCondition(70);
 
@@ -29,7 +30,7 @@ public class MercenaryMaker : MonoBehaviour
 
         newStat.Add(new Stat(potential.Stat2pt, data.stat2ptValue, data.stat2ptValue, 1));
         newStat.Add(new Stat(potential.Stat3pt, data.stat3ptValue, data.stat3ptValue, 1));
-        newStat.Add(new Stat(potential.StatPass, data.statAssistValue, data.statAssistValue, 1));
+        newStat.Add(new Stat(potential.StatPass, data.statPassValue, data.statPassValue, 1));
         newStat.Add(new Stat(potential.StatBlock, data.statBlockValue, data.statBlockValue, 1));
         newStat.Add(new Stat(potential.StatSteal, data.statStealValue, data.statStealValue, 1));
         newStat.Add(new Stat(potential.StatRebound, data.statReboundValue, data.statReboundValue, 1));

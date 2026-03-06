@@ -13,6 +13,10 @@ public class LobbyState : IState
 
     public void Enter()
     {
+        // if (CalendarManager.Instance == null) return;
+
+        // if (CalendarManager.Instance.CheckEventDay())
+        //     _gm.GoToGraduation();
     }
 
     public void Exit()
@@ -22,10 +26,5 @@ public class LobbyState : IState
 
     public void Update()
     {
-        if (Input.GetMouseButtonDown(0))
-        {
-            Debug.Log(">>> [Lobby] 경기 시작 요청 (MatchSimState로 전환)");
-            _sm.ChangeState<MatchSimState>();
-        }
     }
 }

@@ -22,15 +22,14 @@ public class CharacterList : MonoBehaviour
     [SerializeField] private List<PlayerCard> _cardList = new List<PlayerCard>();
     public List<PlayerCard> CardList => _cardList;
 
-    
+
     [SerializeField] private PlayerCard[] _positionCards;
     public PlayerCard[] PositionCards => _positionCards;
-    [SerializeField] private int[] _batchIds;
 
     [SerializeField] private DropPosition[] _dropPositions;
     private PlayerCard _selectedCard;
     private DropPosition _selectedPosition;
-    [SerializeField] MercenaryMaker _mercenaryMaker; // ìš©ë³‘ ìƒì„±ê¸°
+    [SerializeField] MercenaryMaker _mercenaryMaker; // ¿ëº´ »ı¼º±â
 
 
     private int _colorIndex;
@@ -51,32 +50,66 @@ public class CharacterList : MonoBehaviour
         _playerCardPool = new GenericObjectPool<PlayerCard>(_playerCardPrefab, _cardContainer, 5, 20);
 
         _positionCards = new PlayerCard[MAX_BATCH_COUNT];
-        _batchIds = new int[MAX_BATCH_COUNT];
-
-        for (int i = 0; i < MAX_BATCH_COUNT; i++)
-        {
-            _batchIds[i] = 999;
-        }
     }
 
-    private void OnEnable()
+private void OnEnable()
+{
+    var data = CheckSaveData();
+
+    ClearAllCards();
+
+    // °¢ StudentId °¡Á®¿À±â
+    HashSet<int> placedIds = new HashSet<int>();
+    if (data != null && data.studentList != null)
     {
-        CheckSaveData();
-        ClearAllCards();
-
-        _colorIndex = 0;
-
-        foreach (Student student in StudentManager.Instance.MyStudents)
+        for (int i = 0; i < data.studentList.Count && i < _dropPositions.Length; i++)
         {
-            PlayerCard newCard = _playerCardPool.Get();
-            // newCard.SetImageColor(GetNextColor());
-
-            newCard.Init(student);
-            CardList.Add(newCard);
+            placedIds.Add(data.studentList[i].StudentId);
         }
     }
 
-    private void CheckSaveData()
+    // Ä«µå »ı¼ºÇÏ´Âµ¥ ÀÖ¾î ¹èÄ¡ ¼±¼ö(_positionCard), º¸À¯ ¼±¼ö(CardList)¸¦ ±¸ºĞÇÏ¿© Áı¾î³Ö´Â´Ù
+    Dictionary<int, PlayerCard> cardMap = new Dictionary<int, PlayerCard>();
+
+    foreach (Student student in StudentManager.Instance.MyStudents)
+    {
+        PlayerCard card = _playerCardPool.Get();
+        card.Init(student);
+
+        int id = student.StudentId;
+        if (!cardMap.ContainsKey(id))
+            cardMap.Add(id, card);
+
+        if (!placedIds.Contains(id))
+        {
+            // ÇÏ´Ü ¸®½ºÆ®·Î
+            CardList.Add(card);
+            card.transform.SetParent(_cardContainer, false);
+            card.transform.SetAsLastSibling();
+        }
+        else
+        {
+            card.gameObject.SetActive(true);
+        }
+    }
+
+    // 3) ÀúÀå µ¥ÀÌÅÍ°¡ ÀÖÀ¸¸é studentList ¼ø¼­´ë·Î ¹èÄ¡
+    if (data == null || data.studentList == null) return;
+
+    for (int i = 0; i < data.studentList.Count; i++)
+    {
+        if (i >= _dropPositions.Length) break;
+
+        var savedStudent = data.studentList[i];
+
+        if (!cardMap.TryGetValue(savedStudent.StudentId, out PlayerCard card))
+            continue;
+
+        AddOnPosition(card, _dropPositions[i]);
+    }
+}
+
+    private StudentSaveData CheckSaveData()
     {
         if (SaveLoadManager.Instance != null)
         {
@@ -84,42 +117,33 @@ public class CharacterList : MonoBehaviour
 
             int idx = PlayerPrefs.GetInt(PrefKeys.MATCH_PREP_UI_INDEX);
 
-            if (hasMyStdData)
+            if (hasMyStdData && stdData.studentList.Count > 0)
             {
+
                 if (idx == 1)
                 {
-                    // ë’¤ë¡œ ê°€ê¸° ë²„íŠ¼ ë¹„í™œì„±í™”ê¹Œì§€ ë„£ì–´ë†“ê¸°
+                    // µÚ·Î °¡±â ¹öÆ° ºñÈ°¼ºÈ­±îÁö ³Ö¾î³õ±â
                     _matchStartPanelObj.SetActive(true);
-                    return;
+                }
+                else
+                {
+                    _fightingPower.gameObject.SetActive(true);
+                    _fightingPower.Init();
+                    this.gameObject.SetActive(false);
                 }
 
-                _fightingPower.gameObject.SetActive(true);
-                _fightingPower.Init();
-                this.gameObject.SetActive(false);
+                return stdData;
 
-                // bool hasBatchIdData = SaveLoadManager.Instance.TryLoad<BatchIdData>("BatchIdSaveData.json", out var batchIdData);
-
-                // if (hasBatchIdData)
-                // {
-                //     var stdMgr = StudentManager.Instance;
-                //     if (stdMgr == null) return;
-
-                //     for (int i = 0; i < MAX_BATCH_COUNT; i++)
-                //     {
-                //         int id = batchIdData.batchIds[i];
-                //         if (id == 999) continue;
-                        
-                //         // ë³´ìœ  ì¤‘ì¸ í•™ìƒ ì¤‘ì— IDë¡œ ì°¾ê¸°
-                //         var std = stdMgr.FindStudentById(id);
-                        
-                //         var playerCard = new PlayerCard();
-                //         playerCard.Init(std);
-
-                //         _positionCards[i] = playerCard;
-                //     }
-                // }
+            }
+            else
+            {
+                _fightingPower.gameObject.SetActive(false);
+                _matchStartPanelObj.SetActive(false);
+                return null;
             }
         }
+
+        return null;
     }
 
     public void OnClickPosition(DropPosition dPos)
@@ -164,24 +188,24 @@ public class CharacterList : MonoBehaviour
     {
         if (_selectedCard == null || _selectedPosition == null) return;
 
-        // ì„ íƒëœ ì¹´ë“œê°€ ì´ë¯¸ ë‹¤ë¥¸ í¬ì§€ì…˜ì— ë°°ì¹˜ëœ ìƒíƒœì—¬ë„
-        // AddOnPosition ë‚´ë¶€ì—ì„œ already ì²˜ë¦¬ + êµì²´ ì²˜ë¦¬í•¨
+        // ¼±ÅÃµÈ Ä«µå°¡ ÀÌ¹Ì ´Ù¸¥ Æ÷Áö¼Ç¿¡ ¹èÄ¡µÈ »óÅÂ¿©µµ
+        // AddOnPosition ³»ºÎ¿¡¼­ already Ã³¸® + ±³Ã¼ Ã³¸®ÇÔ
         bool placed = AddOnPosition(_selectedCard, _selectedPosition);
 
-        // ë°°ì¹˜ê°€ ì„±ê³µí•˜ë©´ ì„ íƒ í•´ì œ
+        // ¹èÄ¡°¡ ¼º°øÇÏ¸é ¼±ÅÃ ÇØÁ¦
         if (placed)
         {
             ClearSelectedCards();
             ClearSelectedPosition();
         }
-        // ì‹¤íŒ¨ ê²½ìš°
+        // ½ÇÆĞ °æ¿ì
         else
         {
             ClearSelectedCards();
         }
     }
 
-    // ì„ íƒëœ í¬ì§€ì…˜ null ì²˜ë¦¬
+    // ¼±ÅÃµÈ Æ÷Áö¼Ç null Ã³¸®
     private void ClearSelectedPosition()
     {
         if (_selectedPosition != null)
@@ -190,7 +214,7 @@ public class CharacterList : MonoBehaviour
         _selectedPosition = null;
     }
 
-    // ì„ íƒëœ ì¹´ë“œ null ì²˜ë¦¬
+    // ¼±ÅÃµÈ Ä«µå null Ã³¸®
     private void ClearSelectedCards()
     {
         if (_selectedCard != null)
@@ -216,11 +240,11 @@ public class CharacterList : MonoBehaviour
 
     public bool CheckMaxPositionBatch()
     {
-        // ë‚¨ì€ ì¹´ë“œê°€ ì—†ë‹¤?
+        // ³²Àº Ä«µå°¡ ¾ø´Ù?
         if (_cardList == null || _cardList.Count == 0)
             return true;
 
-        // ë°°ì¹˜ ê°€ëŠ¥í•œ ì¹´ë“œê°€ í•˜ë‚˜ë„ ì—†ìœ¼ë©´(ê²½ê¸° ì°¸ê°€ ë¶ˆê°€ëŠ¥ í”Œë ˆì´ì–´ ì¡´ì¬) ë” ë°°ì¹˜í•  ìˆ˜ ì—†ìŒ
+        // ¹èÄ¡ °¡´ÉÇÑ Ä«µå°¡ ÇÏ³ªµµ ¾øÀ¸¸é(°æ±â Âü°¡ ºÒ°¡´É ÇÃ·¹ÀÌ¾î Á¸Àç) ´õ ¹èÄ¡ÇÒ ¼ö ¾øÀ½
         bool hasAvailableCard = false;
         for (int i = 0; i < _cardList.Count; i++)
         {
@@ -234,20 +258,20 @@ public class CharacterList : MonoBehaviour
         if (!hasAvailableCard)
             return true;
 
-        // í¬ì§€ì…˜ ìŠ¬ë¡¯ì´ ì—†ê±°ë‚˜ ê¸¸ì´ê°€ 0ì´ë©´ ê½‰ ì°¬ ê²ƒìœ¼ë¡œ
+        // Æ÷Áö¼Ç ½½·ÔÀÌ ¾ø°Å³ª ±æÀÌ°¡ 0ÀÌ¸é ²Ë Âù °ÍÀ¸·Î
         if (_positionCards == null || _positionCards.Length == 0)
             return true;
 
-        // ìŠ¬ë¡¯ì´ í•˜ë‚˜ë¼ë„ ë¹„ì–´ìˆìœ¼ë©´ ì•„ì§ ìµœëŒ€ ì•„ë‹˜
+        // ½½·ÔÀÌ ÇÏ³ª¶óµµ ºñ¾îÀÖÀ¸¸é ¾ÆÁ÷ ÃÖ´ë ¾Æ´Ô
         int limit = Mathf.Min(MAX_BATCH_COUNT, _positionCards.Length);
         for (int i = 0; i < limit; i++)
         {
-            
+
             if (_positionCards[i] == null)
                 return false;
         }
 
-        // ì—¬ê¸°ê¹Œì§€ ì™”ìœ¼ë©´ limit ë²”ìœ„ ë‚´ ìŠ¬ë¡¯ì´ ë‹¤ ì°¸
+        // ¿©±â±îÁö ¿ÔÀ¸¸é limit ¹üÀ§ ³» ½½·ÔÀÌ ´Ù Âü
         return true;
     }
 
@@ -269,15 +293,14 @@ public class CharacterList : MonoBehaviour
         int idx = GetSlotIndex(dPos);
         if (idx < 0) return false;
 
-        // ê°™ì€ ì¹´ë“œê°€ ë‹¤ë¥¸ ìŠ¬ë¡¯ì— ì´ë¯¸ ìˆìœ¼ë©´ ì œê±°
+        // °°Àº Ä«µå°¡ ´Ù¸¥ ½½·Ô¿¡ ÀÌ¹Ì ÀÖÀ¸¸é Á¦°Å
         int already = IndexOfCard(card);
         if (already >= 0 && already != idx)
         {
             _positionCards[already] = null;
-            _batchIds[already] = 999;
         }
 
-        // êµì²´
+        // ±³Ã¼
         var prev = _positionCards[idx];
         if (prev != null && prev != card)
         {
@@ -286,9 +309,8 @@ public class CharacterList : MonoBehaviour
             prev.transform.SetAsLastSibling();
         }
 
-        // ë°°ì¹˜
+        // ¹èÄ¡
         _positionCards[idx] = card;
-        _batchIds[idx] = card.Player.StudentId;
 
         _cardList.Remove(card);
 
@@ -299,19 +321,19 @@ public class CharacterList : MonoBehaviour
         var rect = (RectTransform)card.transform;
         SetAnchor(rect);
 
-        // í¬ì§€ì…”ë‹ì´ ì™„ë£Œë˜ì—ˆë‹¤ë©´ ë²„íŠ¼ í™œì„±í™” (ìš©ë³‘ í…ŒìŠ¤íŠ¸ëŠ” í•´ë‹¹ ì•¡í‹°ë¸Œë¥¼ trueë¡œ í•˜ë©´ ë¨)
+        // Æ÷Áö¼Å´×ÀÌ ¿Ï·áµÇ¾ú´Ù¸é ¹öÆ° È°¼ºÈ­ (¿ëº´ Å×½ºÆ®´Â ÇØ´ç ¾×Æ¼ºê¸¦ true·Î ÇÏ¸é µÊ)
         if (CheckMaxPositionBatch())
         {
-            // ë°°ì¹˜ëœ ì„ ìˆ˜ ì €ì¥ ë° ìƒˆë¡œìš´ UI ì¸ë±ìŠ¤ ê°±ì‹ 
+            // ¹èÄ¡µÈ ¼±¼ö ÀúÀå ¹× »õ·Î¿î UI ÀÎµ¦½º °»½Å
             SaveBatchStudentData();
             PlayerPrefs.SetInt(PrefKeys.MATCH_PREP_UI_INDEX, 1);
             _matchStartPanelObj.SetActive(true);
         }
-        
+
         return true;
     }
 
-    // ë°°ì¹˜í•œ í•™ìƒ ì •ë³´ ì €ì¥
+    // ¹èÄ¡ÇÑ ÇĞ»ı Á¤º¸ ÀúÀå
     public void SaveBatchStudentData()
     {
         if (_positionCards == null || _positionCards.Length < 1) return;
@@ -320,7 +342,7 @@ public class CharacterList : MonoBehaviour
 
         for (int i = 0; i < _positionCards.Length; i++)
         {
-            // ìš©ë³‘ ìƒì„±
+            // ¿ëº´ »ı¼º
             if (_positionCards[i] == null)
             {
                 Position targetPos = (Position)i + 1;
@@ -337,11 +359,9 @@ public class CharacterList : MonoBehaviour
         }
 
         var batchData = new StudentSaveData(MAX_BATCH_COUNT, sList);
-        var batchIdData = new BatchIdData(_batchIds);
 
         if (SaveLoadManager.Instance == null) return;
         SaveLoadManager.Instance.Save(FilePath.MY_STUDENT_MATCHING_PATH, batchData);
-        SaveLoadManager.Instance.Save("BatchIdSaveData.json", batchIdData);
     }
 
     public void SetAnchor(RectTransform rect)
@@ -349,7 +369,7 @@ public class CharacterList : MonoBehaviour
         rect.anchorMin = new Vector2(0.5f, 0.5f);
         rect.anchorMax = new Vector2(0.5f, 0.5f);
         rect.pivot = new Vector2(0.5f, 0.5f);
-        rect.anchoredPosition = Vector2.zero; // ë¶€ëª¨ ê¸°ì¤€ ì •í™•íˆ ì¤‘ì•™
+        rect.anchoredPosition = Vector2.zero; // ºÎ¸ğ ±âÁØ Á¤È®È÷ Áß¾Ó
     }
 
     public PlayerCard RemoveOnPosition(PlayerCard card)
@@ -367,7 +387,7 @@ public class CharacterList : MonoBehaviour
             }
         }
 
-        // ë¦¬ìŠ¤íŠ¸ì— ì—†ìœ¼ë©´ ë³µê·€
+        // ¸®½ºÆ®¿¡ ¾øÀ¸¸é º¹±Í
         if (!_cardList.Contains(card))
             _cardList.Add(card);
 
@@ -399,7 +419,7 @@ public class CharacterList : MonoBehaviour
         return -1;
     }
 
-    // ë°°ì¹˜ëœ ì¹´ë“œì˜ í˜„ì¬ ì¸ë±ìŠ¤ ë°˜í™˜ (í•˜ë‹¨ ë³´ìœ  ì¹´ë“œ -> í¬ì§€ì…˜ ë°°ì¹˜ì‹œì—ë§Œ ì‚¬ìš©)
+    // ¹èÄ¡µÈ Ä«µåÀÇ ÇöÀç ÀÎµ¦½º ¹İÈ¯ (ÇÏ´Ü º¸À¯ Ä«µå -> Æ÷Áö¼Ç ¹èÄ¡½Ã¿¡¸¸ »ç¿ë)
     private int IsCardInPositionSlots(DropPosition dPos)
     {
         if (_dropPositions == null) return -1;
@@ -415,20 +435,21 @@ public class CharacterList : MonoBehaviour
 
     private void ClearAllCards()
     {
-        // CardListï¿½ï¿½ ï¿½Ö´ï¿½ Ä«ï¿½ï¿½ ï¿½İ³ï¿½
+        // CardList?? ??? ??? ???
         foreach (var card in _cardList)
         {
             if (card != null) _playerCardPool.Release(card);
         }
         _cardList.Clear();
 
-        // ï¿½ï¿½Óµï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½Ö´ï¿½ Ä«ï¿½ï¿½éµµ Ç®ï¿½ï¿½ ï¿½İ³ï¿½
+        // ???? ????? ??? ???? ??? ???
         if (_dropPositions != null)
         {
             foreach (var position in _dropPositions)
             {
-                if (position.transform.childCount > 0) _playerCardPool.Release(position.GetComponentInChildren<PlayerCard>());
+                if (position.transform.childCount > 1) _playerCardPool.Release(position.GetComponentInChildren<PlayerCard>());
             }
+
         }
 
         for (int i = 0; i < _positionCards.Length; i++)

@@ -27,6 +27,7 @@ public static class SceneName
     public const string LOBBY = "Test_Lobby";
     public const string LOADING = "Test_Loading";
     public const string EVENT = "Test_Event";
+    public const string GRADUATION = "Test_Graduation";
 }
 
 public static class FilePath
@@ -94,6 +95,7 @@ public class GameManager : Singleton<GameManager>
         _sm.Register(new MatchSimState(this, _sm));
         _sm.Register(new ResultState(this, _sm));
         _sm.Register(new TutorialState(this, _sm));
+        _sm.Register(new GraduationState(this, _sm));
     }
 
     public void InitData(PlayerSaveData data)
@@ -147,6 +149,20 @@ public class GameManager : Singleton<GameManager>
         StartCoroutine(LoadNextScene_Coroutine());
     }
 
+    public void GoToGraduation()
+    {
+        SetNextFlow(SceneName.GRADUATION, _sm.Get<GraduationState>());
+
+        _sm.ChangeState<LoadingState>();
+    }
+
+    public void GoToLobby()
+    {
+        SetNextFlow(SceneName.LOBBY, _sm.Get<LobbyState>());
+
+        _sm.ChangeState<LoadingState>();
+    }
+
     private IEnumerator LoadNextScene_Coroutine()
     {
         var target = NextSceneName;
@@ -176,6 +192,13 @@ public class GameManager : Singleton<GameManager>
         saveData.honor = honor;
         OnDataChanged?.Invoke();
     }
+
+    public void SetYear(int year)
+    {
+        saveData.year = year;
+        OnDataChanged?.Invoke();
+    }
+    
     public void ChangeState<T>() where T : class, IState
     {
         _sm.ChangeState<T>();
