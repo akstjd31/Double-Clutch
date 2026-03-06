@@ -3,15 +3,24 @@ using System.Collections.Generic;
 
 public class Infra : MonoBehaviour
 {
+    [SerializeField] private infraEffectType _infraEffectType;
+    [SerializeField] private int groupId;
     [SerializeField] private int _currentLevel = 0;               // 현재 레벨
     public int CurrentLevel => _currentLevel;
-    [SerializeField] private infraEffectType _infraEffectType;
     [SerializeField] private int _maxLevel = -1;                  // 최대 레벨
     private List<int> needCostByLevel;
 
     private void Awake()
     {
         needCostByLevel = new List<int>();
+    }
+
+    // 본인의 그룹 ID랑 최대 레벨 세팅
+    private void Init()
+    {
+        if (InfraManager.Instance == null) return;
+
+
     }
 
     // 최대 레벨 주입

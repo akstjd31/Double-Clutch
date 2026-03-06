@@ -3401,8 +3401,9 @@ GameObject:
   - component: {fileID: 141790500}
   - component: {fileID: 141790499}
   - component: {fileID: 141790498}
+  - component: {fileID: 141790501}
   m_Layer: 5
-  m_Name: Stadium
+  m_Name: Front
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3510,6 +3511,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 141790496}
   m_CullTransparentMesh: 1
+--- !u!114 &141790501
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 141790496}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dadb733e528a5d4449f3fbf5a4bbe059, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Infra
+  _infraEffectType: 0
+  groupId: 0
+  _currentLevel: 0
+  _maxLevel: -1
 --- !u!1 &149908916
 GameObject:
   m_ObjectHideFlags: 0
@@ -4597,8 +4614,9 @@ GameObject:
   - component: {fileID: 190325588}
   - component: {fileID: 190325587}
   - component: {fileID: 190325586}
+  - component: {fileID: 190325589}
   m_Layer: 5
-  m_Name: MedicalRoom
+  m_Name: Clinic
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4706,6 +4724,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 190325584}
   m_CullTransparentMesh: 1
+--- !u!114 &190325589
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 190325584}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dadb733e528a5d4449f3fbf5a4bbe059, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Infra
+  _infraEffectType: 0
+  groupId: 0
+  _currentLevel: 0
+  _maxLevel: -1
 --- !u!1 &204269171
 GameObject:
   m_ObjectHideFlags: 0
@@ -11607,6 +11641,7 @@ GameObject:
   - component: {fileID: 577168004}
   - component: {fileID: 577168003}
   - component: {fileID: 577168002}
+  - component: {fileID: 577168005}
   m_Layer: 5
   m_Name: Domitory
   m_TagString: Untagged
@@ -11716,6 +11751,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 577168000}
   m_CullTransparentMesh: 1
+--- !u!114 &577168005
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 577168000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dadb733e528a5d4449f3fbf5a4bbe059, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Infra
+  _infraEffectType: 0
+  groupId: 0
+  _currentLevel: 0
+  _maxLevel: -1
 --- !u!1 &585036111
 GameObject:
   m_ObjectHideFlags: 0
@@ -16679,8 +16730,9 @@ GameObject:
   - component: {fileID: 791592209}
   - component: {fileID: 791592208}
   - component: {fileID: 791592207}
+  - component: {fileID: 791592210}
   m_Layer: 5
-  m_Name: 'DataAnalysis '
+  m_Name: Tactic
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -16788,6 +16840,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 791592205}
   m_CullTransparentMesh: 1
+--- !u!114 &791592210
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 791592205}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dadb733e528a5d4449f3fbf5a4bbe059, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Infra
+  _infraEffectType: 0
+  groupId: 0
+  _currentLevel: 0
+  _maxLevel: -1
 --- !u!1 &794780990
 GameObject:
   m_ObjectHideFlags: 0
@@ -22584,8 +22652,9 @@ GameObject:
   - component: {fileID: 1020592542}
   - component: {fileID: 1020592541}
   - component: {fileID: 1020592540}
+  - component: {fileID: 1020592543}
   m_Layer: 5
-  m_Name: Gym
+  m_Name: Training
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -22693,6 +22762,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1020592538}
   m_CullTransparentMesh: 1
+--- !u!114 &1020592543
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1020592538}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dadb733e528a5d4449f3fbf5a4bbe059, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Infra
+  _infraEffectType: 1
+  groupId: 0
+  _currentLevel: 0
+  _maxLevel: -1
 --- !u!1 &1024233263
 GameObject:
   m_ObjectHideFlags: 0
@@ -25289,7 +25374,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uACBD\uAE30\uC7A5"
+  m_text: "\uD504\uB7F0\uD2B8"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 7c31c93ef95dbfa4987915b09bcc0e1d, type: 2}
   m_sharedMaterial: {fileID: -2959792390391746788, guid: 7c31c93ef95dbfa4987915b09bcc0e1d, type: 2}
@@ -26337,13 +26422,14 @@ GameObject:
   - component: {fileID: 1175224187}
   - component: {fileID: 1175224189}
   - component: {fileID: 1175224188}
+  - component: {fileID: 1175224190}
   m_Layer: 5
   m_Name: InfraPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1175224187
 RectTransform:
   m_ObjectHideFlags: 0
@@ -26408,6 +26494,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1175224186}
   m_CullTransparentMesh: 1
+--- !u!114 &1175224190
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1175224186}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8e8e7e1a36654584c84ae07044b72a98, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InfraUI
 --- !u!1 &1176377790
 GameObject:
   m_ObjectHideFlags: 0
