@@ -4,13 +4,16 @@ using UnityEngine.UI;
 
 public class InfraUI : MonoBehaviour
 {
+    [Header("CurrentClickInfra")]
+
     [Header("UpgradePanel")]
-    [SerializeField] private GameObject _upgradePanelObj;
+    [SerializeField] private InfraUpgradeUI _infraUpgradeUI;
 
     [SerializeField] private GameObject _reconfirmPanelObj;
 
-    public void UpgradePanelInit()
+    public void SetInfraUpgradePanelUI(Infra infra)
     {
-        
+        _infraUpgradeUI.gameObject.SetActive(true);
+        _infraUpgradeUI.Init(infra);
     }
 }

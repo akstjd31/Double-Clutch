@@ -1,10 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
-
-public struct UpgradeData
-{
-    
-}
+using UnityEngine.UI;
+using AYellowpaper.SerializedCollections;
 
 /// <summary>
 /// 인프라 관련 클래스 (해당 스크립트 추가 시 infraEffectType은 시설에 맞게 지정해줘야 함.)
@@ -12,19 +9,28 @@ public struct UpgradeData
 public class Infra : MonoBehaviour
 {
     private InfraUI _infraUi;
+    private Button button;
     [SerializeField] private infraEffectType _infraEffectType;
     [SerializeField] private int _currentLevel = 0;               // 현재 레벨
     public int CurrentLevel => _currentLevel;
     private string _name;
+    public string Name => _name;
+    private string _desc;
+    public string Desc => _desc;
     private int _maxLevel = -1;                  // 최대 레벨
     private int _groupId;
-    private List<int> _needCostByLevel;
+    private List<int> _needCost;
+    [SerializeField] private List<int> _infraEffectValue;  // 인프라 이펙트 벨류 
     private bool initComplete = false;                  // 초기 세팅이 완료되었는지 여부 확인
 
     private void Awake()
     {
-        _needCostByLevel = new List<int>();
+        _needCost = new List<int>();
         _infraUi = this.transform.parent.GetComponent<InfraUI>();
+        button = this.GetComponent<Button>();
+
+        if (button == null) return;
+        button.onClick.AddListener(OnClickInfraButton);
     }
     
     private void OnEnable() 
@@ -42,7 +48,9 @@ public class Infra : MonoBehaviour
 
         // 각 데이터 갱신
         _maxLevel = infraMgr.GetMaxLevelByEffectType(_infraEffectType);
-        _needCostByLevel = infraMgr.GetCostListByEffectType(_infraEffectType);
+        _needCost = infraMgr.GetCostListByEffectType(_infraEffectType);
+        _infraEffectValue = infraMgr.GetValueListByEffectType(_infraEffectType);
+        _desc = infraMgr.GetInfraDescByEffectType(_infraEffectType);
 
         var data = infraMgr.GetDataByEffectType(_infraEffectType);
         if (data == null) return;
@@ -54,11 +62,12 @@ public class Infra : MonoBehaviour
         initComplete = true;
     }     
 
-    public void OnClickInfraButton()
+    private void OnClickInfraButton()
     {
         if (_infraUi == null) return;
 
-        // _infraUi.
+        // UI 초기 세팅
+        _infraUi.SetInfraUpgradePanelUI(this);
     }
 
     public bool CanUpgrade()
@@ -95,4 +104,7 @@ public class Infra : MonoBehaviour
 
         gameMgr.SetMoney(gameMgr.SaveData.money - money);
     }
+
+    public int GetValueByLevel() => _infraEffectValue[_currentLevel];
+    public int GetCostByLevel() => _needCost[_currentLevel];
 }
