@@ -134,6 +134,7 @@ public class Student
 
     public void SetName(string first, string middle, string last)
     {
+        _name = new string[3];
         _name[0] = first;
         _name[1] = middle;
         _name[2] = last;
