@@ -149,16 +149,9 @@ public class MatchEngine : MonoBehaviour
         // 연장전 처리 (4쿼터가 끝났는데 동점일 때만)
         if (targetQuarter >= 4)
         {
-            int maxOvertime = 20; // 최대 연장전 횟수 (20번)
-            int currentOvertime = 0;
 
             while (_homeTeam.SimulatedScore == _awayTeam.SimulatedScore)
             {
-                if (currentOvertime >= maxOvertime)
-                {
-                    Debug.LogWarning("연장전 20회 돌파! 무승부로 강제 종료하여 프리징을 방지합니다.");
-                    break; // 무한 루프 탈출!
-                }
                 RecordLog("GameStart");
 
                 _simTime = 300f;
@@ -172,7 +165,7 @@ public class MatchEngine : MonoBehaviour
 
                 _simQuarter++;
                 _currentPossession = (_currentPossession == TeamSide.Home) ? TeamSide.Away : TeamSide.Home;
-                currentOvertime++;
+                if (_simQuarter > 8) break;
             }
 
             RecordLog("GameEnd");
@@ -203,6 +196,15 @@ public class MatchEngine : MonoBehaviour
         {
             _simTime = 0; // 시간 마이너스 방지
 
+            bool isOT3EndTied = (_simQuarter == 7 && _homeTeam.SimulatedScore == _awayTeam.SimulatedScore);
+
+            if (isOT3EndTied)
+            {
+                Debug.LogWarning($"[시스템] 연장 3쿼터 무승부 도달! {_ballHolder.PlayerName}의 강제 버저비터 발동!");
+                // 강제 버저비터 슛 실행
+                DoShoot(_ballHolder, attackTeam, defendTeam, distToHoop, hoopPos, true, attackTactics, defendTactics, true);
+            }
+
             if (action == 0)
             {
                 // 슛을 시도했는데 마침 0초가 됨 -> 버저비터 찬스! (마지막 매개변수 true 전달)
@@ -226,14 +228,16 @@ public class MatchEngine : MonoBehaviour
         }
     }
 
-    private void DoShoot(MatchPlayer shooter, MatchTeam attackTeam, MatchTeam defendTeam, float distance, Vector2 hoopPos, bool isBuzzerBeater, TeamTactics attackTactics, TeamTactics defendTactics)
+    private void DoShoot(MatchPlayer shooter, MatchTeam attackTeam, MatchTeam defendTeam, float distance, Vector2 hoopPos, bool isBuzzerBeater, TeamTactics attackTactics, TeamTactics defendTactics, bool forceSuccess = false)
     {
         bool isThree = distance > 0.35f;
         bool isDunk = distance <= 0.05f;
 
         int score = isThree ? 3 : 2;
 
-        bool success = MatchCalculator.CalculateShootSuccess(shooter, distance, attackTeam, defendTeam, attackTactics, defendTactics);
+        bool success = forceSuccess || MatchCalculator.CalculateShootSuccess(shooter, distance, attackTeam, defendTeam, attackTactics, defendTactics);
+
+        if (isThree) { attackTeam.Try3pt++; if (success) attackTeam.Succ3pt++; }
 
         // 팀 스탯 기록
         if (isThree) { attackTeam.Try3pt++; if (success) attackTeam.Succ3pt++; }
@@ -309,13 +313,23 @@ public class MatchEngine : MonoBehaviour
         }
         else
         {
-            float yMin = (_currentPossession == TeamSide.Home) ? hoopPos.y - 0.2f : hoopPos.y;
-            float yMax = (_currentPossession == TeamSide.Home) ? hoopPos.y : hoopPos.y + 0.2f;
-            float yDropOffset = (_currentPossession == TeamSide.Home) ?
-                    UnityEngine.Random.Range(-0.2f, 0.0f) :  // 홈팀 공격 시: 골대(0.95)보다 아래로 떨어짐
-                    UnityEngine.Random.Range(0.0f, 0.2f);    // 어웨이 공격 시: 골대(0.05)보다 위로 떨어짐
+            Vector2 randomOffset = UnityEngine.Random.insideUnitCircle * 0.35f;
+            randomOffset.x /= 1.87f; // 종횡비 보정
 
-            Vector2 dropPos = hoopPos + new Vector2(UnityEngine.Random.Range(-0.2f, 0.2f), yDropOffset);
+            if (hoopPos.y > 0.5f)
+            {
+                randomOffset.y = -Mathf.Abs(randomOffset.y);
+            }
+            else
+            {
+                randomOffset.y = Mathf.Abs(randomOffset.y);
+            }
+
+            Vector2 dropPos = new Vector2(
+                Mathf.Clamp01(hoopPos.x + randomOffset.x),
+                Mathf.Clamp01(hoopPos.y + randomOffset.y)
+            );
+
             List<MatchPlayer> allPlayers = new List<MatchPlayer>();
             allPlayers.AddRange(attackTeam.Roster);
             allPlayers.AddRange(defendTeam.Roster);
