@@ -100,11 +100,14 @@ public class EnemyTeamFactory : MonoBehaviour
             List<Player_PassiveData> assignedPassives = new List<Player_PassiveData>();
             if (levelData.isRivalPassiveApplied && _passiveReader != null)
             {
-                // 경기용(Match) 패시브만 필터링해서 1개 쥐어줌
-                var matchPassives = _passiveReader.DataList.FindAll(p => p.skillCategory == skillCategory.Match);
+                var matchPassives = _passiveReader.DataList.FindAll(p =>
+                    p.effectType.ToString().StartsWith("Prob") ||
+                    p.effectType.ToString().StartsWith("Rate")
+                );
+
                 if (matchPassives.Count > 0)
                 {
-                    assignedPassives.Add(matchPassives[Random.Range(0, matchPassives.Count)]);
+                    assignedPassives.Add(matchPassives[UnityEngine.Random.Range(0, matchPassives.Count)]);
                 }
             }
 

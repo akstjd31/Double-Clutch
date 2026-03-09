@@ -52,62 +52,62 @@ public class CharacterList : MonoBehaviour
         _positionCards = new PlayerCard[MAX_BATCH_COUNT];
     }
 
-private void OnEnable()
-{
-    var data = CheckSaveData();
-
-    ClearAllCards();
-
-    // 각 StudentId 가져오기
-    HashSet<int> placedIds = new HashSet<int>();
-    if (data != null && data.studentList != null)
+    private void OnEnable()
     {
-        for (int i = 0; i < data.studentList.Count && i < _dropPositions.Length; i++)
+        var data = CheckSaveData();
+
+        ClearAllCards();
+
+        // 각 StudentId 가져오기
+        HashSet<int> placedIds = new HashSet<int>();
+        if (data != null && data.studentList != null)
         {
-            placedIds.Add(data.studentList[i].StudentId);
+            for (int i = 0; i < data.studentList.Count && i < _dropPositions.Length; i++)
+            {
+                placedIds.Add(data.studentList[i].StudentId);
+            }
+        }
+
+        // 카드 생성하는데 있어 배치 선수(_positionCard), 보유 선수(CardList)를 구분하여 집어넣는다
+        Dictionary<int, PlayerCard> cardMap = new Dictionary<int, PlayerCard>();
+
+        foreach (Student student in StudentManager.Instance.MyStudents)
+        {
+            PlayerCard card = _playerCardPool.Get();
+            card.Init(student);
+
+            int id = student.StudentId;
+            if (!cardMap.ContainsKey(id))
+                cardMap.Add(id, card);
+
+            if (!placedIds.Contains(id))
+            {
+                // 하단 리스트로
+                CardList.Add(card);
+                card.transform.SetParent(_cardContainer, false);
+                card.transform.SetAsLastSibling();
+            }
+            else
+            {
+                card.gameObject.SetActive(true);
+            }
+        }
+
+        // 3) 저장 데이터가 있으면 studentList 순서대로 배치
+        if (data == null || data.studentList == null) return;
+
+        for (int i = 0; i < data.studentList.Count; i++)
+        {
+            if (i >= _dropPositions.Length) break;
+
+            var savedStudent = data.studentList[i];
+
+            if (!cardMap.TryGetValue(savedStudent.StudentId, out PlayerCard card))
+                continue;
+
+            AddOnPosition(card, _dropPositions[i]);
         }
     }
-
-    // 카드 생성하는데 있어 배치 선수(_positionCard), 보유 선수(CardList)를 구분하여 집어넣는다
-    Dictionary<int, PlayerCard> cardMap = new Dictionary<int, PlayerCard>();
-
-    foreach (Student student in StudentManager.Instance.MyStudents)
-    {
-        PlayerCard card = _playerCardPool.Get();
-        card.Init(student);
-
-        int id = student.StudentId;
-        if (!cardMap.ContainsKey(id))
-            cardMap.Add(id, card);
-
-        if (!placedIds.Contains(id))
-        {
-            // 하단 리스트로
-            CardList.Add(card);
-            card.transform.SetParent(_cardContainer, false);
-            card.transform.SetAsLastSibling();
-        }
-        else
-        {
-            card.gameObject.SetActive(true);
-        }
-    }
-
-    // 3) 저장 데이터가 있으면 studentList 순서대로 배치
-    if (data == null || data.studentList == null) return;
-
-    for (int i = 0; i < data.studentList.Count; i++)
-    {
-        if (i >= _dropPositions.Length) break;
-
-        var savedStudent = data.studentList[i];
-
-        if (!cardMap.TryGetValue(savedStudent.StudentId, out PlayerCard card))
-            continue;
-
-        AddOnPosition(card, _dropPositions[i]);
-    }
-}
 
     private StudentSaveData CheckSaveData()
     {
@@ -293,44 +293,98 @@ private void OnEnable()
         int idx = GetSlotIndex(dPos);
         if (idx < 0) return false;
 
-        // 같은 카드가 다른 슬롯에 이미 있으면 제거
-        int already = IndexOfCard(card);
-        if (already >= 0 && already != idx)
+        // 이 카드가 이미 다른 슬롯에 있으면 제거
+        int alreadyIdx = IndexOfCard(card);
+        if (alreadyIdx >= 0 && alreadyIdx != idx)
         {
-            _positionCards[already] = null;
+            _positionCards[alreadyIdx] = null;
         }
 
-        // 교체
-        var prev = _positionCards[idx];
-        if (prev != null && prev != card)
+        // 현재 슬롯에 카드가 있으면 하단 리스트로 복귀
+        PlayerCard prevCard = _positionCards[idx];
+        if (prevCard != null && prevCard != card)
         {
-            if (!_cardList.Contains(prev)) _cardList.Add(prev);
-            prev.transform.SetParent(_cardContainer, false);
-            prev.transform.SetAsLastSibling();
+            _positionCards[idx] = null;
+
+            if (!_cardList.Contains(prevCard))
+                _cardList.Add(prevCard);
+
+            prevCard.transform.SetParent(_cardContainer, false);
+            prevCard.transform.SetAsLastSibling();
+
+            RectTransform prevRect = prevCard.transform as RectTransform;
+            if (prevRect != null)
+                ResetCardRect(prevRect);
         }
 
-        // 배치
-        _positionCards[idx] = card;
-
+        // 하단 리스트에 있던 카드 제거
         _cardList.Remove(card);
 
-        card.transform.SetParent(_dropPositions[idx].transform, false);
+        // 새 카드 배치
+        _positionCards[idx] = card;
+        card.transform.SetParent(dPos.transform, false);
         card.transform.SetAsLastSibling();
 
-        card.transform.SetParent(dPos.transform, true);
-        var rect = (RectTransform)card.transform;
-        SetAnchor(rect);
+        RectTransform rect = card.transform as RectTransform;
+        if (rect != null)
+            ResetCardRect(rect);
 
-        // 포지셔닝이 완료되었다면 버튼 활성화 (용병 테스트는 해당 액티브를 true로 하면 됨)
-        if (CheckMaxPositionBatch())
-        {
-            // 배치된 선수 저장 및 새로운 UI 인덱스 갱신
-            SaveBatchStudentData();
-            PlayerPrefs.SetInt(PrefKeys.MATCH_PREP_UI_INDEX, 1);
-            _matchStartPanelObj.SetActive(true);
-        }
+        UpdateMatchStartUI();
 
         return true;
+    }
+
+    // 카드 배치 시 Rect 리셋 (부모에 레이아웃 그룹 유무에 따라 달라지기 떄문)
+    private void ResetCardRect(RectTransform rect)
+    {
+        rect.anchorMin = new Vector2(0.5f, 0.5f);
+        rect.anchorMax = new Vector2(0.5f, 0.5f);
+        rect.pivot = new Vector2(0.5f, 0.5f);
+        rect.anchoredPosition = Vector2.zero;
+        rect.localScale = Vector3.one;
+        rect.localRotation = Quaternion.identity;
+    }
+
+    public bool MoveToCardList(PlayerCard card)
+    {
+        if (card == null) return false;
+
+        EnsureArrays();
+
+        for (int i = 0; i < _positionCards.Length; i++)
+        {
+            if (_positionCards[i] == card)
+            {
+                _positionCards[i] = null;
+                break;
+            }
+        }
+
+        if (!_cardList.Contains(card))
+            _cardList.Add(card);
+
+        card.transform.SetParent(_cardContainer, false);
+        card.transform.SetAsLastSibling();
+
+        RectTransform rect = card.transform as RectTransform;
+        if (rect != null)
+            ResetCardRect(rect);
+
+        UpdateMatchStartUI();
+        return true;
+    }
+
+    private void UpdateMatchStartUI()
+    {
+        bool canStart = CheckMaxPositionBatch();
+
+        _matchStartPanelObj.SetActive(canStart);
+
+        if (canStart)
+        {
+            SaveBatchStudentData();
+            PlayerPrefs.SetInt(PrefKeys.MATCH_PREP_UI_INDEX, 1);
+        }
     }
 
     // 배치한 학생 정보 저장
@@ -362,39 +416,6 @@ private void OnEnable()
 
         if (SaveLoadManager.Instance == null) return;
         SaveLoadManager.Instance.Save(FilePath.MY_STUDENT_MATCHING_PATH, batchData);
-    }
-
-    public void SetAnchor(RectTransform rect)
-    {
-        rect.anchorMin = new Vector2(0.5f, 0.5f);
-        rect.anchorMax = new Vector2(0.5f, 0.5f);
-        rect.pivot = new Vector2(0.5f, 0.5f);
-        rect.anchoredPosition = Vector2.zero; // 부모 기준 정확히 중앙
-    }
-
-    public PlayerCard RemoveOnPosition(PlayerCard card)
-    {
-        if (card == null) return null;
-
-        EnsureArrays();
-
-        for (int i = 0; i < _positionCards.Length; i++)
-        {
-            if (_positionCards[i] == card)
-            {
-                _positionCards[i] = null;
-                break;
-            }
-        }
-
-        // 리스트에 없으면 복귀
-        if (!_cardList.Contains(card))
-            _cardList.Add(card);
-
-        card.transform.SetParent(_cardContainer, false);
-        card.transform.SetAsLastSibling();
-
-        return card;
     }
 
     private void EnsureArrays()
