@@ -33,8 +33,9 @@ public static class SceneName
 public static class FilePath
 {
     public const string PLAYER_PATH = "PlayerSaveData.json";
-    public const string MY_STUDENT_MATCHING_PATH = "MyStudentMatchingData.json";
-    public const string RIVAL_STUDENT_MATCHING_PATH = "RivalStudentMatchingData.json";
+    public const string MY_STUDENT_MATCHING_PATH = "MyStudentMatchingSaveData.json";
+    public const string RIVAL_STUDENT_MATCHING_PATH = "RivalStudentMatchingSaveData.json";
+    public const string INFRA_PATH = "InfraSaveData.json";
 }
 
 public class GameManager : Singleton<GameManager>
