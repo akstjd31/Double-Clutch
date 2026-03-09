@@ -4,17 +4,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-// 게임의 전반적인 상태
-// public enum GameState
-// {
-//     Main,       // 메인 화면
-//     Loding,
-//     Lobby,      // 로비
-//     Event,      // 이벤트 발생 시점
-//     MatchPrep,  // 농구 시합 전 단계 (준비)
-//     MatchSim,   // 농구 시합
-//     Result      // 결과 (보상 지급)
-// }
 public static class PrefKeys
 {
     public const string KEY_FIRST_RUN_DONE = "FIRST_RUN_DONE";          // 튜토리얼 여부 결정
