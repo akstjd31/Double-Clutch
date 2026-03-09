@@ -23,7 +23,17 @@ public class IndividualRest : ITraining
 
     public int GetCost()
     {
-        return _data.restCost;
+        if (_data.isCureInjury == 1) //집중치료는 할인 없음.
+        {
+            return _data.restCost;
+        }
+
+        else
+        {
+            return _data.restCost * (1 - InfraManager.Instance.GetInfraEffectValueByEffectType(infraEffectType.RestCostDiscount) / 100);            
+        }
+
+        
     }
 
     public bool IsTeam()

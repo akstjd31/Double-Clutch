@@ -38,7 +38,7 @@ public class IndividualTraining : ITraining
             GetInjuryOrOverwork(_target);
         }
 
-        int mainGrowth = _data.mainGain + (_data.mainGain * (_target.GetStat(_data.mainPotential).GrowthRate // + 시설 효율 + 패시브 스킬
+        int mainGrowth = _data.mainGain + (_data.mainGain * (_target.GetStat(_data.mainPotential).GrowthRate + InfraManager.Instance.GetInfraEffectValueByEffectType(infraEffectType.TrainingBonus) //패시브 스킬
             / 100)); //현재는 성장률만 반영.            
         
         _target.GetStat(_data.mainPotential).GrowAndReturn(mainGrowth);
@@ -56,19 +56,19 @@ public class IndividualTraining : ITraining
     }
     private void GetInjuryOrOverwork(Student target)
     {
-        target.ChangeState(StudentState.OverWorked);
-        // int rate = UnityEngine.Random.Range(0, 100);
+        //target.ChangeState(StudentState.OverWorked);
+        int rate = UnityEngine.Random.Range(0, 100);
 
-        // if (rate < 60) // 60% 확률 (0~59)
-        // {
-        //     target.ChangeState(StudentState.OverWorked);
-        //     Debug.Log($"{target.Name} 학생이 과로 상태가 되었습니다.");
-        // }
-        // else // 40% 확률 (60~99)
-        // {
-        //     target.ChangeState(StudentState.Injured);
-        //     Debug.Log($"{target.Name} 학생이 부상 상태가 되었습니다.");
-        // }
+        if (rate < 60) // 60% 확률 (0~59)
+        {
+            target.ChangeState(StudentState.OverWorked);
+            Debug.Log($"{target.Name} 학생이 과로 상태가 되었습니다.");
+        }
+        else // 40% 확률 (60~99)
+        {
+            target.ChangeState(StudentState.Injured);
+            Debug.Log($"{target.Name} 학생이 부상 상태가 되었습니다.");
+        }
     }
 
     public string GetNameKey()
