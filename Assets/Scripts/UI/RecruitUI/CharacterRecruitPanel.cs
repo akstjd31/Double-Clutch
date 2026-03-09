@@ -62,8 +62,6 @@ public class CharacterRecruitPanel : MonoBehaviour
         }
         else
         {
-            // 영입이 3월 1일 기준으로 진행되기 떄문에 연차++ 작업을 이떄 해줌
-            GameManager.Instance.SetYear(GameManager.Instance.SaveData.year + 1);
             CalendarManager.Instance.NextTurn();
         }
 
