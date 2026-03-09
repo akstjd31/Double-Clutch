@@ -132,4 +132,22 @@ public class InfraManager : Singleton<InfraManager>
     }
 
     public void SetInfra(Infra infra) => infras[infra.groupId - 1] = infra;
+
+    public void UpdateInfraLevel(Infra infra) => infras[infra.groupId - 1].currentLevel = infra.currentLevel;
+
+    public int GetInfraEffectValueByEffectType(infraEffectType type)
+    {
+        if (infras == null) return -1;
+        if (type.Equals(infraEffectType.None)) return -1;
+
+        for (int i = 0; i < MAX_INFRA_COUNT; i++)
+        {
+            if (infras[i] == null) continue;
+            if (!infras[i].infraEffectType.Equals(type)) continue;
+            
+            return infras[i].infraEffectValue[infras[i].currentLevel];
+        }
+
+        return -1;
+    }
 }
