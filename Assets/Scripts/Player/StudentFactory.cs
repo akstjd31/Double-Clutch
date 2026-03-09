@@ -53,7 +53,7 @@ public class StudentFactory : MonoBehaviour
         newStudent.SetPersonality(GetRandomPersonality());
         newStudent.SetTrait(GetRandomTrait());
         string[] name = GetRandomName();
-        newStudent.SetName(name[0], name[1], name[3]);
+        newStudent.SetName(name[0], name[1], name[2]);
         SetPassives(newStudent, GetRandomPassive(newStudent));  
         newStudent.SetStat(GetRandomStats(newStudent.Grade));
 
