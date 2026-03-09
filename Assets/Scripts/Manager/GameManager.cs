@@ -204,6 +204,7 @@ public class GameManager : Singleton<GameManager>
     {
         _sm.ChangeState<T>();
     }
+    
     public void LoadMatchSceneWithData(string sceneName, List<Student> homeRoster, List<Student> awayRoster)
     {
         // 상태 머신에서 MatchSimState를 미리 꺼내서 데이터를 주입

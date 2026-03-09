@@ -84,6 +84,12 @@ public class CalendarManager : Singleton<CalendarManager>
     {
         var data = _calReader.DataList[weekId - 1];
 
+        if (weekId == 8) // 3월 1일이라면 년차 추가
+        {
+            // 영입이 3월 1일 기준으로 진행되기 떄문에 연차++ 작업을 이떄 해줌
+            GameManager.Instance.SetYear(GameManager.Instance.SaveData.year + 1);
+        }
+
         if (PlayerPrefs.GetInt(PrefKeys.KEY_FIRST_RUN_DONE) == 0)
         {
             // 튜토리얼 수행 완료
@@ -102,11 +108,6 @@ public class CalendarManager : Singleton<CalendarManager>
                 }
                 else
                 {
-                    if (data.targetidSpecial == 1)
-                    {
-                        GameManager.Instance.SaveData.year++;
-                    }
-
                     weekId = data.targetidSpecial;
                 }
             }

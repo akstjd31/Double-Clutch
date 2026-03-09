@@ -27,12 +27,10 @@ public class TutorialUI : MonoBehaviour
         data.year = 0;
 
         gm.InitData(data);
-
-        this.gameObject.SetActive(false);
-
-        var weekId = GameManager.Instance.SaveData.weekId;
-        CalendarManager.Instance.CalcWeek(weekId);
+    
+        CalendarManager.Instance.CalcWeek(data.weekId);
 
         GameManager.Instance.Dispatch(UIAction.Main_Start); 
+        this.gameObject.SetActive(false);
     }
 }
