@@ -12,7 +12,6 @@ public class InfraController : MonoBehaviour
     private Button button;
     [SerializeField] private infraEffectType _infraEffectType;
     [SerializeField] private List<int> _needCost;
-    [SerializeField] private List<int> _infraEffectValue;
     
     private Infra infra;
     
@@ -37,6 +36,7 @@ public class InfraController : MonoBehaviour
     {
         if (InfraManager.Instance == null) return;
         if (infra == null) return;
+
         InfraManager.Instance.SetInfra(infra);
         InfraManager.Instance.SaveData();
     }
@@ -64,8 +64,8 @@ public class InfraController : MonoBehaviour
                 maxLevel: infraMgr.GetMaxLevelByEffectType(_infraEffectType),
                 groupId: data.Value.group
             );
-            
-            infraMgr.SetInfra(infra);
+
+            infra.SetInfraEffectValueList(infraMgr.GetValueListByEffectType(_infraEffectType));
             infraMgr.SaveData();
         }
         else
@@ -73,7 +73,8 @@ public class InfraController : MonoBehaviour
             infra = saveData;
         }
 
-        _infraEffectValue = infraMgr.GetCostListByEffectType(_infraEffectType);
+        infraMgr.SetInfra(infra);
+
         _needCost = infraMgr.GetCostListByEffectType(_infraEffectType);
 
         Debug.Log($"[{infra.name}] 기초 세팅 완료!");
@@ -98,12 +99,15 @@ public class InfraController : MonoBehaviour
 
         infra.currentLevel++;
         Upgraded?.Invoke(infra.currentLevel);
+
+        if (InfraManager.Instance == null) return;
+        InfraManager.Instance.UpdateInfraLevel(infra);
     }
 
     public int GetCurrentInfraEffectValue()
     {
-        if (_infraEffectValue == null) return -1;
-        return _infraEffectValue[infra.currentLevel];
+        if (infra.infraEffectValue == null) return -1;
+        return infra.infraEffectValue[infra.currentLevel];
     }
     
     public int GetCostByNextLevel()
