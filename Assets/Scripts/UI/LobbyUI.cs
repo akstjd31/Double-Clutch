@@ -11,6 +11,10 @@ public class LobbyUI : MonoBehaviour
     [SerializeField] private Button _trainingButton;
     [SerializeField] private Button _matchButton;
 
+    [Header("Setting")]
+    [SerializeField] private GameObject _settingPanel;
+    [SerializeField] private Toggle _koreanToggle;
+    [SerializeField] private Toggle _englishToggle;
 
     private void OnEnable()
     {
@@ -32,10 +36,8 @@ public class LobbyUI : MonoBehaviour
         Init();
     }
 
-    // Update is called once per frame
     private void Init()
     {
-        // 데이터 로드하면서 값 받아오기
         var gameMgr = GameManager.Instance;
         if (gameMgr == null) return;
 
@@ -56,8 +58,7 @@ public class LobbyUI : MonoBehaviour
             CalendarManager.Instance.OnWeekChanged -= UpdateCalendarText;
             CalendarManager.Instance.OnWeekChanged -= SetButtonActivate;
         }
-            
-            
+
         if (GameManager.Instance != null)
         {
             GameManager.Instance.OnDataChanged -= UpdateMoneyText;
@@ -65,11 +66,30 @@ public class LobbyUI : MonoBehaviour
         }
     }
 
+    // ───── Setting ─────
+
+    public void OnMenuButtonClick()
+    {
+        _settingPanel.SetActive(!_settingPanel.activeSelf);
+    }
+
+    public void OnKoreanToggleChanged(bool isOn)
+    {
+        if (isOn) StringManager.Instance.SetLanguage(Language.Ko);
+    }
+
+    public void OnEnglishToggleChanged(bool isOn)
+    {
+        if (isOn) StringManager.Instance.SetLanguage(Language.En);
+    }
+
+    // ───── Calendar / Money / Honor ─────
+
     public void UpdateCalendarText(Calendar calendar)
     {
         if (GameManager.Instance == null) return;
         if (GameManager.Instance.SaveData == null) return;
-        
+
         _calendarText.text = $"{GameManager.Instance.SaveData.year}년차 {calendar.month}월 {calendar.week}주";
     }
 
@@ -86,14 +106,13 @@ public class LobbyUI : MonoBehaviour
     public void OnClickConfirmButton()
     {
         if (CalendarManager.Instance == null) return;
-        
+
         CalendarManager.Instance.IsEndPhase = true;
         CalendarManager.Instance.NextTurn();
 
         if (GameManager.Instance == null) return;
     }
 
-    // 육성 or 경기 시작 버튼
     public void SetButtonActivate(Calendar calendar)
     {
         var type = CalendarManager.Instance.CurrentGetPhaseType();
