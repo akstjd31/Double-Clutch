@@ -13,10 +13,17 @@ public class CharacterProfilePopUp : MonoBehaviour
 
     Student _student;
 
-    public Student GetStudent()
+    private void OnEnable()
     {
-        return _student;
+        StringManager.OnLanguageChanged += SetText;
     }
+
+    private void OnDisable()
+    {
+        StringManager.OnLanguageChanged -= SetText;
+    }
+
+    public Student GetStudent() => _student;
 
     public void Init(Student target)
     {
@@ -26,13 +33,14 @@ public class CharacterProfilePopUp : MonoBehaviour
 
     public void SetText()
     {
+        if (_student == null) return;
         _characterBox.Init(_student);
         _attack.text = _student.Attack.ToString();
         _defense.text = _student.Defense.ToString();
         _personality.text = StringManager.Instance.GetString(_student.PersonalityData.personalityName);
-        _passive1.Init(_student.Passive[0]);        
-        _passive2.Init();        
-        _passive3.Init();        
+        _passive1.Init(_student.Passive[0]);
+        _passive2.Init();
+        _passive3.Init();
 
         if (_student.Passive.Count >= 2)
         {

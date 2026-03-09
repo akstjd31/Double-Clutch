@@ -1,31 +1,42 @@
 using System.Collections.Generic;
 using UnityEngine;
+using System;
+
+public enum Language
+{
+    Ko,
+    En,
+    Ja
+}
+
 
 public class StringManager : Singleton<StringManager>
 {
-    nation _nation;
+    public static event Action OnLanguageChanged;
+
+    Language _language;
 
     [SerializeField] String_TableDataReader _stringDB;
-    
+
     private Dictionary<string, String_TableData> _stringDict = new Dictionary<string, String_TableData>();
 
     protected override void Awake()
     {
         base.Awake();
-        SetLanguage(nation.Kr);
+        SetLanguage(Language.Ko);
         InitDict();
     }
 
     private void Start()
     {
-        
+
     }
 
     private void InitDict()
     {
         if (_stringDB == null)
         {
-            Debug.Log("stringDB가 비어있습니다. 인스펙터에서 stringTableDataReader를 할당해주세요.");
+            Debug.Log("stringDB가 없습니다. 인스펙터에서 stringTableDataReader를 할당해주세요.");
             return;
         }
 
@@ -39,29 +50,33 @@ public class StringManager : Singleton<StringManager>
         }
     }
 
-    public void SetLanguage(nation nation)
+    public void SetLanguage(Language language)
     {
-        _nation = nation;
+        _language = language;
+        Debug.Log($"[StringManager] 언어 변경: {language}");
+        OnLanguageChanged?.Invoke();
     }
-    
-    
-    public string GetString(string key) // 키값을 받아 현재 설정된 언어에 맞는 문자열 반환
+
+
+    public string GetString(string key)
     {
         if (_stringDict.TryGetValue(key, out var data))
         {
-            switch (_nation)
+            switch (_language)
             {
-                case nation.Kr:
-                    return data.ko;
-                default: //기본 설정은 한국어로
+                case Language.En:
+                    return data.en;
+                case Language.Ja:
+                    return data.ja;
+                case Language.Ko:
+                default:
                     return data.ko;
             }
         }
-
         else
         {
-            Debug.LogWarning($"stringKey [{key}]가 stringTable에 없습니다. ");
-            return key; //테이블에 없으면 대신 키라도 반환
+            Debug.LogWarning($"stringKey [{key}]가 stringTable에 없습니다.");
+            return key;
         }
     }
 }
