@@ -42,6 +42,43 @@ public class InfraManager : Singleton<InfraManager>
 
         if (SaveLoadManager.Instance == null) return;
         SaveLoadManager.Instance.TryLoad<InfraSaveData>(FilePath.INFRA_PATH, out _myInfraData);
+
+        if (_myInfraData == null)
+        {
+            InitInfra();
+        }
+        else
+        {
+            for (int i = 0; i < infras.Length; i++)
+            {
+                infras[i] = _myInfraData.infraList[i];
+            }
+        }
+    }
+
+    private void InitInfra()
+    {
+        if (_reader == null) return;
+
+        int i = 0;
+        foreach (var data in _reader.DataList)
+        {
+            // 레벨이 0인 얘들 초기값 주기 (나중에 0이어도 리소스 경로가 존재할 수 있으니 이렇게 구조를 짰음.)
+            if (data.infraLevel == 0)
+            {
+                var infra = new Infra
+                (
+                    name: "",
+                    desc: "",
+                    maxLevel: 0,
+                    groupId: 0
+                );
+
+                infras[i] = infra;
+            }   
+        }
+
+        Debug.Log("인프라 초기 설정 완료!");
     }
 
     // 그룹 ID 중 맥스 레벨 반환
@@ -137,17 +174,17 @@ public class InfraManager : Singleton<InfraManager>
 
     public int GetInfraEffectValueByEffectType(infraEffectType type)
     {
-        if (infras == null) return -1;
-        if (type.Equals(infraEffectType.None)) return -1;
+        if (infras == null) return 0;
+        if (type.Equals(infraEffectType.None)) return 0;
 
         for (int i = 0; i < MAX_INFRA_COUNT; i++)
         {
             if (infras[i] == null) continue;
             if (!infras[i].infraEffectType.Equals(type)) continue;
-            
+
             return infras[i].infraEffectValue[infras[i].currentLevel];
         }
 
-        return -1;
+        return 0;
     }
 }
