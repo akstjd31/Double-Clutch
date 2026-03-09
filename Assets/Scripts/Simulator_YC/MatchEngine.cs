@@ -23,6 +23,17 @@ public class MatchEngine : MonoBehaviour
     [Header("Data Readers")]
     [SerializeField] private Event_ConfigDataReader _eventConfigReader;
     [SerializeField] private Position_PresetDataReader _positionPresetReader;
+
+    [Header("Balance Settings")]
+    [SerializeField]
+    [Tooltip("드리블 시 수비수에게 방해받는 판정 거리")]
+    private float dribbleBlockDist = 0.1f;
+    [SerializeField]
+    [Tooltip("패스 시 수비수에게 차단당하는 판정 거리")]
+    private float passInterceptDist = 0.03f;
+    [SerializeField]
+    [Tooltip("슛 시도 시 수비수에게 블록당하는 판정 거리")]
+    private float blockDist = 0.25f;
     public void StartSimulation()
     {
         // 엔진 내부에서 코루틴을 돌려 전반전/하프타임/후반전 흐름을 제어합니다.
@@ -187,9 +198,9 @@ public class MatchEngine : MonoBehaviour
         TeamTactics attackTactics = MatchDataProxy.Instance.GetTactics(attackTeam.TeamColorId);
         TeamTactics defendTactics = MatchDataProxy.Instance.GetTactics(defendTeam.TeamColorId);
 
-        int action = MatchCalculator.DecideAction(_ballHolder, distToHoop, attackTactics, attackTeam.Roster, defendTeam.Roster);
+        int action = MatchCalculator.DecideAction(_ballHolder, distToHoop, attackTactics, attackTeam.Roster, defendTeam.Roster, passInterceptDist);
 
-        float timeCost = UnityEngine.Random.Range(5f, 10f);
+        float timeCost = UnityEngine.Random.Range(1f, 3f);
         _simTime -= timeCost;
 
         if (_simTime <= 0)
@@ -235,7 +246,7 @@ public class MatchEngine : MonoBehaviour
 
         int score = isThree ? 3 : 2;
 
-        bool success = forceSuccess || MatchCalculator.CalculateShootSuccess(shooter, distance, attackTeam, defendTeam, attackTactics, defendTactics);
+        bool success = forceSuccess || MatchCalculator.CalculateShootSuccess(shooter, distance, attackTeam, defendTeam, attackTactics, defendTactics, blockDist);
 
         if (isThree) { attackTeam.Try3pt++; if (success) attackTeam.Succ3pt++; }
 
@@ -314,7 +325,7 @@ public class MatchEngine : MonoBehaviour
         else
         {
             Vector2 randomOffset = UnityEngine.Random.insideUnitCircle * 0.35f;
-            randomOffset.x /= 1.87f; // 종횡비 보정
+            randomOffset.y /= 1.87f; // 종횡비 보정
 
             if (hoopPos.y > 0.5f)
             {
@@ -351,7 +362,6 @@ public class MatchEngine : MonoBehaviour
         MatchPlayer bestReceiver = null;
         float maxPassScore = -999f;
 
-        float interceptDist = MatchDataProxy.Instance.GetBalance("Pen_Intercept_Dist");
         float penDistHoop = MatchDataProxy.Instance.GetBalance("Pen_Dist_Hoop");
         float wPassBase = MatchDataProxy.Instance.GetBalance("W_Pass_Base");
 
@@ -371,7 +381,7 @@ public class MatchEngine : MonoBehaviour
             float pathEnemySteal = 0f;
             foreach (var e in defendTeam.Roster)
             {
-                if (MatchCalculator.DistancePointToLineSegment(e.LogicPosition, passer.LogicPosition, mate.LogicPosition) < interceptDist)
+                if (MatchCalculator.DistancePointToLineSegment(e.LogicPosition, passer.LogicPosition, mate.LogicPosition) < passInterceptDist)
                 {
                     hasEnemyOnPath = 1;
                     pathEnemySteal = e.GetStat(MatchStatType.Steal);
@@ -393,7 +403,7 @@ public class MatchEngine : MonoBehaviour
         if (bestReceiver == null) return;
 
         MatchPlayer interceptor;
-        bool success = MatchCalculator.CalculatePassSuccess(passer, bestReceiver, attackTeam, defendTeam, attackTactics, defendTactics, out interceptor);
+        bool success = MatchCalculator.CalculatePassSuccess(passer, bestReceiver, attackTeam, defendTeam, attackTactics, defendTactics, passInterceptDist, out interceptor);
 
         // 로그 기록 전 공 소유자 갱신
         if (success)
@@ -411,7 +421,7 @@ public class MatchEngine : MonoBehaviour
 
     private void DoDribble(MatchPlayer dribbler, List<MatchPlayer> enemies, Vector2 hoopPos, TeamTactics attackTactics, TeamTactics defendTactics)
     {
-        bool success = MatchCalculator.CalculateDribbleSuccess(dribbler, enemies, attackTactics, defendTactics);
+        bool success = MatchCalculator.CalculateDribbleSuccess(dribbler, enemies, attackTactics, defendTactics, dribbleBlockDist);
         if (success)
         {
             Vector2 dir = (hoopPos - dribbler.LogicPosition).normalized;

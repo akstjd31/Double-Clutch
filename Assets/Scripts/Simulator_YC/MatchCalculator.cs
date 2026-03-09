@@ -10,8 +10,9 @@ public static class MatchCalculator
     public static float LastShootStat;
     public static float LastBlockPressure;
 
-    // [기획서 3.1] 종횡비 보정값 1.87 (9:16)
+    // [기획서 3.1] 종횡비 보정값 1.87 (16:9)
     private const float ASPECT_RATIO = 1.87f;
+
 
     public static float CalculateDistance(Vector2 p1, Vector2 p2)
     {
@@ -59,7 +60,7 @@ public static class MatchCalculator
     }
 
     // [기획서 6.2] 행동 결정
-    public static int DecideAction(MatchPlayer player, float distToHoop, TeamTactics tactics, List<MatchPlayer> teammates, List<MatchPlayer> enemies)
+    public static int DecideAction(MatchPlayer player, float distToHoop, TeamTactics tactics, List<MatchPlayer> teammates, List<MatchPlayer> enemies, float interceptDist)
     {
         // 밸런스 값 가져오기
         float penDistHoop = MatchDataProxy.Instance.GetBalance("Pen_Dist_Hoop");
@@ -87,7 +88,6 @@ public static class MatchCalculator
 
         // 패스 점수 공식
 
-        float interceptDist = MatchDataProxy.Instance.GetBalance("Pen_Intercept_Dist");
         float maxPassScore = -999f;
         foreach (var mate in teammates)
         {
@@ -124,9 +124,9 @@ public static class MatchCalculator
                            + (distToHoop * penDistHoop * tactics.bonusDribble)
                            - (enemySteal * (1f / (nearestEnemyDist + penSteal)) * tactics.bonusDribble);
 
-        if (distToHoop > 0.5f)
+        if (distToHoop > 0.84f)
         {
-            scoreShoot = -999f; // 거리가 0.5(하프라인) 밖이면 슛 점수를 마이너스로 고정해 절대 안 쏘게 만듦 ( 역습이나 공수전환중에 노마크 발생으로 인한 확정 골 오류 방지 )
+            scoreShoot = -999f; // 거리가 0.8415(하프라인) 밖이면 슛 점수를 마이너스로 고정해 절대 안 쏘게 만듦 ( 역습이나 공수전환중에 노마크 발생으로 인한 확정 골 오류 방지 )
         }
         else
         {
@@ -155,8 +155,10 @@ public static class MatchCalculator
 
         string actionName = chosenAction == 0 ? "슛" : (chosenAction == 1 ? "패스" : "드리블");
 
+        string playerName = MakeName(player.PlayerName);
+
         // 기획서 원본 공식이 그대로 보이는 행동 결정 디버그 로그!
-        Debug.Log($"<color=#FFFF00>[행동 결정 디버그]</color> {player.PlayerName} (골대거리:{distToHoop:F2}, 수비거리:{nearestEnemyDist:F2})\n" +
+        Debug.Log($"<color=#FFFF00>[행동 결정 디버그]</color> {playerName} (골대거리:{distToHoop:F2}, 수비거리:{nearestEnemyDist:F2})\n" +
                   $"▶ 슛 공식: ({shootStat}*{wShoot}*{wShotBase}) + (100/({distToHoop:F2}+1)) - ({enemyBlock}*(1/({nearestEnemyDist:F2}+{penBlock}))*{wShoot})\n" +
                   $"▶ 결과 점수 => 슛: {scoreShoot:F2} | 패스: {scorePass:F2} | 드리블: {scoreDribble:F2}\n" +
                   $"▶ <color=#00FF00>최종 AI 선택: {actionName}</color>");
@@ -166,16 +168,14 @@ public static class MatchCalculator
 
 
     // 슛 성공 확률
-    public static bool CalculateShootSuccess(MatchPlayer attacker, float distance, MatchTeam attackTeam, MatchTeam defendTeam, TeamTactics attackTactics, TeamTactics defendTactics)
+    public static bool CalculateShootSuccess(MatchPlayer attacker, float distance, MatchTeam attackTeam, MatchTeam defendTeam, TeamTactics attackTactics, TeamTactics defendTactics, float blockDist)
     {
         float shootStat = (distance > 0.35f) ? attacker.GetStat(MatchStatType.ThreePoint, attackTactics.bonusThreePoint) : attacker.GetStat(MatchStatType.TwoPoint, attackTactics.bonusTwoPoint);
 
-        // 반경 0.05 내 가장 가까운 수비수의 블록 스탯 적용
-        float blockDist = MatchDataProxy.Instance.GetBalance("Def_Block_Dist");
-        if (blockDist <= 0f) blockDist = 0.15f;
         float blockStat = 0f;
         float minEnemyDist;
         MatchPlayer nearestEnemy = GetNearestPlayer(attacker, defendTeam.Roster, out minEnemyDist);
+
         if (nearestEnemy != null && minEnemyDist <= blockDist)
         {
             blockStat = nearestEnemy.GetStat(MatchStatType.Block, defendTactics.bonusBlock);
@@ -183,12 +183,11 @@ public static class MatchCalculator
         Debug.Log($"[수비 체크] 공격수 위치: {attacker.LogicPosition} | 수비수 위치: {nearestEnemy.LogicPosition} | 최단거리: {minEnemyDist:F4} | 수비발동?: {minEnemyDist <= blockDist}");
 
         float penDistHoop = MatchDataProxy.Instance.GetBalance("Pen_Dist_Hoop");
-        float distancePenalty = 1f + (distance * penDistHoop); // 여기서 distancePenalty가 생성됩니다!
+        float distancePenalty = 1f + (distance * penDistHoop);
 
-        float denominator = shootStat + (blockStat * distancePenalty);
-        if (denominator <= 0) denominator = 1f;
-
-        float prob = (shootStat / denominator) * 100f;
+        // 공식: { 33 + (공격수 슛 * 0.67) / (100 + 적 블록 * 거리 페널티) } * 100
+        float calcStat = (shootStat * 0.67f) / (100f + blockStat * distancePenalty);
+        float prob = 33f + (calcStat * 100f);
 
 
         effectType targetEffect = (distance > 0.35f) ? effectType.Prob3pt : effectType.Prob2pt;
@@ -206,23 +205,22 @@ public static class MatchCalculator
         float dice = Random.Range(0f, 100f);
         bool isSuccess = dice <= prob;
 
+        string attackerName = MakeName(attacker.PlayerName);
         string eName = nearestEnemy != null ? MakeName(nearestEnemy.PlayerName) : "없음";
-        Debug.Log($"<color=#FF8C00>[슛 디버그]</color> {attacker.PlayerName} 슛 시도 (골대거리:{distance:F2})\n" +
+        Debug.Log($"<color=#FF8C00>[슛 디버그]</color> {attackerName} 슛 시도 (골대거리:{distance:F2})\n" +
               $"▶ 공격 슛스탯: {shootStat} | 수비({eName}) 블록스탯: {blockStat} (수비거리:{minEnemyDist:F2})\n" +
-              $"▶ 공식: ( {shootStat} / (내슛{shootStat} + 적블록{blockStat} * 거리배율{distancePenalty:F2}) ) * 100\n" +
-              $"▶ 적용: ( {shootStat} / {denominator:F2} * 100 ) + 패시브({passiveBonus}%) = {prob:F2}%\n" +
+              $"▶ 공식: 33 + ( ({shootStat} * 0.67) / (100 + {blockStat} * {distancePenalty:F2}) ) * 100\n" +
+              $"▶ 적용: 33 + {calcStat * 100f:F2} + 패시브({passiveBonus}%) = {prob:F2}%\n" +
               $"▶ <color=#00FF00>최종확률: {prob:F2}%</color> | 주사위: {dice:F2} => {(isSuccess ? "<b>골!</b>" : "<b>노골</b>")}");
 
         return isSuccess;
     }
 
     // 패스 성공 확률
-    public static bool CalculatePassSuccess(MatchPlayer passer, MatchPlayer receiver, MatchTeam attackTeam, MatchTeam defendTeam, TeamTactics attackTactics, TeamTactics defendTactics, out MatchPlayer interceptor)
+    public static bool CalculatePassSuccess(MatchPlayer passer, MatchPlayer receiver, MatchTeam attackTeam, MatchTeam defendTeam, TeamTactics attackTactics, TeamTactics defendTactics, float interceptDist, out MatchPlayer interceptor)
     {
         interceptor = null;
         MatchPlayer pathEnemy = null;
-
-        float interceptDist = MatchDataProxy.Instance.GetBalance("Pen_Intercept_Dist");
 
         // 최단 거리 0.03 미만 (interceptDist)인 적 탐색
         foreach (var e in defendTeam.Roster)
@@ -272,15 +270,27 @@ public static class MatchCalculator
     }
 
     // 드리블 성공 확률
-    public static bool CalculateDribbleSuccess(MatchPlayer dribbler, List<MatchPlayer> enemies, TeamTactics attackTactics, TeamTactics defendTactics)
+    public static bool CalculateDribbleSuccess(MatchPlayer dribbler, List<MatchPlayer> enemies, TeamTactics attackTactics, TeamTactics defendTactics, float dribbleBlockDist)
     {
         float minEnemyDist;
         MatchPlayer nearestEnemy = GetNearestPlayer(dribbler, enemies, out minEnemyDist);
 
-        if (nearestEnemy == null || minEnemyDist > 0.1f)
+        string dribblerName = MakeName(dribbler.PlayerName);
+
+        if (nearestEnemy == null)
         {
-            Debug.Log($"<color=#DA70D6>[드리블 디버그]</color> {dribbler.PlayerName} 드리블 이동\n" +
-                      $"▶ 수비수({(nearestEnemy != null ? nearestEnemy.PlayerName : "없음")})와의 최단거리가 0.1 밖입니다. (거리:{minEnemyDist:F2})\n" +
+            Debug.Log($"<color=#DA70D6>[드리블 디버그]</color> {dribblerName} 드리블 이동\n" +
+                      $"▶ 코트 위에 매치업 대상(수비수)이 존재하지 않습니다!\n" +
+                      $"▶ 방해 없음! 100% 안전한 드리블 성공");
+            return true;
+        }
+
+        string enemyName = MakeName(nearestEnemy.PlayerName);
+
+        if (minEnemyDist > dribbleBlockDist)
+        {
+            Debug.Log($"<color=#DA70D6>[드리블 디버그]</color> {dribblerName} 노마크 돌파\n" +
+                      $"▶ 수비수({enemyName})와의 최단거리가 {dribbleBlockDist} 밖입니다. (거리:{minEnemyDist:F2})\n" +
                       $"▶ 방해 없음! 100% 안전한 드리블 성공");
             return true;
         }
@@ -288,13 +298,30 @@ public static class MatchCalculator
         float dribbleStat = dribbler.GetStat(MatchStatType.Pass, attackTactics.bonusDribble);
         float stealStat = nearestEnemy.GetStat(MatchStatType.Steal, defendTactics.bonusSteal);
 
+        // 밸런스 가중치 적용
+        float wStealBalance = MatchDataProxy.Instance.GetBalance("W_Def_Steal_Dribble");
+        if (wStealBalance <= 0f) wStealBalance = 1.0f;
+
+        // 수비수 스틸 패시브 적용
+        float stealPassiveBonus = 0f;
+        foreach (var p in nearestEnemy.Passives)
+        {
+            if (p.effectType == effectType.ProbSteal)
+            {
+                stealPassiveBonus += (p.effectValue * 100f);
+            }
+        }
+
+        float weightedStealStat = stealStat * wStealBalance;
         float prob = (dribbleStat / (dribbleStat + stealStat)) * 100f;
+        prob -= stealPassiveBonus;
+
         float dice = Random.Range(0f, 100f);
         bool success = dice <= prob;
 
-        Debug.Log($"<color=#DA70D6>드리블 디버그</color> {dribbler.PlayerName} (수비수:{nearestEnemy.PlayerName}, 거리:{minEnemyDist:F2})\n" +
-                  $"▶ 공격 드리블(패스)스탯: {dribbleStat} | 수비 스틸스탯: {stealStat}\n" +
-                  $"▶ <color=#00FF00>최종확률: ({dribbleStat}/{dribbleStat + stealStat})*100 = {prob:F2}%</color> | 주사위: {dice:F2} => {(success ? "<b>성공</b>" : "<b>스틸당함</b>")}");
+        Debug.Log($"<color=#DA70D6>[드리블 디버그]</color> {dribblerName} 돌파 경합! (수비수: {enemyName}, 거리:{minEnemyDist:F2})\n" +
+                  $"▶ 내 드리블 스탯: {dribbleStat} | 적 스틸 스탯: {stealStat} (가중치 {wStealBalance}배 적용 -> {weightedStealStat})\n" +
+                  $"▶ <color=#00FF00>최종 돌파 확률: {prob:F2}%</color> | 주사위: {dice:F2} => {(success ? "<b>돌파 성공(전진)!</b>" : "<b>수비에 막힘(좌우이동)</b>")}");
 
         return success;
 
