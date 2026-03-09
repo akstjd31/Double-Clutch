@@ -45,9 +45,12 @@ public class CharacterRecruitBox : MonoBehaviour, IPointerDownHandler, IPointerU
 
     private void SetText()
     {
+        StringManager manager = StringManager.Instance;
+        string name = manager.GetString(_student.Name[0]) + manager.GetString(_student.Name[1]) + manager.GetString(_student.Name[2]);
+
         _positionText.text = _student.Position.ToString();
         _gradeText.text = _student.Grade.ToString() + "ÇÐ³â";
-        _nameText.text = _student.Name;
+        _nameText.text = name;
         _attackText.text = _student.Attack.ToString();
         _defenseText.text = _student.Defense.ToString();
     }

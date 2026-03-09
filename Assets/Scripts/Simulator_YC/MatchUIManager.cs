@@ -385,11 +385,11 @@ public class MatchUIManager : MonoBehaviour
         text = text.Replace("{Quarter}", state.CurrentQuarter.ToString());
 
         // 출전 중인 유저(Home) 팀 선수의 이름으로 치환
-        if (text.Contains("{PG}")) text = text.Replace("{PG}", state.HomeTeam.GetPlayerByPosition(Position.PG)?.PlayerName ?? "가드");
-        if (text.Contains("{SG}")) text = text.Replace("{SG}", state.HomeTeam.GetPlayerByPosition(Position.SG)?.PlayerName ?? "가드");
-        if (text.Contains("{SF}")) text = text.Replace("{SF}", state.HomeTeam.GetPlayerByPosition(Position.SF)?.PlayerName ?? "포워드");
-        if (text.Contains("{PF}")) text = text.Replace("{PF}", state.HomeTeam.GetPlayerByPosition(Position.PF)?.PlayerName ?? "포워드");
-        if (text.Contains("{C}")) text = text.Replace("{C}", state.HomeTeam.GetPlayerByPosition(Position.C)?.PlayerName ?? "센터");
+        if (text.Contains("{PG}")) text = text.Replace("{PG}", MakeName(state.HomeTeam.GetPlayerByPosition(Position.PG)?.PlayerName) ?? "가드");
+        if (text.Contains("{SG}")) text = text.Replace("{SG}", MakeName(state.HomeTeam.GetPlayerByPosition(Position.SG)?.PlayerName) ?? "가드");
+        if (text.Contains("{SF}")) text = text.Replace("{SF}", MakeName(state.HomeTeam.GetPlayerByPosition(Position.SF)?.PlayerName) ?? "포워드");
+        if (text.Contains("{PF}")) text = text.Replace("{PF}", MakeName(state.HomeTeam.GetPlayerByPosition(Position.PF)?.PlayerName) ?? "포워드");
+        if (text.Contains("{C}")) text = text.Replace("{C}", MakeName(state.HomeTeam.GetPlayerByPosition(Position.C)?.PlayerName) ?? "센터");
 
         return text;
     }
@@ -590,5 +590,12 @@ public class MatchUIManager : MonoBehaviour
             _leagueCalculatePanel.gameObject.SetActive(true);
             _leagueCalculatePanel.Init(round, onConfirm);
         }
+    }
+
+    private string MakeName(string[] nameKey)
+    {
+        StringManager manager = StringManager.Instance;
+        string name = manager.GetString(nameKey[0]) + manager.GetString(nameKey[1]) + manager.GetString(nameKey[2]);
+        return name;
     }
 }

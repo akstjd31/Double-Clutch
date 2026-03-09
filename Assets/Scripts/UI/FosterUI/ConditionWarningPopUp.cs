@@ -39,6 +39,8 @@ public class ConditionWarningPopUp : MonoBehaviour
 
     private void MakeWarningList(List<Student> students)
     {
+        StringManager manager = StringManager.Instance;        
+
         foreach (var box in _problemList) //기존에 사용하던 경고창들을 풀로 반납
         {
             _problemPool.Release(box);
@@ -47,13 +49,14 @@ public class ConditionWarningPopUp : MonoBehaviour
 
         foreach (Student target in students) //넘겨받은 학생 중 문제 컨디션 0 다시 체크 후 경고문구 생성
         {
+            string name = manager.GetString(target.Name[0]) + manager.GetString(target.Name[1]) + manager.GetString(target.Name[2]);
             if (target.State != StudentState.None) //부상, 과로 학생용(팀 훈련 시)
-            {
-                CreateWarning(target.Name, target.State);
+            {                
+                CreateWarning(name, target.State);
             }
             else if (target.Condition <= 0) //컨디션 0 학생(범용)
             {
-                CreateWarning(target.Name);
+                CreateWarning(name);
             }
         }        
     }

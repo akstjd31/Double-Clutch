@@ -32,7 +32,9 @@ public class CharacterPowerBox : MonoBehaviour
 
     public void SetUI()
     {
-        _characterName.text = _player.Name;
+        StringManager manager = StringManager.Instance;
+        string name = manager.GetString(_player.Name[0]) + manager.GetString(_player.Name[1]) + manager.GetString(_player.Name[2]);
+        _characterName.text = name;
         _characterPosition.text = _player.Position.ToString();
         _characterAttack.text = _player.Attack.ToString();
         _characterDefense.text = _player.Defense.ToString();

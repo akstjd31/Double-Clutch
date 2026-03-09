@@ -51,8 +51,9 @@ public class StudentFactory : MonoBehaviour
         newStudent.SetVisual(GetRandomVisual(newStudent.SpecieId));
         newStudent.SetGrade(GetrRandomGrade());
         newStudent.SetPersonality(GetRandomPersonality());
-        newStudent.SetTrait(GetRandomTrait()); 
-        newStudent.SetName(GetRandomName());
+        newStudent.SetTrait(GetRandomTrait());
+        string[] name = GetRandomName();
+        newStudent.SetName(name[0], name[1], name[3]);
         SetPassives(newStudent, GetRandomPassive(newStudent));  
         newStudent.SetStat(GetRandomStats(newStudent.Grade));
 
@@ -77,13 +78,13 @@ public class StudentFactory : MonoBehaviour
             switch (nameData.namePart)
             {
                 case namePart.FirstName:
-                    _firstNames.Add(StringManager.Instance.GetString(nameData.nameKey));
+                    _firstNames.Add(nameData.nameKey);
                     break;
                 case namePart.MiddleName:
-                    _middleNames.Add(StringManager.Instance.GetString(nameData.nameKey));
+                    _middleNames.Add(nameData.nameKey);
                     break;
                 case namePart.LastName:
-                    _lastNames.Add(StringManager.Instance.GetString(nameData.nameKey));
+                    _lastNames.Add(nameData.nameKey);
                     break;
             }
         }
@@ -131,13 +132,18 @@ public class StudentFactory : MonoBehaviour
     }
 
 
-    private string GetRandomName() 
+    private string[] GetRandomName() 
     {
         string first = _firstNames[Random.Range(0, _firstNames.Count)];
         string middle = _middleNames[Random.Range(0, _middleNames.Count)];
         string last = _lastNames[Random.Range(0, _lastNames.Count)];
 
-        return first + middle + last;
+        string[] name = new string[3];
+        name[0] = first;
+        name[1] = middle;
+        name[2] = last;
+
+        return name;
     }
 
     private Player_SpeciesData GetRandomSpecie()

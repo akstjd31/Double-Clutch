@@ -251,7 +251,7 @@ public class MatchEngine : MonoBehaviour
         log.Quarter = _simQuarter;
         log.TeamId = (_currentPossession == TeamSide.Home) ? 0 : 1;
         log.PlayerId = shooter.PlayerId;
-        log.PlayerName = shooter.PlayerName;
+        log.PlayerName = MakeName(shooter.PlayerName);
         log.EventType = success ? "GOAL" : "MISS";
         log.IsSuccess = success;
         log.ScoreAdded = success ? score : 0;
@@ -469,8 +469,8 @@ public class MatchEngine : MonoBehaviour
 
         // 텍스트 치환
         string finalText = StringManager.Instance != null ? StringManager.Instance.GetString(config.textTemplate) : config.textTemplate;
-        if (actor != null) finalText = finalText.Replace("{PlayerName}", actor.PlayerName);
-        if (target != null) finalText = finalText.Replace("{TargetName}", target.PlayerName); // 패스 대상 이름 치환
+        if (actor != null) finalText = finalText.Replace("{PlayerName}", MakeName(actor.PlayerName));
+        if (target != null) finalText = finalText.Replace("{TargetName}", MakeName(target.PlayerName)); // 패스 대상 이름 치환
         // 5쿼터 이상이면 '연장 1', 아니면 원래 숫자 유지
         string quarterString = _simQuarter > 4 ? $"연장 {_simQuarter - 4}" : _simQuarter.ToString();
         finalText = finalText.Replace("{Quarter}", quarterString);
@@ -638,5 +638,12 @@ public class MatchEngine : MonoBehaviour
         int seconds = (int)elapsedTime % 60;
 
         return $"{minutes:D2}:{seconds:D2}";
+    }
+
+    private string MakeName(string[] nameKey)
+    {
+        StringManager manager = StringManager.Instance;
+        string name = manager.GetString(nameKey[0]) + manager.GetString(nameKey[1]) + manager.GetString(nameKey[2]);
+        return name;
     }
 }

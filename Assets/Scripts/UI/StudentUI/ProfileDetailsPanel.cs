@@ -34,8 +34,12 @@ public class ProfileDetailsPanel : MonoBehaviour
     {
         Debug.Log("Profile Details Panel Init!");
         _student = student;
+
+        StringManager manager = StringManager.Instance;
+        string name = manager.GetString(_student.Name[0]) + manager.GetString(_student.Name[1]) + manager.GetString(_student.Name[2]);
+
         _positionDropdown.value = PositionIntoValue(student.Position);
-        _nameText.text = student.Name;
+        _nameText.text = name;
         _gradeText.text = student.Grade.ToString() + "학년";
         _attackText.text = student.Attack.ToString();
         _defenseText.text = student.Defense.ToString();

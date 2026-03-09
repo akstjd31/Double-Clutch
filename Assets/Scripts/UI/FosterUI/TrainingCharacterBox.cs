@@ -26,9 +26,13 @@ public class TrainingCharacterBox : MonoBehaviour
     public void Init(Student student)
     {
         _student = student;
+
+        StringManager manager = StringManager.Instance;
+        string name = manager.GetString(_student.Name[0]) + manager.GetString(_student.Name[1]) + manager.GetString(_student.Name[2]);
+
         _button.onClick.RemoveAllListeners();
         _button.onClick.AddListener(() => StudentUIManager.Instance.OnTrainingCharacterBoxClick(_student));
-        _nameText.text = _student.Name;
+        _nameText.text = name;
         SetStudentState();
     }
 

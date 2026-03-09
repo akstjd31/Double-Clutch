@@ -20,7 +20,11 @@ public class PlayerCard : MonoBehaviour, IPointerClickHandler
     public void Init(Student student)
     {
         _player = student;
-        _playerName.text = student.Name;
+
+        StringManager manager = StringManager.Instance;
+        string name = manager.GetString(_player.Name[0]) + manager.GetString(_player.Name[1]) + manager.GetString(_player.Name[2]);
+
+        _playerName.text = name;
         _playerPosition.text = student.Position.ToString();   
         if (student.State == StudentState.OverWorked)
         {

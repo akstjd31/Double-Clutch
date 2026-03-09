@@ -206,7 +206,7 @@ public static class MatchCalculator
         float dice = Random.Range(0f, 100f);
         bool isSuccess = dice <= prob;
 
-        string eName = nearestEnemy != null ? nearestEnemy.PlayerName : "없음";
+        string eName = nearestEnemy != null ? MakeName(nearestEnemy.PlayerName) : "없음";
         Debug.Log($"<color=#FF8C00>[슛 디버그]</color> {attacker.PlayerName} 슛 시도 (골대거리:{distance:F2})\n" +
               $"▶ 공격 슛스탯: {shootStat} | 수비({eName}) 블록스탯: {blockStat} (수비거리:{minEnemyDist:F2})\n" +
               $"▶ 공식: ( {shootStat} / (내슛{shootStat} + 적블록{blockStat} * 거리배율{distancePenalty:F2}) ) * 100\n" +
@@ -337,5 +337,12 @@ public static class MatchCalculator
         }
 
         return candidates[0];
+    }
+
+    private static string MakeName(string[] nameKey)
+    {
+        StringManager manager = StringManager.Instance;
+        string name = manager.GetString(nameKey[0]) + manager.GetString(nameKey[1]) + manager.GetString(nameKey[2]);
+        return name;
     }
 }

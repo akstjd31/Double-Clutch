@@ -63,7 +63,7 @@ public class ResultState : IState
                 matchPlayers.Add(new MatchPlayerData
                 {
                     Position = matchPlayer.MainPosition.ToString(), // 선수의 주 포지션
-                    Name = matchPlayer.PlayerName,                  // 선수 이름
+                    Name = MakeName(matchPlayer.PlayerName),        // 선수 이름
                     Score = matchPlayer.Score                       // 선수의 득점
                 });
                 if (matchPlayer.PlayerId < 10000)
@@ -142,5 +142,11 @@ public class ResultState : IState
 
         // 로딩 상태로 전환하여 자연스럽게 씬 이동 처리
         _sm.ChangeState<LoadingState>();
+    }
+    private string MakeName(string[] nameKey)
+    {
+        StringManager manager = StringManager.Instance;
+        string name = manager.GetString(nameKey[0]) + manager.GetString(nameKey[1]) + manager.GetString(nameKey[2]);
+        return name;
     }
 }
