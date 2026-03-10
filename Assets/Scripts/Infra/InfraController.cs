@@ -66,18 +66,16 @@ public class InfraController : MonoBehaviour
             );
 
             infra.SetInfraEffectValueList(infraMgr.GetValueListByEffectType(_infraEffectType));
-            infraMgr.SaveData();
         }
         else
         {
             infra = saveData;
         }
 
-        infraMgr.SetInfra(infra);
-
         _needCost = infraMgr.GetCostListByEffectType(_infraEffectType);
 
         Debug.Log($"[{infra.name}] 기초 세팅 완료!");
+        infraMgr.SetInfra(infra);
         initComplete = true;
     }     
 
