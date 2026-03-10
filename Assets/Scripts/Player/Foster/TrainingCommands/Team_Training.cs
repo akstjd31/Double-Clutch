@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class TeamTraining : ITraining
@@ -68,16 +69,19 @@ public class TeamTraining : ITraining
                         int growth = _data.allGain + (_data.allGain * ((_target.GetStat(pot).GrowthRate + InfraManager.Instance.GetInfraEffectValueByEffectType(infraEffectType.TrainingBonus))/ 100));
 
                         _target.GetStat(pot).GrowAndReturn(growth);
+                        _target.AddChangedPotential(pot);
                     }
                     break;
                 case 2: //전술 훈련 : 포지션 별 주/부 스탯을 각각 수치만큼 증가
                     potential mainPot = FosterManager.Instance.GetPositionMapping(this._target).mainPotential;
                     int mainGrowth = _data.mainGain + (_data.mainGain * ((_target.GetStat(mainPot).GrowthRate + InfraManager.Instance.GetInfraEffectValueByEffectType(infraEffectType.TrainingBonus)) / 100));
                     _target.GetStat(mainPot).GrowAndReturn(mainGrowth);
+                    _target.AddChangedPotential(mainPot);
 
                     potential subPot = FosterManager.Instance.GetPositionMapping(this._target).subPotential;
                     int subGrowth = _data.subGain + (_data.subGain * ((_target.GetStat(subPot).GrowthRate + InfraManager.Instance.GetInfraEffectValueByEffectType(infraEffectType.TrainingBonus)) / 100));
                     _target.GetStat(subPot).GrowAndReturn(subGrowth);
+                    _target.AddChangedPotential(subPot);
 
                     break;
             }
