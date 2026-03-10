@@ -16,6 +16,8 @@ public class EventManager : MonoBehaviour
     //선수별 발생 이벤트 선정 딕셔너리
     private Dictionary<int, RandomEvent> _studentEventList = new();
 
+    int max;
+
     //어떤 선수의 이벤트인지 대상 선택.
     //매서드가 호출되면 이벤트가 실행되도록 함.
 
@@ -50,16 +52,19 @@ public class EventManager : MonoBehaviour
             //모든 이벤트 수만큼 검사
             for (int j = 0; j < data.Count; j++)
             {
-                Debug.Log($"{_myStudents[i].GetCurrentStat(data[j].mainPotentialType)} >= {data[j].requiredPotentialValue}");
-                Debug.Log($"{i} - {data[j].eventId}");
                 //스텟 검사
                 if (_myStudents[i].GetCurrentStat(data[j].mainPotentialType) >= data[j].requiredPotentialValue)
                 {
                     //이벤트 id랑 쿨타임 저장
                     _eventListDictionary[studentID].Add(new RandomEvent(data[j].eventId, data[j].cooldownTurn, data[j].eventPriority));
-                    Debug.Log($"{i} - {data[j].eventId}");
                 }
             }
+                Debug.Log($"------[1차 후보]------");
+            foreach (var n in _eventListDictionary[studentID])
+            {
+                Debug.Log($"1차 후보 : {i} - {n.EventId}");
+            }
+                Debug.Log($"----------------------");
         }
     }
 
@@ -67,6 +72,7 @@ public class EventManager : MonoBehaviour
     private void CooldownTurnCheck()
     {
         List<RandomEvent> events = new List<RandomEvent>();
+        
 
         //학생들 전체 검사
         for (int i = 0; i < _myStudents.Count; i++)
@@ -80,49 +86,41 @@ public class EventManager : MonoBehaviour
                 continue;
             }
 
-            int maxNum = MaxPriorityNumber(list);
-
+            Debug.Log($"쿨타임/우선순위검사");
             //딕셔너리>학생>이벤트리스트 개수만큼 체크
-            for (int j = 0; j < list.Count; j++)
+            events = MaxPriorityNumber(list);
+                Debug.Log($"------[2차 후보]------");
+            foreach(var n in events)
             {
-                //쿨다운 타이머 false인 이벤트만 통과
-                if (list[j].IsCooldownStart == true)
-                {
-                    continue;
-                }
-
-                //우선순위가 가장 높은 값과 같은 값을 가진 이벤트만 통과
-                if (list[j].EventPriority != maxNum)
-                {
-                    continue;
-                }
-
-                //우선순위가 가장 높은 이벤트
-
-                
-                events.Add(list[j]);
+                Debug.Log($"{i} - {n.EventId}");
             }
+                Debug.Log($"----------------------");
 
             //우선순위가 같은 이벤트가 2개 이상이라면 그 중에 하나만 뽑기
             //Q. 우선순위가 같은 세개의 이벤트 중에 하나를 뽑았는데 뽑힌 이벤트가 발생확률이 낮으면 아무 이벤트도 발생하지 않을 수 있나?
-            if(events.Count > 1)
+            if (events.Count > 1)
             {
                 int random = Random.Range(0, events.Count);
                 _studentEventList[studentID] = events[random];
-                Debug.Log($"{i} - {events[random]}");
+                Debug.Log($"------[결과 ]------");
+                Debug.Log($"{i} - {events[random].EventId}");
+                Debug.Log($"----------------------");
             }
             else if(events.Count == 1)
             {
                 //이벤트발생 리스트에 넣기.
                 _studentEventList[studentID] = events[0];
-                Debug.Log($"{i} - {events[0]}");
+                Debug.Log($"------[결과 ]------");
+                Debug.Log($"{i} - {events[0].EventId}");
+                Debug.Log($"----------------------");
             }
             
         }
     }
 
 
-    //주차가 끝나면 이벤트 쿨타임 감소
+    //주차가 끝나면 모든 학생이 가지고 있는 이벤트
+    //IsReady = false만 쿨타임 감소
     public void WeekendCooldown()
     {
         var data = _Event_DataModelReader.DataList;
@@ -141,7 +139,7 @@ public class EventManager : MonoBehaviour
             for (int j = 0; j < _eventListDictionary[studentID].Count; j++)
             {
                 //쿨다운 시작된 이벤트만 감소
-                if (_eventListDictionary[studentID][j].IsCooldownStart == false)
+                if (_eventListDictionary[studentID][j].IsReady == false)
                 {
                     continue;
                 }
@@ -150,20 +148,40 @@ public class EventManager : MonoBehaviour
             }
         }
     }
-    private int MaxPriorityNumber(List<RandomEvent> data)
+
+    //우선순위 최댓값 찾기
+    private List<RandomEvent> MaxPriorityNumber(List<RandomEvent> data)
     {
-        int max = int.MaxValue;
+        max = int.MinValue;
+        List<RandomEvent> resultList = new List<RandomEvent>();
 
         for (int i = 0; i < data.Count; i++)
         {
             int num = data[i].EventPriority;
+
+            //쿨다운 타이머 true인 이벤트만 통과
+            if (data[i].IsReady == false)
+            {
+                continue;
+            }
+
+            //현재 숫자가 최대숫자라면
             if (num > max)
             {
                 max = num;
+                //초기화 후 추가
+                resultList.Clear();
+                resultList.Add(data[i]);
+            }
+            //같은 숫자면 그냥 추가
+            else if(num == max)
+            {
+                resultList.Add(data[i]);
             }
         }
+        Debug.Log($"--------------------------------");
 
-        return max;
+        return resultList;
     }
 
     //Context 로드
