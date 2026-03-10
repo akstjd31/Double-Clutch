@@ -129,11 +129,12 @@ public class CalendarManager : Singleton<CalendarManager>
                 // 2. 시즌 아웃 조건 유무 확인
                 if (data.hasSeasonOut)
                 {
+                    weekId = data.targetidSpecial;
                     // 경기 결과 정보 받기
                 }
                 else
                 {
-                    weekId = data.targetidSpecial;
+                    weekId = data.targetidDefault;
                 }
             }
             else
@@ -144,13 +145,16 @@ public class CalendarManager : Singleton<CalendarManager>
             data = _calReader.DataList[weekId - 1];
         }
 
+        // 만약 시즌아웃을 당했다면 현재 달과 타겟 달 차이를 비교하여 누적시킨 지원금을 추가로 받는다.
+        int accSub = data.hasSeasonOut ? (data.month - calendar.month + 12) % 12 : 1;
+
         calendar.month = data.month;
         calendar.week = data.weekNo;
 
         if (IsFundingDay())
         {
             var m = gm.SaveData.money;
-            gm.SetMoney(m + 100);
+            gm.SetMoney(m + (100 * accSub));
         }
 
         gm.SetWeekId(weekId);
