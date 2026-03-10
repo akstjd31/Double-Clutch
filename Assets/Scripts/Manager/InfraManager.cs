@@ -168,7 +168,25 @@ public class InfraManager : Singleton<InfraManager>
         SaveLoadManager.Instance.Save<InfraSaveData>(FilePath.INFRA_PATH, saveData);
     }
 
-    public void SetInfra(Infra infra) => infras[infra.groupId - 1] = infra;
+    public void SetInfra(Infra infra)
+    {
+        infras[infra.groupId - 1] = infra;
+
+        if (HasCompleteInfraSetUp())
+            SaveData();
+    }
+
+    // 인프라 배열의 셋업이 완료가 되었다면
+    private bool HasCompleteInfraSetUp()
+    {
+        foreach (var infra in infras)
+        {
+            if (infra == null) return false;
+        }
+
+        return true;
+    }
+
 
     public void UpdateInfraLevel(Infra infra) => infras[infra.groupId - 1].currentLevel = infra.currentLevel;
 
