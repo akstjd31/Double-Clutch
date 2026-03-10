@@ -84,7 +84,7 @@ public static class MatchCalculator
 
         float scoreShoot = (shootStat * wShoot * wShotBase)
                          + (100f / (distToHoop + 1f))
-                         - (enemyBlock * (1f / (nearestEnemyDist + penBlock)) * wShoot);
+                         - (enemyBlock * (1f / (nearestEnemyDist + penBlock))  * wShoot * wShotBase);
 
         // 패스 점수 공식
 
@@ -109,8 +109,8 @@ public static class MatchCalculator
             }
 
             float currentPassScore = (mate.GetStat(MatchStatType.Pass) * tactics.bonusPass * wPassBase)
-                                   + (mateNearestEnemyDist * penDistHoop)
-                                   - (hasEnemyOnPath * pathEnemySteal * tactics.bonusPass);
+                                   + (mateNearestEnemyDist * 100f)
+                                   - (hasEnemyOnPath * pathEnemySteal * tactics.bonusPass * wPassBase);
 
             if (currentPassScore > maxPassScore) maxPassScore = currentPassScore;
         }
@@ -120,9 +120,9 @@ public static class MatchCalculator
         float enemySteal = (nearestEnemy != null) ? nearestEnemy.GetStat(MatchStatType.Steal) : 0f;
 
         float scoreDribble = (player.GetStat(MatchStatType.Pass) * tactics.bonusDribble * wDribBase)
-                           + (nearestEnemyDist * penDistHoop * tactics.bonusDribble)
-                           + (distToHoop * penDistHoop * tactics.bonusDribble)
-                           - (enemySteal * (1f / (nearestEnemyDist + penSteal)) * tactics.bonusDribble);
+                           + (nearestEnemyDist * 100f * tactics.bonusDribble * wDribBase)
+                           + (distToHoop * penDistHoop * tactics.bonusDribble * wDribBase)
+                           - (enemySteal * (1f / (nearestEnemyDist + penSteal)) * tactics.bonusDribble * wDribBase);
 
         if (distToHoop > 0.84f)
         {
