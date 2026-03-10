@@ -103,7 +103,8 @@ public class MatchSimState : IState
 
         string actualVisualKey = s.VisualData.playerImageResource;
         if (string.IsNullOrEmpty(actualVisualKey)) actualVisualKey = "Default_Player_Sprite";
-
-        return new MatchPlayer(id, s.Name, pos, stats, actualVisualKey, s.Passive);
+        MatchPlayer matchPlayer = new MatchPlayer(id, s.Name, pos, stats, actualVisualKey, s.Passive);
+        matchPlayer.TraitId = s.TraitId;
+        return matchPlayer;
     }
 }

@@ -23,6 +23,7 @@ public class MatchEngine : MonoBehaviour
     [Header("Data Readers")]
     [SerializeField] private Event_ConfigDataReader _eventConfigReader;
     [SerializeField] private Position_PresetDataReader _positionPresetReader;
+    [SerializeField] private Player_SynergyDataReader _synergyReader;
 
     [Header("Balance Settings")]
     [SerializeField]
@@ -132,6 +133,11 @@ public class MatchEngine : MonoBehaviour
 
         _homeTeam.SimulatedScore = 0;
         _awayTeam.SimulatedScore = 0;
+
+        if (_synergyReader != null)
+        {
+            _homeTeam.EvaluateSynergies(_synergyReader.DataList);
+        }
     }
 
     public void CalculateUntilQuarter(int targetQuarter)
@@ -345,7 +351,7 @@ public class MatchEngine : MonoBehaviour
             allPlayers.AddRange(attackTeam.Roster);
             allPlayers.AddRange(defendTeam.Roster);
 
-            MatchPlayer rebounder = MatchCalculator.CalculateReboundWinner(dropPos, allPlayers);
+            MatchPlayer rebounder = MatchCalculator.CalculateReboundWinner(dropPos, allPlayers, _homeTeam);
             RecordLog("Rebound", rebounder);
             _ballHolder = rebounder;
 
@@ -421,10 +427,10 @@ public class MatchEngine : MonoBehaviour
 
     private void DoDribble(MatchPlayer dribbler, List<MatchPlayer> enemies, Vector2 hoopPos, TeamTactics attackTactics, TeamTactics defendTactics)
     {
-        bool success = MatchCalculator.CalculateDribbleSuccess(dribbler, enemies, attackTactics, defendTactics, dribbleBlockDist);
+        bool success = MatchCalculator.CalculateDribbleSuccess(dribbler, _homeTeam, _awayTeam, attackTactics, defendTactics, dribbleBlockDist);
         if (success)
         {
-            Vector2 dir = (hoopPos - dribbler.LogicPosition).normalized;
+            Vector2 dir = (hoopPos - dribbler.LogicPosition).normalized; List<MatchPlayer> allPlayers = new List<MatchPlayer>();
             float moveDist = Mathf.Min(UnityEngine.Random.Range(0.1f, 0.2f), MAX_MOVE_PER_TICK);
             dribbler.LogicPosition += dir * moveDist;
             RecordLog("Dribble", dribbler);

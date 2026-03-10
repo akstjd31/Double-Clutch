@@ -7,7 +7,7 @@ public enum skillCategory
 public enum effectType
 {
     //    2ptProb, 3ptProb, 
-    None, Prob2pt, Prob3pt, ProbDunk, ProbSteal, GrowthShoot, GrowthSteal
+    None, Prob2pt, Prob3pt, ProbDunk, ProbSteal, ProbRebound, DecreaseSteal, DecreaseRebound, ConditionSave, GrowthShoot, GrowthSteal
 }
 
 [Serializable]
