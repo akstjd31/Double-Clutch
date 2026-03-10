@@ -65,6 +65,7 @@ public class Team_Rest : ITraining
                     _target.ChangeState(StudentState.None);                    
                     break;
             }
+            _target.OnStatChanged();
             _target.ResetTrainingSchedule();
         }
     }

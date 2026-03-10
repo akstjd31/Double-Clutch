@@ -9,7 +9,11 @@ public class CharacterRow : MonoBehaviour
 {
     [SerializeField] TextMeshProUGUI _name;
     [SerializeField] TextMeshProUGUI _attack;
+    [SerializeField] TextMeshProUGUI _attackTag1;
+    [SerializeField] TextMeshProUGUI _attackTag2;
     [SerializeField] TextMeshProUGUI _guard;
+    [SerializeField] TextMeshProUGUI _guardTag1;
+    [SerializeField] TextMeshProUGUI _guardTag2;
     [SerializeField] TextMeshProUGUI _condition;
     [SerializeField] TextMeshProUGUI _state;
 
@@ -17,9 +21,10 @@ public class CharacterRow : MonoBehaviour
     {
         StringManager manager = StringManager.Instance;
         _name.text = manager.GetString(target.Name[0]) + manager.GetString(target.Name[1]) + manager.GetString(target.Name[2]);
-        _attack.text = $"+{target.AttackChange}";
-        _guard.text = $"+{target.DefenseChange}";
-        _condition.text = target.Condition.ToString();
+        
+        _attack.text = target.AttackChange != 0 ? $"+{target.AttackChange}" : "-";
+        _guard.text = target.DefenseChange != 0 ? $"+{target.DefenseChange}" : "-";
+        _condition.text = target.ConditionChange.ToString();
         _state.text = GetStateString(target.State);
     }
 
@@ -27,6 +32,11 @@ public class CharacterRow : MonoBehaviour
     {
         if (state == StudentState.Injured) return "부상";
         else if (state == StudentState.OverWorked) return "과로";
-        else return ("정상");
+        else return ("-");
     }
+
+    private void SetTag()
+    {
+
+    }    
 }
