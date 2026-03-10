@@ -83,6 +83,42 @@ public class Student
     {
         _currentTraining = training;
     }
+
+    public float GetFosterPassiveValue(potential pot)
+    {
+        switch(pot)
+        {
+            case potential.Stat2pt:
+                return FindPassive(effectType.Growth2pt);
+            case potential.Stat3pt:
+                return FindPassive(effectType.Growth3pt);
+            case potential.StatBlock:
+                return FindPassive(effectType.GrowthBlock);
+            case potential.StatPass:
+                return FindPassive(effectType.GrowthPass);
+            case potential.StatSteal:
+                return FindPassive(effectType.GrowthSteal);
+            case potential.StatRebound:
+                return FindPassive(effectType.GrowthRebound);
+            default:
+                return 0;
+        }
+    }
+
+    private float FindPassive(effectType type)
+    {
+        float result = 0f;
+        foreach (var passive in _passiveDataList)
+        {
+            if (passive.effectType == type)
+            {
+                result += passive.effectValue;
+            }
+        }
+        return result;
+    }
+
+
     public int GetCurrentStat(potential type) //현재 스탯 수치 반환(바로가기) 매서드
     {
         if (type == potential.None || !_statDict.ContainsKey(type))
