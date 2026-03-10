@@ -84,7 +84,7 @@ public static class MatchCalculator
 
         float scoreShoot = (shootStat * wShoot * wShotBase)
                          + (100f / (distToHoop + 1f))
-                         - (enemyBlock * (1f / (nearestEnemyDist + penBlock)) * wShoot);
+                         - (enemyBlock * (1f / (nearestEnemyDist + penBlock))  * wShoot * wShotBase);
 
         // 패스 점수 공식
 
@@ -109,8 +109,8 @@ public static class MatchCalculator
             }
 
             float currentPassScore = (mate.GetStat(MatchStatType.Pass) * tactics.bonusPass * wPassBase)
-                                   + (mateNearestEnemyDist * penDistHoop)
-                                   - (hasEnemyOnPath * pathEnemySteal * tactics.bonusPass);
+                                   + (mateNearestEnemyDist * 100f)
+                                   - (hasEnemyOnPath * pathEnemySteal * tactics.bonusPass * wPassBase);
 
             if (currentPassScore > maxPassScore) maxPassScore = currentPassScore;
         }
@@ -120,9 +120,9 @@ public static class MatchCalculator
         float enemySteal = (nearestEnemy != null) ? nearestEnemy.GetStat(MatchStatType.Steal) : 0f;
 
         float scoreDribble = (player.GetStat(MatchStatType.Pass) * tactics.bonusDribble * wDribBase)
-                           + (nearestEnemyDist * penDistHoop * tactics.bonusDribble)
-                           + (distToHoop * penDistHoop * tactics.bonusDribble)
-                           - (enemySteal * (1f / (nearestEnemyDist + penSteal)) * tactics.bonusDribble);
+                           + (nearestEnemyDist * 100f * tactics.bonusDribble * wDribBase)
+                           + (distToHoop * 100f * tactics.bonusDribble * wDribBase)
+                           - (enemySteal * (1f / (nearestEnemyDist + penSteal)) * tactics.bonusDribble * wDribBase);
 
         if (distToHoop > 0.84f)
         {
@@ -159,7 +159,7 @@ public static class MatchCalculator
 
         // 기획서 원본 공식이 그대로 보이는 행동 결정 디버그 로그!
         Debug.Log($"<color=#FFFF00>[행동 결정 디버그]</color> {playerName} (골대거리:{distToHoop:F2}, 수비거리:{nearestEnemyDist:F2})\n" +
-                  $"▶ 슛 공식: ({shootStat}*{wShoot}*{wShotBase}) + (100/({distToHoop:F2}+1)) - ({enemyBlock}*(1/({nearestEnemyDist:F2}+{penBlock}))*{wShoot})\n" +
+                  $"▶ 슛 공식: ({shootStat}*{wShoot}*{wShotBase}) + (100/({distToHoop:F2}+1)) - ({enemyBlock}*(1/({nearestEnemyDist:F2}+{penBlock}))*{wShoot}*{wShotBase})\n" +
                   $"▶ 결과 점수 => 슛: {scoreShoot:F2} | 패스: {scorePass:F2} | 드리블: {scoreDribble:F2}\n" +
                   $"▶ <color=#00FF00>최종 AI 선택: {actionName}</color>");
 
@@ -260,7 +260,7 @@ public static class MatchCalculator
         float dice = Random.Range(0f, 100f);
         bool success = dice <= prob;
 
-        Debug.Log($"<color=#00BFFF>패스 디버그</color> {passer.PlayerName}->{receiver.PlayerName} (차단시도:{pathEnemy.PlayerName})\n" +
+        Debug.Log($"<color=#00BFFF>[패스 디버그]</color> {passer.PlayerName}->{receiver.PlayerName} (차단시도:{pathEnemy.PlayerName})\n" +
                   $"▶ 공격 패스스탯: {passStat} | 수비 스틸스탯: {stealStat} (차단판정거리: {interceptDist:F2})\n" +
                   $"▶ 공식: (({passStat} / {passStat + stealStat}) * 100) - 수비패시브({stealPassiveBonus}%) = {prob:F2}%\n" +
                   $"▶ <color=#00FF00>최종확률: {prob:F2}%</color> | 주사위: {dice:F2} => {(success ? "<b>성공</b>" : "<b>차단당함</b>")}");
@@ -313,7 +313,7 @@ public static class MatchCalculator
         }
 
         float weightedStealStat = stealStat * wStealBalance;
-        float prob = (dribbleStat / (dribbleStat + stealStat)) * 100f;
+        float prob = (dribbleStat / (dribbleStat + weightedStealStat)) * 100f;
         prob -= stealPassiveBonus;
 
         float dice = Random.Range(0f, 100f);
@@ -321,6 +321,7 @@ public static class MatchCalculator
 
         Debug.Log($"<color=#DA70D6>[드리블 디버그]</color> {dribblerName} 돌파 경합! (수비수: {enemyName}, 거리:{minEnemyDist:F2})\n" +
                   $"▶ 내 드리블 스탯: {dribbleStat} | 적 스틸 스탯: {stealStat} (가중치 {wStealBalance}배 적용 -> {weightedStealStat})\n" +
+                  $"▶ 공식: (({dribbleStat} / ({dribbleStat} + {weightedStealStat})) * 100) - 수비패시브({stealPassiveBonus}%) = {prob:F2}%\n" +
                   $"▶ <color=#00FF00>최종 돌파 확률: {prob:F2}%</color> | 주사위: {dice:F2} => {(success ? "<b>돌파 성공(전진)!</b>" : "<b>수비에 막힘(좌우이동)</b>")}");
 
         return success;

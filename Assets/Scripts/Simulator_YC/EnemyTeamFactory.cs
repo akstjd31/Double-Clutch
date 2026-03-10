@@ -128,10 +128,10 @@ public class EnemyTeamFactory : MonoBehaviour
                 name: playerName,
                 pos: pos,
                 initStats: stats,
-                resourceKey: "Enemy_Resource",
-                passives: new List<Player_PassiveData>()
+                resourceKey: resourceKey,
+                passives: assignedPassives
             );
-
+            player.TraitId = assignedTraitId;
             enemyTeam.AddPlayer(player);
         }
 
@@ -210,13 +210,9 @@ public class EnemyTeamFactory : MonoBehaviour
         {
             if (data.nation == targetNation)
             {
-                // 스트링 매니저에서 텍스트를 못 찾을 경우 엑셀의 desc(원문)을 그대로 사용
-                string nameStr = (StringManager.Instance != null) ? StringManager.Instance.GetString(data.nameKey) : data.desc;
-                if (string.IsNullOrEmpty(nameStr) || nameStr == data.nameKey) nameStr = data.desc;
-
-                if (data.namePart == namePart.FirstName) firsts.Add(nameStr);
-                else if (data.namePart == namePart.MiddleName) middles.Add(nameStr);
-                else if (data.namePart == namePart.LastName) lasts.Add(nameStr);
+                if (data.namePart == namePart.FirstName) firsts.Add(data.nameKey);
+                else if (data.namePart == namePart.MiddleName) middles.Add(data.nameKey);
+                else if (data.namePart == namePart.LastName) lasts.Add(data.nameKey);
             }
         }
 
