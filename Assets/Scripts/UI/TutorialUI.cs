@@ -1,6 +1,8 @@
+using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+
 
 public class TutorialUI : MonoBehaviour
 {
@@ -28,7 +30,7 @@ public class TutorialUI : MonoBehaviour
 
             _wrongTextPanelObj.SetActive(true);
             return;
-        } 
+        }
 
         var gm = GameManager.Instance;
         var data = new PlayerSaveData();
@@ -39,21 +41,45 @@ public class TutorialUI : MonoBehaviour
         data.year = 0;
 
         gm.InitData(data);
-    
+
         CalendarManager.Instance.CalcWeek(data.weekId, gm);
 
-        GameManager.Instance.Dispatch(UIAction.Main_Start); 
+        GameManager.Instance.Dispatch(UIAction.Main_Start);
         this.gameObject.SetActive(false);
     }
 
     private bool CheckBadWord(string text)
     {
+        string normalizedInput = NormalizeText(text);
+
+        if (string.IsNullOrEmpty(normalizedInput))
+            return false;
+
         foreach (string word in _reader.WordData)
         {
-            if (text.Contains(word))
+            if (string.IsNullOrWhiteSpace(word))
+                continue;
+
+            string normalizedWord = NormalizeText(word);
+
+            if (string.IsNullOrEmpty(normalizedWord))
+                continue;
+
+            if (normalizedInput.Contains(normalizedWord))
                 return true;
         }
 
         return false;
+    }
+
+    private string NormalizeText(string text)
+    {
+        if (string.IsNullOrEmpty(text))
+            return "";
+
+        // 공백, 특수문자, 숫자 제거
+        string normalized = Regex.Replace(text, @"[^a-zA-Z가-힣]", "");
+
+        return normalized.ToLower();
     }
 }
