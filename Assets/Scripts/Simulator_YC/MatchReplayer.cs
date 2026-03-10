@@ -81,11 +81,18 @@ public class MatchReplayer : MonoBehaviour
         {
             if (player.VisualObject == null)
             {
-                player.VisualObject = CreateCircleUI(player.PlayerName, color, 30f);
+                player.VisualObject = CreateCircleUI(MakeName(player.PlayerName), color, 30f);
                 player.VisualObject.GetComponent<RectTransform>().anchoredPosition
                     = LogicToUIPos(player.LogicPosition);
             }
         }
+    }
+
+    private string MakeName(string[] nameKey)
+    {
+        StringManager manager = StringManager.Instance;
+        string name = manager.GetString(nameKey[0]) + manager.GetString(nameKey[1]) + manager.GetString(nameKey[2]);
+        return name;
     }
 
     // °ñ´ë »ý¼º

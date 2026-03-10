@@ -13,7 +13,7 @@ public class Student
 {
     //저장되는 데이터(-1은 미할당을 의미)
     [SerializeField] int _studentId = -1; //학생 식별용 고유 id(학생 영입 확정 후 부여)
-    [SerializeField] string _name; //이름
+    [SerializeField] string[] _name; //이름
     [SerializeField] string _specieId = string.Empty; // 종족
     [SerializeField] string _visualId = string.Empty; // 비주얼 Id
     [SerializeField] string _personalityId = string.Empty; // 성격 Id
@@ -48,7 +48,7 @@ public class Student
 
     //외부 호출용 프로퍼티(조회용)
     public int StudentId => _studentId;
-    public string Name => _name;
+    public string[] Name => _name;
     public string SpecieId => _specieId;
     public Player_SpeciesData SpecieData => _specieData;
     public string VisualId => _visualId;
@@ -132,9 +132,12 @@ public class Student
         _studentId = id;
     }
 
-    public void SetName(string name)
+    public void SetName(string first, string middle, string last)
     {
-        _name = name;
+        _name = new string[3];
+        _name[0] = first;
+        _name[1] = middle;
+        _name[2] = last;
     }
     public void SetSpecieId(string specieId)
     {

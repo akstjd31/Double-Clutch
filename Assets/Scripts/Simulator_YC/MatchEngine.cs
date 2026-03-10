@@ -23,6 +23,17 @@ public class MatchEngine : MonoBehaviour
     [Header("Data Readers")]
     [SerializeField] private Event_ConfigDataReader _eventConfigReader;
     [SerializeField] private Position_PresetDataReader _positionPresetReader;
+
+    [Header("Balance Settings")]
+    [SerializeField]
+    [Tooltip("드리블 시 수비수에게 방해받는 판정 거리")]
+    private float dribbleBlockDist = 0.1f;
+    [SerializeField]
+    [Tooltip("패스 시 수비수에게 차단당하는 판정 거리")]
+    private float passInterceptDist = 0.03f;
+    [SerializeField]
+    [Tooltip("슛 시도 시 수비수에게 블록당하는 판정 거리")]
+    private float blockDist = 0.25f;
     public void StartSimulation()
     {
         // 엔진 내부에서 코루틴을 돌려 전반전/하프타임/후반전 흐름을 제어합니다.
@@ -149,16 +160,9 @@ public class MatchEngine : MonoBehaviour
         // 연장전 처리 (4쿼터가 끝났는데 동점일 때만)
         if (targetQuarter >= 4)
         {
-            int maxOvertime = 20; // 최대 연장전 횟수 (20번)
-            int currentOvertime = 0;
 
             while (_homeTeam.SimulatedScore == _awayTeam.SimulatedScore)
             {
-                if (currentOvertime >= maxOvertime)
-                {
-                    Debug.LogWarning("연장전 20회 돌파! 무승부로 강제 종료하여 프리징을 방지합니다.");
-                    break; // 무한 루프 탈출!
-                }
                 RecordLog("GameStart");
 
                 _simTime = 300f;
@@ -172,7 +176,7 @@ public class MatchEngine : MonoBehaviour
 
                 _simQuarter++;
                 _currentPossession = (_currentPossession == TeamSide.Home) ? TeamSide.Away : TeamSide.Home;
-                currentOvertime++;
+                if (_simQuarter > 8) break;
             }
 
             RecordLog("GameEnd");
@@ -194,14 +198,23 @@ public class MatchEngine : MonoBehaviour
         TeamTactics attackTactics = MatchDataProxy.Instance.GetTactics(attackTeam.TeamColorId);
         TeamTactics defendTactics = MatchDataProxy.Instance.GetTactics(defendTeam.TeamColorId);
 
-        int action = MatchCalculator.DecideAction(_ballHolder, distToHoop, attackTactics, attackTeam.Roster, defendTeam.Roster);
+        int action = MatchCalculator.DecideAction(_ballHolder, distToHoop, attackTactics, attackTeam.Roster, defendTeam.Roster, passInterceptDist);
 
-        float timeCost = UnityEngine.Random.Range(5f, 10f);
+        float timeCost = UnityEngine.Random.Range(1f, 3f);
         _simTime -= timeCost;
 
         if (_simTime <= 0)
         {
             _simTime = 0; // 시간 마이너스 방지
+
+            bool isOT3EndTied = (_simQuarter == 7 && _homeTeam.SimulatedScore == _awayTeam.SimulatedScore);
+
+            if (isOT3EndTied)
+            {
+                Debug.LogWarning($"[시스템] 연장 3쿼터 무승부 도달! {_ballHolder.PlayerName}의 강제 버저비터 발동!");
+                // 강제 버저비터 슛 실행
+                DoShoot(_ballHolder, attackTeam, defendTeam, distToHoop, hoopPos, true, attackTactics, defendTactics, true);
+            }
 
             if (action == 0)
             {
@@ -226,14 +239,16 @@ public class MatchEngine : MonoBehaviour
         }
     }
 
-    private void DoShoot(MatchPlayer shooter, MatchTeam attackTeam, MatchTeam defendTeam, float distance, Vector2 hoopPos, bool isBuzzerBeater, TeamTactics attackTactics, TeamTactics defendTactics)
+    private void DoShoot(MatchPlayer shooter, MatchTeam attackTeam, MatchTeam defendTeam, float distance, Vector2 hoopPos, bool isBuzzerBeater, TeamTactics attackTactics, TeamTactics defendTactics, bool forceSuccess = false)
     {
         bool isThree = distance > 0.35f;
         bool isDunk = distance <= 0.05f;
 
         int score = isThree ? 3 : 2;
 
-        bool success = MatchCalculator.CalculateShootSuccess(shooter, distance, attackTeam, defendTeam, attackTactics, defendTactics);
+        bool success = forceSuccess || MatchCalculator.CalculateShootSuccess(shooter, distance, attackTeam, defendTeam, attackTactics, defendTactics, blockDist);
+
+        if (isThree) { attackTeam.Try3pt++; if (success) attackTeam.Succ3pt++; }
 
         // 팀 스탯 기록
         if (isThree) { attackTeam.Try3pt++; if (success) attackTeam.Succ3pt++; }
@@ -247,7 +262,7 @@ public class MatchEngine : MonoBehaviour
         log.Quarter = _simQuarter;
         log.TeamId = (_currentPossession == TeamSide.Home) ? 0 : 1;
         log.PlayerId = shooter.PlayerId;
-        log.PlayerName = shooter.PlayerName;
+        log.PlayerName = MakeName(shooter.PlayerName);
         log.EventType = success ? "GOAL" : "MISS";
         log.IsSuccess = success;
         log.ScoreAdded = success ? score : 0;
@@ -309,13 +324,23 @@ public class MatchEngine : MonoBehaviour
         }
         else
         {
-            float yMin = (_currentPossession == TeamSide.Home) ? hoopPos.y - 0.2f : hoopPos.y;
-            float yMax = (_currentPossession == TeamSide.Home) ? hoopPos.y : hoopPos.y + 0.2f;
-            float yDropOffset = (_currentPossession == TeamSide.Home) ?
-                    UnityEngine.Random.Range(-0.2f, 0.0f) :  // 홈팀 공격 시: 골대(0.95)보다 아래로 떨어짐
-                    UnityEngine.Random.Range(0.0f, 0.2f);    // 어웨이 공격 시: 골대(0.05)보다 위로 떨어짐
+            Vector2 randomOffset = UnityEngine.Random.insideUnitCircle * 0.35f;
+            randomOffset.y /= 1.87f; // 종횡비 보정
 
-            Vector2 dropPos = hoopPos + new Vector2(UnityEngine.Random.Range(-0.2f, 0.2f), yDropOffset);
+            if (hoopPos.y > 0.5f)
+            {
+                randomOffset.y = -Mathf.Abs(randomOffset.y);
+            }
+            else
+            {
+                randomOffset.y = Mathf.Abs(randomOffset.y);
+            }
+
+            Vector2 dropPos = new Vector2(
+                Mathf.Clamp01(hoopPos.x + randomOffset.x),
+                Mathf.Clamp01(hoopPos.y + randomOffset.y)
+            );
+
             List<MatchPlayer> allPlayers = new List<MatchPlayer>();
             allPlayers.AddRange(attackTeam.Roster);
             allPlayers.AddRange(defendTeam.Roster);
@@ -337,7 +362,6 @@ public class MatchEngine : MonoBehaviour
         MatchPlayer bestReceiver = null;
         float maxPassScore = -999f;
 
-        float interceptDist = MatchDataProxy.Instance.GetBalance("Pen_Intercept_Dist");
         float penDistHoop = MatchDataProxy.Instance.GetBalance("Pen_Dist_Hoop");
         float wPassBase = MatchDataProxy.Instance.GetBalance("W_Pass_Base");
 
@@ -357,7 +381,7 @@ public class MatchEngine : MonoBehaviour
             float pathEnemySteal = 0f;
             foreach (var e in defendTeam.Roster)
             {
-                if (MatchCalculator.DistancePointToLineSegment(e.LogicPosition, passer.LogicPosition, mate.LogicPosition) < interceptDist)
+                if (MatchCalculator.DistancePointToLineSegment(e.LogicPosition, passer.LogicPosition, mate.LogicPosition) < passInterceptDist)
                 {
                     hasEnemyOnPath = 1;
                     pathEnemySteal = e.GetStat(MatchStatType.Steal);
@@ -379,7 +403,7 @@ public class MatchEngine : MonoBehaviour
         if (bestReceiver == null) return;
 
         MatchPlayer interceptor;
-        bool success = MatchCalculator.CalculatePassSuccess(passer, bestReceiver, attackTeam, defendTeam, attackTactics, defendTactics, out interceptor);
+        bool success = MatchCalculator.CalculatePassSuccess(passer, bestReceiver, attackTeam, defendTeam, attackTactics, defendTactics, passInterceptDist, out interceptor);
 
         // 로그 기록 전 공 소유자 갱신
         if (success)
@@ -397,7 +421,7 @@ public class MatchEngine : MonoBehaviour
 
     private void DoDribble(MatchPlayer dribbler, List<MatchPlayer> enemies, Vector2 hoopPos, TeamTactics attackTactics, TeamTactics defendTactics)
     {
-        bool success = MatchCalculator.CalculateDribbleSuccess(dribbler, enemies, attackTactics, defendTactics);
+        bool success = MatchCalculator.CalculateDribbleSuccess(dribbler, enemies, attackTactics, defendTactics, dribbleBlockDist);
         if (success)
         {
             Vector2 dir = (hoopPos - dribbler.LogicPosition).normalized;
@@ -455,8 +479,8 @@ public class MatchEngine : MonoBehaviour
 
         // 텍스트 치환
         string finalText = StringManager.Instance != null ? StringManager.Instance.GetString(config.textTemplate) : config.textTemplate;
-        if (actor != null) finalText = finalText.Replace("{PlayerName}", actor.PlayerName);
-        if (target != null) finalText = finalText.Replace("{TargetName}", target.PlayerName); // 패스 대상 이름 치환
+        if (actor != null) finalText = finalText.Replace("{PlayerName}", MakeName(actor.PlayerName));
+        if (target != null) finalText = finalText.Replace("{TargetName}", MakeName(target.PlayerName)); // 패스 대상 이름 치환
         // 5쿼터 이상이면 '연장 1', 아니면 원래 숫자 유지
         string quarterString = _simQuarter > 4 ? $"연장 {_simQuarter - 4}" : _simQuarter.ToString();
         finalText = finalText.Replace("{Quarter}", quarterString);
@@ -624,5 +648,12 @@ public class MatchEngine : MonoBehaviour
         int seconds = (int)elapsedTime % 60;
 
         return $"{minutes:D2}:{seconds:D2}";
+    }
+
+    private string MakeName(string[] nameKey)
+    {
+        StringManager manager = StringManager.Instance;
+        string name = manager.GetString(nameKey[0]) + manager.GetString(nameKey[1]) + manager.GetString(nameKey[2]);
+        return name;
     }
 }

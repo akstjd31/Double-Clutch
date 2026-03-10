@@ -7,22 +7,36 @@ public class CharacterPassiveProfileRow : MonoBehaviour, IPointerUpHandler, IPoi
 {
     const string DEFAULT_TEXT = "비어 있음";
     Player_PassiveData _data;
+    bool _isEmpty = true;
     [SerializeField] TextMeshProUGUI _passiveText;
+
+    private void OnEnable()
+    {
+        StringManager.OnLanguageChanged += SetPassiveText;
+    }
+
+    private void OnDisable()
+    {
+        StringManager.OnLanguageChanged -= SetPassiveText;
+    }
 
     public void Init(Player_PassiveData data)
     {
         _data = data;
-        SetPassiveText();        
+        _isEmpty = false;
+        SetPassiveText();
     }
 
     public void Init()
     {
         _data = default;
+        _isEmpty = true;
         _passiveText.text = DEFAULT_TEXT;
     }
 
     public void SetPassiveText()
     {
+        if (_isEmpty) return;
         _passiveText.text = StringManager.Instance.GetString(_data.skillName);
     }
 
@@ -32,7 +46,7 @@ public class CharacterPassiveProfileRow : MonoBehaviour, IPointerUpHandler, IPoi
     }
 
     public void OnPointerDown(PointerEventData eventData)
-    {        
+    {
         StudentUIManager.Instance.OnPassiveProfilePopUpStart(_data);
     }
 }

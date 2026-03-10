@@ -15,7 +15,8 @@ public class CharacterRow : MonoBehaviour
 
     public void Init(Student target)
     {
-        _name.text = target.Name;
+        StringManager manager = StringManager.Instance;
+        _name.text = manager.GetString(target.Name[0]) + manager.GetString(target.Name[1]) + manager.GetString(target.Name[2]);
         _attack.text = $"+{target.AttackChange}";
         _guard.text = $"+{target.DefenseChange}";
         _condition.text = target.Condition.ToString();

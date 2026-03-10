@@ -70,8 +70,8 @@ public class EnemyTeamFactory : MonoBehaviour
             speciesType currentSpecies = teamSpecies[i];
 
             // 이름 로컬라이징 (기획서 4.2.3)
-            string playerName = GenerateRivalName(rivalData.teamsector);
-
+            string[] playerName = GenerateRivalName(rivalData.teamsector);
+            
             var stats = new Dictionary<MatchStatType, int>();
             stats[MatchStatType.TwoPoint] = Mathf.RoundToInt(Random.Range(minStat, maxStat + 1) * archetypeData.weight2pt);
             stats[MatchStatType.ThreePoint] = Mathf.RoundToInt(Random.Range(minStat, maxStat + 1) * archetypeData.weight3pt);
@@ -195,8 +195,10 @@ public class EnemyTeamFactory : MonoBehaviour
         return result;
     }
     // 이름 생성 로직
-    private string GenerateRivalName(teamSector sector)
+    private string[] GenerateRivalName(teamSector sector)
     {
+        string[] name = new string[3];
+
         // DOM(국내)이면 한국 이름, OS(해외)이거나 NA(안드로이드)면 외국 이름 사용
         nation targetNation = (sector == teamSector.DOM) ? nation.Kr : nation.Us;
 
@@ -222,11 +224,12 @@ public class EnemyTeamFactory : MonoBehaviour
         string m = middles.Count > 0 ? middles[Random.Range(0, middles.Count)] : "";
         string l = lasts.Count > 0 ? lasts[Random.Range(0, lasts.Count)] : "";
 
-        // 한국은 "성+가운데+끝", 미국은 "First Name + Last Name" 조합
-        if (targetNation == nation.Kr)
-            return $"{f}{m}{l}";
-        else
-            return $"{f} {l}";
+        // 한국은 "성+가운데+끝", 미국은 "First Name + Last Name" 조합 => 무조건 first , middle, last 조합으로 변경.
+        name[0] = f;
+        name[1] = m;
+        name[2] = l;
+
+        return name;        
     }
 
 }

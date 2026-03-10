@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Xml.Schema;
 using UnityEngine;
 using UnityEngine.PlayerLoop;
@@ -13,6 +14,26 @@ public struct Calendar
         month = m;
         week = w;
     }
+}
+
+// 달마다 있는 이 주차는 고정이기 떄문에 이렇게 정의했음
+public static class MonthWeekTable
+{
+    public static readonly int[] weekCounts =
+    {
+        4,
+        4,
+        5,
+        4,
+        4,
+        4,
+        5,
+        4,
+        4,
+        5,
+        4,
+        5
+    };
 }
 
 public class CalendarManager : Singleton<CalendarManager>
@@ -164,5 +185,43 @@ public class CalendarManager : Singleton<CalendarManager>
     public phaseType CurrentGetPhaseType()
     {
         return _calReader.DataList[GameManager.Instance.SaveData.weekId - 1].phase;
+    }
+
+    // 현재 달에 해당되는 1주차 ~ 끝 Desc 값 리스트 반환
+    public List<string> GetDescArrayByMonth(int weekId)
+    {
+        var descList = new List<string>();
+        int start = 0, end = 0;
+        // 1주면 계산 필요 없음
+        if (calendar.week == 1)
+        {
+            start = weekId;
+            end = weekId + MonthWeekTable.weekCounts[calendar.month - 1];
+        }
+
+        else
+        {
+            start = weekId - calendar.week;
+            end = start + MonthWeekTable.weekCounts[calendar.month - 1];
+        }
+
+        for (int i = start; i < end; i++)
+                descList.Add(_calReader.DataList[i].desc);
+            
+        return descList;
+    }
+
+    public List<string> GetDescArrayByNextMonth(int weekId)
+    {
+        var descList = new List<string>();
+
+        // 남은 주 + 1
+        int start = weekId + MonthWeekTable.weekCounts[calendar.month - 1] - calendar.week;
+        int end = start + MonthWeekTable.weekCounts[calendar.month];
+
+        for (int i = start; i < end; i++)
+            descList.Add(_calReader.DataList[i].desc);
+        
+        return descList;
     }
 }

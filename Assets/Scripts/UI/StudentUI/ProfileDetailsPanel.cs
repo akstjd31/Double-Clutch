@@ -1,18 +1,13 @@
-using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using static UnityEngine.Rendering.DebugUI;
-/// <summary>
-/// ���� : ���� ������ �гο� �����Ͽ� ���� �ؽ�Ʈ ǥ��
-/// </summary>
+
 public class ProfileDetailsPanel : MonoBehaviour
 {
     [SerializeField] TextMeshProUGUI _nameText;
     [SerializeField] TextMeshProUGUI _gradeText;
     [SerializeField] TMP_Dropdown _positionDropdown;
     [SerializeField] Slider _conditionSlider;
-
 
     [SerializeField] TextMeshProUGUI _attackText;
     [SerializeField] TextMeshProUGUI _defenseText;
@@ -23,23 +18,41 @@ public class ProfileDetailsPanel : MonoBehaviour
     [SerializeField] PassiveProfileBox _profileBox1;
     [SerializeField] PassiveProfileBox _profileBox2;
 
-
-
     Student _student;
+
+    private void OnEnable()
+    {
+        StringManager.OnLanguageChanged += Refresh;
+    }
+
+    private void OnDisable()
+    {
+        StringManager.OnLanguageChanged -= Refresh;
+    }
 
     public void Init(Student student)
     {
         Debug.Log("Profile Details Panel Init!");
         _student = student;
+
+        StringManager manager = StringManager.Instance;
+        string name = manager.GetString(_student.Name[0]) + manager.GetString(_student.Name[1]) + manager.GetString(_student.Name[2]);
+
         _positionDropdown.value = PositionIntoValue(student.Position);
-        _nameText.text = student.Name;
+        _nameText.text = name;
         _gradeText.text = student.Grade.ToString() + "학년";
         _attackText.text = student.Attack.ToString();
         _defenseText.text = student.Defense.ToString();
-        _personalityText.text = StringManager.Instance.GetString(student.PersonalityData.personalityName);
-        _traitText.text = StringManager.Instance.GetString(student.TraitData.traitName);
         _conditionSlider.value = NormalizeConditionValue(student.Condition);
         SetPassiveText(student);
+        Refresh();
+    }
+
+    private void Refresh()
+    {
+        if (_student == null) return;
+        _personalityText.text = StringManager.Instance.GetString(_student.PersonalityData.personalityName);
+        _traitText.text = StringManager.Instance.GetString(_student.TraitData.traitName);
     }
 
     private void SetPassiveText(Student student)
@@ -76,6 +89,7 @@ public class ProfileDetailsPanel : MonoBehaviour
             default: return 0;
         }
     }
+
     private Position ValueIntoPosition(int value)
     {
         switch (value)
@@ -87,10 +101,10 @@ public class ProfileDetailsPanel : MonoBehaviour
             case 4: return Position.PG;
             default: return Position.C;
         }
-    }    
+    }
 
     public float NormalizeConditionValue(int condition)
-    {        
+    {
         return (float)condition / 100;
     }
 }

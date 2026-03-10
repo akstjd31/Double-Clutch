@@ -62,40 +62,40 @@ public class FightingPower : MonoBehaviour
         }
         // �����Ͱ� ���� ��
         // else
-        // {
-        //     // CharacterList���� ���� ��ġ�� ī�� �迭�� ������
-        //     PlayerCard[] placedCards = _characterList.PositionCards;
+        //{
+        //    // CharacterList���� ���� ��ġ�� ī�� �迭�� ������
+        //    PlayerCard[] placedCards = _characterList.PositionCards;
 
-        //     for (int i = 0; i < _fightingList.Length; i++)
-        //     {
-        //         Student targetStudent = null;
+        //    for (int i = 0; i < _fightingList.Length; i++)
+        //    {
+        //        Student targetStudent = null;
 
-        //         // 1. �ش� ���Կ� ������ ��ġ�� ī�尡 �ִ��� Ȯ��
-        //         if (placedCards[i] != null && placedCards[i].Player != null)
-        //         {
-        //             targetStudent = placedCards[i].Player;
-        //         }
-        //         // 2. ī�尡 ���ٸ� �뺴 ����
-        //         else
-        //         {
-        //             // �ε��� i�� ���������� ��ȯ (0:PG, 1:SG, 2:SF, 3:PF, 4:C ��� ����)
-        //             Position targetPos = (Position)i + 1;
-        //             targetStudent = _mercenaryMaker.MakeMercenary(targetPos);
-        //             targetStudent.OnStatChanged();
-        //         }
+        //        // 1. �ش� ���Կ� ������ ��ġ�� ī�尡 �ִ��� Ȯ��
+        //        if (placedCards[i] != null && placedCards[i].Player != null)
+        //        {
+        //            targetStudent = placedCards[i].Player;
+        //        }
+        //        // 2. ī�尡 ���ٸ� �뺴 ����
+        //        else
+        //        {
+        //            // �ε��� i�� ���������� ��ȯ (0:PG, 1:SG, 2:SF, 3:PF, 4:C ��� ����)
+        //            Position targetPos = (Position)i + 1;
+        //            targetStudent = _mercenaryMaker.MakeMercenary(targetPos);
+        //            targetStudent.OnStatChanged();
+        //        }
 
-        //         // 3. CharacterPowerBox�� ���� ���� (�뺴 ����)
-        //         if (targetStudent != null)
-        //         {
-        //             _rivalList[i].Init(targetStudent);
-        //             _myTotalFightingPower += (_rivalList[i].Attack + _rivalList[i].Defense);
+        //        // 3. CharacterPowerBox�� ���� ���� (�뺴 ����)
+        //        if (targetStudent != null)
+        //        {
+        //            _rivalList[i].Init(targetStudent);
+        //            _myTotalFightingPower += (_rivalList[i].Attack + _rivalList[i].Defense);
 
-        //             _myMatchingStudentList.Add(targetStudent);
+        //            _myMatchingStudentList.Add(targetStudent);
 
-        //             Debug.Log($"[�Ʊ� ����] {targetStudent.Name}({targetStudent.Position}) | 2��:{targetStudent.GetCurrentStat(potential.Stat2pt)}, 3��:{targetStudent.GetCurrentStat(potential.Stat3pt)}, ����:{targetStudent.GetCurrentStat(potential.StatBlock)}, ��ƿ:{targetStudent.GetCurrentStat(potential.StatSteal)}, ����:{targetStudent.GetCurrentStat(potential.StatRebound)}");
-        //         }
-        //     }
-        // }
+        //            Debug.Log($"[�Ʊ� ����] {targetStudent.Name}({targetStudent.Position}) | 2��:{targetStudent.GetCurrentStat(potential.Stat2pt)}, 3��:{targetStudent.GetCurrentStat(potential.Stat3pt)}, ����:{targetStudent.GetCurrentStat(potential.StatBlock)}, ��ƿ:{targetStudent.GetCurrentStat(potential.StatSteal)}, ����:{targetStudent.GetCurrentStat(potential.StatRebound)}");
+        //        }
+        //    }
+        //}
 
 
         //���⼭ _rivalList �迭 �� ��� CharacterBox�� ����� �л�(Student Ŭ����)���� Init���ֽø� �˴ϴ�.
@@ -133,7 +133,7 @@ public class FightingPower : MonoBehaviour
                 MatchPlayer mp = generatedAwayTeam.Roster[i];
                 Student rivalStudent = new Student();
 
-                rivalStudent.SetName(mp.PlayerName);
+                rivalStudent.SetName(mp.PlayerName[0], mp.PlayerName[1], mp.PlayerName[2]);
                 rivalStudent.SetPosition(mp.MainPosition);
 
                 // ���丮���� ���� ���� �״�� �̽�

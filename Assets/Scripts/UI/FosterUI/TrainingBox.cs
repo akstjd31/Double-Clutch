@@ -1,10 +1,7 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-/// <summary>
-/// 개인 훈련 박스 프리팹에 할당할 스크립트
-/// 클릭 시 FosterManager에 훈련 예약 
-/// </summary>
+
 public class TrainingBox : MonoBehaviour
 {
     [SerializeField] TextMeshProUGUI _trainingName;
@@ -17,21 +14,36 @@ public class TrainingBox : MonoBehaviour
     public ITraining Command => _command;
     public Student Target => _target;
 
+    private void OnEnable()
+    {
+        StringManager.OnLanguageChanged += Refresh;
+    }
 
-    public void Init(ITraining command) //팀 훈련은 Init만 하기
-    {        
+    private void OnDisable()
+    {
+        StringManager.OnLanguageChanged -= Refresh;
+    }
+
+    public void Init(ITraining command)
+    {
         _command = command;
 
         _button.onClick.RemoveAllListeners();
-        _button.onClick.AddListener(command.IsTeam()? (() => FosterManager.Instance.ReserveTeamTraining(_command)): () => FosterManager.Instance.ReserveIndividualTraining(_command));        
-        _button.onClick.AddListener(() => StudentUIManager.Instance.OnTrainingBoxClick());        
+        _button.onClick.AddListener(command.IsTeam() ? (() => FosterManager.Instance.ReserveTeamTraining(_command)) : () => FosterManager.Instance.ReserveIndividualTraining(_command));
+        _button.onClick.AddListener(() => StudentUIManager.Instance.OnTrainingBoxClick());
 
-        _trainingName.text = StringManager.Instance.GetString(command.GetNameKey());
-        _trainingDesc.text = StringManager.Instance.GetString(command.GetDescKey());
-        _trainingcost.text = StringManager.Instance.GetString(command.GetCost().ToString() + "G");
+        Refresh();
     }
 
-    public void SetStudent(Student target) //개인 훈련은 Init 후 SetStudent로 대상 정해주기
+    private void Refresh()
+    {
+        if (_command == null) return;
+        _trainingName.text = StringManager.Instance.GetString(_command.GetNameKey());
+        _trainingDesc.text = StringManager.Instance.GetString(_command.GetDescKey());
+        _trainingcost.text = StringManager.Instance.GetString(_command.GetCost().ToString() + "G");
+    }
+
+    public void SetStudent(Student target)
     {
         _target = target;
         _command.SetTarget(_target);

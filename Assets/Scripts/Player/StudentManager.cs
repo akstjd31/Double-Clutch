@@ -12,12 +12,18 @@ public class StudentManager : Singleton<StudentManager>
 
     int _idCount = 0; //???? ???? ?? ?��??? ???? id ?????(????/?��? ???)
     int _recruitLimit = 5; //???? ???? ????
-    public int RecruitLimit => _recruitLimit;
-    public bool IsStable => _recruitLimit == _myStudents.Count;
+    public int RecruitLimit => GetRecruitLimit();
+    public bool IsStable => GetRecruitLimit() == _myStudents.Count;
     // public static StudentManager Instance { get; private set; }
     [SerializeField] StudentFactory _studentFactory; //???? ?????? ????
     [SerializeField] private List<Student> _myStudents = new List<Student>(); //???? ???
     public List<Student> MyStudents => _myStudents;
+
+    public int GetRecruitLimit()
+    {
+        return _recruitLimit + InfraManager.Instance.GetInfraEffectValueByEffectType(infraEffectType.AddRoster);
+    }
+
     protected override void Awake()
     {
         base.Awake();

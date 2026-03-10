@@ -20,9 +20,12 @@ public class GraduationProfileDetailPanel : MonoBehaviour
 
     public void Profile(Student student)
     {
+        StringManager manager = StringManager.Instance;
         //프로필 패널 활성화
+        string name = manager.GetString(student.Name[0]) + manager.GetString(student.Name[1]) + manager.GetString(student.Name[2]);
+
         gameObject.SetActive(true);
-        _name.text = student.Name;
+        _name.text = name;
         _attackPoint.text = student.Attack.ToString();
         _defensePoint.text = student.Defense.ToString();
         _personality.text = student.PersonalityData.personalityName;

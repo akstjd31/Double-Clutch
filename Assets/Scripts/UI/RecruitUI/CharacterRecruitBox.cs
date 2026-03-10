@@ -4,7 +4,8 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System.Collections;
 
-public class CharacterRecruitBox : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
+public class CharacterRecruitBox : MonoBehaviour
+    //IPointerDownHandler, IPointerUpHandler
 {
     [SerializeField] Image _characterImage;
     [SerializeField] TextMeshProUGUI _positionText;
@@ -14,6 +15,7 @@ public class CharacterRecruitBox : MonoBehaviour, IPointerDownHandler, IPointerU
     [SerializeField] TextMeshProUGUI _defenseText;    
     [SerializeField] Toggle _toggleButton;
     [SerializeField] Outline _outLine;
+    [SerializeField] Button _profileButton;
 
     private Student _student;
     private bool isSelected = false;
@@ -36,6 +38,7 @@ public class CharacterRecruitBox : MonoBehaviour, IPointerDownHandler, IPointerU
     {
         _student = target;
         SetText();
+        SetButton();
     }
 
     public Student GetStudent()
@@ -45,9 +48,12 @@ public class CharacterRecruitBox : MonoBehaviour, IPointerDownHandler, IPointerU
 
     private void SetText()
     {
+        StringManager manager = StringManager.Instance;
+        string name = manager.GetString(_student.Name[0]) + manager.GetString(_student.Name[1]) + manager.GetString(_student.Name[2]);
+
         _positionText.text = _student.Position.ToString();
         _gradeText.text = _student.Grade.ToString() + "학년";
-        _nameText.text = _student.Name;
+        _nameText.text = name;
         _attackText.text = _student.Attack.ToString();
         _defenseText.text = _student.Defense.ToString();
     }
@@ -66,6 +72,11 @@ public class CharacterRecruitBox : MonoBehaviour, IPointerDownHandler, IPointerU
         }
     }
 
+    private void SetButton()
+    {
+        _profileButton.onClick.RemoveAllListeners();
+        _profileButton.onClick.AddListener(() => StudentUIManager.Instance.OpenProfilePopUp(_student));
+    }
 
     //터치 시 프로필 팝업 등장 구현
     public void OnPointerDown(PointerEventData eventData)

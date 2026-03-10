@@ -10,7 +10,7 @@ public class MercenaryMaker : MonoBehaviour
     {
         Mercenary_Data data = FindData(position);
         Student robot = new Student();
-        robot.SetName(StringManager.Instance.GetString(data.mercName));
+        robot.SetName(StringManager.Instance.GetString(data.mercName), "", "");
         robot.SetPosition(position);
         robot.SetMatchPosition(position);
         robot.SetStat(MakeMercenaryStats(data));

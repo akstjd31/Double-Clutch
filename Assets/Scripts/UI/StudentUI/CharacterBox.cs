@@ -14,7 +14,9 @@ public class CharacterBox : MonoBehaviour
 
     public void Init(Student student)
     {        
-        _nameText.text = student.Name;                     
+        StringManager manager = StringManager.Instance;
+        string name = manager.GetString(student.Name[0]) + manager.GetString(student.Name[1]) + manager.GetString(student.Name[2]);
+        _nameText.text = name;                     
         _target = student;                
     }
 

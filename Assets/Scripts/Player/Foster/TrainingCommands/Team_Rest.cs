@@ -28,7 +28,7 @@ public class Team_Rest : ITraining
 
     public int GetCost()
     {
-        return _data.restCost;
+        return _data.restCost * (1 - InfraManager.Instance.GetInfraEffectValueByEffectType(infraEffectType.RestCostDiscount) / 100);
     }
 
     public bool IsTeam()

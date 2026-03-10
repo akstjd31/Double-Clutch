@@ -7,7 +7,7 @@ public class MatchPlayer
     public const int MAX_STAMINA = 100;
 
     private int _playerId;
-    private string _playerName;
+    private string[] _playerName;
     private Position _position;
     private Dictionary<MatchStatType, int> _stats; // 6대 스탯 + @ 관리
     private int _currentCondition; // 경기 중 소모되는 컨디션
@@ -24,7 +24,7 @@ public class MatchPlayer
     public string TraitId { get; set; } = string.Empty;
 
     public int PlayerId => _playerId;
-    public string PlayerName => _playerName;
+    public string[] PlayerName => _playerName;
     public Position MainPosition => _position;
     public int CurrentCondition
     {
@@ -36,7 +36,7 @@ public class MatchPlayer
     // 하프타임 이벤트로 인한 임시 스탯 증감치 저장소
     private Dictionary<MatchStatType, float> _tempStatBuffs = new Dictionary<MatchStatType, float>();
     // 생성자: 데이터 로드시 초기화
-    public MatchPlayer(int id, string name, Position pos, Dictionary<MatchStatType, int> initStats, string resourceKey, List<Player_PassiveData> passives = null)
+    public MatchPlayer(int id, string[] name, Position pos, Dictionary<MatchStatType, int> initStats, string resourceKey, List<Player_PassiveData> passives = null)
     {
         _playerId = id;
         _playerName = name;
