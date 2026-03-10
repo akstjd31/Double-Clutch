@@ -203,8 +203,8 @@ public static class MatchCalculator
         float calcStat = (shootStat * 0.67f) / (100f + blockStat * distancePenalty);
         float prob = 33f + (calcStat * 100f);
 
-        effectType targetEffect = (distance > 0.35f) ? effectType.Prob3pt : effectType.Prob2pt;
-        if (distance <= 0.05f) targetEffect = effectType.ProbDunk;
+        effectType targetEffect = (distance > 0.35f) ? effectType.SpaceOperator : effectType.CutInPlay;
+        if (distance <= 0.05f) targetEffect = effectType.GorillaDunk;
 
         float extraBonus = 0f;
 
@@ -266,18 +266,6 @@ public static class MatchCalculator
         float stealStat = pathEnemy.GetStat(MatchStatType.Steal, enemyTactics.bonusSteal);
         float probBonus = 0f;
 
-        if (isHome)
-        {
-            // 아군 패스 시: 아군의 '상대 스틸 확률 감소' 시너지 적용
-            foreach (var syn in homeTeam.ActiveSynergies)
-                if (syn.effectType == effectType.DecreaseSteal) probBonus += (syn.effectValue * 100f);
-        }
-        else
-        {
-            // 적군 패스 시 (아군 수비): 아군의 '스틸 확률 증가' 시너지 적용
-            foreach (var syn in homeTeam.ActiveSynergies)
-                if (syn.effectType == effectType.ProbSteal) probBonus -= (syn.effectValue * 100f);
-        }
 
         // 기본 패스 성공 확률
         float prob = (passStat / (passStat + stealStat)) * 100f;
@@ -338,20 +326,6 @@ public static class MatchCalculator
         float weightedStealStat = stealStat * wStealBalance;
         float probBonus = 0f;
 
-        if (isHome)
-        {
-            // 아군 드리블 시: 아군의 '상대 스틸 확률 감소' 시너지 적용
-            foreach (var syn in homeTeam.ActiveSynergies)
-                if (syn.effectType == effectType.DecreaseSteal) probBonus += (syn.effectValue * 100f);
-        }
-        else
-        {
-            // 적군 드리블 시 (아군 수비): 아군의 '스틸 확률 증가' 시너지 적용
-            foreach (var syn in homeTeam.ActiveSynergies)
-                if (syn.effectType == effectType.ProbSteal) probBonus -= (syn.effectValue * 100f);
-        }
-
-
         float prob = (dribbleStat / (dribbleStat + weightedStealStat)) * 100f;
         prob += probBonus;
 
@@ -382,14 +356,7 @@ public static class MatchCalculator
 
         if (candidates.Count == 0) return allPlayers[Random.Range(0, allPlayers.Count)]; // 아무도 없으면 완전 랜덤
 
-        // 아군의 리바운드 시너지만 미리 계산
-        float homeReboundBonus = 0f, homeDecreaseOpponent = 0f;
-        foreach (var syn in homeTeam.ActiveSynergies)
-        {
-            if (syn.effectType == effectType.ProbRebound) homeReboundBonus += syn.effectValue;
-            if (syn.effectType == effectType.DecreaseRebound) homeDecreaseOpponent += syn.effectValue;
-        }
-
+       
         // Ticket 계산 및 총합
         float totalTicket = 0f;
         List<float> tickets = new List<float>();
@@ -402,16 +369,6 @@ public static class MatchCalculator
 
             float finalMultiplier = 1.0f;
 
-            if (homeTeam.Roster.Contains(p))
-            {
-                // 후보가 아군일 때: 아군의 리바운드 증가 시너지 적용
-                finalMultiplier += homeReboundBonus;
-            }
-            else
-            {
-                // 후보가 적군일 때: 아군의 적 리바운드 감소 시너지 적용
-                finalMultiplier -= homeDecreaseOpponent;
-            }
 
             // 최종 티켓 배율 
             finalMultiplier = Mathf.Max(0.1f, finalMultiplier); // 티켓이 음수가 되지 않도록 최소 보장
