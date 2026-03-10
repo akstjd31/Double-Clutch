@@ -65,17 +65,19 @@ public class CalendarManager : Singleton<CalendarManager>
     public void NextTurn()
     {
         if (_calReader == null) return;
-        if (GameManager.Instance == null) return;
+        
+        var gm = GameManager.Instance;
+        if (gm == null) return;
 
         // 임시 테스트용
-        var weekId = GameManager.Instance.SaveData.weekId;
+        var weekId = gm.SaveData.weekId;
 
         // 만약 전체 일정이 끝나게 된다면 weekId 0으로 시작(1월 1일)
         if (weekId >= _calReader.DataList.Count)
             weekId = 0;
 
         // 1. 주차 시작(주차 계산)
-        CalcWeek(weekId);
+        CalcWeek(weekId, gm);
 
         // 2. 시작 컷신 체크
         if (HasExistStartCutscene(weekId))
@@ -101,14 +103,16 @@ public class CalendarManager : Singleton<CalendarManager>
         IsEndPhase = false;
     }
 
-    public void CalcWeek(int weekId)
+    public void CalcWeek(int weekId, GameManager gm)
     {
+        if (gm == null) return;
         var data = _calReader.DataList[weekId - 1];
 
         if (weekId == 8) // 3월 1일이라면 년차 추가
         {
             // 영입이 3월 1일 기준으로 진행되기 떄문에 연차++ 작업을 이떄 해줌
-            GameManager.Instance.SetYear(GameManager.Instance.SaveData.year + 1);
+            var y = gm.SaveData.year;
+            gm.SetYear(y + 1);
         }
 
         if (PlayerPrefs.GetInt(PrefKeys.KEY_FIRST_RUN_DONE) == 0)
@@ -143,17 +147,25 @@ public class CalendarManager : Singleton<CalendarManager>
         calendar.month = data.month;
         calendar.week = data.weekNo;
 
-        GameManager.Instance.SetWeekId(weekId);
+        if (IsFundingDay())
+        {
+            var m = gm.SaveData.money;
+            gm.SetMoney(m + 100);
+        }
+
+        gm.SetWeekId(weekId);
 
         // 이벤트 페이즈면서 어떤 날인지 구분하는게 필요함. (ex. 졸업, 영입 등)
         if (CheckEventDay(weekId))
         {
             if (calendar.month == 2 && calendar.week == 4)
-                GameManager.Instance.GoToGraduation();
+                gm.GoToGraduation();
         }
 
         OnWeekChanged?.Invoke(calendar);
     }
+
+    public bool IsFundingDay() => calendar.week == 1;
 
     public bool CheckEventDay(int weekId) => _calReader.DataList[weekId - 1].phase.Equals(phaseType.Event);
    
