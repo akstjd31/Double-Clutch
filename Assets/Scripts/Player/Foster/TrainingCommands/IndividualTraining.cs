@@ -42,12 +42,13 @@ public class IndividualTraining : ITraining
             / 100)); //현재는 성장률만 반영.            
         
         _target.GetStat(_data.mainPotential).GrowAndReturn(mainGrowth);
-
+        _target.AddChangedPotential(_data.mainPotential);
         if (_data.subPotential != potential.None) //부 잠재력이 설정된 훈련이라면
         {
             int subGrowth = _data.subGain + (_data.subGain * (_target.GetStat(_data.subPotential).GrowthRate // + 시설 효율 + 패시브 스킬
             / 100)); //현재는 성장률만 반영.
             _target.GetStat(_data.subPotential).GrowAndReturn(subGrowth);
+            _target.AddChangedPotential(_data.subPotential);
         }
 
         _target.ChangeCondition(-(Random.Range(_data.conditionCostMin, _data.conditionCostMax)));
