@@ -71,6 +71,7 @@ public class IndividualRest : ITraining
                 _target.ChangeState(StudentState.None);
                 break;
         }
+        _target.OnStatChanged();
         _target.ResetTrainingSchedule();
     }
 

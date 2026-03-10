@@ -51,6 +51,7 @@ public class IndividualTraining : ITraining
         }
 
         _target.ChangeCondition(-(Random.Range(_data.conditionCostMin, _data.conditionCostMax)));
+        _target.OnStatChanged();
         _target.ResetTrainingSchedule();
 
     }
