@@ -29,9 +29,11 @@ public static class FilePath
 
 public class GameManager : Singleton<GameManager>
 {
+    public const int MAX_MONEY = 999999;
+
     [Header("Data")]
-    [SerializeField] private PlayerSaveData saveData;
-    public PlayerSaveData SaveData => saveData;
+    [SerializeField] private PlayerSaveData _saveData;
+    public PlayerSaveData SaveData => _saveData;
 
     public event Action OnDataChanged;
 
@@ -58,7 +60,7 @@ public class GameManager : Singleton<GameManager>
     private void InitCommandSystem()
     {
         // 임시 저장 경로 (데이터 존재 여부에 따라 처음인지 아닌지를 판별)
-        if (SaveLoadManager.Instance.TryLoad(FilePath.PLAYER_PATH, out saveData))
+        if (SaveLoadManager.Instance.TryLoad(FilePath.PLAYER_PATH, out _saveData))
         {
             PlayerPrefs.SetInt(PrefKeys.KEY_FIRST_RUN_DONE, 1);
         }
@@ -90,12 +92,12 @@ public class GameManager : Singleton<GameManager>
 
     public void InitData(PlayerSaveData data)
     {
-        saveData = data;
-        Debug.Log($"{saveData.schoolName} 학교 {saveData.coachName} 감독님 환영합니다!");
+        _saveData = data;
+        Debug.Log($"{_saveData.schoolName} 학교 {_saveData.coachName} 감독님 환영합니다!");
         SavePlayerData();
     }
 
-    private void SavePlayerData() => SaveLoadManager.Instance.Save(FilePath.PLAYER_PATH, saveData);
+    private void SavePlayerData() => SaveLoadManager.Instance.Save(FilePath.PLAYER_PATH, _saveData);
 
     private void Start()
     {
@@ -167,25 +169,27 @@ public class GameManager : Singleton<GameManager>
 
     public void SetMoney(int money)
     {
-        saveData.money = money;
+        _saveData.money = HasMaximumMoney() ? MAX_MONEY : money;
         OnDataChanged?.Invoke();
     }
 
+    public bool HasMaximumMoney() => _saveData.money > MAX_MONEY;
+
     public void SetWeekId(int weekId)
     {
-        saveData.weekId = weekId;
+        _saveData.weekId = weekId;
         OnDataChanged?.Invoke();
     }
 
     public void SetHonor(int honor)
     {
-        saveData.honor = honor;
+        _saveData.honor = honor;
         OnDataChanged?.Invoke();
     }
 
     public void SetYear(int year)
     {
-        saveData.year = year;
+        _saveData.year = year;
         OnDataChanged?.Invoke();
     }
     

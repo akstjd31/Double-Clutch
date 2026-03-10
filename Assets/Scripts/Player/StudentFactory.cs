@@ -27,6 +27,9 @@ public class StudentFactory : MonoBehaviour
     [Header("Player_PassiveGradeData(패시브 등장 확률 데이터)")]
     [SerializeField] Player_PassiveGradeDataReader _passiveGradeDataReader;
 
+    [Header("Player_Reputation(최대 잠재력 범위 관련 데이터)")]
+    [SerializeField] Player_ReputationDataReader _reputationDataReader;
+
     const float FIRST_GRADE_RATE = 0.6f;
     const float SECOND_GRADE_RATE = 0.2f;
     const float THIRD_GRADE_RATE = 0.2f;
@@ -278,7 +281,11 @@ public class StudentFactory : MonoBehaviour
             }
 
             int currentValue = Random.Range(stateSetting.startMin, stateSetting.startMax + 1); 
-            int limitValue = Random.Range(_maxPotential.minPotentialValue, _maxPotential.maxPotentialValue + 1); 
+
+            int minPoVal = _maxPotential.minPotentialValue + GetCalReputation(false);
+            int maxPoVal = _maxPotential.maxPotentialValue + GetCalReputation(true);
+
+            int limitValue = Random.Range(minPoVal, maxPoVal + 1); 
             int growthRate = GetRandomGrowthRate(grade);
             int safetyNet = 0;
             while (limitValue <= currentValue && safetyNet < 100) 
@@ -294,5 +301,22 @@ public class StudentFactory : MonoBehaviour
             newStat.Add(stat);
         }
         return newStat;
+    }
+
+    // false: Min, true: Max
+    public int GetCalReputation(bool flag)
+    {
+        if (_reputationDataReader) return 0;
+
+        var data = _reputationDataReader.DataList[0];
+
+        int repSco = flag ? data.maxReputationScore : data.minReputationScore;
+        int stepVal = flag ? data.maxStepValue : data.minStepValue;
+
+        if (GameManager.Instance == null) return 0;
+        var h = GameManager.Instance.SaveData.honor;
+        
+        int result = (h % repSco) * stepVal;
+        return result;
     }
 }
