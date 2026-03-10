@@ -28,7 +28,7 @@ public class TutorialUI : MonoBehaviour
 
         gm.InitData(data);
     
-        CalendarManager.Instance.CalcWeek(data.weekId);
+        CalendarManager.Instance.CalcWeek(data.weekId, gm);
 
         GameManager.Instance.Dispatch(UIAction.Main_Start); 
         this.gameObject.SetActive(false);
