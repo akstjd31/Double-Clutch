@@ -6,12 +6,10 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "BannedWordDataReader", menuName = "Scriptable Object/BannedWordDataReader", order = int.MaxValue)]
 public class BannedWordDataReader : DataReaderBase
 {
-    [SerializeField] public List<BannedWordData> DataList = new List<BannedWordData>();
+    [SerializeField] public List<string> WordData = new List<string>();
 
     internal void UpdateStats(List<GSTU_Cell> list, int rowIndex)
     {
-        string[] wordData = new string[list.Count];
-
         for (int i = 0; i < list.Count; i++)
         {
             string val = list[i].value;
@@ -19,9 +17,7 @@ public class BannedWordDataReader : DataReaderBase
             if (string.IsNullOrWhiteSpace(val) || val == "-")
                 val = "";
 
-            wordData[i] = val;
+            WordData.Add(val);
         }
-
-        DataList.Add(new BannedWordData(wordData));
     }
 }

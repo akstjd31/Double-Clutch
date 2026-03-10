@@ -29,7 +29,7 @@ public class BannedWordDataReaderEditor : Editor
 
         if (GUILayout.Button("데이터 읽기(API 호출)"))
         {
-            data.DataList.Clear();
+            data.WordData.Clear();
             UpdateStats(UpdateMethodOne);
         }
     }
@@ -59,7 +59,7 @@ public class BannedWordDataReaderEditor : Editor
 
         EditorUtility.SetDirty(target);
         AssetDatabase.SaveAssets();
-        Debug.Log($"[Calendar_TableDataReader] Loaded: {data.DataList.Count} rows");
+        Debug.Log($"[Calendar_TableDataReader] Loaded: {data.WordData.Count} rows");
     }
     static IEnumerable<int> GetRowIndices(GstuSpreadSheet ss)
     {
