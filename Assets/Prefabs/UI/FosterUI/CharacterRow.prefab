@@ -164,7 +164,6 @@ GameObject:
   - component: {fileID: 2118662134562071711}
   - component: {fileID: 7896931268487179788}
   - component: {fileID: 7138650493486597382}
-  - component: {fileID: 1935884674440818637}
   m_Layer: 5
   m_Name: CharacterRow
   m_TagString: Untagged
@@ -223,8 +222,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 1
+  m_Sprite: {fileID: 7666765206894600619, guid: 7cf32097a23383946ac094c7d844e2d6, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -273,24 +272,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CharacterRow
   _name: {fileID: 1902625459953239060}
   _attack: {fileID: 5385079246586426806}
+  _attackTag1: {fileID: 8311662163433375818}
+  _attackTag2: {fileID: 1628685630237641161}
   _guard: {fileID: 6021056170970553750}
+  _guardTag1: {fileID: 8398899928316429847}
+  _guardTag2: {fileID: 8033725993224506065}
   _condition: {fileID: 8852415859704424143}
   _state: {fileID: 8267547576122093057}
---- !u!114 &1935884674440818637
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 758704589925668677}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e19747de3f5aca642ab2be37e372fb86, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Outline
-  m_EffectColor: {r: 0.6745098, g: 0.7176471, b: 0.8117648, a: 1}
-  m_EffectDistance: {x: 5, y: -5}
-  m_UseGraphicAlpha: 1
 --- !u!1 &858477602878595434
 GameObject:
   m_ObjectHideFlags: 0
@@ -1582,8 +1570,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 285.715, y: -19.72}
-  m_SizeDelta: {x: 82.45, y: 0}
+  m_AnchoredPosition: {x: 162.04001, y: -19.72}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5244646685844684871
 CanvasRenderer:
@@ -1613,7 +1601,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uB4DD\uC810\u2191"
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 7c31c93ef95dbfa4987915b09bcc0e1d, type: 2}
   m_sharedMaterial: {fileID: -2959792390391746788, guid: 7c31c93ef95dbfa4987915b09bcc0e1d, type: 2}
@@ -1990,8 +1978,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 178.26501, y: -19.72}
-  m_SizeDelta: {x: 82.45, y: 0}
+  m_AnchoredPosition: {x: 137.04001, y: -19.72}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3981835132844591133
 CanvasRenderer:
@@ -2021,7 +2009,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uC9C0\uC6D0\u2191"
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 7c31c93ef95dbfa4987915b09bcc0e1d, type: 2}
   m_sharedMaterial: {fileID: -2959792390391746788, guid: 7c31c93ef95dbfa4987915b09bcc0e1d, type: 2}

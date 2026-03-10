@@ -26,7 +26,7 @@ public class Student
     [SerializeField] StudentState _state;
     [SerializeField] int _condition = 100;
     [SerializeField] int _cureCount = 0;
-
+    [SerializeField] int _awardCount = 0;
 
     //게임 실행 후 불러오는 데이터
     Player_SpeciesData _specieData; //종족
@@ -35,11 +35,13 @@ public class Student
     List<Player_PassiveData> _passiveDataList = new List<Player_PassiveData>(); //패시브 스킬
     Player_TraitData _traitData; //특성
     List<Player_PositionData> _positionDataList = new List<Player_PositionData>();
+    List<potential> _changedPotentials = new List<potential>();
     Dictionary<potential, Stat> _statDict = new Dictionary<potential, Stat>(); //스탯(잠재력)목록
     int _attack;
     int _defense;
     int _attackChange;
     int _defenseChange;
+    int _conditionChange;
     Position _matchPosition;
     ITraining _currentTraining;
     
@@ -64,12 +66,15 @@ public class Student
     public int Defense => _defense;
     public int AttackChange => _attackChange;
     public int DefenseChange => _defenseChange;
+    public int ConditionChange => _conditionChange;
     public Position Position => _position;
     public Position MatchPosition => _matchPosition;
     public StudentState State => _state;
     public int Condition => _condition;
     public int CureCount => _cureCount;
     public ITraining CurrentTraining => _currentTraining;
+    public int AwardCount { get { return _awardCount; } set { _awardCount = value; } }
+    public List<potential> ChangedPotentials => _changedPotentials;
     public void ResetTrainingSchedule()
     {
         _currentTraining = null;
@@ -78,6 +83,42 @@ public class Student
     {
         _currentTraining = training;
     }
+
+    public float GetFosterPassiveValue(potential pot)
+    {
+        switch(pot)
+        {
+            case potential.Stat2pt:
+                return FindPassive(effectType.Growth2pt);
+            case potential.Stat3pt:
+                return FindPassive(effectType.Growth3pt);
+            case potential.StatBlock:
+                return FindPassive(effectType.GrowthBlock);
+            case potential.StatPass:
+                return FindPassive(effectType.GrowthPass);
+            case potential.StatSteal:
+                return FindPassive(effectType.GrowthSteal);
+            case potential.StatRebound:
+                return FindPassive(effectType.GrowthRebound);
+            default:
+                return 0;
+        }
+    }
+
+    private float FindPassive(effectType type)
+    {
+        float result = 0f;
+        foreach (var passive in _passiveDataList)
+        {
+            if (passive.effectType == type)
+            {
+                result += passive.effectValue;
+            }
+        }
+        return result;
+    }
+
+
     public int GetCurrentStat(potential type) //현재 스탯 수치 반환(바로가기) 매서드
     {
         if (type == potential.None || !_statDict.ContainsKey(type))
@@ -261,6 +302,13 @@ public class Student
         _matchPosition = position;
     }
 
+    public void AddChangedPotential(potential pot)
+    {
+        if (pot != potential.None && !_changedPotentials.Contains(pot))
+        {
+            _changedPotentials.Add(pot);
+        }
+    }
     #endregion
 
 
@@ -295,6 +343,8 @@ public class Student
     {
         _attackChange = _attack;  // 현재 공격력을 임시 저장
         _defenseChange = _defense; // 현재 수비력을 임시 저장
+        _conditionChange = _condition; //현재 컨디션을 임시 저장
+        _changedPotentials.Clear();
     }
 
     public void OnStatChanged() //스탯 기반 공격력 & 방어력 계산
@@ -320,7 +370,8 @@ public class Student
             }
         }
         _attackChange = newAttack - _attackChange;
-        _defenseChange = newDefense - _defenseChange;      
+        _defenseChange = newDefense - _defenseChange;
+        _conditionChange = _condition - _conditionChange;
         
         _attack = newAttack;
         _defense = newDefense;

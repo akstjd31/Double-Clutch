@@ -1,4 +1,4 @@
-﻿using GoogleSheetsToUnity;
+using GoogleSheetsToUnity;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
@@ -7,10 +7,10 @@ using UnityEngine.Events;
 using static UnityEngine.GraphicsBuffer;
 
 #if UNITY_EDITOR
-[CustomEditor(typeof(String_TableDataReader))]
-public class String_TableDataReaderEditor : Editor
+[CustomEditor(typeof(BannedWordDataReader))]
+public class BannedWordDataReaderEditor : Editor
 {
-    private String_TableDataReader data;
+    private BannedWordDataReader data;
 
     // ✅ 너 시트 구조 고정:
     // 1행 한글설명 / 2행 영문헤더 / 3행 타입 / 4행부터 데이터
@@ -18,7 +18,7 @@ public class String_TableDataReaderEditor : Editor
 
     void OnEnable()
     {
-        data = (String_TableDataReader)target;
+        data = (BannedWordDataReader)target;
     }
 
     public override void OnInspectorGUI()
@@ -109,7 +109,7 @@ public class String_TableDataReaderEditor : Editor
         // 3) 아무것도 못 찾으면 0~(안전하게) 500까지 시도 (최후의 안전장치)
         // 시트가 작으면 이걸로도 통과함
         var fallback = new List<int>();
-        for (int i = 0; i < 3000; i++) fallback.Add(i);
+        for (int i = 0; i < 5000; i++) fallback.Add(i);
         return fallback;
     }
 

@@ -38,19 +38,21 @@ public class IndividualTraining : ITraining
             GetInjuryOrOverwork(_target);
         }
 
-        int mainGrowth = _data.mainGain + (_data.mainGain * (_target.GetStat(_data.mainPotential).GrowthRate + InfraManager.Instance.GetInfraEffectValueByEffectType(infraEffectType.TrainingBonus) //패시브 스킬
-            / 100)); //현재는 성장률만 반영.            
+        int mainBonus = _target.GetStat(_data.mainPotential).GrowthRate + InfraManager.Instance.GetInfraEffectValueByEffectType(infraEffectType.TrainingBonus) + (int)_target.GetFosterPassiveValue(_data.mainPotential);
+        int mainGrowth = _data.mainGain + (_data.mainGain * mainBonus / 100);
         
         _target.GetStat(_data.mainPotential).GrowAndReturn(mainGrowth);
-
+        _target.AddChangedPotential(_data.mainPotential);
         if (_data.subPotential != potential.None) //부 잠재력이 설정된 훈련이라면
         {
-            int subGrowth = _data.subGain + (_data.subGain * (_target.GetStat(_data.subPotential).GrowthRate // + 시설 효율 + 패시브 스킬
-            / 100)); //현재는 성장률만 반영.
+            int subBonus = _target.GetStat(_data.subPotential).GrowthRate + InfraManager.Instance.GetInfraEffectValueByEffectType(infraEffectType.TrainingBonus) + (int)_target.GetFosterPassiveValue(_data.subPotential);
+            int subGrowth = _data.subGain + (_data.subGain * subBonus / 100);
             _target.GetStat(_data.subPotential).GrowAndReturn(subGrowth);
+            _target.AddChangedPotential(_data.subPotential);
         }
 
         _target.ChangeCondition(-(Random.Range(_data.conditionCostMin, _data.conditionCostMax)));
+        _target.OnStatChanged();
         _target.ResetTrainingSchedule();
 
     }

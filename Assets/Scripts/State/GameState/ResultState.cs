@@ -48,9 +48,10 @@ public class ResultState : IState
 
         // 인프라 보너스 산정
         float infraBonusPercent = 0f;
-        // 추후 InfraManager 구현 시 프런트(RewardGoldBonus)의 infraEffectValue 값을 가져와 적용
-        // 예: infraBonusPercent = InfraManager.Instance.GetEffectValue(infraEffectType.RewardGoldBonus) / 100f;
 
+        // 추후 InfraManager 구현 시 프런트(RewardGoldBonus)의 infraEffectValue 값을 가져와 적용
+        if (InfraManager.Instance != null)
+            infraBonusPercent = InfraManager.Instance.GetInfraEffectValueByEffectType(infraEffectType.RewardGoldBonus);
 
         // 현재 경기 뛰었던 팀(HomeTeam)의 선수 득점 기록을 List로 만들기
         List<MatchPlayerData> matchPlayers = new List<MatchPlayerData>();
