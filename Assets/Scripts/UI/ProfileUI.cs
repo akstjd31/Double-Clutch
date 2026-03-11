@@ -8,8 +8,7 @@ using System.Collections;
 
 public class ProfileUI : MonoBehaviour
 {
-    // 문자의 최소, 최대 길이
-    private const int NAME_MIN = 1;
+    // 문자의 최대 길이
     private const int NAME_MAX = 13;
 
     [SerializeField] private BannedWordDataReader _reader;
@@ -71,10 +70,10 @@ public class ProfileUI : MonoBehaviour
         if (GameManager.Instance == null) return;
         if (_reader == null) return;
 
-        if (!CheckLength(_schoolNameField.text) || !CheckLength(_playerNameField.text))
+        if (!IsValidNameLength(_schoolNameField.text) || !IsValidNameLength(_playerNameField.text))
         {
             if (_warningCoroutine != null) return;
-            _warningCoroutine = StartCoroutine(PrintWarningText("문자의 최소/최대 길이는 1/13입니다!"));
+            _warningCoroutine = StartCoroutine(PrintWarningText("한글 1자 이상, 영어 2자 이상으로 구성되게 작성해주세요!"));
             return;
         }
 
@@ -125,6 +124,29 @@ public class ProfileUI : MonoBehaviour
         this.gameObject.SetActive(false);
     }
 
+    // 한글, 영문 최소 글자 수에 적합하는지?
+    private bool IsValidNameLength(string text)
+    {
+        string normalized = NormalizeText(text);
+
+        if (string.IsNullOrEmpty(normalized))
+            return false;
+
+        bool hasKorean = Regex.IsMatch(normalized, @"[가-힣]");
+        bool hasEnglish = Regex.IsMatch(normalized, @"[a-zA-Z]");
+
+        // 영문이 하나라도 들어가면 최소 2글자
+        if (hasEnglish)
+            return normalized.Length >= 2 && normalized.Length <= NAME_MAX;
+
+        // 한글만 있으면 최소 1글자
+        if (hasKorean)
+            return normalized.Length >= 1 && normalized.Length <= NAME_MAX;
+
+        return false;
+    }
+
+    // 정규화 후 금칙어 테이블에 속하는지 확인
     private bool CheckBadWord(string text)
     {
         string normalizedInput = NormalizeText(text);
@@ -152,12 +174,12 @@ public class ProfileUI : MonoBehaviour
         return false;
     }
 
+    // 공백, 특수문자, 숫자 제거 후 반환
     private string NormalizeText(string text)
     {
         if (string.IsNullOrEmpty(text))
             return "";
 
-        // 공백, 특수문자, 숫자 제거
         string normalized = Regex.Replace(text, @"[^a-zA-Z가-힣]", "");
 
         return normalized.ToLower();
@@ -177,6 +199,7 @@ public class ProfileUI : MonoBehaviour
             _schoolNameField.interactable = false;
     }
 
+    // 위험 문구 출력
     private IEnumerator PrintWarningText(string prompt)
     {
         if (_warningText == null) yield break;
@@ -185,11 +208,5 @@ public class ProfileUI : MonoBehaviour
         yield return new WaitForSeconds(2.0f);
         _warningText.text = "";
         _warningCoroutine = null;
-    }
-
-    private bool CheckLength(string text)
-    {
-        int len = text.Trim().Length;
-        return len >= NAME_MIN && len <= NAME_MAX;
     }
 }
