@@ -18,6 +18,7 @@ public class ProfileDetailsPanel : MonoBehaviour
     [SerializeField] PassiveProfileBox _profileBox1;
     [SerializeField] PassiveProfileBox _profileBox2;
 
+    [SerializeField] StatTriangle _statTriangle;
     Student _student;
 
     private void OnEnable()
@@ -46,6 +47,7 @@ public class ProfileDetailsPanel : MonoBehaviour
         _conditionSlider.value = NormalizeConditionValue(student.Condition);
         SetPassiveText(student);
         Refresh();
+        MakeTriangle();
     }
 
     private void Refresh()
@@ -70,6 +72,13 @@ public class ProfileDetailsPanel : MonoBehaviour
         {
             _profileBox2.Init(student.Passive[2]);
         }
+    }
+
+    private void MakeTriangle()
+    {
+        _statTriangle.Scoring = _student.GetCurrentStat(potential.Stat2pt) + _student.GetCurrentStat(potential.Stat3pt);
+        _statTriangle.Support = _student.GetCurrentStat(potential.StatPass) + _student.GetCurrentStat(potential.StatRebound);
+        _statTriangle.Disruption = _student.GetCurrentStat(potential.StatSteal) + _student.GetCurrentStat(potential.StatBlock);
     }
 
     public void OnPositionChanged(int value)

@@ -43,7 +43,9 @@ public class IndividualTrainingCommandPopUp : MonoBehaviour
             CreateBox(new IndividualRest(restDB[i]));
         }
 
-        _nameText.text = _selectedStudent.Name + " 腊己 目盖靛";
+        StringManager manager = StringManager.Instance;
+        string name = manager.GetString(_selectedStudent.Name[0]) + manager.GetString(_selectedStudent.Name[1]) + manager.GetString(_selectedStudent.Name[2]);
+        _nameText.text = name + " 腊己 目盖靛";
     }
 
     private void CreateBox(ITraining command)
