@@ -23,6 +23,7 @@ public class MatchTeam
     public string TeamColorId => _teamColorId;
     public int Score => _score;
     public List<MatchPlayer> Roster => _roster;
+    public List<PlayerSynergyData> ActiveSynergies { get; private set; } = new List<PlayerSynergyData>();
     public MatchTeam(TeamSide side, string name, string tacticId)
     {
         _side = side;
@@ -43,7 +44,47 @@ public class MatchTeam
             Debug.LogWarning($"[MatchTeam] Roster is full for {_teamName}");
         }
     }
+    public void EvaluateSynergies(List<PlayerSynergyData> synergyDb)
+    {
+        ActiveSynergies.Clear();
 
+        // 현재 출전 중인 5명의 특성 개수를 카운트
+        Dictionary<string, int> traitCounts = new Dictionary<string, int>();
+        foreach (var player in _roster)
+        {
+            if (!string.IsNullOrEmpty(player.TraitId))
+            {
+                if (!traitCounts.ContainsKey(player.TraitId))
+                    traitCounts[player.TraitId] = 0;
+                traitCounts[player.TraitId]++;
+            }
+        }
+
+        // 시너지 DB를 순회하며 발동 조건이 맞는지 체크
+        foreach (var syn in synergyDb)
+        {
+            bool isActivated = false;
+
+            // 같은 특성 2개를 요구하는 시너지인 경우
+            if (syn.traitId1 == syn.traitId2)
+            {
+                if (traitCounts.ContainsKey(syn.traitId1) && traitCounts[syn.traitId1] >= 2)
+                    isActivated = true;
+            }
+            // 서로 다른 특성 2개를 요구하는 시너지인 경우 (ex: 스피드 + 테크닉)
+            else
+            {
+                if (traitCounts.ContainsKey(syn.traitId1) && traitCounts.ContainsKey(syn.traitId2))
+                    isActivated = true;
+            }
+
+            if (isActivated)
+            {
+                ActiveSynergies.Add(syn);
+                Debug.Log($"[시너지 발동] {_teamName} 팀에 '{StringManager.Instance.GetString(syn.synergyName)}' 시너지 발동! (효과: {syn.effectType} {syn.effectValue})");
+            }
+        }
+    }
     public void AddScore(int points)
     {
         _score += points;
