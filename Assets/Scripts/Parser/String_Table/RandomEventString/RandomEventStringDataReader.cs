@@ -3,16 +3,15 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Event_ChoiceDataReader", menuName = "Scriptable Object/Event_ChoiceDataReader", order = int.MaxValue)]
-public class Event_LocalizationReader : DataReaderBase
+[CreateAssetMenu(fileName = "RandomEventStringDataReader", menuName = "Scriptable Object/RandomEventStringDataReader", order = int.MaxValue)]
+public class RandomEventStringDataReader : DataReaderBase
 {
-    [SerializeField] public List<Event_LocalizationData> DataList = new List<Event_LocalizationData>();
+    [SerializeField] public List<RandomEventStringData> DataList = new List<RandomEventStringData>();
 
     internal void UpdateStats(List<GSTU_Cell> list, int rowIndex)
     {
-        string textKey = null;
-        string KR = null;
-        string EN = null;
+        string stringKey = null;
+        string ko = null, en = null, ja = null;
 
         for (int i = 0; i < list.Count; i++)
         {
@@ -24,27 +23,27 @@ public class Event_LocalizationReader : DataReaderBase
             
             switch (col)
             {
-                case "textKey":
-                    textKey = val;
+                case "stringKey":
+                    stringKey = val;
                     break;
 
-                case "KR":
-                    KR = val;
+                case "ko":
+                    ko = val;
                     break;
 
-                case "EN":
-                    EN = val;
+                case "en":
+                    en = val;
+                    break;
+                case "ja":
+                    ja = val;
                     break;
 
             }
         }
-
-
-        if (textKey == "") return;
         
-        var synergyData = new Event_LocalizationData
+        var synergyData = new RandomEventStringData
         (
-            textKey, KR, EN
+            stringKey, ko, en, ja
         );
 
         DataList.Add(synergyData);
