@@ -100,6 +100,11 @@ public class InfraController : MonoBehaviour
 
         if (InfraManager.Instance == null) return;
         InfraManager.Instance.UpdateInfraLevel(infra);
+
+        if (infra.infraEffectType == infraEffectType.AddTactic)
+        {
+            StudentManager.Instance.OnInfraUpdated();
+        }
     }
 
     public int GetCurrentInfraEffectValue()
