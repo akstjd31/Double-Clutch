@@ -64,6 +64,7 @@ public class LeagueRecordManager : MonoBehaviour
         _leagueRecords.Clear();
         Debug.Log("[LeagueRecordManager] 리그가 종료되어 모든 경기 로그가 초기화되었습니다.");
     }
+    
     // 특정 경기의 특정 쿼터 로그만 쏙 뽑아서 반환해 주는 함수
     public List<MatchLogData> GetLogsByQuarter(int matchId, int targetQuarter)
     {

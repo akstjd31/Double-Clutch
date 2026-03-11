@@ -122,6 +122,14 @@ public class StudentManager : Singleton<StudentManager>
         }
     }
 
+    public void OnInfraUpdated()
+    {
+        foreach (var student in _myStudents)
+        {
+            student.OnInfraUpdated();
+        }
+    }
+
     protected override void OnApplicationQuit()
     {
         base.OnApplicationQuit();

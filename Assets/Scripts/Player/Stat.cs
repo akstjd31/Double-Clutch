@@ -19,11 +19,18 @@ public class Stat
     [SerializeField] int _current; //현재 스탯값
     [SerializeField] int _limit; //스탯 최대 성장치
     [SerializeField] int _growthRate; //스탯 성장률
+    [SerializeField] int _finalCurrent; //보너스 적용 현재 스탯값
+    
+    float _statBonusPercent = 0;
+    float _limitBonus = 0;
 
     public potential Type => _type;
-    public int Current => _current;
-    public int Limit => _limit;
+    public int Current => _finalCurrent;
+    public int Limit => _limit + (int)_limitBonus;
     public int GrowthRate => _growthRate;
+    public int InfraBonus => InfraManager.Instance.GetInfraEffectValueByEffectType(infraEffectType.AddTactic);
+    public int RawCurrent => _current;
+    public int RawLimit => _limit;
 
     public Stat(potential type, int current, int limit, int growthRate) //생성자에서 종류, 초기값, 최대치 지정
     {
@@ -35,12 +42,27 @@ public class Stat
 
     public int GrowAndReturn(int amount) // 스탯을 성장시키고 성장치를 반환하는 메서드
     {
-        int before = Current;
+        int before = _current;
 
-        _current = Mathf.Clamp(Current + amount, 0, Limit);
+        _current = Mathf.Clamp(_current + amount, 0, Limit);
 
-        int growth = Current - before;
+        int growth = _current - before;
+
+        RefreshFinalStat();
 
         return growth;
+    }
+
+    public void RefreshFinalStat() 
+    {
+        //Debug.Log("스탯 재계산!");
+        //Debug.Log($"{_type} : 기본 {_current}| 인프라 {InfraBonus}| 패시브 스탯{_statBonusPercent} | 패시브 리밋 {_limitBonus} | 최종 {_finalCurrent}");
+        _finalCurrent = (int)((_current + InfraBonus ) * (1f + _statBonusPercent));         
+    }
+
+    public void SetPassiveBonus(float rate, float poten)
+    {
+        _statBonusPercent = rate;
+        _limitBonus = poten;        
     }
 }
