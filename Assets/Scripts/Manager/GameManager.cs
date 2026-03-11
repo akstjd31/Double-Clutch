@@ -167,6 +167,18 @@ public class GameManager : Singleton<GameManager>
         NotifyLoadingDone(); // 로드 끝난 뒤 상태 전환
     }
 
+    public void SetCoachName(string name)
+    {
+        _saveData.coachName = name;
+        OnDataChanged?.Invoke();
+    }
+    
+    public void SetSchoolName(string name)
+    {
+        _saveData.schoolName = name;
+        OnDataChanged?.Invoke();
+    }
+
     public void SetMoney(int money)
     {
         _saveData.money = HasMaximumMoney() ? MAX_MONEY : money;
