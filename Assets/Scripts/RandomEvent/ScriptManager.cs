@@ -6,7 +6,7 @@ using UnityEngine;
 public class ScriptManager : MonoBehaviour
 {
     [SerializeField] private Event_ChoiceDataReader _choiceDataReader;
-    [SerializeField] private String_RandomEventStringReader _randomEventStringReader;
+    [SerializeField] private RandomEventStringDataReader _randomEventStringReader;
 
     [SerializeField] private List<string> _debugList;
 

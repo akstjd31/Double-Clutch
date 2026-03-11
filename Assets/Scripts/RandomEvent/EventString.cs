@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class EventString : MonoBehaviour
 {
-    [SerializeField] private String_RandomEventStringReader _randomEventStringReader;
+    [SerializeField] private RandomEventStringDataReader _randomEventStringReader;
 
     private Dictionary<string, string> _koScreenPlay = new();
     private Dictionary<string, string> _enScreenPlay = new();

@@ -9,7 +9,7 @@ public class EventManager : MonoBehaviour
     [SerializeField] private Event_DataModelReader _dataModelReader;
     [SerializeField] private Event_ScriptSelectorReader _scriptSelectorReader;
     [SerializeField] private Event_ChoiceDataReader _choiceDataReader;
-    [SerializeField] private String_RandomEventStringReader _randomEventStringReader;
+    [SerializeField] private RandomEventStringDataReader _randomEventStringReader;
     [SerializeField] private List<Student> _myStudents;
 
     [SerializeField] private EventUI _eventUI;
