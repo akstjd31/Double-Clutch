@@ -79,6 +79,10 @@ public class StudentFactory : MonoBehaviour
         {
             
             Player_NameData nameData = _nameDataReader.DataList[i];
+            if (nameData.nation != nation.Kr)
+            {
+                continue;
+            }
             switch (nameData.namePart)
             {
                 case namePart.FirstName:
