@@ -57,8 +57,9 @@ public class StudentFactory : MonoBehaviour
         newStudent.SetTrait(GetRandomTrait());
         string[] name = GetRandomName();
         newStudent.SetName(name[0], name[1], name[2]);
-        SetPassives(newStudent, GetRandomPassive(newStudent));  
         newStudent.SetStat(GetRandomStats(newStudent.Grade));
+        SetPassives(newStudent, GetRandomPassive(newStudent));  
+        
 
         InitStudent(newStudent);        
 
@@ -306,7 +307,7 @@ public class StudentFactory : MonoBehaviour
     // false: Min, true: Max
     public int GetCalReputation(bool flag)
     {
-        if (_reputationDataReader) return 0;
+        if (!_reputationDataReader) return 0;
 
         var data = _reputationDataReader.DataList[0];
 
