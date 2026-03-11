@@ -5,6 +5,8 @@ using UnityEngine.UI;
 
 public class LobbyUI : MonoBehaviour
 {
+    [SerializeField] private TextMeshProUGUI _schoolText;
+    [SerializeField] private TextMeshProUGUI _coachText;
     [SerializeField] private TextMeshProUGUI _calendarText;
     [SerializeField] private TextMeshProUGUI _moneyText;
     [SerializeField] private TextMeshProUGUI _honorText;
@@ -28,6 +30,7 @@ public class LobbyUI : MonoBehaviour
         {
             GameManager.Instance.OnDataChanged += UpdateMoneyText;
             GameManager.Instance.OnDataChanged += UpdateHonorText;
+            GameManager.Instance.OnDataChanged += UpdateProfileText;
         }
     }
 
@@ -38,11 +41,10 @@ public class LobbyUI : MonoBehaviour
 
     private void Init()
     {
-        var gameMgr = GameManager.Instance;
-        if (gameMgr == null) return;
-
+        if (GameManager.Instance == null) return;
         UpdateMoneyText();
         UpdateHonorText();
+        UpdateProfileText();
 
         var calMgr = CalendarManager.Instance;
         if (calMgr == null) return;
@@ -63,6 +65,7 @@ public class LobbyUI : MonoBehaviour
         {
             GameManager.Instance.OnDataChanged -= UpdateMoneyText;
             GameManager.Instance.OnDataChanged -= UpdateHonorText;
+            GameManager.Instance.OnDataChanged -= UpdateProfileText;
         }
     }
 
@@ -101,6 +104,13 @@ public class LobbyUI : MonoBehaviour
     public void UpdateHonorText()
     {
         _honorText.text = GameManager.Instance.SaveData.honor.ToString("N0");
+    }
+
+    public void UpdateProfileText()
+    {
+        var data = GameManager.Instance.SaveData;
+        _schoolText.text = data.schoolName;
+        _coachText.text = data.coachName;
     }
 
     public void OnClickConfirmButton()

@@ -17,6 +17,7 @@ public class InfraController : MonoBehaviour
     
     public event Action<int> Upgraded;
     private bool initComplete = false;                     // 초기 세팅이 완료되었는지 여부 확인
+    private Coroutine _warningCoroutine;
 
     private void Awake()
     {
@@ -100,6 +101,11 @@ public class InfraController : MonoBehaviour
 
         if (InfraManager.Instance == null) return;
         InfraManager.Instance.UpdateInfraLevel(infra);
+
+        if (infra.infraEffectType == infraEffectType.AddTactic)
+        {
+            StudentManager.Instance.OnInfraUpdated();
+        }
     }
 
     public int GetCurrentInfraEffectValue()

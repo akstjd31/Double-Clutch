@@ -11,7 +11,7 @@ public class League_RewardDataReader : DataReaderBase
     internal void UpdateStats(List<GSTU_Cell> list)
     {
         string leagueRId = null;
-        int rewardFW = 0, rewardGW = 0, rewardGE = 0;
+        int rewardFW = 0, rewardGW = 0, rewardGE = 0, finalParticipationFame = 0;
         float rewardGM = 0;
 
         for (int i = 0; i < list.Count; i++)
@@ -43,12 +43,15 @@ public class League_RewardDataReader : DataReaderBase
                 case "rewardGoldMultiplier":
                     float.TryParse(val, out rewardGM);
                     break;
+                case "finalParticipationFame":
+                    int.TryParse(val, out finalParticipationFame);
+                    break;
             }
         }
 
         var rewardData = new League_RewardData
         (
-            leagueRId, rewardFW, rewardGW, rewardGE, rewardGM
+            leagueRId, rewardFW, rewardGW, rewardGE, rewardGM, finalParticipationFame
         );
 
         DataList.Add(rewardData);

@@ -7,10 +7,10 @@ using UnityEngine.Events;
 using static UnityEngine.GraphicsBuffer;
 
 #if UNITY_EDITOR
-[CustomEditor(typeof(Event_LocalizationReader))]
-public class Event_LocalizationReaderEditor : Editor
+[CustomEditor(typeof(RandomEventStringDataReader))]
+public class RandomEventStringDataReaderEditor : Editor
 {
-    private Event_LocalizationReader data;
+    private RandomEventStringDataReader data;
 
     // ✅ 너 시트 구조 고정:
     // 1행 한글설명 / 2행 영문헤더 / 3행 타입 / 4행부터 데이터
@@ -18,7 +18,7 @@ public class Event_LocalizationReaderEditor : Editor
 
     void OnEnable()
     {
-        data = (Event_LocalizationReader)target;
+        data = (RandomEventStringDataReader)target;
     }
 
     public override void OnInspectorGUI()
@@ -109,7 +109,7 @@ public class Event_LocalizationReaderEditor : Editor
         // 3) 아무것도 못 찾으면 0~(안전하게) 500까지 시도 (최후의 안전장치)
         // 시트가 작으면 이걸로도 통과함
         var fallback = new List<int>();
-        for (int i = 0; i < 500; i++) fallback.Add(i);
+        for (int i = 0; i < 10000; i++) fallback.Add(i);
         return fallback;
     }
 

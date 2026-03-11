@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public enum StudentState
@@ -89,23 +90,65 @@ public class Student
         switch(pot)
         {
             case potential.Stat2pt:
-                return FindPassive(effectType.Growth2pt);
+                return FindPassiveValue(effectType.Growth2pt);
             case potential.Stat3pt:
-                return FindPassive(effectType.Growth3pt);
+                return FindPassiveValue(effectType.Growth3pt);
             case potential.StatBlock:
-                return FindPassive(effectType.GrowthBlock);
+                return FindPassiveValue(effectType.GrowthBlock);
             case potential.StatPass:
-                return FindPassive(effectType.GrowthPass);
+                return FindPassiveValue(effectType.GrowthPass);
             case potential.StatSteal:
-                return FindPassive(effectType.GrowthSteal);
+                return FindPassiveValue(effectType.GrowthSteal);
             case potential.StatRebound:
-                return FindPassive(effectType.GrowthRebound);
+                return FindPassiveValue(effectType.GrowthRebound);
             default:
                 return 0;
         }
     }
 
-    private float FindPassive(effectType type)
+    public float GetRatePassiveValue(potential pot)
+    {
+        switch (pot)
+        {
+            case potential.Stat2pt:
+                return FindPassiveValue(effectType.Rate2pt);
+            case potential.Stat3pt:
+                return FindPassiveValue(effectType.Rate3pt);
+            case potential.StatBlock:
+                return FindPassiveValue(effectType.RateBlock);
+            case potential.StatPass:
+                return FindPassiveValue(effectType.RatePass);
+            case potential.StatSteal:
+                return FindPassiveValue(effectType.RateSteal);
+            case potential.StatRebound:
+                return FindPassiveValue(effectType.RateRebound);
+            default:
+                return 0;
+        }
+    }
+
+    public float GetPotenPassiveValue(potential pot)
+    {
+        switch (pot)
+        {
+            case potential.Stat2pt:
+                return FindPassiveValue(effectType.Poten2pt);
+            case potential.Stat3pt:
+                return FindPassiveValue(effectType.Poten3pt);
+            case potential.StatBlock:
+                return FindPassiveValue(effectType.PotenBlock);
+            case potential.StatPass:
+                return FindPassiveValue(effectType.PotenPass);
+            case potential.StatSteal:
+                return FindPassiveValue(effectType.PotenSteal);
+            case potential.StatRebound:
+                return FindPassiveValue(effectType.PotenRebound);
+            default:
+                return 0;
+        }
+    }
+
+    private float FindPassiveValue(effectType type)
     {
         float result = 0f;
         foreach (var passive in _passiveDataList)
@@ -229,6 +272,7 @@ public class Student
         {
             _passiveIdList.Add(data.skillId);
         }
+        OnPassiveUpdated();
     }
     public bool HasPassive(string skillId)
     {
@@ -316,9 +360,9 @@ public class Student
     public void Init(Player_SpeciesDataReader specieDb, Player_PersonalityDataReader personalityDb, Player_PassiveDataReader passiveDb, Player_TraitDataReader traitDb, Player_PositionDataReader positionDb) //Id 기반으로 데이터 연결하기
     {
         InitStat();
+        InitPassive(passiveDb);         
         InitSpecies(specieDb);
-        InitPersonality(personalityDb);
-        InitPassive(passiveDb);
+        InitPersonality(personalityDb);        
         InitTrait(traitDb);
         InitPositionData(positionDb);
     }
@@ -328,7 +372,7 @@ public class Student
         _statDict.Clear();
         foreach (var stat in _stats) //스탯 리스트를 딕셔너리에 할당(조회 편의성)
         {
-            _statDict[stat.Type] = stat;
+            _statDict[stat.Type] = stat;            
         }
         OnStatChanged(); //공격력 & 방어력 계산
     }
@@ -360,12 +404,12 @@ public class Student
                 case potential.Stat2pt:
                 case potential.Stat3pt:
                 case potential.StatPass:
-                    newAttack += stat.Current;
+                    newAttack += stat.Current;                    
                     break;
                 case potential.StatBlock:
                 case potential.StatSteal:
                 case potential.StatRebound:
-                    newDefense += stat.Current;
+                    newDefense += stat.Current;                    
                     break;
             }
         }
@@ -393,7 +437,8 @@ public class Student
         {
             Player_PassiveData data = db.DataList.Find(data => data.skillId == _passiveIdList[i]);
             _passiveDataList.Add(data);
-        }        
+        }
+        OnPassiveUpdated();
     }
 
     private void InitTrait(Player_TraitDataReader db)
@@ -410,4 +455,32 @@ public class Student
         }
         OnStatChanged(); // 공격력/수비력 계산도 같이 갱신
     }
+
+    public void OnPassiveUpdated()
+    {        
+        foreach (var stat in _stats)
+        {
+            if (stat.Type == potential.None)
+            {
+                continue;
+            }
+            stat.SetPassiveBonus(GetRatePassiveValue(stat.Type), GetPotenPassiveValue(stat.Type));
+            stat.RefreshFinalStat();
+        }
+        OnStatChanged();
+    }
+
+    public void OnInfraUpdated()
+    {
+        foreach (var stat in _stats)
+        {
+            if (stat.Type == potential.None)
+            {
+                continue;
+            }
+            stat.RefreshFinalStat();
+        }
+        OnStatChanged();
+    }
+
 }
