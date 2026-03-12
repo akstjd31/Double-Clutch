@@ -37,9 +37,9 @@ public class StudentFactory : MonoBehaviour
     List<Player_StartingStateData> _startingStates = new List<Player_StartingStateData>();
     Player_MaxPotentialData _maxPotential;
     
-    List<string> _firstNames = new List<string>();
-    List<string> _middleNames = new List<string>();
-    List<string> _lastNames = new List<string>();    
+    Dictionary<nation, List<string>>  _firstNames = new Dictionary<nation, List<string>>();
+    Dictionary<nation, List<string>> _middleNames = new Dictionary<nation, List<string>>();
+    Dictionary<nation, List<string>> _lastNames = new Dictionary<nation, List<string>>();    
     
     Dictionary<string, List<Player_VisualData>> _visualDataDict = new Dictionary<string, List<Player_VisualData>>();
     Dictionary<int, List<Player_PassiveData>> _gradePool = new Dictionary<int, List<Player_PassiveData>>();
@@ -55,7 +55,7 @@ public class StudentFactory : MonoBehaviour
         newStudent.SetGrade(GetrRandomGrade());
         newStudent.SetPersonality(GetRandomPersonality());
         newStudent.SetTrait(GetRandomTrait());
-        string[] name = GetRandomName();
+        string[] name = GetRandomName(nation.Kr);
         newStudent.SetName(name[0], name[1], name[2]);
         newStudent.SetStat(GetRandomStats(newStudent.Grade));
         SetPassives(newStudent, GetRandomPassive(newStudent));  
@@ -79,20 +79,21 @@ public class StudentFactory : MonoBehaviour
         {
             
             Player_NameData nameData = _nameDataReader.DataList[i];
-            if (nameData.nation != nation.Kr)
-            {
-                continue;
-            }
+            nation n = nameData.nation;
+            if (!_firstNames.ContainsKey(n)) _firstNames[n] = new List<string>();
+            if (!_middleNames.ContainsKey(n)) _middleNames[n] = new List<string>();
+            if (!_lastNames.ContainsKey(n)) _lastNames[n] = new List<string>();
+
             switch (nameData.namePart)
             {
                 case namePart.FirstName:
-                    _firstNames.Add(nameData.nameKey);
+                    _firstNames[n].Add(nameData.nameKey);
                     break;
                 case namePart.MiddleName:
-                    _middleNames.Add(nameData.nameKey);
+                    _middleNames[n].Add(nameData.nameKey);
                     break;
                 case namePart.LastName:
-                    _lastNames.Add(nameData.nameKey);
+                    _lastNames[n].Add(nameData.nameKey);
                     break;
             }
         }
@@ -140,11 +141,11 @@ public class StudentFactory : MonoBehaviour
     }
 
 
-    private string[] GetRandomName() 
+    private string[] GetRandomName(nation target) 
     {
-        string first = _firstNames[Random.Range(0, _firstNames.Count)];
-        string middle = _middleNames[Random.Range(0, _middleNames.Count)];
-        string last = _lastNames[Random.Range(0, _lastNames.Count)];
+        string first = _firstNames[target][Random.Range(0, _firstNames[target].Count)];
+        string middle = _middleNames[target][Random.Range(0, _middleNames[target].Count)];
+        string last = _lastNames[target][Random.Range(0, _lastNames[target].Count)];
 
         string[] name = new string[3];
         name[0] = first;
