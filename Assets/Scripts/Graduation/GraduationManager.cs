@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using static UnityEngine.GraphicsBuffer;
@@ -81,6 +81,7 @@ public class GraduationManager : MonoBehaviour
         {
             StudentManager.Instance.ReleaseStudent(_graduationStudentList[i]);
         }
+        StudentManager.Instance.SaveGame();
     }
 
     public void NextScene()

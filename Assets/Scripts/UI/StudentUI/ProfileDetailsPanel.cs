@@ -18,6 +18,7 @@ public class ProfileDetailsPanel : MonoBehaviour
     [SerializeField] PassiveProfileBox _profileBox1;
     [SerializeField] PassiveProfileBox _profileBox2;
 
+    [SerializeField] StatTriangle _statTriangle;
     Student _student;
 
     private void OnEnable()
@@ -45,7 +46,7 @@ public class ProfileDetailsPanel : MonoBehaviour
         _defenseText.text = student.Defense.ToString();
         _conditionSlider.value = NormalizeConditionValue(student.Condition);
         SetPassiveText(student);
-        Refresh();
+        Refresh();        
     }
 
     private void Refresh()
@@ -53,6 +54,7 @@ public class ProfileDetailsPanel : MonoBehaviour
         if (_student == null) return;
         _personalityText.text = StringManager.Instance.GetString(_student.PersonalityData.personalityName);
         _traitText.text = StringManager.Instance.GetString(_student.TraitData.traitName);
+        MakeTriangle();
     }
 
     private void SetPassiveText(Student student)
@@ -70,6 +72,15 @@ public class ProfileDetailsPanel : MonoBehaviour
         {
             _profileBox2.Init(student.Passive[2]);
         }
+    }
+
+    private void MakeTriangle()
+    {
+        _statTriangle.Scoring = _student.GetCurrentStat(potential.Stat2pt) + _student.GetCurrentStat(potential.Stat3pt);
+        _statTriangle.Support = _student.GetCurrentStat(potential.StatPass) + _student.GetCurrentStat(potential.StatRebound);
+        _statTriangle.Disruption = _student.GetCurrentStat(potential.StatSteal) + _student.GetCurrentStat(potential.StatBlock);
+
+        _statTriangle.SetVerticesDirty();
     }
 
     public void OnPositionChanged(int value)

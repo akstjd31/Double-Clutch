@@ -31,6 +31,29 @@ public class PassiveExplainBox : MonoBehaviour
         if (StringManager.Instance == null) return;
 
         _skillNameText.text = StringManager.Instance.GetString(_data.Value.skillName ?? "");
-        _skillDescText.text = StringManager.Instance.GetString(_data.Value.passiveDesc ?? "");
+        string originDesc = StringManager.Instance.GetString(_data.Value.passiveDesc ?? "");
+        string valueString = string.Empty;
+
+        switch (_data.Value.effectType)
+        {
+            case effectType.None:
+                break;
+            case effectType.Rate2pt:
+            case effectType.Rate3pt:
+            case effectType.RateBlock:
+            case effectType.RatePass:
+            case effectType.RateSteal:
+            case effectType.RateRebound:
+            case effectType.MonthGoldUp:
+            case effectType.MatchGoldUp:
+                valueString = (_data.Value.effectValue * 100).ToString()+"%";
+                break;
+            default:
+                valueString = (_data.Value.effectValue).ToString();
+                break;
+        }
+
+        string formattedDesc = originDesc.Replace("{effectValue}", valueString);
+        _skillDescText.text = formattedDesc;
     }
 }

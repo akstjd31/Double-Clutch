@@ -9,17 +9,18 @@ public class MatchPlayer
     private int _playerId;
     private string[] _playerName;
     private Position _position;
-    private Dictionary<MatchStatType, int> _stats; // 6´ë ½ºÅÈ + @ °ü¸®
-    private int _currentCondition; // °æ±â Áß ¼Ò¸ğµÇ´Â ÄÁµğ¼Ç
+    private Dictionary<MatchStatType, int> _stats; // 6ëŒ€ ìŠ¤íƒ¯ + @ ê´€ë¦¬
+    private int _currentCondition; // ê²½ê¸° ì¤‘ ì†Œëª¨ë˜ëŠ” ì»¨ë””ì…˜
+    public int PassReceivedBuffTick = 0; // [ì‹œë„ˆì§€ìš© ë³€ìˆ˜] íŒ¨ìŠ¤ë¥¼ ë°›ì€ ì§í›„ ëª‡ í‹±(í„´)ì´ ì§€ë‚¬ëŠ”ì§€ ì¹´ìš´íŠ¸ (0ì´ë©´ ë²„í”„ ì—†ìŒ)
 
     public List<Player_PassiveData> Passives { get; private set; }
-    // ½Ã¹Ä·¹ÀÌ¼ÇÀº ÀÌ ÁÂÇ¥·Î °è»êÇÏ°í, ¸®ÇÃ·¹ÀÌ¾î´Â ÀÌ°É ¿ùµå ÁÂÇ¥·Î º¯È¯ÇØ¼­ º¸¿©ÁÜ.
+    // ì‹œë®¬ë ˆì´ì…˜ì€ ì´ ì¢Œí‘œë¡œ ê³„ì‚°í•˜ê³ , ë¦¬í”Œë ˆì´ì–´ëŠ” ì´ê±¸ ì›”ë“œ ì¢Œí‘œë¡œ ë³€í™˜í•´ì„œ ë³´ì—¬ì¤Œ.
     public Vector2 LogicPosition { get; set; }
     public int Score { get; set; } = 0;
-    // ºñÁÖ¾ó ¿ÀºêÁ§Æ® (¸®ÇÃ·¹ÀÌ¾î¿¡¼­ »ç¿ë)
+    // ë¹„ì£¼ì–¼ ì˜¤ë¸Œì íŠ¸ (ë¦¬í”Œë ˆì´ì–´ì—ì„œ ì‚¬ìš©)
     public GameObject VisualObject { get; set; }
 
-    // ¿ÜÇü ¸®¼Ò½º Å°¿Í Æ¯¼º ID¸¦ ÀúÀåÇÒ ÇÁ·ÎÆÛÆ¼
+    // ì™¸í˜• ë¦¬ì†ŒìŠ¤ í‚¤ì™€ íŠ¹ì„± IDë¥¼ ì €ì¥í•  í”„ë¡œí¼í‹°
     public string ResourceKey { get; private set; }
     public string TraitId { get; set; } = string.Empty;
 
@@ -31,11 +32,11 @@ public class MatchPlayer
         get => _currentCondition;
         set => _currentCondition = Mathf.Clamp(value, 0, MAX_STAMINA);
     }
-    // ÇÏÇÁÅ¸ÀÓ ÀÌº¥Æ®·Î ÀÎÇÑ ÀÓ½Ã Æ÷Áö¼Ç(ÁøÇü) º¯°æ
+    // í•˜í”„íƒ€ì„ ì´ë²¤íŠ¸ë¡œ ì¸í•œ ì„ì‹œ í¬ì§€ì…˜(ì§„í˜•) ë³€ê²½
     public changeType TempPositionChange { get; set; } = changeType.Default;
-    // ÇÏÇÁÅ¸ÀÓ ÀÌº¥Æ®·Î ÀÎÇÑ ÀÓ½Ã ½ºÅÈ Áõ°¨Ä¡ ÀúÀå¼Ò
+    // í•˜í”„íƒ€ì„ ì´ë²¤íŠ¸ë¡œ ì¸í•œ ì„ì‹œ ìŠ¤íƒ¯ ì¦ê°ì¹˜ ì €ì¥ì†Œ
     private Dictionary<MatchStatType, float> _tempStatBuffs = new Dictionary<MatchStatType, float>();
-    // »ı¼ºÀÚ: µ¥ÀÌÅÍ ·Îµå½Ã ÃÊ±âÈ­
+    // ìƒì„±ì: ë°ì´í„° ë¡œë“œì‹œ ì´ˆê¸°í™”
     public MatchPlayer(int id, string[] name, Position pos, Dictionary<MatchStatType, int> initStats, string resourceKey, List<Player_PassiveData> passives = null)
     {
         _playerId = id;
@@ -45,32 +46,32 @@ public class MatchPlayer
         _currentCondition = MAX_STAMINA;
         Passives = passives ?? new List<Player_PassiveData>();
         ResourceKey = resourceKey;
-        // ÃÊ±â À§Ä¡ ¼³Á¤
+        // ì´ˆê¸° ìœ„ì¹˜ ì„¤ì •
         InitDefaultPosition();
-        // [µğ¹ö±×] ÃÊ±âÈ­ ¿Ï·á Á÷ÈÄ µé¾î¿Â ½ºÅÈ È®ÀÎ
-        Debug.Log($"<color=#00FF00>[MatchPlayer º¯È¯ ¿Ï·á]</color> {_playerName} »ı¼ºµÊ. Àü´Ş¹ŞÀº 2Á¡½¸ ½ºÅÈ: {_stats[MatchStatType.TwoPoint]}");
+        // [ë””ë²„ê·¸] ì´ˆê¸°í™” ì™„ë£Œ ì§í›„ ë“¤ì–´ì˜¨ ìŠ¤íƒ¯ í™•ì¸
+        Debug.Log($"<color=#00FF00>[MatchPlayer ë³€í™˜ ì™„ë£Œ]</color> {_playerName} ìƒì„±ë¨. ì „ë‹¬ë°›ì€ 2ì ìŠ› ìŠ¤íƒ¯: {_stats[MatchStatType.TwoPoint]}");
     }
 
     private void InitDefaultPosition()
     {
         switch (_position)
         {
-            case Position.PG: LogicPosition = new Vector2(0.5f, 0.65f); break; // Å¾
-            case Position.SG: LogicPosition = new Vector2(0.8f, 0.75f); break; // ¿ìÃø 45µµ
-            case Position.SF: LogicPosition = new Vector2(0.2f, 0.75f); break; // ÁÂÃø 45µµ
-            case Position.PF: LogicPosition = new Vector2(0.65f, 0.85f); break; // ÇÏÀÌ Æ÷½ºÆ®
-            case Position.C: LogicPosition = new Vector2(0.5f, 0.9f); break;  // °ñ¹Ø
+            case Position.PG: LogicPosition = new Vector2(0.5f, 0.65f); break; // íƒ‘
+            case Position.SG: LogicPosition = new Vector2(0.8f, 0.75f); break; // ìš°ì¸¡ 45ë„
+            case Position.SF: LogicPosition = new Vector2(0.2f, 0.75f); break; // ì¢Œì¸¡ 45ë„
+            case Position.PF: LogicPosition = new Vector2(0.65f, 0.85f); break; // í•˜ì´ í¬ìŠ¤íŠ¸
+            case Position.C: LogicPosition = new Vector2(0.5f, 0.9f); break;  // ê³¨ë°‘
             default: LogicPosition = new Vector2(0.5f, 0.5f); break;
         }
     }
 
-    //  ¹öÇÁ ºÎ¿© ÇÔ¼ö
+    //  ë²„í”„ ë¶€ì—¬ í•¨ìˆ˜
     public void AddTempStatBuff(MatchStatType type, float value)
     {
         if (!_tempStatBuffs.ContainsKey(type)) _tempStatBuffs[type] = 0f;
         _tempStatBuffs[type] += value;
     }
-    // ½ºÅÈ ¹İÈ¯ ½Ã ÀÓ½Ã ¹öÇÁµµ ´õÇØ¼­ °è»êÇÏµµ·Ï º¯°æ
+    // ìŠ¤íƒ¯ ë°˜í™˜ ì‹œ ì„ì‹œ ë²„í”„ë„ ë”í•´ì„œ ê³„ì‚°í•˜ë„ë¡ ë³€ê²½
     public int GetStat(MatchStatType type, float tacticBonus = 1.0f)
     {
         float baseStat = _stats.ContainsKey(type) ? _stats[type] : 0;

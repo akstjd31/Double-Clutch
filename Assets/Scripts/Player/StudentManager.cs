@@ -72,7 +72,7 @@ public class StudentManager : Singleton<StudentManager>
 
         newStudent.SetStudentId(_idCount++);
 
-        SaveGame();
+        //SaveGame();
     }
 
     public void ReleaseStudent(Student target)
@@ -80,7 +80,7 @@ public class StudentManager : Singleton<StudentManager>
         _myStudents.Remove(target);
         Debug.Log($"{target.Name} 선수가 팀을 떠났습니다.");
 
-        SaveGame();
+        //SaveGame();
     }
 
     // ??? ?��? ??? ????????

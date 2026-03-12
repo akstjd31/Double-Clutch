@@ -19,90 +19,90 @@ public class MatchUIManager : MonoBehaviour
 
     [Header("Result Popup")]
     [SerializeField] private NormalResultPanel _normalResultPanel; 
-    [SerializeField] private GameObject _resultPanel;              // °á°ú ÆĞ³Î ÀüÃ¼
-    [SerializeField] private TextMeshProUGUI _textResultHomeScore; // ¾Æ±º Á¡¼ö (ex: 10)
-    [SerializeField] private TextMeshProUGUI _textResultHomeName;  // ¾Æ±º ÀÌ¸§ (ex: ÇÃ·¹°í)
-    [SerializeField] private TextMeshProUGUI _textResultAwayScore; // Àû±º Á¡¼ö (ex: 9)
-    [SerializeField] private TextMeshProUGUI _textResultAwayName;  // Àû±º ÀÌ¸§ (ex: ¶óÀÌ¹ú°í)
-    [SerializeField] private TextMeshProUGUI _textResultTitle;     // ½ÂÆĞ ÅØ½ºÆ® (ex: ½Â¸® / ÆĞ¹è)
-    [SerializeField] private TextMeshProUGUI _textResultReward;    // Áö¿ø±İ ÅØ½ºÆ® (ex: Áö¿ø±İ : +49)
+    [SerializeField] private GameObject _resultPanel;              // ê²°ê³¼ íŒ¨ë„ ì „ì²´
+    [SerializeField] private TextMeshProUGUI _textResultHomeScore; // ì•„êµ° ì ìˆ˜ (ex: 10)
+    [SerializeField] private TextMeshProUGUI _textResultHomeName;  // ì•„êµ° ì´ë¦„ (ex: í”Œë ˆê³ )
+    [SerializeField] private TextMeshProUGUI _textResultAwayScore; // ì êµ° ì ìˆ˜ (ex: 9)
+    [SerializeField] private TextMeshProUGUI _textResultAwayName;  // ì êµ° ì´ë¦„ (ex: ë¼ì´ë²Œê³ )
+    [SerializeField] private TextMeshProUGUI _textResultTitle;     // ìŠ¹íŒ¨ í…ìŠ¤íŠ¸ (ex: ìŠ¹ë¦¬ / íŒ¨ë°°)
+    [SerializeField] private TextMeshProUGUI _textResultReward;    // ì§€ì›ê¸ˆ í…ìŠ¤íŠ¸ (ex: ì§€ì›ê¸ˆ : +49)
 
     [Header("Match Log")]
     [SerializeField] private TextMeshProUGUI _textLogMessage;
 
     [Header("Quarter End Popup")]
-    [SerializeField] private GameObject _quarterEndPanel; // "2ÄõÅÍ Á¾·á" ÆË¾÷ ÀüÃ¼
+    [SerializeField] private GameObject _quarterEndPanel; // "2ì¿¼í„° ì¢…ë£Œ" íŒì—… ì „ì²´
 
     [Header("League Calculate UI")]
     [SerializeField] private LeagueCalculatePanel _leagueCalculatePanel;
 
     [Header("Halftime Event Visual Novel UI")]
-    [SerializeField] private GameObject _halftimeVNPanel; // ºñÁÖ¾ó ³ëº§ ÀüÃ¼ ÆĞ³Î
-    [SerializeField] private Button _btnNext; // ÀÏ¹İ ´ëÈ­(Desc/End) ³Ñ±â±â¿ë ÀüÃ¼ È­¸é ¹öÆ°
-    [SerializeField] private GameObject _choiceGroup; // ¼±ÅÃÁö ¹öÆ°µéÀ» ¹­¾îµĞ ºÎ¸ğ °´Ã¼
+    [SerializeField] private GameObject _halftimeVNPanel; // ë¹„ì£¼ì–¼ ë…¸ë²¨ ì „ì²´ íŒ¨ë„
+    [SerializeField] private Button _btnNext; // ì¼ë°˜ ëŒ€í™”(Desc/End) ë„˜ê¸°ê¸°ìš© ì „ì²´ í™”ë©´ ë²„íŠ¼
+    [SerializeField] private GameObject _choiceGroup; // ì„ íƒì§€ ë²„íŠ¼ë“¤ì„ ë¬¶ì–´ë‘” ë¶€ëª¨ ê°ì²´
     [SerializeField] private Button _btnChoice1;
     [SerializeField] private TextMeshProUGUI _txtChoice1;
     [SerializeField] private Button _btnChoice2;
     [SerializeField] private TextMeshProUGUI _txtChoice2;
     [SerializeField] private Button _btnChoice3;
     [SerializeField] private TextMeshProUGUI _txtChoice3;
-    [SerializeField] private Image _imgBackground;      // ¹è°æ ÀÌ¹ÌÁö
-    [SerializeField] private Image _imgStandingLeft;    // ÁÂÃø ½ºÅÄµù
-    [SerializeField] private Image _imgStandingMiddle;  // Áß¾Ó Ä³¸¯ÅÍ
-    [SerializeField] private Image _imgStandingRight;   // ¿ìÃø ½ºÅÄµù
-    [SerializeField] private Image _imgCG;              // CG ÆĞ³Î
+    [SerializeField] private Image _imgBackground;      // ë°°ê²½ ì´ë¯¸ì§€
+    [SerializeField] private Image _imgStandingLeft;    // ì¢Œì¸¡ ìŠ¤íƒ ë”©
+    [SerializeField] private Image _imgStandingMiddle;  // ì¤‘ì•™ ìºë¦­í„°
+    [SerializeField] private Image _imgStandingRight;   // ìš°ì¸¡ ìŠ¤íƒ ë”©
+    [SerializeField] private Image _imgCG;              // CG íŒ¨ë„
 
     [Header("Left Dialogue UI")]
-    [SerializeField] private GameObject _leftBubbleGroup;         // ÁÂÃø ´ëÈ­Ã¢ ÀüÃ¼ ºÎ¸ğ
-    [SerializeField] private TextMeshProUGUI _txtLeftSpeakerName; // ÁÂÃø È­ÀÚ ÀÌ¸§
-    [SerializeField] private TextMeshProUGUI _txtLeftDialogue;    // ÁÂÃø ´ë»ç
+    [SerializeField] private GameObject _leftBubbleGroup;         // ì¢Œì¸¡ ëŒ€í™”ì°½ ì „ì²´ ë¶€ëª¨
+    [SerializeField] private TextMeshProUGUI _txtLeftSpeakerName; // ì¢Œì¸¡ í™”ì ì´ë¦„
+    [SerializeField] private TextMeshProUGUI _txtLeftDialogue;    // ì¢Œì¸¡ ëŒ€ì‚¬
 
     [Header("Right Dialogue UI")]
-    [SerializeField] private GameObject _rightBubbleGroup;         // ¿ìÃø ´ëÈ­Ã¢ ÀüÃ¼ ºÎ¸ğ
-    [SerializeField] private TextMeshProUGUI _txtRightSpeakerName; // ¿ìÃø È­ÀÚ ÀÌ¸§
-    [SerializeField] private TextMeshProUGUI _txtRightDialogue;    // ¿ìÃø ´ë»ç
+    [SerializeField] private GameObject _rightBubbleGroup;         // ìš°ì¸¡ ëŒ€í™”ì°½ ì „ì²´ ë¶€ëª¨
+    [SerializeField] private TextMeshProUGUI _txtRightSpeakerName; // ìš°ì¸¡ í™”ì ì´ë¦„
+    [SerializeField] private TextMeshProUGUI _txtRightDialogue;    // ìš°ì¸¡ ëŒ€ì‚¬
 
 
     [Header("Cut-In Effect")]
-    [SerializeField] private GameObject _cutInPanel;      // ÄÆÀÎ ÀüÃ¼ ÆĞ³Î (Canvas ³» Panel)
-    [SerializeField] private Image _cutInImage;           // ÄÆÀÎ ÀÌ¹ÌÁö Ãâ·ÂºÎ (UI Image)
-    [SerializeField] private TextMeshProUGUI _cutInText;  // ÄÆÀÎ ÅØ½ºÆ® (DUNK! µî)
+    [SerializeField] private GameObject _cutInPanel;      // ì»·ì¸ ì „ì²´ íŒ¨ë„ (Canvas ë‚´ Panel)
+    [SerializeField] private Image _cutInImage;           // ì»·ì¸ ì´ë¯¸ì§€ ì¶œë ¥ë¶€ (UI Image)
+    [SerializeField] private TextMeshProUGUI _cutInText;  // ì»·ì¸ í…ìŠ¤íŠ¸ (DUNK! ë“±)
 
     [Header("Settings UI")]
     [SerializeField] private GameObject _settingPanel;
 
-    // À¯´ÏÆ¼ ¿¡µğÅÍ¿¡¼­ ¿¬°áÇÒ ½ºÇÁ¶óÀÌÆ®µé
+    // ìœ ë‹ˆí‹° ì—ë””í„°ì—ì„œ ì—°ê²°í•  ìŠ¤í”„ë¼ì´íŠ¸ë“¤
     [SerializeField] private Sprite _spriteDunk;
     [SerializeField] private Sprite _spriteThreePoint;
     [SerializeField] private Sprite _spriteBuzzerBeater;
 
-    // ·Î±× È÷½ºÅä¸®¸¦ ÀúÀåÇÒ ¸®½ºÆ®¿Í ÃÖ´ë Ç¥½Ã ÁÙ ¼ö
-    [SerializeField] private int _maxLogLines = 5; // ÇÑ È­¸é¿¡ º¸¿©ÁÙ ÃÖ´ë ·Î±× °³¼ö (UI Å©±â¿¡ ¸ÂÃç Á¶Àı)
+    // ë¡œê·¸ íˆìŠ¤í† ë¦¬ë¥¼ ì €ì¥í•  ë¦¬ìŠ¤íŠ¸ì™€ ìµœëŒ€ í‘œì‹œ ì¤„ ìˆ˜
+    [SerializeField] private int _maxLogLines = 5; // í•œ í™”ë©´ì— ë³´ì—¬ì¤„ ìµœëŒ€ ë¡œê·¸ ê°œìˆ˜ (UI í¬ê¸°ì— ë§ì¶° ì¡°ì ˆ)
     private List<string> _logHistory = new List<string>();
 
     [Header("Playback Speed UI")]
-    [SerializeField] private MatchReplayer _replayer; // ¹è¼ÓÀ» Á¶ÀıÇÒ ¸®ÇÃ·¹ÀÌ¾î ÂüÁ¶
-    [SerializeField] private TextMeshProUGUI _textSpeedButton; // ¹öÆ° À§¿¡ "1.0x"¶ó°í Ç¥½ÃµÉ ÅØ½ºÆ®
+    [SerializeField] private MatchReplayer _replayer; // ë°°ì†ì„ ì¡°ì ˆí•  ë¦¬í”Œë ˆì´ì–´ ì°¸ì¡°
+    [SerializeField] private TextMeshProUGUI _textSpeedButton; // ë²„íŠ¼ ìœ„ì— "1.0x"ë¼ê³  í‘œì‹œë  í…ìŠ¤íŠ¸
 
-    // ±âÈ¹¼­ ±âÁØ ¹è¼Ó ´Ü°è
+    // ê¸°íšì„œ ê¸°ì¤€ ë°°ì† ë‹¨ê³„
     private float[] _speedSteps = { 1.0f, 2.0f, 4.0f, 8.0f };
-    private int _currentSpeedIndex = 0; // ÇöÀç ¼±ÅÃµÈ ¹è¼ÓÀÇ ÀÎµ¦½º
+    private int _currentSpeedIndex = 0; // í˜„ì¬ ì„ íƒëœ ë°°ì†ì˜ ì¸ë±ìŠ¤
 
     private string _currentScriptId;
     private int _currentLineId;
     public bool IsEventFinished { get; private set; } = false;
 
-    // ÄõÅÍ Á¾·á È®ÀÎ ¹öÆ°À» ´­·¶´ÂÁö Ã¼Å©ÇÏ´Â ÇÁ·ÎÆÛÆ¼
+    // ì¿¼í„° ì¢…ë£Œ í™•ì¸ ë²„íŠ¼ì„ ëˆŒë €ëŠ”ì§€ ì²´í¬í•˜ëŠ” í”„ë¡œí¼í‹°
     public bool IsQuarterEndConfirmed { get; private set; } = false;
 
 
-    // È®ÀÎ ¹öÆ°À» ´­·¶À» ¶§ ½ÇÇàÇÒ ÇÔ¼ö¸¦ ´ã¾ÆµÑ º¯¼ö Ãß°¡
+    // í™•ì¸ ë²„íŠ¼ì„ ëˆŒë €ì„ ë•Œ ì‹¤í–‰í•  í•¨ìˆ˜ë¥¼ ë‹´ì•„ë‘˜ ë³€ìˆ˜ ì¶”ê°€
     private Action _onResultConfirmAction;
 
-    // Á¡¼öÆÇ °»½Å (½Ã°£, Á¡¼ö)
+    // ì ìˆ˜íŒ ê°±ì‹  (ì‹œê°„, ì ìˆ˜)
     public void UpdateScoreBoard(MatchState state)
     {
-        // ÄõÅÍ Ç¥½Ã ¼öÁ¤ (4ÄõÅÍ ÀÌÇÏ´Â 1Q~4Q, ±× ÀÌ»óÀº OT1, OT2...)
+        // ì¿¼í„° í‘œì‹œ ìˆ˜ì • (4ì¿¼í„° ì´í•˜ëŠ” 1Q~4Q, ê·¸ ì´ìƒì€ OT1, OT2...)
         if (state.CurrentQuarter <= 4)
         {
             _textQuarter.text = $"{state.CurrentQuarter}Q";
@@ -112,64 +112,64 @@ public class MatchUIManager : MonoBehaviour
             _textQuarter.text = $"OT{state.CurrentQuarter - 4}";
         }
 
-        //  ³²Àº ½Ã°£ (ÃÊ -> ºĞ:ÃÊ º¯È¯)
+        //  ë‚¨ì€ ì‹œê°„ (ì´ˆ -> ë¶„:ì´ˆ ë³€í™˜)
         int min = Mathf.FloorToInt(state.RemainTime / 60);
         int sec = Mathf.FloorToInt(state.RemainTime % 60);
         _textTime.text = $"{min:D2}:{sec:D2}";
 
-        //  Á¡¼ö Ç¥½Ã
+        //  ì ìˆ˜ í‘œì‹œ
         _textHomeScore.text = state.HomeTeam.Score.ToString();
         _textAwayScore.text = state.AwayTeam.Score.ToString();
 
-        //  ÆÀ ÀÌ¸§
+        //  íŒ€ ì´ë¦„
         _textHomeName.text = state.HomeTeam.TeamName;
         _textAwayName.text = state.AwayTeam.TeamName;
     }
 
-    // Áß°è ·Î±× Ç¥½Ã (Å¸ÀÚ±â È¿°ú or ±×³É ÅØ½ºÆ®)
+    // ì¤‘ê³„ ë¡œê·¸ í‘œì‹œ (íƒ€ìê¸° íš¨ê³¼ or ê·¸ëƒ¥ í…ìŠ¤íŠ¸)
     public void UpdateLogText(string message)
     {
-        // ÅØ½ºÆ®°¡ ºñ¾îÀÖÀ¸¸é(Àû±º Çàµ¿ÀÌ¸é) UI¿¡ ºó ÁÙÀ» Ãß°¡ÇÏÁö ¾Ê°í ¹«½ÃÇÔ
+        // í…ìŠ¤íŠ¸ê°€ ë¹„ì–´ìˆìœ¼ë©´(ì êµ° í–‰ë™ì´ë©´) UIì— ë¹ˆ ì¤„ì„ ì¶”ê°€í•˜ì§€ ì•Šê³  ë¬´ì‹œí•¨
         if (string.IsNullOrEmpty(message)) return;
-        // »õ ¸Ş½ÃÁö¸¦ ¸®½ºÆ®¿¡ Ãß°¡
+        // ìƒˆ ë©”ì‹œì§€ë¥¼ ë¦¬ìŠ¤íŠ¸ì— ì¶”ê°€
         _logHistory.Add(message);
 
-        // ÃÖ´ë ÁÙ ¼ö¸¦ ³Ñ¾î°¡¸é °¡Àå ¿À·¡µÈ(À§ÂÊ) ·Î±× »èÁ¦
+        // ìµœëŒ€ ì¤„ ìˆ˜ë¥¼ ë„˜ì–´ê°€ë©´ ê°€ì¥ ì˜¤ë˜ëœ(ìœ„ìª½) ë¡œê·¸ ì‚­ì œ
         if (_logHistory.Count > _maxLogLines)
         {
             _logHistory.RemoveAt(0);
         }
 
-        // ÅØ½ºÆ® °áÇÕ (ÃÖ½Å ·Î±×´Â Èò»öÀ¸·Î °­Á¶, ÀÌÀü ·Î±×´Â È¸»öÀ¸·Î Ã³¸®)
+        // í…ìŠ¤íŠ¸ ê²°í•© (ìµœì‹  ë¡œê·¸ëŠ” í°ìƒ‰ìœ¼ë¡œ ê°•ì¡°, ì´ì „ ë¡œê·¸ëŠ” íšŒìƒ‰ìœ¼ë¡œ ì²˜ë¦¬)
         string combinedText = "";
         for (int i = 0; i < _logHistory.Count; i++)
         {
             if (i == _logHistory.Count - 1)
             {
-                // ¹æ±İ µé¾î¿Â ÃÖ½Å ·Î±×
+                // ë°©ê¸ˆ ë“¤ì–´ì˜¨ ìµœì‹  ë¡œê·¸
                 combinedText += $"<color=#FFFFFF>{_logHistory[i]}</color>";
             }
             else
             {
-                // ÀÌ¹Ì Áö³ª°£ ÀÌÀü ·Î±×µé
+                // ì´ë¯¸ ì§€ë‚˜ê°„ ì´ì „ ë¡œê·¸ë“¤
                 combinedText += $"<color=#888888>{_logHistory[i]}</color>\n";
             }
         }
 
-        // UI ÅØ½ºÆ®¿¡ Àû¿ë
+        // UI í…ìŠ¤íŠ¸ì— ì ìš©
         _textLogMessage.text = combinedText;
     }
-    // °æ±â°¡ »õ·Î ½ÃÀÛµÉ ¶§ ·Î±× Ã¢À» ±ú²ıÇÏ°Ô ºñ¿öÁÖ´Â ÇÔ¼ö
+    // ê²½ê¸°ê°€ ìƒˆë¡œ ì‹œì‘ë  ë•Œ ë¡œê·¸ ì°½ì„ ê¹¨ë—í•˜ê²Œ ë¹„ì›Œì£¼ëŠ” í•¨ìˆ˜
     public void ClearLog()
     {
         _logHistory.Clear();
         _textLogMessage.text = "";
     }
 
-    // ÄÆÀÎ ¿¬Ãâ ½ÇÇà ÇÔ¼ö
+    // ì»·ì¸ ì—°ì¶œ ì‹¤í–‰ í•¨ìˆ˜
     public void ShowCutInEffect(string type, float speed = 1.0f)
     {
-        Debug.Log($">>> ÄÆÀÎ ÇÔ¼ö È£ÃâµÊ! Å¸ÀÔ: {type} / ÆĞ³Î¿¬°á¿©ºÎ: {(_cutInPanel != null)}");
+        Debug.Log($">>> ì»·ì¸ í•¨ìˆ˜ í˜¸ì¶œë¨! íƒ€ì…: {type} / íŒ¨ë„ì—°ê²°ì—¬ë¶€: {(_cutInPanel != null)}");
         if (_cutInPanel == null) return;
 
         Sprite targetSprite = null;
@@ -190,17 +190,17 @@ public class MatchUIManager : MonoBehaviour
                 targetText = "BUZZER BEATER!";
                 break;
             default:
-                return; // ÇØ´ç ¾øÀ¸¸é ¹«½Ã
+                return; // í•´ë‹¹ ì—†ìœ¼ë©´ ë¬´ì‹œ
         }
 
-        // ÀÌ¹ÌÁö/ÅØ½ºÆ® ¼¼ÆÃ
+        // ì´ë¯¸ì§€/í…ìŠ¤íŠ¸ ì„¸íŒ…
         if (_cutInImage != null && targetSprite != null)
             _cutInImage.sprite = targetSprite;
 
         if (_cutInText != null)
             _cutInText.text = targetText;
 
-        // ¿¬Ãâ ½ÃÀÛ (ÄÚ·çÆ¾)
+        // ì—°ì¶œ ì‹œì‘ (ì½”ë£¨í‹´)
         StartCoroutine(CoPlayCutInAnim(speed));
     }
 
@@ -209,17 +209,17 @@ public class MatchUIManager : MonoBehaviour
         _cutInPanel.SetActive(true);
         _cutInPanel.transform.localScale = Vector3.zero;
 
-        // ÆÅ ÇÏ°í Æ¢¾î³ª¿È (DOTween)
+        // íŒ í•˜ê³  íŠ€ì–´ë‚˜ì˜´ (DOTween)
         _cutInPanel.transform.DOScale(1.2f, 0.2f / speed).SetEase(Ease.OutBack);
         yield return new WaitForSeconds(0.2f / speed);
 
-        // ¿ø·¡ Å©±â·Î »ìÂ¦ º¹±Í
+        // ì›ë˜ í¬ê¸°ë¡œ ì‚´ì§ ë³µê·€
         _cutInPanel.transform.DOScale(1.0f, 0.1f / speed);
 
-        // 1ÃÊ À¯Áö (°­Á¶ ½Ã°£)
+        // 1ì´ˆ ìœ ì§€ (ê°•ì¡° ì‹œê°„)
         yield return new WaitForSeconds(1.0f / speed);
 
-        // »ç¶óÁü
+        // ì‚¬ë¼ì§
         _cutInPanel.transform.DOScale(0f, 0.2f / speed).SetEase(Ease.InBack);
         yield return new WaitForSeconds(0.2f / speed);
 
@@ -227,44 +227,44 @@ public class MatchUIManager : MonoBehaviour
     }
 
 
-    // °æ±â Á¾·á ½Ã È£ÃâÇÒ ÇÔ¼ö
+    // ê²½ê¸° ì¢…ë£Œ ì‹œ í˜¸ì¶œí•  í•¨ìˆ˜
     public void ShowResultPopup(string homeName, int homeScore, string awayName, int awayScore, int rewardAmount = 0, List<MatchPlayerData> players = null, Action onConfirm = null)
     {
         _onResultConfirmAction = onConfirm;
-        // ÆĞ³Î ÄÑ±â
+        // íŒ¨ë„ ì¼œê¸°
         if (_resultPanel != null)
         {
             _resultPanel.SetActive(true);
 
-            // Á¡¼ö ¹× ÆÀ ÀÌ¸§ ¼¼ÆÃ
+            // ì ìˆ˜ ë° íŒ€ ì´ë¦„ ì„¸íŒ…
             if (_textResultHomeName != null) _textResultHomeName.text = homeName;
             if (_textResultHomeScore != null) _textResultHomeScore.text = homeScore.ToString();
 
             if (_textResultAwayName != null) _textResultAwayName.text = awayName;
             if (_textResultAwayScore != null) _textResultAwayScore.text = awayScore.ToString();
 
-            // ½ÂÆĞ ÆÇÁ¤ (µ¿Á¡Àº ¿¬ÀåÀü ·ÎÁ÷»ó ¹ß»ıÇÏÁö ¾ÊÀ½)
+            // ìŠ¹íŒ¨ íŒì • (ë™ì ì€ ì—°ì¥ì „ ë¡œì§ìƒ ë°œìƒí•˜ì§€ ì•ŠìŒ)
             if (_textResultTitle != null)
             {
                 if (homeScore > awayScore)
                 {
-                    _textResultTitle.text = "½Â¸®";
-                    _textResultTitle.color = new Color(1f, 0.8f, 0f); // ½Â¸® ½Ã ÅØ½ºÆ® »ö»ó (³ë¶õ»ö/±İ»ö °è¿­)
+                    _textResultTitle.text = "ìŠ¹ë¦¬";
+                    _textResultTitle.color = new Color(1f, 0.8f, 0f); // ìŠ¹ë¦¬ ì‹œ í…ìŠ¤íŠ¸ ìƒ‰ìƒ (ë…¸ë€ìƒ‰/ê¸ˆìƒ‰ ê³„ì—´)
                 }
                 else
                 {
-                    _textResultTitle.text = "ÆĞ¹è";
-                    _textResultTitle.color = Color.white; // ÆĞ¹è ½Ã ±âº» Èò»ö
+                    _textResultTitle.text = "íŒ¨ë°°";
+                    _textResultTitle.color = Color.white; // íŒ¨ë°° ì‹œ ê¸°ë³¸ í°ìƒ‰
                 }
             }
 
-            // Áö¿ø±İ ¼¼ÆÃ (Áö¿ø±İ ÀÛ¾÷ ¿Ï·á Àü±îÁö´Â 0ÀÌ³ª ÀÓÀÇÀÇ °ª Ãâ·Â)
+            // ì§€ì›ê¸ˆ ì„¸íŒ… (ì§€ì›ê¸ˆ ì‘ì—… ì™„ë£Œ ì „ê¹Œì§€ëŠ” 0ì´ë‚˜ ì„ì˜ì˜ ê°’ ì¶œë ¥)
             if (_textResultReward != null)
             {
-                _textResultReward.text = $"Áö¿ø±İ : +{rewardAmount}";
+                _textResultReward.text = $"ì§€ì›ê¸ˆ : +{rewardAmount}";
             }
 
-            // µîÀå ¿¬Ãâ
+            // ë“±ì¥ ì—°ì¶œ
             _resultPanel.transform.localScale = Vector3.zero;
             _resultPanel.transform.DOScale(1f, 0.5f).SetEase(Ease.OutBack);
         }
@@ -276,7 +276,7 @@ public class MatchUIManager : MonoBehaviour
     public void StartHalftimeEvent(string scriptId)
     {
         _currentScriptId = scriptId;
-        _currentLineId = 1; // ½ºÅ©¸³Æ®ÀÇ Ã¹ ¹øÂ° ÁÙ(currentId = 1)ºÎÅÍ ½ÃÀÛ
+        _currentLineId = 1; // ìŠ¤í¬ë¦½íŠ¸ì˜ ì²« ë²ˆì§¸ ì¤„(currentId = 1)ë¶€í„° ì‹œì‘
         IsEventFinished = false;
 
         if (_halftimeVNPanel != null)
@@ -293,24 +293,24 @@ public class MatchUIManager : MonoBehaviour
     {
         MatchState matchState = UnityEngine.Object.FindFirstObjectByType<MatchState>();
 
-        // ÇöÀç ½ºÅ©¸³Æ® ID¿Í ¶óÀÎ ID°¡ ÀÏÄ¡ÇÏ´Â µ¥ÀÌÅÍ¸¦ Å×ÀÌºí¿¡¼­ °Ë»ö
+        // í˜„ì¬ ìŠ¤í¬ë¦½íŠ¸ IDì™€ ë¼ì¸ IDê°€ ì¼ì¹˜í•˜ëŠ” ë°ì´í„°ë¥¼ í…Œì´ë¸”ì—ì„œ ê²€ìƒ‰
         var lineData = matchState.HalftimeScriptReader.DataList.Find(x => x.scriptId == _currentScriptId && x.currentId == lineId);
 
-        // µ¥ÀÌÅÍ¸¦ ¸ø Ã£°Å³ª 0ÀÌ¸é ÀÌº¥Æ® °­Á¦ Á¾·á (¾ÈÀüÀåÄ¡)
+        // ë°ì´í„°ë¥¼ ëª» ì°¾ê±°ë‚˜ 0ì´ë©´ ì´ë²¤íŠ¸ ê°•ì œ ì¢…ë£Œ (ì•ˆì „ì¥ì¹˜)
         if (string.IsNullOrEmpty(lineData.scriptId) || lineData.scriptId == "-")
         {
             EndHalftimeEvent();
             return;
         }
 
-        // ´ë»ç Ãâ·Â (StringManager ¿¬µ¿)
+        // ëŒ€ì‚¬ ì¶œë ¥ (StringManager ì—°ë™)
         string rawText = StringManager.Instance.GetString(lineData.textKey);
         rawText = ReplaceVariables(rawText, matchState);
 
 
         if (lineData.speakDirection == "Left")
         {
-            // ÁÂÃø È­ÀÚÀÏ ¶§
+            // ì¢Œì¸¡ í™”ìì¼ ë•Œ
             _leftBubbleGroup.SetActive(true);
             _rightBubbleGroup.SetActive(false);
 
@@ -319,7 +319,7 @@ public class MatchUIManager : MonoBehaviour
         }
         else if (lineData.speakDirection == "Right")
         {
-            // ¿ìÃø È­ÀÚÀÏ ¶§
+            // ìš°ì¸¡ í™”ìì¼ ë•Œ
             _leftBubbleGroup.SetActive(false);
             _rightBubbleGroup.SetActive(true);
 
@@ -328,22 +328,22 @@ public class MatchUIManager : MonoBehaviour
         }
         else
         {
-            // µ¶¹éÀÌ³ª Áß¾Ó ÅØ½ºÆ®ÀÏ °æ¿ì (±âÈ¹¿¡ µû¶ó ¿¹¿Ü Ã³¸®)
+            // ë…ë°±ì´ë‚˜ ì¤‘ì•™ í…ìŠ¤íŠ¸ì¼ ê²½ìš° (ê¸°íšì— ë”°ë¼ ì˜ˆì™¸ ì²˜ë¦¬)
             _leftBubbleGroup.SetActive(false);
             _rightBubbleGroup.SetActive(false);
         }
 
 
-        // ºñÁÖ¾ó ÀÌ¹ÌÁö °»½Å ·ÎÁ÷ Ãß°¡ (Resources.Load »ç¿ë °¡Á¤)
+        // ë¹„ì£¼ì–¼ ì´ë¯¸ì§€ ê°±ì‹  ë¡œì§ ì¶”ê°€ (Resources.Load ì‚¬ìš© ê°€ì •)
         UpdateVisuals(lineData);
 
-        // Å¸ÀÔ¿¡ µû¸¥ ¹öÆ° ¹× ¼±ÅÃÁö È°¼ºÈ­ Ã³¸®
+        // íƒ€ì…ì— ë”°ë¥¸ ë²„íŠ¼ ë° ì„ íƒì§€ í™œì„±í™” ì²˜ë¦¬
         _btnNext.gameObject.SetActive(false);
         _choiceGroup.SetActive(false);
 
         if (lineData.textType == textType.Desc)
         {
-            // ÀÏ¹İ ´ëÈ­: È­¸é(¶Ç´Â Next¹öÆ°) Å¬¸¯ ½Ã ´ÙÀ½ ÁÙ·Î ÀÌµ¿
+            // ì¼ë°˜ ëŒ€í™”: í™”ë©´(ë˜ëŠ” Nextë²„íŠ¼) í´ë¦­ ì‹œ ë‹¤ìŒ ì¤„ë¡œ ì´ë™
             _btnNext.gameObject.SetActive(true);
             _btnNext.onClick.RemoveAllListeners();
             _btnNext.onClick.AddListener(() =>
@@ -354,7 +354,7 @@ public class MatchUIManager : MonoBehaviour
         }
         else if (lineData.textType == textType.Choice)
         {
-            // ¼±ÅÃÁö Ç¥½Ã
+            // ì„ íƒì§€ í‘œì‹œ
             _choiceGroup.SetActive(true);
             SetupChoiceButton(_btnChoice1, _txtChoice1, lineData.choice01, lineData.choiceStat01, lineData.changeStat01, lineData.choicePosition01, lineData.changePosition01, lineData.nextId01);
             SetupChoiceButton(_btnChoice2, _txtChoice2, lineData.choice02, lineData.choiceStat02, lineData.changeStat02, lineData.choicePosition02, lineData.changePosition02, lineData.nextId02);
@@ -362,54 +362,54 @@ public class MatchUIManager : MonoBehaviour
         }
         else if (lineData.textType == textType.End)
         {
-            // ÀÌº¥Æ® Á¾·á
+            // ì´ë²¤íŠ¸ ì¢…ë£Œ
             _btnNext.gameObject.SetActive(true);
             _btnNext.onClick.RemoveAllListeners();
             _btnNext.onClick.AddListener(EndHalftimeEvent);
         }
     }
 
-    // ÅØ½ºÆ® ³» {PG}, {SG} µîÀÇ º¯¼ö¸¦ ½ÇÁ¦ ¼±¼ö ÀÌ¸§À¸·Î Ä¡È¯ÇÏ´Â ÇïÆÛ ÇÔ¼ö
+    // í…ìŠ¤íŠ¸ ë‚´ {PG}, {SG} ë“±ì˜ ë³€ìˆ˜ë¥¼ ì‹¤ì œ ì„ ìˆ˜ ì´ë¦„ìœ¼ë¡œ ì¹˜í™˜í•˜ëŠ” í—¬í¼ í•¨ìˆ˜
     private string ReplaceVariables(string text, MatchState state)
     {
         if (string.IsNullOrEmpty(text)) return text;
 
-        text = text.Replace("{ME}", GameManager.Instance.SaveData.coachName); // °¨µ¶ ÀÌ¸§
+        text = text.Replace("{ME}", GameManager.Instance.SaveData.coachName); // ê°ë… ì´ë¦„
 
-        // ÆÀ ÀÌ¸§ (ÁÖ·Î À¯Àú ÆÀÀ» ÁöÄªÇÏ´Â °æ¿ì°¡ ¸¹À¸¹Ç·Î HomeTeam ±âÁØ Ã³¸®)
-        // »ó´ëÆÀÀ» ÄªÇÒ °æ¿ì¸¦ ´ëºñÇØ {AwayTeamName} µµ ¿¹¾àÇØ µÓ´Ï´Ù.
+        // íŒ€ ì´ë¦„ (ì£¼ë¡œ ìœ ì € íŒ€ì„ ì§€ì¹­í•˜ëŠ” ê²½ìš°ê°€ ë§ìœ¼ë¯€ë¡œ HomeTeam ê¸°ì¤€ ì²˜ë¦¬)
+        // ìƒëŒ€íŒ€ì„ ì¹­í•  ê²½ìš°ë¥¼ ëŒ€ë¹„í•´ {AwayTeamName} ë„ ì˜ˆì•½í•´ ë‘¡ë‹ˆë‹¤.
         text = text.Replace("{TeamName}", state.HomeTeam.TeamName);
         text = text.Replace("{AwayTeamName}", state.AwayTeam.TeamName);
 
-        // ÇöÀç ÄõÅÍ
+        // í˜„ì¬ ì¿¼í„°
         text = text.Replace("{Quarter}", state.CurrentQuarter.ToString());
 
-        // ÃâÀü ÁßÀÎ À¯Àú(Home) ÆÀ ¼±¼öÀÇ ÀÌ¸§À¸·Î Ä¡È¯
-        if (text.Contains("{PG}")) text = text.Replace("{PG}", MakeName(state.HomeTeam.GetPlayerByPosition(Position.PG)?.PlayerName) ?? "°¡µå");
-        if (text.Contains("{SG}")) text = text.Replace("{SG}", MakeName(state.HomeTeam.GetPlayerByPosition(Position.SG)?.PlayerName) ?? "°¡µå");
-        if (text.Contains("{SF}")) text = text.Replace("{SF}", MakeName(state.HomeTeam.GetPlayerByPosition(Position.SF)?.PlayerName) ?? "Æ÷¿öµå");
-        if (text.Contains("{PF}")) text = text.Replace("{PF}", MakeName(state.HomeTeam.GetPlayerByPosition(Position.PF)?.PlayerName) ?? "Æ÷¿öµå");
-        if (text.Contains("{C}")) text = text.Replace("{C}", MakeName(state.HomeTeam.GetPlayerByPosition(Position.C)?.PlayerName) ?? "¼¾ÅÍ");
+        // ì¶œì „ ì¤‘ì¸ ìœ ì €(Home) íŒ€ ì„ ìˆ˜ì˜ ì´ë¦„ìœ¼ë¡œ ì¹˜í™˜
+        if (text.Contains("{PG}")) text = text.Replace("{PG}", MakeName(state.HomeTeam.GetPlayerByPosition(Position.PG)?.PlayerName) ?? "ê°€ë“œ");
+        if (text.Contains("{SG}")) text = text.Replace("{SG}", MakeName(state.HomeTeam.GetPlayerByPosition(Position.SG)?.PlayerName) ?? "ê°€ë“œ");
+        if (text.Contains("{SF}")) text = text.Replace("{SF}", MakeName(state.HomeTeam.GetPlayerByPosition(Position.SF)?.PlayerName) ?? "í¬ì›Œë“œ");
+        if (text.Contains("{PF}")) text = text.Replace("{PF}", MakeName(state.HomeTeam.GetPlayerByPosition(Position.PF)?.PlayerName) ?? "í¬ì›Œë“œ");
+        if (text.Contains("{C}")) text = text.Replace("{C}", MakeName(state.HomeTeam.GetPlayerByPosition(Position.C)?.PlayerName) ?? "ì„¼í„°");
 
         return text;
     }
-    // Å×ÀÌºíÀÇ ¹®ÀÚ¿­ Å°¸¦ ±â¹İÀ¸·Î UI ÀÌ¹ÌÁö¸¦ ÄÑ°í ²ô´Â ÇïÆÛ ÇÔ¼ö
+    // í…Œì´ë¸”ì˜ ë¬¸ìì—´ í‚¤ë¥¼ ê¸°ë°˜ìœ¼ë¡œ UI ì´ë¯¸ì§€ë¥¼ ì¼œê³  ë„ëŠ” í—¬í¼ í•¨ìˆ˜
     private void UpdateVisuals(Halftime_ScriptData lineData)
     {
-        // ¹è°æ ÀÌ¹ÌÁö °»½Å
+        // ë°°ê²½ ì´ë¯¸ì§€ ê°±ì‹ 
         if (!string.IsNullOrEmpty(lineData.background) && lineData.background != "-")
         {
             if (_imgBackground != null) _imgBackground.gameObject.SetActive(true);
-            // TODO: ResourceLoad ¹æ½Ä¿¡ ¸ÂÃç ÀÌ¹ÌÁö ·Îµå. ¿¹: _imgBackground.sprite = Resources.Load<Sprite>(lineData.background);
+            // TODO: ResourceLoad ë°©ì‹ì— ë§ì¶° ì´ë¯¸ì§€ ë¡œë“œ. ì˜ˆ: _imgBackground.sprite = Resources.Load<Sprite>(lineData.background);
         }
 
-        // ÁÂÃø ½ºÅÄµù Ã³¸®
+        // ì¢Œì¸¡ ìŠ¤íƒ ë”© ì²˜ë¦¬
         if (!string.IsNullOrEmpty(lineData.standingLeft) && lineData.standingLeft != "-")
         {
             if (_imgStandingLeft != null)
             {
                 _imgStandingLeft.gameObject.SetActive(true);
-                // ¿¹½Ã: _imgStandingLeft.sprite = Resources.Load<Sprite>(lineData.standingLeft);
+                // ì˜ˆì‹œ: _imgStandingLeft.sprite = Resources.Load<Sprite>(lineData.standingLeft);
                 _imgStandingLeft.color = (lineData.speakDirection == "Left") ? Color.white : Color.gray;
             }
         }
@@ -418,14 +418,14 @@ public class MatchUIManager : MonoBehaviour
             _imgStandingLeft.gameObject.SetActive(false);
         }
 
-        // Áß¾Ó ½ºÅÄµù Ã³¸® (´Üµ¶ µîÀå¿ë)
+        // ì¤‘ì•™ ìŠ¤íƒ ë”© ì²˜ë¦¬ (ë‹¨ë… ë“±ì¥ìš©)
         if (!string.IsNullOrEmpty(lineData.standingMiddle) && lineData.standingMiddle != "-")
         {
             if (_imgStandingMiddle != null)
             {
                 _imgStandingMiddle.gameObject.SetActive(true);
-                // ¿¹½Ã: _imgStandingMiddle.sprite = Resources.Load<Sprite>(lineData.standingMiddle);
-                // Áß¾Ó(Center/Middle) È­ÀÚÀÏ ¶§ ¹à°Ô, ¾Æ´Ï¸é ¾îµÓ°Ô
+                // ì˜ˆì‹œ: _imgStandingMiddle.sprite = Resources.Load<Sprite>(lineData.standingMiddle);
+                // ì¤‘ì•™(Center/Middle) í™”ìì¼ ë•Œ ë°ê²Œ, ì•„ë‹ˆë©´ ì–´ë‘¡ê²Œ
                 _imgStandingMiddle.color = (lineData.speakDirection == "Center" || lineData.speakDirection == "Middle") ? Color.white : Color.gray;
             }
         }
@@ -434,13 +434,13 @@ public class MatchUIManager : MonoBehaviour
             if (_imgStandingMiddle != null) _imgStandingMiddle.gameObject.SetActive(false);
         }
 
-        // ¿ìÃø ½ºÅÄµù Ã³¸®
+        // ìš°ì¸¡ ìŠ¤íƒ ë”© ì²˜ë¦¬
         if (!string.IsNullOrEmpty(lineData.standingRight) && lineData.standingRight != "-")
         {
             if (_imgStandingRight != null)
             {
                 _imgStandingRight.gameObject.SetActive(true);
-                // ¿¹½Ã: _imgStandingRight.sprite = Resources.Load<Sprite>(lineData.standingRight);
+                // ì˜ˆì‹œ: _imgStandingRight.sprite = Resources.Load<Sprite>(lineData.standingRight);
                 _imgStandingRight.color = (lineData.speakDirection == "Right") ? Color.white : Color.gray;
             }
         }
@@ -451,7 +451,7 @@ public class MatchUIManager : MonoBehaviour
     }
     private void SetupChoiceButton(Button btn, TextMeshProUGUI txt, string choiceTextKey, potential stat, float statChange, Position pos, changeType posChange, int nextId)
     {
-        // ¼±ÅÃÁö µ¥ÀÌÅÍ°¡ ºñ¾îÀÖÀ¸¸é ¹öÆ° ºñÈ°¼ºÈ­
+        // ì„ íƒì§€ ë°ì´í„°ê°€ ë¹„ì–´ìˆìœ¼ë©´ ë²„íŠ¼ ë¹„í™œì„±í™”
         if (string.IsNullOrEmpty(choiceTextKey) || choiceTextKey == "-")
         {
             btn.gameObject.SetActive(false);
@@ -464,11 +464,11 @@ public class MatchUIManager : MonoBehaviour
         btn.onClick.RemoveAllListeners();
         btn.onClick.AddListener(() =>
         {
-            // ¼±ÅÃÁö¿¡ µû¸¥ È¿°ú¸¦ Áï½Ã Àû¿ë
+            // ì„ íƒì§€ì— ë”°ë¥¸ íš¨ê³¼ë¥¼ ì¦‰ì‹œ ì ìš©
             MatchState matchState = UnityEngine.Object.FindFirstObjectByType<MatchState>();
             matchState.ApplyHalfTimeEffectDirectly(stat, statChange, pos, posChange);
 
-            // °á°ú ´ë»ç(´ÙÀ½ ÁÙ)·Î ÀÌµ¿
+            // ê²°ê³¼ ëŒ€ì‚¬(ë‹¤ìŒ ì¤„)ë¡œ ì´ë™
             if (nextId == 0) EndHalftimeEvent();
             else ShowScriptLine(nextId);
         });
@@ -477,7 +477,7 @@ public class MatchUIManager : MonoBehaviour
     private void EndHalftimeEvent()
     {
         if (_halftimeVNPanel != null) _halftimeVNPanel.SetActive(false);
-        IsEventFinished = true; // MatchEngine ÄÚ·çÆ¾¿¡ ½ÅÈ£ Àü´Ş
+        IsEventFinished = true; // MatchEngine ì½”ë£¨í‹´ì— ì‹ í˜¸ ì „ë‹¬
     }
 
 
@@ -485,38 +485,38 @@ public class MatchUIManager : MonoBehaviour
     {
         if (_replayer == null)
         {
-            Debug.LogWarning("[MatchUIManager] MatchReplayer°¡ ¿¬°áµÇÁö ¾Ê¾Ò½À´Ï´Ù.");
+            Debug.LogWarning("[MatchUIManager] MatchReplayerê°€ ì—°ê²°ë˜ì§€ ì•Šì•˜ìŠµë‹ˆë‹¤.");
             return;
         }
 
-        // ´ÙÀ½ ¹è¼Ó ´Ü°è·Î ³Ñ¾î°¨ (¸¶Áö¸· ´Ü°è¸é ´Ù½Ã 0¹ø ÀÎµ¦½º·Î)
+        // ë‹¤ìŒ ë°°ì† ë‹¨ê³„ë¡œ ë„˜ì–´ê° (ë§ˆì§€ë§‰ ë‹¨ê³„ë©´ ë‹¤ì‹œ 0ë²ˆ ì¸ë±ìŠ¤ë¡œ)
         _currentSpeedIndex++;
         if (_currentSpeedIndex >= _speedSteps.Length)
         {
             _currentSpeedIndex = 0;
         }
 
-        // »õ·Î¿î ¹è¼Ó °ª Àû¿ë
+        // ìƒˆë¡œìš´ ë°°ì† ê°’ ì ìš©
         float newSpeed = _speedSteps[_currentSpeedIndex];
         _replayer.PlaybackSpeed = newSpeed;
 
-        // ¹öÆ° ÅØ½ºÆ® °»½Å
+        // ë²„íŠ¼ í…ìŠ¤íŠ¸ ê°±ì‹ 
         if (_textSpeedButton != null)
         {
             _textSpeedButton.text = $"{newSpeed:F1}x";
         }
     }
-    // ½ºÅµ ½Ã ÁøÇà ÁßÀÌ´ø ÄÆÀÎ ¿¬ÃâÀ» Áï½Ã ¾ø¾Ö±â À§ÇÑ ÇïÆÛ ÇÔ¼ö
+    // ìŠ¤í‚µ ì‹œ ì§„í–‰ ì¤‘ì´ë˜ ì»·ì¸ ì—°ì¶œì„ ì¦‰ì‹œ ì—†ì• ê¸° ìœ„í•œ í—¬í¼ í•¨ìˆ˜
     public void ForceCloseCutIn()
     {
         if (_cutInPanel != null)
         {
-            _cutInPanel.transform.DOKill(); // DOTween ¾Ö´Ï¸ŞÀÌ¼Ç Áï½Ã ÁßÁö
+            _cutInPanel.transform.DOKill(); // DOTween ì• ë‹ˆë©”ì´ì…˜ ì¦‰ì‹œ ì¤‘ì§€
             _cutInPanel.SetActive(false);
         }
     }
 
-    // ¹öÆ°ÀÇ OnClick¿¡ ¿¬°áÇÒ ½ºÅµ ¹öÆ° Àü¿ë ÇÔ¼ö
+    // ë²„íŠ¼ì˜ OnClickì— ì—°ê²°í•  ìŠ¤í‚µ ë²„íŠ¼ ì „ìš© í•¨ìˆ˜
     public void OnClickSkipButton()
     {
         if (_replayer != null)
@@ -524,55 +524,55 @@ public class MatchUIManager : MonoBehaviour
             _replayer.SkipReplay();
         }
     }
-    // [°ÔÀÓ¸Ş´º] ¹öÆ°À» ´­·¶À» ¶§ È£ÃâÇÒ ÇÔ¼ö
+    // [ê²Œì„ë©”ë‰´] ë²„íŠ¼ì„ ëˆŒë €ì„ ë•Œ í˜¸ì¶œí•  í•¨ìˆ˜
     public void OnClickGameMenuButton()
     {
         if (_settingPanel != null)
         {
             _settingPanel.SetActive(true);
 
-            // ¼¼ÆÃ Ã¢ÀÌ ÄÑÁ³À» ¶§ °ÔÀÓÀ» ÀÏ½ÃÁ¤Áö
+            // ì„¸íŒ… ì°½ì´ ì¼œì¡Œì„ ë•Œ ê²Œì„ì„ ì¼ì‹œì •ì§€
             Time.timeScale = 0f; 
         }
     }
 
-    // ¼¼ÆÃ Ã¢ ¹Ù±ù ¾îµÎ¿î ¹è°æÀ» ÅÍÄ¡ÇßÀ» ¶§ È£ÃâÇÒ ÇÔ¼ö (ÆÄ¶õ È­»ìÇ¥ ºÎºĞ)
+    // ì„¸íŒ… ì°½ ë°”ê¹¥ ì–´ë‘ìš´ ë°°ê²½ì„ í„°ì¹˜í–ˆì„ ë•Œ í˜¸ì¶œí•  í•¨ìˆ˜ (íŒŒë€ í™”ì‚´í‘œ ë¶€ë¶„)
     public void OnClickCloseSettingButton()
     {
         if (_settingPanel != null)
         {
             _settingPanel.SetActive(false);
 
-            // ÀÏ½ÃÁ¤Áö ÇØÁ¦
+            // ì¼ì‹œì •ì§€ í•´ì œ
             Time.timeScale = 1f;
         }
     }
-    // 2ÄõÅÍ Á¾·á ÆË¾÷ ¿­±â
+    // 2ì¿¼í„° ì¢…ë£Œ íŒì—… ì—´ê¸°
     public void ShowQuarterEndPopup()
     {
         if (_quarterEndPanel != null)
         {
             _quarterEndPanel.SetActive(true);
-            IsQuarterEndConfirmed = false; // ÇÃ·¡±× ÃÊ±âÈ­
+            IsQuarterEndConfirmed = false; // í”Œë˜ê·¸ ì´ˆê¸°í™”
         }
         else
         {
-            // ÆĞ³ÎÀÌ ¿¬°á ¾È µÇ¾î ÀÖÀ¸¸é ±×³É ¹Ù·Î ³Ñ¾î°£ °ÍÀ¸·Î Ã³¸®
+            // íŒ¨ë„ì´ ì—°ê²° ì•ˆ ë˜ì–´ ìˆìœ¼ë©´ ê·¸ëƒ¥ ë°”ë¡œ ë„˜ì–´ê°„ ê²ƒìœ¼ë¡œ ì²˜ë¦¬
             IsQuarterEndConfirmed = true;
         }
     }
 
-    // [È®ÀÎ] ¹öÆ°À» ´­·¶À» ¶§ È£ÃâµÉ ÇÔ¼ö
+    // [í™•ì¸] ë²„íŠ¼ì„ ëˆŒë €ì„ ë•Œ í˜¸ì¶œë  í•¨ìˆ˜
     public void OnClickQuarterEndConfirm()
     {
-        IsQuarterEndConfirmed = true; // È®ÀÎ ¿Ï·á ÇÃ·¡±× ÄÑ±â
+        IsQuarterEndConfirmed = true; // í™•ì¸ ì™„ë£Œ í”Œë˜ê·¸ ì¼œê¸°
 
         if (_quarterEndPanel != null)
         {
-            _quarterEndPanel.SetActive(false); // ÆË¾÷ ´İ±â
+            _quarterEndPanel.SetActive(false); // íŒì—… ë‹«ê¸°
         }
     }
-    // ¹öÆ° Å¬¸¯ ÇÔ¼ö
+    // ë²„íŠ¼ í´ë¦­ í•¨ìˆ˜
     public void OnClickResultConfirmButton()
     {
         if (_resultPanel != null)
@@ -580,7 +580,7 @@ public class MatchUIManager : MonoBehaviour
             _resultPanel.SetActive(false);
         }
 
-        // ResultState¿¡¼­ ³Ñ°ÜÁá´ø ReturnToLobby ÇÔ¼ö¸¦ ¿©±â¼­ ½ÇÇà
+        // ResultStateì—ì„œ ë„˜ê²¨ì¤¬ë˜ ReturnToLobby í•¨ìˆ˜ë¥¼ ì—¬ê¸°ì„œ ì‹¤í–‰
         _onResultConfirmAction?.Invoke();
     }
     public void ShowLeagueCalculatePanel(int round, Action onConfirm)
