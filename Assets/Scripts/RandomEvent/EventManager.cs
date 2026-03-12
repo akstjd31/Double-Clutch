@@ -266,6 +266,9 @@ public class EventManager : MonoBehaviour
     Dictionary<int, Event_ChoiceData> _screenPlayDic;
     string _eventId;
     int _currentStudentNum = 0;
+    string _currentStudentName = "";
+
+    Event_ResultData _selectedResultData;
 
     //이벤트 시작할때마다 실행
     public void StartEvent()
@@ -283,13 +286,14 @@ public class EventManager : MonoBehaviour
         }
 
         _currentStudentNum = 0;
+        _currentStudentName = _myStudents[_currentStudentNum].Name[0] + _myStudents[_currentStudentNum].Name[1] + _myStudents[_currentStudentNum].Name[2];
 
         //버튼으로 테스트 시에 사용
         //_currentStudentNum++;
 
         _screenPlayDic = Dic;
         _nextId = _screenPlayDic[1].currentId;
-        Debug.LogWarning($"시작 이벤트 id : {_screenPlayDic[1].scriptId}");
+        Debug.Log($"시작 이벤트 id : {_screenPlayDic[1].scriptId}");
     }
 
     Dictionary<string, string> stringTable;
@@ -328,7 +332,7 @@ public class EventManager : MonoBehaviour
                     {
                         //언어에 따라서 다른 딕셔너리 선택해야 함
                         script = _eventString.KoScreenPlay[_screenPlayDic[_nextId].textKey];
-                        _eventUI.UpdateText(_screenPlayDic[_nextId].playerName, script);
+                        _eventUI.UpdateText(_currentStudentName, script, _screenPlayDic[_nextId].speakDirection);
 
                         choice[0] = stringTable[_screenPlayDic[_nextId].choice01];
                         choice[1] = stringTable[_screenPlayDic[_nextId].choice02];
@@ -339,7 +343,7 @@ public class EventManager : MonoBehaviour
                 case textType.Desc:
                     {
                         script = _eventString.KoScreenPlay[_screenPlayDic[_nextId].textKey];
-                        _eventUI.UpdateText(_screenPlayDic[_nextId].playerName, script);
+                        _eventUI.UpdateText(_currentStudentName, script, _screenPlayDic[_nextId].speakDirection);
                         _nextId++;
                     }
                     break;
@@ -348,8 +352,8 @@ public class EventManager : MonoBehaviour
                         //텍스트는 출력, 버튼 누르면 결과 팝업 떠야 함.
                         //캐릭터 능력치 변동 적용
                         script = _eventString.KoScreenPlay[_screenPlayDic[_nextId].textKey];
-                        _eventUI.UpdateText(_screenPlayDic[_nextId].playerName, script);
-                        _eventUI.EventResult();
+                        _eventUI.UpdateText(_currentStudentName, script, _screenPlayDic[_nextId].speakDirection);
+                        ResultCalculator();
                         //다음 학생으로
                         _currentStudentNum++;
                     }
@@ -386,6 +390,7 @@ public class EventManager : MonoBehaviour
                 break;
         }
 
+        Debug.Log($"선택지 id : {_resultDataDebugList.Count}");
         _resultDataDebugList = new List<string>(resultDic.Keys);
         Debug.Log($"선택지 id : {selectedResultId}");
 
@@ -399,6 +404,7 @@ public class EventManager : MonoBehaviour
                 {
                     //다음 아이디 가져오기
                     _nextId = value[i].nextId;
+                    _selectedResultData = value[i];
                     break;
                 }
                 else
@@ -409,13 +415,45 @@ public class EventManager : MonoBehaviour
 
             Debug.Log($"다음 대사 ID : {_nextId}");
             //선택한 대사 미리 넣어두기
-            _eventUI.UpdateText("", choice[choiceNum]);
+            _eventUI.UpdateText("", choice[choiceNum], "");
             //다음 대사로 넘어 가기
             OnClickContinue();
         }
         else
         {
             Debug.Log($"선택지 이후 대사 불러오기 실패..");
+        }
+    }
+
+    private void ResultCalculator()
+    {
+        //resultData 딕셔너리 필요
+        _eventUI.UpdateEventResult(_selectedResultData.statusChange, _selectedResultData.potentialChangeType, _selectedResultData.potentialChangeValue, _selectedResultData.resultscriptKey,_selectedResultData.reactionPortraitId);
+
+        //선수 컨디션 변경
+        _myStudents[_currentStudentNum].ChangeCondition(_selectedResultData.conditionChange);
+        
+        //선수 상태 변경
+        string getValue = _selectedResultData.statusChange;
+        StudentState value = (StudentState)System.Enum.Parse(typeof(StudentState), getValue);
+        _myStudents[_currentStudentNum].ChangeState(value);
+
+        //능력치 변경
+        //매서드 만들어주시면 추가
+    }
+
+    public void OnClickOkButton()
+    {
+        //다음 학생 없으면 로비씬, 다음 이벤트 없으면 로비씬.. 같은거임
+        //학생 있으면 다음 학생 진행
+        if(_screenplayIdList.Count < 1)
+        {
+            Debug.Log($"로비씬으로");
+        }
+        else
+        {
+            Debug.Log($"다음 이벤트 시작");
+            StartEvent();
         }
     }
 
