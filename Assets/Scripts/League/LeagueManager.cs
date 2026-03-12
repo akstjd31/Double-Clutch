@@ -14,7 +14,7 @@ public class LeagueManager : Singleton<LeagueManager>
         _leagueFactory = this.GetComponent<LeagueFactory>();
     }
 
-    // 위크 ID를 매개변수로 받아 리그 셀렉션 테이블에서 생성 날짜인지 확인
+    // 위크 ID를 매개변수로 받아 리그 셀렉션 테이블에서 데이터 생성 날짜인지 확인
     public bool IsCachingDay(int weekId)
     {
         if (_leagueFactory == null) return false;

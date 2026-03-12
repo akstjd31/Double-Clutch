@@ -233,6 +233,7 @@ public class CalendarManager : Singleton<CalendarManager>
         return descList;
     }
 
+    // 다음 달 1주차 ~ 마지막 주 데이터 리스트 계산
     public List<string> GetDescArrayByNextMonth(int weekId)
     {
         var descList = new List<string>();
@@ -245,5 +246,16 @@ public class CalendarManager : Singleton<CalendarManager>
             descList.Add(_calReader.DataList[i].desc);
         
         return descList;
+    }
+
+    // 현 저장된 데이터의 weekID의 leagueID
+    public string GetCurrentLeagueId()
+    {
+        if (_calReader == null) return null;
+
+        var saveData = GameManager.Instance.SaveData;
+        if (saveData == null) return null;
+
+        return _calReader.DataList[saveData.weekId].leagueId;
     }
 }
