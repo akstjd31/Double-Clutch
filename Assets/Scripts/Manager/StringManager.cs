@@ -1,6 +1,7 @@
-using System.Collections.Generic;
-using UnityEngine;
 using System;
+using System.Collections.Generic;
+using TMPro;
+using UnityEngine;
 
 public enum Language
 {
@@ -15,8 +16,15 @@ public class StringManager : Singleton<StringManager>
     public static event Action OnLanguageChanged;
 
     Language _language;
+    public Language CurrentLanguage => _language;
 
     [SerializeField] String_TableDataReader _stringDB;
+
+    [Header("Global Fonts (ë¹„ì›Œë‘ë©´ ê¸°ë³¸ í°íŠ¸ ìœ ì§€)")]
+    [SerializeField] private TMP_FontAsset _koFont;
+    [SerializeField] private TMP_FontAsset _enFont;
+    [SerializeField] private TMP_FontAsset _jaFont;
+
 
     private Dictionary<string, String_TableData> _stringDict = new Dictionary<string, String_TableData>();
 
@@ -36,7 +44,7 @@ public class StringManager : Singleton<StringManager>
     {
         if (_stringDB == null)
         {
-            Debug.Log("stringDB°¡ ¾ø½À´Ï´Ù. ÀÎ½ºÆåÅÍ¿¡¼­ stringTableDataReader¸¦ ÇÒ´çÇØÁÖ¼¼¿ä.");
+            Debug.Log("stringDBê°€ ì—†ìŠµë‹ˆë‹¤. ì¸ìŠ¤í™í„°ì—ì„œ stringTableDataReaderë¥¼ í• ë‹¹í•´ì£¼ì„¸ìš”.");
             return;
         }
 
@@ -53,10 +61,19 @@ public class StringManager : Singleton<StringManager>
     public void SetLanguage(Language language)
     {
         _language = language;
-        Debug.Log($"[StringManager] ¾ğ¾î º¯°æ: {language}");
+        Debug.Log($"[StringManager] ì–¸ì–´ ë³€ê²½: {language}");
         OnLanguageChanged?.Invoke();
     }
 
+    public TMP_FontAsset GetFont()
+    {
+        return _language switch
+        {
+            Language.En => _enFont,
+            Language.Ja => _jaFont,
+            _ => _koFont,
+        };
+    }
 
     public string GetString(string key)
     {
@@ -75,7 +92,7 @@ public class StringManager : Singleton<StringManager>
         }
         else
         {
-            Debug.LogWarning($"stringKey [{key}]°¡ stringTable¿¡ ¾ø½À´Ï´Ù.");
+            Debug.LogWarning($"stringKey [{key}]ê°€ stringTableì— ì—†ìŠµë‹ˆë‹¤.");
             return key;
         }
     }
