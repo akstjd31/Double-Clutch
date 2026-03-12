@@ -62,14 +62,13 @@ public class EventController : MonoBehaviour
         Debug.Log($"딕셔너리 불러오기{_eventManager.EventScript.Count}");
         if (!_eventManager.EventScript.TryGetValue(_eventId, out var Dic))
         {
-            Debug.LogWarning($"스크립트 없음 : {_eventId}, 다음 학생");
             _currentStudentNum++;
-            if (_eventSelector.ScreenplayIdList.Count > 0)
-            {
-                StartEvent();
-            }
-
+            Debug.LogWarning($"스크립트 없음 : {_eventId}, 다음 학생 {_currentStudentNum}");
             return;
+        }
+        if (_eventSelector.ScreenplayIdList.Count > 0)
+        {
+            StartEvent();
         }
 
         StringManager manager = StringManager.Instance;
