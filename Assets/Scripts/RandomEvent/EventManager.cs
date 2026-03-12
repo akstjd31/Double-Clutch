@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEditor.PackageManager;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.LightTransport;
 
 [System.Serializable]
@@ -9,7 +11,8 @@ public class EventManager : MonoBehaviour
     [SerializeField] private Event_DataModelReader _dataModelReader;
     [SerializeField] private Event_ScriptSelectorReader _scriptSelectorReader;
     [SerializeField] private Event_ChoiceDataReader _choiceDataReader;
-    [SerializeField] private RandomEventStringDataReader _randomEventStringReader;
+
+
     [SerializeField] private List<Student> _myStudents;
 
     [SerializeField] private EventUI _eventUI;
@@ -24,9 +27,13 @@ public class EventManager : MonoBehaviour
     [SerializeField] private List<string> debugQueue = new();
 
     //<이벤트 스크립트 id, 출력텍스트 리스트>를 저장한 딕셔너리
-    Dictionary<string, List<Event_ChoiceData>> _eventScript = new();
+    Dictionary<string, Dictionary<int,Event_ChoiceData>> _eventScript = new();
     [Header("대본 딕셔너리 아이디 리스트 - 전체 이벤트 개수를 의미함")]
-    [SerializeField] private List<string> _debugList;
+    [SerializeField] private List<string> _eventScriptDebugList;
+
+    //<선택지 id, ResultData>를 저장한 딕셔너리
+    [Header("Result 딕셔너리 아이디 리스트 - 전체 ID개수를 의미함")]
+    [SerializeField] private List<string> _resultDataDebugList;
 
     int _max;
 
@@ -201,22 +208,22 @@ public class EventManager : MonoBehaviour
     //2. _studentEventList 에 있는 리스트에 기반하여 실행될 이벤트 스크립트 큐 제작 _scriptSelectorReader
     public void PersonalityEvent(Student student, RandomEvent selectedEvent)
     {
-        var script = _scriptSelectorReader.DataList;
+        var screenPlay = _scriptSelectorReader.DataList;
         string eventId = selectedEvent.EventId;
 
         //eventId, 학생의 coreType이 같은 스크립트의 selectorId를 저장
         //_scriptSelectorReader개수만큼 반복
-        for (int i = 0; i < script.Count; i++)
+        for (int i = 0; i < screenPlay.Count; i++)
         {
             //결정된 이벤트 아이디와 같은 행 찾기
             //Debug.Log($"{student.StudentId} - 이벤트Id:{eventId} / 스크립트:{script[i].eventId} : {eventId.Equals(script[i].eventId)}");
             //Debug.Log($"{student.StudentId} - 학생 성격:{student.PersonalityData.core} / 스크립트:{script[i].selectCoreType} : {student.PersonalityData.core.Equals(script[i].selectCoreType)}");
-            if (eventId.Equals(script[i].eventId))
+            if (eventId.Equals(screenPlay[i].eventId))
             {
-                if (student.PersonalityData.core.Equals(script[i].selectCoreType))
+                if (student.PersonalityData.core.Equals(screenPlay[i].selectCoreType))
                 {
-                    _screenplayIdList.Enqueue(script[i].scriptId);
-                    Debug.Log($"큐 추가 {student.StudentId} - {script[i].scriptId}");
+                    _screenplayIdList.Enqueue(screenPlay[i].scriptId);
+                    Debug.Log($"큐 추가 {student.StudentId} - {screenPlay[i].scriptId}");
                     break;
                 }
             }
@@ -242,78 +249,174 @@ public class EventManager : MonoBehaviour
         //시트 개수만큼 반복
         for (int i = 0; i < data.Count; i++)
         {
-            string currentId = data[i].scriptId;
+            string cId = data[i].scriptId;
 
-            //ID 키값으로 리스트가 없으면 새로 생성
-            if (!_eventScript.TryGetValue(currentId, out List<Event_ChoiceData> list))
+            //ID 키값으로 딕셔너리가 없으면 새로 생성
+            if (!_eventScript.TryGetValue(cId, out Dictionary<int, Event_ChoiceData> chDic))
             {
-                list = new List<Event_ChoiceData>();
-                _eventScript.Add(currentId, list);
+                chDic = new();
+                _eventScript.Add(cId, chDic);
             }
-            list.Add(data[i]);
+            chDic.Add(data[i].currentId, data[i]);
         }
-        _debugList = new List<string>(_eventScript.Keys);
+        _eventScriptDebugList = new List<string>(_eventScript.Keys);
     }
 
-    int next;
-    List<Event_ChoiceData> screenPlayList;
-    string eventId;
+    int _nextId;
+    Dictionary<int, Event_ChoiceData> _screenPlayDic;
+    string _eventId;
+    int _currentStudentNum = 0;
 
     //이벤트 시작할때마다 실행
     public void StartEvent()
     {
         //큐 순서대로 이벤트 진행
         //이벤트 아이디 가져오기
-        eventId = _screenplayIdList.Dequeue();
+        _eventId = _screenplayIdList.Dequeue();
         //아이디에 해당하는 리스트 가져오기
 
-        Debug.Log($"리스트 불러오기{_eventScript.Count}");
-        if (!_eventScript.TryGetValue(eventId, out var List))
+        Debug.Log($"딕셔너리 불러오기{_eventScript.Count}");
+        if (!_eventScript.TryGetValue(_eventId, out var Dic))
         {
-            Debug.LogWarning($"스크립트 없음 : {eventId}");
+            Debug.LogWarning($"스크립트 없음 : {_eventId}");
             return;
         }
 
-        screenPlayList = List;
-        next = 0;
+        _currentStudentNum = 0;
+
+        //버튼으로 테스트 시에 사용
+        //_currentStudentNum++;
+
+        _screenPlayDic = Dic;
+        _nextId = _screenPlayDic[1].currentId;
+        Debug.LogWarning($"시작 이벤트 id : {_screenPlayDic[1].scriptId}");
     }
-    
+
+    Dictionary<string, string> stringTable;
+
+    private void ScreenPlayLanguage()
+    {
+        switch (StringManager.Instance.CurrentLanguage)
+        {
+            case Language.Ko:
+                stringTable = _eventString.KoScreenPlay;
+                break;
+            case Language.En:
+                stringTable = _eventString.EnScreenPlay;
+                break;
+            case Language.Ja:
+                stringTable = _eventString.JaScreenPlay;
+                break;
+        }
+    }
+
+    string[] choice = new string[3];
 
     public void OnClickContinue()
     {
         string script = "대사 불러오기 실패";
 
+        ScreenPlayLanguage();
+        Debug.Log($"다음 대사 ID : {_nextId}");
+
         //대본 순서대로 화면에 출력
-        if( next < screenPlayList.Count)
+        if (_screenPlayDic.ContainsKey(_nextId))
         {
-            switch (screenPlayList[next].textType)
+            switch (_screenPlayDic[_nextId].textType)
             {
                 case textType.Choice:
                     {
                         //언어에 따라서 다른 딕셔너리 선택해야 함
-                        var stringTable = _eventString.KoScreenPlay;
-                        string choice1 = stringTable[screenPlayList[next].choice01];
-                        string choice2 = stringTable[screenPlayList[next].choice02];
-                        string choice3 = stringTable[screenPlayList[next].choice03];
-                        _eventUI.UpdateChiceText(choice1, choice2, choice3);
+                        script = _eventString.KoScreenPlay[_screenPlayDic[_nextId].textKey];
+                        _eventUI.UpdateText(_screenPlayDic[_nextId].playerName, script);
+
+                        choice[0] = stringTable[_screenPlayDic[_nextId].choice01];
+                        choice[1] = stringTable[_screenPlayDic[_nextId].choice02];
+                        choice[2] = stringTable[_screenPlayDic[_nextId].choice03];
+                        _eventUI.UpdateChiceText(choice[0], choice[1], choice[2]);
                     }
                     break;
                 case textType.Desc:
                     {
-                        script = _eventString.KoScreenPlay[screenPlayList[next].textKey];
-                        _eventUI.UpdateText(screenPlayList[next].playerName, script);
-                        next++;
+                        script = _eventString.KoScreenPlay[_screenPlayDic[_nextId].textKey];
+                        _eventUI.UpdateText(_screenPlayDic[_nextId].playerName, script);
+                        _nextId++;
                     }
                     break;
                 case textType.End:
                     {
                         //텍스트는 출력, 버튼 누르면 결과 팝업 떠야 함.
                         //캐릭터 능력치 변동 적용
-                        script = _eventString.KoScreenPlay[screenPlayList[next].textKey];
+                        script = _eventString.KoScreenPlay[_screenPlayDic[_nextId].textKey];
+                        _eventUI.UpdateText(_screenPlayDic[_nextId].playerName, script);
                         _eventUI.EventResult();
+                        //다음 학생으로
+                        _currentStudentNum++;
                     }
                     break;
             }
         }
+        else
+        {
+            Debug.Log($"해당 id없음");
+        }
     }
+
+    public void OnClickChoice(int choiceNum)
+    {
+        var resultDic = _eventString.ResultData;
+        string selectedResultId = "";
+
+        switch (choiceNum)
+        {
+            case 0:
+                {
+                    selectedResultId = _screenPlayDic[_nextId].choice01;
+                }
+                break;
+            case 1:
+                {
+                    selectedResultId = _screenPlayDic[_nextId].choice02;
+                }
+                break;
+            case 2:
+                {
+                    selectedResultId = _screenPlayDic[_nextId].choice03;
+                }
+                break;
+        }
+
+        _resultDataDebugList = new List<string>(resultDic.Keys);
+        Debug.Log($"선택지 id : {selectedResultId}");
+
+        //resultData에서 nextId값 받아오기
+        if (resultDic.TryGetValue(selectedResultId, out var value))
+        {
+            for(int i = 0; i < value.Count; i++)
+            {
+                //코어성격타입 조건 체크
+                if (_myStudents[_currentStudentNum].PersonalityData.personality == value[i].matchPersonalityId)
+                {
+                    //다음 아이디 가져오기
+                    _nextId = value[i].nextId;
+                    break;
+                }
+                else
+                {
+                    Debug.Log($"해당 성격을 가진 이벤트 없음");
+                }
+            }
+
+            Debug.Log($"다음 대사 ID : {_nextId}");
+            //선택한 대사 미리 넣어두기
+            _eventUI.UpdateText("", choice[choiceNum]);
+            //다음 대사로 넘어 가기
+            OnClickContinue();
+        }
+        else
+        {
+            Debug.Log($"선택지 이후 대사 불러오기 실패..");
+        }
+    }
+
 }
