@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class RandomEvent
@@ -6,19 +6,22 @@ public class RandomEvent
     private Event_DataModelReader _Event_DataModelReader;
 
     [SerializeField] string _eventId; //이벤트 아이디
+    [SerializeField] float _potentialPercent; //발생확률
     [SerializeField] int _eventPriority; //이벤트 우선순위
     [SerializeField] int _cooldownTurn; //쿨타임
     [SerializeField] int _currentCooldownTurn; //쿨타임
     [SerializeField] bool _isReady; //이벤트 발생 시 false, 쿨다운 시작
 
     public string EventId => _eventId;
+    public float PotentialPercent => _potentialPercent;
     public int EventPriority => _eventPriority;
     public int CooldownTurn => _currentCooldownTurn;
     public bool IsReady => _isReady;
 
-    public RandomEvent(string eventID, int cooldownTurn, string eventPriority)
+    public RandomEvent(string eventID, float potentialPercent, int cooldownTurn, string eventPriority)
     {
         _eventId = eventID;
+        _potentialPercent = potentialPercent;
         _cooldownTurn = cooldownTurn;
         _eventPriority = int.Parse(eventPriority);
         _currentCooldownTurn = _cooldownTurn;

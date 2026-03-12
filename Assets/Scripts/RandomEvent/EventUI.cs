@@ -28,10 +28,12 @@ public class EventUI : MonoBehaviour
     //bool _isFirstText = true;
     int _textTurn;
 
-    private void Start()
+    private void OnEnable()
     {
         //_isFirstText = true;
         _textTurn = 1;
+        TextInit();
+        ImageInit();
     }
 
     public void UpdateText(string name, string scriptText, string speakDirection)
@@ -66,6 +68,8 @@ public class EventUI : MonoBehaviour
     {
         Color on = Color.white;
 
+        Debug.Log($"스피커 : {speakDirection}");
+
         ImageInit();
 
         switch (speakDirection)
@@ -90,12 +94,12 @@ public class EventUI : MonoBehaviour
 
     public void ImageInit()
     {
-        Color off = new Color(128, 128, 128);
+        Color dim = new Color(0.6f, 0.6f, 0.6f);
 
         //색 초기화
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < _characterImage.Length; i++)
         {
-            _characterImage[i].color = off;
+            _characterImage[i].color = dim;
         }
         //위치 초기화
         _characterImage[0].transform.SetSiblingIndex(0);
@@ -177,13 +181,12 @@ public class EventUI : MonoBehaviour
             _stat.text = transText + "↑";
         }
 
-        //결과 이미지 리소스 넣기
-        //_resultText.sprite = ;reactionPortraitId
+        //_resultImage.sprite = 이미지;
 
-
-        //패널 띄우기
+        //결과 텍스트 출력
         _resultText.text = resultScriptKey;
 
+        //패널 띄우기
         _resultPanel.SetActive(true);
     }
 
