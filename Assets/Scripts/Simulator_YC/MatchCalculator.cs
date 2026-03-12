@@ -14,21 +14,21 @@ public static class MatchCalculator
     private const float ASPECT_RATIO = 1.87f;
 
     // 팀의 활성화된 시너지 합산을 가져오는 헬퍼 함수
-    public static float GetSynergyBonus(MatchTeam homeTeam, effectType type)
+    public static float GetSynergyBonus(MatchTeam team, effectType type)
     {
-        if (homeTeam == null || homeTeam.ActiveSynergies == null) return 0f;
+        if (team == null || team.ActiveSynergies == null) return 0f;
         float bonus = 0f;
-        foreach (var syn in homeTeam.ActiveSynergies)
+        foreach (var syn in team.ActiveSynergies)
         {
             if (syn.effectType == type) bonus += syn.effectValue;
         }
         return bonus;
     }
-    public static float GetMaxSynergyBonus(MatchTeam homeTeam, effectType type)
+    public static float GetMaxSynergyBonus(MatchTeam team, effectType type)
     {
-        if (homeTeam == null || homeTeam.ActiveSynergies == null) return 0f;
+        if (team == null || team.ActiveSynergies == null) return 0f;
         float maxBonus = 0f;
-        foreach (var syn in homeTeam.ActiveSynergies)
+        foreach (var syn in team.ActiveSynergies)
         {
             // 합산(+=)하지 않고, 기존 값보다 크면 덮어씌움 (최댓값만 추출)
             if (syn.effectType == type && syn.effectValue > maxBonus)
@@ -39,18 +39,18 @@ public static class MatchCalculator
         return maxBonus;
     }
     // '모든 능력치' 증감 시너지 3종 일괄 합산 함수
-    public static float GetAllStatBonus(MatchTeam homeTeam)
+    public static float GetAllStatBonus(MatchTeam team)
     {
-        if (homeTeam == null) return 0f;
-        return GetSynergyBonus(homeTeam, effectType.AbsoluteTrust)
-             - GetSynergyBonus(homeTeam, effectType.Discordance)
-             - GetSynergyBonus(homeTeam, effectType.DifferentDreams);
+        if (team == null) return 0f;
+        return GetSynergyBonus(team, effectType.AbsoluteTrust)
+             - GetSynergyBonus(team, effectType.Discordance)
+             - GetSynergyBonus(team, effectType.DifferentDreams);
     }
     // 스탯을 가져올 때 자동으로 '모든 능력치' 시너지를 발라주는 래퍼 함수 (기본)
-    public static float GetPlayerStat(MatchPlayer player, MatchStatType statType, MatchTeam homeTeam)
+    public static float GetPlayerStat(MatchPlayer player, MatchStatType statType, MatchTeam playerTeam)
     {
         float stat = player.GetStat(statType);
-        if (homeTeam != null && homeTeam.Roster.Contains(player)) stat += GetAllStatBonus(homeTeam);
+        if (playerTeam != null && playerTeam.Roster.Contains(player)) stat += GetAllStatBonus(playerTeam);
         return Mathf.Max(0, stat);
     }
 
@@ -100,13 +100,12 @@ public static class MatchCalculator
     }
 
     // [기획서 6.2] 행동 결정
-    public static int DecideAction(MatchPlayer player, float distToHoop, TeamTactics tactics, MatchTeam attackTeam, MatchTeam defendTeam, float interceptDist, MatchTeam homeTeam)
+    public static int DecideAction(MatchPlayer player, float distToHoop, TeamTactics tactics, MatchTeam attackTeam, MatchTeam defendTeam, float interceptDist, float remainTime)
     {
-        bool isHomeAttacking = homeTeam == attackTeam;
         // 밸런스 값 가져오기
-        float homePassBonus = GetSynergyBonus(homeTeam, effectType.SystemBasket);
-        float homeBlockBonus = GetSynergyBonus(homeTeam, effectType.SuffocatingDefense);
-        float enemyStealDebuff = GetSynergyBonus(homeTeam, effectType.AnkleBreaker);
+        float attackerPassBonus = GetSynergyBonus(attackTeam, effectType.SystemBasket);
+        float defenderBlockBonus = GetSynergyBonus(defendTeam, effectType.SuffocatingDefense);
+        float attackerStealDebuff = GetSynergyBonus(attackTeam, effectType.AnkleBreaker);
 
         float wShotBase = MatchDataProxy.Instance.GetBalance("W_Shot_Base");
         float wPassBase = MatchDataProxy.Instance.GetBalance("W_Pass_Base");
@@ -128,11 +127,11 @@ public static class MatchCalculator
         MatchPlayer nearestEnemy = GetNearestPlayer(player, defendTeam.Roster, out nearestEnemyDist);
 
         // 슛 점수 공식
-        // [블락 적용] 아군 수비(적군 슛)일 때 아군의 질식수비 보너스 적용
-        float blockStat = (nearestEnemy != null) ? GetPlayerStat(nearestEnemy, MatchStatType.Block, homeTeam) : 0f;
-        if (!isHomeAttacking && nearestEnemy != null) blockStat += homeBlockBonus;
+        // [블락 적용] 질식수비 보너스 적용
+        float blockStat = (nearestEnemy != null) ? GetPlayerStat(nearestEnemy, MatchStatType.Block, defendTeam) : 0f;
+        if (nearestEnemy != null) blockStat += defenderBlockBonus;
 
-        float shootStat = (distToHoop > 0.35f) ? GetPlayerStat(player, MatchStatType.ThreePoint, homeTeam) : GetPlayerStat(player, MatchStatType.TwoPoint, homeTeam);
+        float shootStat = (distToHoop > 0.35f) ? GetPlayerStat(player, MatchStatType.ThreePoint, attackTeam) : GetPlayerStat(player, MatchStatType.TwoPoint, attackTeam);
         float wShoot = (distToHoop > 0.35f) ? tactics.bonusThreePoint : tactics.bonusTwoPoint;
 
         LastShootStat = shootStat;
@@ -147,15 +146,12 @@ public static class MatchCalculator
         float aiBonusScore = 0f;
         string activeSynergyLog = ""; // 디버그 로그용
 
-        if (isHomeAttacking)
+        // 트랜지션 마스터 (패스를 받은 선수의 2점 슛 점수 로직 + effectValue)
+        // 엔진에서 방금 막 패스를 받았으면 4틱을 부여하므로, 틱이 '3'일 때가 바로 직후 1틱입니다.
+        if (distToHoop <= 0.35f && player.PassReceivedBuffTick == 3)
         {
-            // 트랜지션 마스터 (패스를 받은 선수의 2점 슛 점수 로직 + effectValue)
-            // 엔진에서 방금 막 패스를 받았으면 4틱을 부여하므로, 틱이 '3'일 때가 바로 직후 1틱입니다.
-            if (distToHoop <= 0.35f && player.PassReceivedBuffTick == 3)
-            {
-                aiBonusScore += GetSynergyBonus(homeTeam, effectType.TransitionMaster);
-                activeSynergyLog += "[트랜지션마스터] ";
-            }
+            aiBonusScore += GetSynergyBonus(attackTeam, effectType.TransitionMaster);
+            activeSynergyLog += "[트랜지션마스터] ";
         }
         scoreShoot += aiBonusScore;
 
@@ -181,16 +177,16 @@ public static class MatchCalculator
                     {
                         closestDist = distToPasser;
                         hasEnemyOnPath = 1;
-                        // [스틸 디버프 적용] 아군 공격 시, 길목에 있는 적군의 스틸 능력치 감소 (앵클 브레이커)
-                        float eSteal = GetPlayerStat(e, MatchStatType.Steal, homeTeam);
-                        if (isHomeAttacking) eSteal = Mathf.Max(0, eSteal - enemyStealDebuff);
+                        // [스틸 디버프 적용] 공격 시, 길목에 있는 상대의 스틸 능력치 감소 (앵클 브레이커)
+                        float eSteal = GetPlayerStat(e, MatchStatType.Steal, defendTeam);
+                        eSteal = Mathf.Max(0, eSteal - attackerStealDebuff);
                         pathEnemySteal = eSteal;
                     }
                 }
             }
-            // [패스 보너스 적용] 아군 공격 시에만 아군에게 시스템 바스켓 적용
-            float matePassStat = GetPlayerStat(mate, MatchStatType.Pass, homeTeam);
-            if (isHomeAttacking) matePassStat += homePassBonus;
+            // [패스 보너스 적용] 시스템 바스켓 적용
+            float matePassStat = GetPlayerStat(mate, MatchStatType.Pass, attackTeam);
+            matePassStat += attackerPassBonus;
             float currentPassScore = (matePassStat * tactics.bonusPass * wPassBase)
                                    + (mateNearestEnemyDist * wDistBonus)
                                    - (hasEnemyOnPath * pathEnemySteal * wStealBase);
@@ -200,18 +196,18 @@ public static class MatchCalculator
         float scorePass = maxPassScore;
 
         // 드리블 점수 공식
-        float dribblerPassStat = GetPlayerStat(player, MatchStatType.Pass, homeTeam);
-        if (isHomeAttacking) dribblerPassStat += homePassBonus; // 드리블(패스기반) 상승
+        float dribblerPassStat = GetPlayerStat(player, MatchStatType.Pass, attackTeam);
+        dribblerPassStat += attackerPassBonus; // 드리블(패스기반) 상승
 
-        float enemySteal = (nearestEnemy != null) ? GetPlayerStat(nearestEnemy, MatchStatType.Steal, homeTeam) : 0f;
-        if (isHomeAttacking && nearestEnemy != null) enemySteal = Mathf.Max(0, enemySteal - enemyStealDebuff); // 적 스틸 감소
+        float enemySteal = (nearestEnemy != null) ? GetPlayerStat(nearestEnemy, MatchStatType.Steal, defendTeam) : 0f;
+        if (nearestEnemy != null) enemySteal = Mathf.Max(0, enemySteal - attackerStealDebuff); //  스틸 감소
 
         float scoreDribble = (dribblerPassStat * tactics.bonusDribble * wDribBase)
                            + (nearestEnemyDist * wDribbleBonus)
                            + (distToHoop * wDistBonus)
                            - (enemySteal * (1f / (nearestEnemyDist + penSteal)) * wStealBase);
 
-        if (distToHoop > 0.84f)
+        if (distToHoop > 0.84f && remainTime > 0f)
         {
             scoreShoot = -999f; // 거리가 0.8415(하프라인) 밖이면 슛 점수를 마이너스로 고정해 절대 안 쏘게 만듦 ( 역습이나 공수전환중에 노마크 발생으로 인한 확정 골 오류 방지 )
         }
@@ -257,17 +253,14 @@ public static class MatchCalculator
 
 
     // 슛 성공 확률
-    public static bool CalculateShootSuccess(MatchPlayer attacker, float distance, MatchTeam homeTeam, MatchTeam awayTeam, TeamTactics homeTactics, TeamTactics awayTactics, float blockDist)
+    public static bool CalculateShootSuccess(MatchPlayer attacker, float distance, MatchTeam attackTeam, MatchTeam defendTeam, TeamTactics attackTactics, TeamTactics defendTactics, float blockDist)
     {
 
-        bool isHomeAttacking = homeTeam.Roster.Contains(attacker);
-        TeamTactics myTactics = isHomeAttacking ? homeTactics : awayTactics;
-        TeamTactics enemyTactics = isHomeAttacking ? awayTactics : homeTactics;
-        List<MatchPlayer> enemies = isHomeAttacking ? awayTeam.Roster : homeTeam.Roster;
+        List<MatchPlayer> enemies = defendTeam.Roster;
 
-        float shootStat = (distance > 0.35f) ? GetPlayerStat(attacker, MatchStatType.ThreePoint, homeTeam) : GetPlayerStat(attacker, MatchStatType.TwoPoint, homeTeam);
+        float shootStat = (distance > 0.35f) ? GetPlayerStat(attacker, MatchStatType.ThreePoint, attackTeam) : GetPlayerStat(attacker, MatchStatType.TwoPoint, attackTeam);
 
-        shootStat *= (distance > 0.35f) ? myTactics.bonusThreePoint : myTactics.bonusTwoPoint;
+        shootStat *= (distance > 0.35f) ? attackTactics.bonusThreePoint : attackTactics.bonusTwoPoint;
 
         float blockStat = 0f;
 
@@ -275,11 +268,11 @@ public static class MatchCalculator
 
         if (nearestEnemy != null && minEnemyDist <= blockDist)
         {
-            blockStat = GetPlayerStat(nearestEnemy, MatchStatType.Block, homeTeam);
-            // [시너지] 적군 공격(내가 수비)일 때 내 블락 스탯 증가 (질식 수비)
-            if (!isHomeAttacking) blockStat += GetSynergyBonus(homeTeam, effectType.SuffocatingDefense);
+            blockStat = GetPlayerStat(nearestEnemy, MatchStatType.Block, defendTeam);
+            // [시너지] 블락 스탯 증가 (질식 수비)
+            blockStat += GetSynergyBonus(defendTeam, effectType.SuffocatingDefense);
             // 가장 마지막에 전술 배율 곱하기
-            blockStat *= enemyTactics.bonusBlock;
+            blockStat *= defendTactics.bonusBlock;
         }
 
 
@@ -296,39 +289,38 @@ public static class MatchCalculator
         float extraBonus = 0f;
         string activeSynergyLog = ""; // 디버그 로그용
 
-        if (isHomeAttacking)
+
+        int scoreGap = attackTeam.SimulatedScore - defendTeam.SimulatedScore;
+
+
+        // 승부사의 심장 (10점 차 이상 지고 있을 때 3점슛 확률 증가)
+        if (distance > 0.35f && scoreGap <= -10)
         {
-            int scoreGap = homeTeam.SimulatedScore - awayTeam.SimulatedScore; // 내 점수 - 적 점수
+            extraBonus += GetSynergyBonus(attackTeam, effectType.ClutchHeart); // 확률이므로 100을 곱해 % 단위로 맞춤
+            activeSynergyLog += "[승부사의심장] ";
+        }
 
-            // 승부사의 심장 (10점 차 이상 지고 있을 때 3점슛 확률 증가)
-            if (distance > 0.35f && scoreGap <= -10)
+        // 고릴라 덩크 (거리 0.01 ~ 0.05 사이일 때 슛 성공률 증가 - 패스 무관)
+        if (distance >= 0.01f && distance <= 0.05f)
+        {
+            extraBonus += GetSynergyBonus(attackTeam, effectType.GorillaDunk);
+            activeSynergyLog += "[고릴라덩크] ";
+        }
+
+        // 패스 연계 시너지 (패스받은 직후 3틱 이내일 때만 발동)
+        if (attacker.PassReceivedBuffTick > 0)
+        {
+            if (distance > 0.35f) // 3점 (스페이스 오퍼레이터)
             {
-                extraBonus += GetSynergyBonus(homeTeam, effectType.ClutchHeart); // 확률이므로 100을 곱해 % 단위로 맞춤
-                activeSynergyLog += "[승부사의심장] ";
+                extraBonus += GetMaxSynergyBonus(attackTeam, effectType.SpaceOperator);
+                activeSynergyLog += "[스페이스오퍼레이터] ";
             }
-
-            // 고릴라 덩크 (거리 0.01 ~ 0.05 사이일 때 슛 성공률 증가 - 패스 무관)
-            if (distance >= 0.01f && distance <= 0.05f)
+            else  // 2점 (컷인 플레이)
             {
-                extraBonus += GetSynergyBonus(homeTeam, effectType.GorillaDunk);
-                activeSynergyLog += "[고릴라덩크] ";
+                extraBonus += GetMaxSynergyBonus(attackTeam, effectType.CutInPlay);
+                activeSynergyLog += "[컷인플레이] ";
             }
-
-            // 패스 연계 시너지 (패스받은 직후 3틱 이내일 때만 발동)
-            if (attacker.PassReceivedBuffTick > 0)
-            {
-                if (distance > 0.35f) // 3점 (스페이스 오퍼레이터)
-                {
-                    extraBonus += GetMaxSynergyBonus(homeTeam, effectType.SpaceOperator);
-                    activeSynergyLog += "[스페이스오퍼레이터] ";
-                }
-                else  // 2점 (컷인 플레이)
-                {
-                    extraBonus += GetMaxSynergyBonus(homeTeam, effectType.CutInPlay);
-                    activeSynergyLog += "[컷인플레이] ";
-                }
                 
-            }
         }
         prob += extraBonus;
         float dice = Random.Range(0f, 100f);
@@ -347,15 +339,12 @@ public static class MatchCalculator
     }
 
     // 패스 성공 확률
-    public static bool CalculatePassSuccess(MatchPlayer passer, MatchPlayer receiver, MatchTeam homeTeam, MatchTeam awayTeam, TeamTactics homeTactics, TeamTactics awayTactics, float interceptDist, out MatchPlayer interceptor)
+    public static bool CalculatePassSuccess(MatchPlayer passer, MatchPlayer receiver, MatchTeam attackTeam, MatchTeam defendTeam, TeamTactics attackTactics, TeamTactics defendTactics, float interceptDist, out MatchPlayer interceptor)
     {
         interceptor = null;
         MatchPlayer pathEnemy = null;
 
-        bool isHomeAttacking = homeTeam.Roster.Contains(passer);
-        TeamTactics myTactics = isHomeAttacking ? homeTactics : awayTactics;
-        TeamTactics enemyTactics = isHomeAttacking ? awayTactics : homeTactics;
-        List<MatchPlayer> enemies = isHomeAttacking ? awayTeam.Roster : homeTeam.Roster;
+        List<MatchPlayer> enemies = defendTeam.Roster;
 
         // 최단 거리 0.03 미만 (interceptDist)인 적 탐색
         float closestDist = float.MaxValue;
@@ -379,18 +368,14 @@ public static class MatchCalculator
             return true;
         }
 
-        float passStat = GetPlayerStat(passer, MatchStatType.Pass, homeTeam);
-        float stealStat = GetPlayerStat(pathEnemy, MatchStatType.Steal, homeTeam);
+        float passStat = GetPlayerStat(passer, MatchStatType.Pass, attackTeam);
+        float stealStat = GetPlayerStat(pathEnemy, MatchStatType.Steal, defendTeam);
 
-        if (isHomeAttacking)
-        {
-            // 아군 공격 시: 패스 증가, 적 스틸 감소
-            passStat += GetSynergyBonus(homeTeam, effectType.SystemBasket);
-            stealStat = Mathf.Max(0, stealStat - GetSynergyBonus(homeTeam, effectType.AnkleBreaker));
-        }
+        passStat += GetSynergyBonus(attackTeam, effectType.SystemBasket);
+        stealStat = Mathf.Max(0, stealStat - GetSynergyBonus(attackTeam, effectType.AnkleBreaker));
 
-        passStat *= myTactics.bonusPass;
-        stealStat *= enemyTactics.bonusSteal;
+        passStat *= attackTactics.bonusPass;
+        stealStat *= defendTactics.bonusSteal;
 
         // 기본 패스 성공 확률
         float prob = (passStat / (passStat + stealStat)) * 100f;
@@ -411,12 +396,9 @@ public static class MatchCalculator
     }
 
     // 드리블 성공 확률
-    public static bool CalculateDribbleSuccess(MatchPlayer dribbler, MatchTeam homeTeam, MatchTeam awayTeam, TeamTactics homeTactics, TeamTactics awayTactics, float dribbleBlockDist)
+    public static bool CalculateDribbleSuccess(MatchPlayer dribbler, MatchTeam attackTeam, MatchTeam defendTeam, TeamTactics attackTactics, TeamTactics defendTactics, float dribbleBlockDist)
     {
-        bool isHomeAttacking = homeTeam.Roster.Contains(dribbler);
-        TeamTactics myTactics = isHomeAttacking ? homeTactics : awayTactics;
-        TeamTactics enemyTactics = isHomeAttacking ? awayTactics : homeTactics;
-        List<MatchPlayer> enemies = isHomeAttacking ? awayTeam.Roster : homeTeam.Roster;
+        List<MatchPlayer> enemies = defendTeam.Roster;
 
         MatchPlayer nearestEnemy = GetNearestPlayer(dribbler, enemies, out float minEnemyDist);
 
@@ -440,21 +422,19 @@ public static class MatchCalculator
             return true;
         }
 
-        float dribbleStat = GetPlayerStat(dribbler, MatchStatType.Pass, homeTeam);
-        float stealStat = GetPlayerStat(nearestEnemy, MatchStatType.Steal, homeTeam);
+        float dribbleStat = GetPlayerStat(dribbler, MatchStatType.Pass, attackTeam);
+        float stealStat = GetPlayerStat(nearestEnemy, MatchStatType.Steal, defendTeam);
 
-        if (isHomeAttacking)
-        {
-            // 아군 드리블 시: 패스(드리블의 기반 스탯) 증가, 적 스틸 감소
-            dribbleStat += GetSynergyBonus(homeTeam, effectType.SystemBasket);
-            stealStat = Mathf.Max(0, stealStat - GetSynergyBonus(homeTeam, effectType.AnkleBreaker));
-        }
 
-        dribbleStat *= myTactics.bonusDribble;
-        stealStat *= enemyTactics.bonusSteal;
+        // 아군 드리블 시: 패스(드리블의 기반 스탯) 증가, 적 스틸 감소
+        dribbleStat += GetSynergyBonus(attackTeam, effectType.SystemBasket);
+        stealStat = Mathf.Max(0, stealStat - GetSynergyBonus(attackTeam, effectType.AnkleBreaker));
+
+        dribbleStat *= attackTactics.bonusDribble;
+        stealStat *= defendTactics.bonusSteal;
 
         // 밸런스 가중치 적용
-        float wStealBalance = MatchDataProxy.Instance.GetBalance("W_Def_Steal_Dribble");
+        float wStealBalance = MatchDataProxy.Instance.GetBalance("W_Steal_Base");
         if (wStealBalance <= 0f) wStealBalance = 1.0f;
 
         float weightedStealStat = stealStat * wStealBalance;
@@ -474,7 +454,7 @@ public static class MatchCalculator
     }
 
     // 리바운드 가중치 추첨
-    public static MatchPlayer CalculateReboundWinner(Vector2 ballDropPos, List<MatchPlayer> allPlayers, MatchTeam homeTeam)
+    public static MatchPlayer CalculateReboundWinner(Vector2 ballDropPos, List<MatchPlayer> allPlayers, MatchTeam homeTeam, MatchTeam awayTeam, TeamTactics homeTactics, TeamTactics awayTactics)
     {
         // 낙구 지점 반경 0.35 내의 후보 선정
         List<MatchPlayer> candidates = new List<MatchPlayer>();
@@ -491,6 +471,7 @@ public static class MatchCalculator
 
         // Ticket 계산 및 총합
         float homeIronWall = GetSynergyBonus(homeTeam, effectType.IronWall);
+        float awayIronWall = GetSynergyBonus(awayTeam, effectType.IronWall);
         float totalTicket = 0f;
         List<float> tickets = new List<float>();
 
@@ -499,10 +480,20 @@ public static class MatchCalculator
             var p = candidates[i];
             float dist = CalculateDistance(p.LogicPosition, ballDropPos);
 
-            float finalReboundStat = GetPlayerStat(p, MatchStatType.Rebound, homeTeam);
+            MatchTeam playerTeam = homeTeam.Roster.Contains(p) ? homeTeam : awayTeam;
+            float finalReboundStat = GetPlayerStat(p, MatchStatType.Rebound, playerTeam);
 
             // [시너지] 난공불락 스탯 부여
-            if (homeTeam.Roster.Contains(p)) finalReboundStat += homeIronWall;
+            if (playerTeam == homeTeam)
+            {
+                finalReboundStat += homeIronWall;
+                finalReboundStat *= homeTactics.bonusRebound;
+            }
+            else
+            {
+                finalReboundStat += awayIronWall;
+                finalReboundStat *= awayTactics.bonusRebound;
+            }
 
             float baseTicket = finalReboundStat * (1.0f - dist);
 
