@@ -119,6 +119,70 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &312164447
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 312164450}
+  - component: {fileID: 312164449}
+  - component: {fileID: 312164448}
+  m_Layer: 0
+  m_Name: LeagueManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &312164448
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 312164447}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6bc22f05a9e82aa4aac27a5267383c77, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LeagueFactory
+  _leagueMasterReader: {fileID: 11400000, guid: 5b177a0437888e44581b761c7f8b41ed, type: 2}
+  _leagueTeamSelectionReader: {fileID: 11400000, guid: 02e2dc6aad86a2247a80a20f8514c442, type: 2}
+  _rivalMasterReader: {fileID: 11400000, guid: f9addf54606d27d45b6fc885787057fe, type: 2}
+  _archetypeReader: {fileID: 11400000, guid: 716634fb00f78bc41842041e37c5a086, type: 2}
+  _leagueLevelReader: {fileID: 11400000, guid: 1f2b51ab93100da4997214738663e46e, type: 2}
+  _leagueRewardReader: {fileID: 11400000, guid: 227fdc63c25e5d34eb1ba4bf55150b3d, type: 2}
+--- !u!114 &312164449
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 312164447}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b44810d2cf4f598478461f7197c9dc7a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LeagueManager
+  dontDestroyOnLoad: 1
+--- !u!4 &312164450
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 312164447}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &400084806
 GameObject:
   m_ObjectHideFlags: 0
@@ -706,3 +770,4 @@ SceneRoots:
   - {fileID: 775522538}
   - {fileID: 1721351879}
   - {fileID: 748093095}
+  - {fileID: 312164450}
