@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -14,11 +15,39 @@ public class LeagueManager : Singleton<LeagueManager>
         _leagueFactory = this.GetComponent<LeagueFactory>();
     }
 
+    public List<string> CreateLeagueTeams(League_TeamData rule)
+    {
+        if (_leagueFactory == null) return null;
+        var allTeams = _leagueFactory.GetRivalMasterDataList();
+
+        var priorityTeamIds = GetPriorityTeams(rule);
+        string playerTeamId = "Player_Team";    // 임시
+        
+        int seed = rule.weekId; // 필요에 따라 사용
+        var selector = new LeagueTeamSelector(seed);
+
+        var selectedTeams = selector.SelectTeams
+        (
+            rule,
+            allTeams,
+            priorityTeamIds,
+            playerTeamId
+        );
+
+        return selectedTeams;
+    }
+
+    // 이전 리그 상위팀 가져오기
+    private List<string> GetPriorityTeams(League_TeamData rule)
+    {
+        return null;
+    }
+
     // 위크 ID를 매개변수로 받아 리그 셀렉션 테이블에서 데이터 생성 날짜인지 확인
     public bool IsCachingDay(int weekId)
     {
         if (_leagueFactory == null) return false;
-        
+
         var dataList = _leagueFactory.GetTeamSelectionDataList();
 
         foreach (var data in dataList)
@@ -35,7 +64,7 @@ public class LeagueManager : Singleton<LeagueManager>
         if (_leagueFactory == null) return null;
 
         var dataList = _leagueFactory.GetMasterDataList();
-        
+
         foreach (var data in dataList)
         {
             if (data.leagueId.Equals(leagueId))
