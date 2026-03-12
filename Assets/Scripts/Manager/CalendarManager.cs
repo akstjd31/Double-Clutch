@@ -157,6 +157,12 @@ public class CalendarManager : Singleton<CalendarManager>
             gm.SetMoney(m + (100 * accSub));
         }
 
+        // 캐싱 데이터 작업이 들어가야 하는 weekId 인지??
+        if (LeagueManager.Instance.IsCachingDay(weekId))
+        {
+            
+        }
+
         gm.SetWeekId(weekId);
 
         // 이벤트 페이즈면서 어떤 날인지 구분하는게 필요함. (ex. 졸업, 영입 등)
