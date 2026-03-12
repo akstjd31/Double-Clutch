@@ -157,6 +157,12 @@ public class CalendarManager : Singleton<CalendarManager>
             gm.SetMoney(m + (100 * accSub));
         }
 
+        // 캐싱 데이터 작업이 들어가야 하는 weekId 인지??
+        if (LeagueManager.Instance.IsCachingDay(weekId))
+        {
+            
+        }
+
         gm.SetWeekId(weekId);
 
         // 이벤트 페이즈면서 어떤 날인지 구분하는게 필요함. (ex. 졸업, 영입 등)
@@ -227,6 +233,7 @@ public class CalendarManager : Singleton<CalendarManager>
         return descList;
     }
 
+    // 다음 달 1주차 ~ 마지막 주 데이터 리스트 계산
     public List<string> GetDescArrayByNextMonth(int weekId)
     {
         var descList = new List<string>();
@@ -239,5 +246,16 @@ public class CalendarManager : Singleton<CalendarManager>
             descList.Add(_calReader.DataList[i].desc);
         
         return descList;
+    }
+
+    // 현 저장된 데이터의 weekID의 leagueID
+    public string GetCurrentLeagueId()
+    {
+        if (_calReader == null) return null;
+
+        var saveData = GameManager.Instance.SaveData;
+        if (saveData == null) return null;
+
+        return _calReader.DataList[saveData.weekId].leagueId;
     }
 }
