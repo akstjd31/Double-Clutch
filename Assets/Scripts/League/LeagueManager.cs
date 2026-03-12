@@ -28,4 +28,20 @@ public class LeagueManager : Singleton<LeagueManager>
         }
         return false;
     }
+
+    // 리그 ID를 비교하여 해당 데이터 반환
+    public League_MasterData? GetMasterDataById(string leagueId)
+    {
+        if (_leagueFactory == null) return null;
+
+        var dataList = _leagueFactory.GetMasterDataList();
+        
+        foreach (var data in dataList)
+        {
+            if (data.leagueId.Equals(leagueId))
+                return data;
+        }
+
+        return null;
+    }
 }
