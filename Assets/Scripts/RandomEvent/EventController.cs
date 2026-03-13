@@ -19,7 +19,8 @@ public class EventController : MonoBehaviour
 
     [SerializeField] private List<Student> _myStudents;
 
-    private int _nextId;
+    [SerializeField] private int _nextId;
+    //현재 진행중인 이벤트 아이디
     private string _eventId;
     private string _currentStudentName = "";
     private Event_ResultData _selectedResultData;
@@ -54,22 +55,29 @@ public class EventController : MonoBehaviour
 
     public void StartEvent()
     {
+        Debug.Log($"랜덤이벤트 시작");
+
+        if (_eventSelector.ScreenplayIdList.Count < 1)
+        {
+            Debug.LogWarning($"남은 이벤트 없음. 이벤트 종료");
+            _eventPanel.SetActive(false);
+            return;
+        }
         //큐 순서대로 이벤트 진행
         //이벤트 아이디 가져오기
         _eventId = _eventSelector.ScreenplayIdList.Dequeue();
         //아이디에 해당하는 리스트 가져오기
 
         Debug.Log($"딕셔너리 불러오기{_eventManager.EventScript.Count}");
+        Debug.Log($"이번 스크립트 : {_eventId}, 학생 {_currentStudentNum}의 이벤트");
         if (!_eventManager.EventScript.TryGetValue(_eventId, out var Dic))
         {
             _currentStudentNum++;
             Debug.LogWarning($"스크립트 없음 : {_eventId}, 다음 학생 {_currentStudentNum}");
+            StartEvent();
             return;
         }
-        if (_eventSelector.ScreenplayIdList.Count > 0)
-        {
-            StartEvent();
-        }
+
 
         StringManager manager = StringManager.Instance;
         string nameSet =
@@ -81,6 +89,7 @@ public class EventController : MonoBehaviour
         _screenPlayDic = Dic;
         _nextId = _screenPlayDic[1].currentId;
         Debug.Log($"시작 이벤트 id : {_screenPlayDic[1].scriptId}");
+        OnClickContinue();
     }
    
 
@@ -179,6 +188,7 @@ public class EventController : MonoBehaviour
                 else
                 {
                     Debug.Log($"해당 성격을 가진 이벤트 없음");
+                    Debug.Log($"선수 번호가 맞지 않음");
                 }
             }
 
@@ -206,6 +216,7 @@ public class EventController : MonoBehaviour
         {
             Debug.Log($"패널 닫기");
             _eventPanel.SetActive(false);
+            _eventManager.SaveGame();
         }
         else
         {
@@ -251,8 +262,26 @@ public class EventController : MonoBehaviour
 
 
         Debug.Log($"다음 학생 ID : {_myStudents[_currentStudentNum].StudentId + 1}");
-        _currentStudentNum++;
 
+        //현재 학생의 이벤트 리스트를 가져오기
+        List<RandomEvent> studentEventList = _eventManager.CandidateDictionary[_myStudents[_currentStudentNum].StudentId];
+
+        for (int i = 0; i < studentEventList.Count; i++)
+        {
+
+            string evnetNumber = $"{studentEventList[i].EventId}_{_myStudents[_currentStudentNum].PersonalityData.core.ToString()}";
+
+            Debug.Log($"{_eventId}에서 {studentEventList[i].EventId} 검색");
+            Debug.Log($"{evnetNumber == _eventId}");
+
+            //진행했던 이벤트 아이디를 찾아 쿨다운모드로 변경
+            if (evnetNumber == _eventId)
+            {
+                studentEventList[i].WaitingMode();
+                return;
+            }
+        }
+        _currentStudentNum++;
         //다음 학생으로
     }
 
