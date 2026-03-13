@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 public class StudentFactory : MonoBehaviour
 {
@@ -26,13 +27,17 @@ public class StudentFactory : MonoBehaviour
     [SerializeField] Player_PositionDataReader _player_PositionDataReader;
     [Header("Player_PassiveGradeData(패시브 등장 확률 데이터)")]
     [SerializeField] Player_PassiveGradeDataReader _passiveGradeDataReader;
-
     [Header("Player_Reputation(최대 잠재력 범위 관련 데이터)")]
     [SerializeField] Player_ReputationDataReader _reputationDataReader;
 
     const float FIRST_GRADE_RATE = 0.6f;
     const float SECOND_GRADE_RATE = 0.2f;
     const float THIRD_GRADE_RATE = 0.2f;
+
+    const float RIVAL_FIRST_GRADE_RATE = 0.34f;
+    const float RIVAL_SECOND_GRADE_RATE = 0.33f;
+    const float RIVAL_THIRD_GRADE_RATE = 0.33f;
+
 
     List<Player_StartingStateData> _startingStates = new List<Player_StartingStateData>();
     Player_MaxPotentialData _maxPotential;
@@ -52,7 +57,7 @@ public class StudentFactory : MonoBehaviour
         
         newStudent.SetSpecie(GetRandomSpecie());
         newStudent.SetVisual(GetRandomVisual(newStudent.SpecieId));
-        newStudent.SetGrade(GetrRandomGrade());
+        newStudent.SetGrade(GetRandomGrade());
         newStudent.SetPersonality(GetRandomPersonality());
         newStudent.SetTrait(GetRandomTrait());
         string[] name = GetRandomName(nation.Kr);
@@ -66,11 +71,35 @@ public class StudentFactory : MonoBehaviour
         return newStudent;
     }
 
+    public Student MakeRivalStudentSkeleton(nation nation) //종족, 비주얼, 포지션 추가 설정 요구.
+    {
+        Student newStudent = new Student();
+
+        newStudent.SetStat(GetRandomStats(newStudent.Grade));
+        newStudent.SetGrade(GetRivalRandomGrade());
+        newStudent.SetPersonality(GetRandomPersonality());
+        newStudent.SetTrait(GetRandomTrait());
+        string[] name = GetRandomName(nation);
+        newStudent.SetName(name[0], name[1], name[2]);        
+        SetPassives(newStudent, GetRandomPassive(newStudent));
+
+
+        InitRivalStudent(newStudent);
+
+        return newStudent;
+    }
+
+    
     public void InitStudent(Student target) 
     {
         target.Init(_speciesDataReader, _personalityDataReader, _passiveDataReader, _traitDataReader, _player_PositionDataReader);
         Position bestPosition = DecideBestPosition(target);
         target.SetPosition(bestPosition);
+    }
+
+    public void InitRivalStudent(Student rival)
+    {
+        rival.Init(_speciesDataReader, _personalityDataReader, _passiveDataReader, _traitDataReader, _player_PositionDataReader);
     }
 
     public void InitDatas() 
@@ -160,7 +189,26 @@ public class StudentFactory : MonoBehaviour
         return _speciesDataReader.DataList[Random.Range(0, _speciesDataReader.DataList.Count)];
     }
 
-    private Player_VisualData GetRandomVisual(string specieId)
+    public Player_SpeciesData GetRandomSpecieByType(speciesType type)
+    {
+        List< Player_SpeciesData > targets = new List< Player_SpeciesData >();
+        
+
+        foreach (Player_SpeciesData specie in _speciesDataReader.DataList)
+        {
+            if (specie.species == type)
+            {
+                targets.Add( specie );
+            }
+        }
+
+        int randomIndex = Random.Range(0, targets.Count);
+
+
+        return targets[randomIndex];
+    }
+
+    public Player_VisualData GetRandomVisual(string specieId)
     {
         if (_visualDataDict.TryGetValue(specieId, out var value))
         {
@@ -180,7 +228,8 @@ public class StudentFactory : MonoBehaviour
     {
         return _traitDataReader.DataList[Random.Range(0, _traitDataReader.DataList.Count)];
     }
-    private int GetrRandomGrade() 
+
+    private int GetRandomGrade() 
     {
         float random = Random.value; 
 
@@ -189,6 +238,24 @@ public class StudentFactory : MonoBehaviour
             return 1;
         }
         else if (random < FIRST_GRADE_RATE + SECOND_GRADE_RATE)
+        {
+            return 2;
+        }
+        else
+        {
+            return 3;
+        }
+    }
+
+    private int GetRivalRandomGrade()
+    {
+        float random = Random.value;
+
+        if (random < RIVAL_FIRST_GRADE_RATE)
+        {
+            return 1;
+        }
+        else if (random < RIVAL_FIRST_GRADE_RATE + RIVAL_SECOND_GRADE_RATE)
         {
             return 2;
         }
@@ -325,4 +392,6 @@ public class StudentFactory : MonoBehaviour
         int result = (h % repSco) * stepVal;
         return result;
     }
+
+
 }
