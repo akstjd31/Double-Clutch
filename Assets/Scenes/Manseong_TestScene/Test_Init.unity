@@ -119,6 +119,70 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &312164447
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 312164450}
+  - component: {fileID: 312164449}
+  - component: {fileID: 312164448}
+  m_Layer: 0
+  m_Name: LeagueManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &312164448
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 312164447}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6bc22f05a9e82aa4aac27a5267383c77, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LeagueFactory
+  _leagueMasterReader: {fileID: 11400000, guid: 5b177a0437888e44581b761c7f8b41ed, type: 2}
+  _leagueTeamSelectionReader: {fileID: 11400000, guid: 02e2dc6aad86a2247a80a20f8514c442, type: 2}
+  _rivalMasterReader: {fileID: 11400000, guid: f9addf54606d27d45b6fc885787057fe, type: 2}
+  _archetypeReader: {fileID: 11400000, guid: 716634fb00f78bc41842041e37c5a086, type: 2}
+  _leagueLevelReader: {fileID: 11400000, guid: 1f2b51ab93100da4997214738663e46e, type: 2}
+  _leagueRewardReader: {fileID: 11400000, guid: 227fdc63c25e5d34eb1ba4bf55150b3d, type: 2}
+--- !u!114 &312164449
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 312164447}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b44810d2cf4f598478461f7197c9dc7a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LeagueManager
+  dontDestroyOnLoad: 1
+--- !u!4 &312164450
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 312164447}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &400084806
 GameObject:
   m_ObjectHideFlags: 0
@@ -376,6 +440,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::StringManager
   dontDestroyOnLoad: 1
   _stringDB: {fileID: 11400000, guid: 3d7ca27fff3aac04fa55cabfa1a34912, type: 2}
+  _koFont: {fileID: 0}
+  _enFont: {fileID: 0}
+  _jaFont: {fileID: 0}
 --- !u!4 &775522538
 Transform:
   m_ObjectHideFlags: 0
@@ -480,6 +547,56 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1613157974
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1613157976}
+  - component: {fileID: 1613157975}
+  m_Layer: 0
+  m_Name: EventManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1613157975
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1613157974}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: edbc4066ebf83e04bb700f4f600180f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EventManager
+  dontDestroyOnLoad: 1
+  _dataModelReader: {fileID: 11400000, guid: c9e37057e7e0bc6498ce9a158fb6aedc, type: 2}
+  _choiceDataReader: {fileID: 11400000, guid: e7bef3e8648703341b1d0efce4c97341, type: 2}
+  _myStudents: []
+  _debugList_candidateDictionary: 
+  _debugList_eventScript: []
+--- !u!4 &1613157976
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1613157974}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 761.8638, y: 1392.069, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -706,3 +823,5 @@ SceneRoots:
   - {fileID: 775522538}
   - {fileID: 1721351879}
   - {fileID: 748093095}
+  - {fileID: 312164450}
+  - {fileID: 1613157976}
