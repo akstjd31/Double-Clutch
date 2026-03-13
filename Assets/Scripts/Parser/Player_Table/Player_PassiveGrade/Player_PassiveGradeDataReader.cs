@@ -6,7 +6,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Player_PassiveGradeDataReader", menuName = "Scriptable Object/Player_PassiveGradeDataReader", order = int.MaxValue)]
 public class Player_PassiveGradeDataReader : DataReaderBase
 {
-    [Header("½ºÇÁ·¹µå½ÃÆ®¿¡¼­ ÀĞÇôÁ® Á÷·ÄÈ­ µÈ ¿ÀºêÁ§Æ®")]
+    [Header("ìŠ¤í”„ë ˆë“œì‹œíŠ¸ì—ì„œ ì½í˜€ì ¸ ì§ë ¬í™” ëœ ì˜¤ë¸Œì íŠ¸")]
     [SerializeField] public List<Player_PassiveGradeData> DataList = new List<Player_PassiveGradeData>();
 
     
@@ -15,6 +15,7 @@ public class Player_PassiveGradeDataReader : DataReaderBase
         int gradeId = 0;        
         string skillName = string.Empty;
         float spawnRate = 0;
+        string passiveFrameResource = null;
 
         for (int i = 0; i < list.Count; i++)
         {
@@ -37,10 +38,13 @@ public class Player_PassiveGradeDataReader : DataReaderBase
                 case "spawnRate":
                     float.TryParse(val, out spawnRate);
                     break;
+                case "passiveFrameResource":
+                    passiveFrameResource = val;
+                    break;
             }
         }
 
-        DataList.Add(new Player_PassiveGradeData(gradeId, skillName, spawnRate));
+        DataList.Add(new Player_PassiveGradeData(gradeId, skillName, spawnRate, passiveFrameResource));
     }
 
     private static bool ParseBool(string val)

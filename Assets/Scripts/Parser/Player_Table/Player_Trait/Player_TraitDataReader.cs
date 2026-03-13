@@ -6,19 +6,20 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "PlayerTraitDataReader", menuName = "Scriptable Object/PlayerTraitDataReader", order = int.MaxValue)]
 public class Player_TraitDataReader : DataReaderBase
 {
-    [Header("½ºÇÁ·¹µå½ÃÆ®¿¡¼­ ÀĞÇôÁ® Á÷·ÄÈ­ µÈ ¿ÀºêÁ§Æ®")]
+    [Header("ìŠ¤í”„ë ˆë“œì‹œíŠ¸ì—ì„œ ì½í˜€ì ¸ ì§ë ¬í™” ëœ ì˜¤ë¸Œì íŠ¸")]
     [SerializeField] public List<Player_TraitData> DataList = new List<Player_TraitData>();
 
-    // ItemDataÃ³·³ List<GSTU_Cell> ÇÑ ÁÙÀ» ¹Ş¾Æ¼­ ÆÄ½Ì
+    // ItemDataì²˜ëŸ¼ List<GSTU_Cell> í•œ ì¤„ì„ ë°›ì•„ì„œ íŒŒì‹±
     internal void UpdateStats(List<GSTU_Cell> list, int rowIndex)
     {
         string traitId = null;
         string traitName = "";
         string desc = "";
+        string traitResource = "";
 
         for (int i = 0; i < list.Count; i++)
         {
-            string col = list[i].columnId;   // "weekId", "desc" µî (½ÃÆ® 2Çà Çì´õ)
+            string col = list[i].columnId;   // "weekId", "desc" ë“± (ì‹œíŠ¸ 2í–‰ í—¤ë”)
             string val = list[i].value;
 
             if (string.IsNullOrWhiteSpace(val) || val == "-")
@@ -37,13 +38,17 @@ public class Player_TraitDataReader : DataReaderBase
                 case "desc":
                     desc = val;
                     break;
+                case "traitResource":
+                    traitResource = val;
+                    break;
 
-               
+
+
             }
         }
 
         DataList.Add(new Player_TraitData(
-            traitId, traitName, desc
+            traitId, traitName, desc, traitResource
         ));
     }
 

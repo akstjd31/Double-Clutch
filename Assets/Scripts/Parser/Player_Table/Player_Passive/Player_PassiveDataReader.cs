@@ -6,10 +6,10 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Player_PassiveDataReader", menuName = "Scriptable Object/Player_PassiveDataReader", order = int.MaxValue)]
 public class Player_PassiveDataReader : DataReaderBase
 {
-    [Header("½ºÇÁ·¹µå½ÃÆ®¿¡¼­ ÀĞÇôÁ® Á÷·ÄÈ­ µÈ ¿ÀºêÁ§Æ®")]
+    [Header("ìŠ¤í”„ë ˆë“œì‹œíŠ¸ì—ì„œ ì½í˜€ì ¸ ì§ë ¬í™” ëœ ì˜¤ë¸Œì íŠ¸")]
     [SerializeField] public List<Player_PassiveData> DataList = new List<Player_PassiveData>();
 
-    // ItemDataÃ³·³ List<GSTU_Cell> ÇÑ ÁÙÀ» ¹Ş¾Æ¼­ ÆÄ½Ì
+    // ItemDataì²˜ëŸ¼ List<GSTU_Cell> í•œ ì¤„ì„ ë°›ì•„ì„œ íŒŒì‹±
     internal void UpdateStats(List<GSTU_Cell> list, int rowIndex)
     {
         string skillId = null;
@@ -18,10 +18,11 @@ public class Player_PassiveDataReader : DataReaderBase
         effectType effectType = default;
         float effectValue = 0;
         string passiveDesc = "";
+        string passiveResource = "";
 
         for (int i = 0; i < list.Count; i++)
         {
-            string col = list[i].columnId;   // "weekId", "desc" µî (½ÃÆ® 2Çà Çì´õ)
+            string col = list[i].columnId;   // "weekId", "desc" ë“± (ì‹œíŠ¸ 2í–‰ í—¤ë”)
             string val = list[i].value;
 
             if (string.IsNullOrWhiteSpace(val) || val == "-")
@@ -43,7 +44,7 @@ public class Player_PassiveDataReader : DataReaderBase
                 case "effectType":
                     if (!string.IsNullOrEmpty(val))
                     {
-                        // ¼ıÀÚ(enum int)µµ ´ëÀÀ
+                        // ìˆ«ì(enum int)ë„ ëŒ€ì‘
                         if (int.TryParse(val, out var eInt)) effectType = (effectType)eInt;
                         else if (Enum.TryParse(val, true, out effectType e)) effectType = e;
                     }
@@ -56,16 +57,19 @@ public class Player_PassiveDataReader : DataReaderBase
                 case "passiveDesc":
                     passiveDesc = val;
                     break;
+                case "passiveResource":
+                    passiveResource = val;
+                    break;
 
             }
         }
 
-        // skillId ¾øÀ¸¸é ½ºÅµ (Å¸ÀÔÇà/ºóÇà ¹æÁö)
+        // skillId ì—†ìœ¼ë©´ ìŠ¤í‚µ (íƒ€ì…í–‰/ë¹ˆí–‰ ë°©ì§€)
         if (string.IsNullOrEmpty(skillId)) return;
 
         DataList.Add(new Player_PassiveData(
             skillId, skillName, grade, effectType,
-            effectValue, passiveDesc
+            effectValue, passiveDesc, passiveResource
         ));
     }
 

@@ -11,8 +11,9 @@ public struct PlayerSynergyData
     public effectType effectType;
     public float effectValue;
     public string synergyDesc;
+    public string synergyResource;
 
-    public PlayerSynergyData(string synergyId, string traitId1, string traitId2, string synergyName, effectType effectType, float effectValue, string synergyDesc)
+    public PlayerSynergyData(string synergyId, string traitId1, string traitId2, string synergyName, effectType effectType, float effectValue, string synergyDesc, string synergyResource)
     {
         this.synergyId = synergyId;
         this.traitId1 = traitId1;
@@ -21,5 +22,6 @@ public struct PlayerSynergyData
         this.effectType = effectType;
         this.effectValue = effectValue;
         this.synergyDesc = synergyDesc;
+        this.synergyResource = synergyResource;
     }
 }

@@ -35,12 +35,13 @@ public struct Player_PassiveData
     public effectType effectType;
     public float effectValue;
     public string passiveDesc;
+    public string passiveResource;
 
     public Player_PassiveData
         (
             string _skillId, string _skillName, int _grade,
             effectType _effectType, float _effectValue,
-            string _passiveDesc
+            string _passiveDesc, string _passiveResource
         )
     {
         skillId = _skillId;
@@ -49,5 +50,6 @@ public struct Player_PassiveData
         effectType = _effectType;
         effectValue = _effectValue;
         passiveDesc = _passiveDesc;
+        passiveResource = _passiveResource;
     }
 }
