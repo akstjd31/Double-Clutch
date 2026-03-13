@@ -72,8 +72,6 @@ public class ResultState : IState
                     Student realStudent = StudentManager.Instance.FindStudentById(matchPlayer.PlayerId);
                     if (realStudent != null)
                     {
-                        // 경기 종료 후 컨디션 -30 차감
-                        realStudent.ChangeCondition(-30);
 
                         // 경기 지원금 상승 패시브 (MatchGoldUp) 합산
                         foreach (var passive in realStudent.Passive)
@@ -149,5 +147,58 @@ public class ResultState : IState
         StringManager manager = StringManager.Instance;
         string name = manager.GetString(nameKey[0]) + manager.GetString(nameKey[1]) + manager.GetString(nameKey[2]);
         return name;
+    }
+    // 추후 LeagueManager 등에서 "리그 전체 일정이 완전히 끝났을 때" 1회 호출할 함수
+    public void ApplyLeagueEndConditionDrop(int totalRounds)
+    {
+        // 중복 방지를 위한 HashSet
+        HashSet<int> participatedIds = new HashSet<int>();
+
+        // 리그 전체 기록을 뒤져서 1번이라도 출전한 '학생'의 ID만 긁어모음
+        for (int i = 1; i <= totalRounds; i++)
+        {
+            var record = LeagueRecordManager.Instance.GetMatchRecord(i);
+            if (record != null && record.HomePlayerIds != null)
+            {
+                foreach (int id in record.HomePlayerIds)
+                {
+                    // 용병(10000번 이상)은 제외하고 학생만 등록
+                    if (id < 10000)
+                    {
+                        participatedIds.Add(id);
+                    }
+                }
+            }
+        }
+
+        // 출전 학생들에게만 순서대로 로직 적용
+        foreach (int id in participatedIds)
+        {
+            Student realStudent = StudentManager.Instance.FindStudentById(id);
+            if (realStudent != null)
+            {
+                // 컨디션 깎기전에 현재 컨디션이 0인지 먼저 판별
+                if (realStudent.Condition <= 0 && realStudent.State == StudentState.None)
+                {
+                    int rate = UnityEngine.Random.Range(0, 100);
+                    if (rate < 60)
+                    {
+                        realStudent.ChangeState(StudentState.OverWorked);
+                        Debug.Log($"[리그 종료 후유증] {realStudent.Name[0]} 학생이 과로 상태가 되었습니다.");
+                    }
+                    else
+                    {
+                        realStudent.ChangeState(StudentState.Injured);
+                        Debug.Log($"[리그 종료 후유증] {realStudent.Name[0]} 학생이 부상 상태가 되었습니다.");
+                    }
+                }
+
+                // 판정이 모두 끝난 뒤에 출전 페널티 -30 적용
+                realStudent.ChangeCondition(-30);
+            }
+        }
+
+        // 변경된 상태 일괄 저장
+        StudentManager.Instance.SaveGame();
     }
 }

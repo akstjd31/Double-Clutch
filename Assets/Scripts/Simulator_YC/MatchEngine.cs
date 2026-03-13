@@ -139,6 +139,7 @@ public class MatchEngine : MonoBehaviour
         if (_synergyReader != null)
         {
             _homeTeam.EvaluateSynergies(_synergyReader.DataList);
+            _awayTeam.EvaluateSynergies(_synergyReader.DataList);
         }
     }
 
@@ -209,8 +210,7 @@ public class MatchEngine : MonoBehaviour
         TeamTactics attackTactics = MatchDataProxy.Instance.GetTactics(attackTeam.TeamColorId);
         TeamTactics defendTactics = MatchDataProxy.Instance.GetTactics(defendTeam.TeamColorId);
 
-        int action = MatchCalculator.DecideAction(_ballHolder, distToHoop, attackTactics, attackTeam, defendTeam, passInterceptDist, _homeTeam);
-
+        int action = MatchCalculator.DecideAction(_ballHolder, distToHoop, attackTactics, attackTeam, defendTeam, passInterceptDist, _simTime);
         float timeCost = UnityEngine.Random.Range(1f, 3f);
         _simTime -= timeCost;
 
@@ -245,7 +245,7 @@ public class MatchEngine : MonoBehaviour
             {
                 case 0: DoShoot(_ballHolder, attackTeam, defendTeam, distToHoop, hoopPos, false, attackTactics, defendTactics); break;
                 case 1: DoPass(_ballHolder, attackTeam, defendTeam, attackTactics, defendTactics); break;
-                case 2: DoDribble(_ballHolder, defendTeam.Roster, hoopPos, attackTactics, defendTactics); break;
+                case 2: DoDribble(_ballHolder, attackTeam, defendTeam, hoopPos, attackTactics, defendTactics); break;
             }
         }
     }
@@ -255,7 +255,7 @@ public class MatchEngine : MonoBehaviour
         bool isThree = distance > 0.35f;
         bool isDunk = distance <= 0.05f;
 
-        if (attackTeam == _homeTeam && shooter.PassReceivedBuffTick > 0)
+        if (shooter.PassReceivedBuffTick > 0)
         {
             float highlightProb = MatchCalculator.GetSynergyBonus(_homeTeam, effectType.HighlightFilm);
             if (highlightProb > 0)
@@ -373,7 +373,10 @@ public class MatchEngine : MonoBehaviour
             allPlayers.AddRange(attackTeam.Roster);
             allPlayers.AddRange(defendTeam.Roster);
 
-            MatchPlayer rebounder = MatchCalculator.CalculateReboundWinner(dropPos, allPlayers, _homeTeam);
+            TeamTactics homeTactics = MatchDataProxy.Instance.GetTactics(_homeTeam.TeamColorId);
+            TeamTactics awayTactics = MatchDataProxy.Instance.GetTactics(_awayTeam.TeamColorId);
+
+            MatchPlayer rebounder = MatchCalculator.CalculateReboundWinner(dropPos, allPlayers, _homeTeam, _awayTeam, homeTactics, awayTactics);
             RecordLog("Rebound", rebounder);
             _ballHolder = rebounder;
 
@@ -412,12 +415,12 @@ public class MatchEngine : MonoBehaviour
                 if (MatchCalculator.DistancePointToLineSegment(e.LogicPosition, passer.LogicPosition, mate.LogicPosition) < passInterceptDist)
                 {
                     hasEnemyOnPath = 1;
-                    pathEnemySteal = MatchCalculator.GetPlayerStat(e, MatchStatType.Steal, _homeTeam);
+                    pathEnemySteal = MatchCalculator.GetPlayerStat(e, MatchStatType.Steal, defendTeam);
                     break;
                 }
             }
 
-            float currentPassScore = (MatchCalculator.GetPlayerStat(mate, MatchStatType.Pass, _homeTeam) * attackTactics.bonusPass * wPassBase)
+            float currentPassScore = (MatchCalculator.GetPlayerStat(mate, MatchStatType.Pass, attackTeam) * attackTactics.bonusPass * wPassBase)
                                    + (mateNearestEnemyDist * penDistHoop)
                                    - (hasEnemyOnPath * pathEnemySteal * attackTactics.bonusPass);
 
@@ -449,9 +452,9 @@ public class MatchEngine : MonoBehaviour
         }
     }
 
-    private void DoDribble(MatchPlayer dribbler, List<MatchPlayer> enemies, Vector2 hoopPos, TeamTactics attackTactics, TeamTactics defendTactics)
+    private void DoDribble(MatchPlayer dribbler, MatchTeam attackTeam, MatchTeam defendTeam, Vector2 hoopPos, TeamTactics attackTactics, TeamTactics defendTactics)
     {
-        bool success = MatchCalculator.CalculateDribbleSuccess(dribbler, _homeTeam, _awayTeam, attackTactics, defendTactics, dribbleBlockDist);
+        bool success = MatchCalculator.CalculateDribbleSuccess(dribbler, attackTeam, defendTeam, attackTactics, defendTactics, dribbleBlockDist);
         if (success)
         {
             Vector2 dir = (hoopPos - dribbler.LogicPosition).normalized; List<MatchPlayer> allPlayers = new List<MatchPlayer>();

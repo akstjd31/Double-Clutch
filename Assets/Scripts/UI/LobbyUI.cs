@@ -17,7 +17,7 @@ public class LobbyUI : MonoBehaviour
     [SerializeField] private GameObject _settingPanel;
     [SerializeField] private Toggle _koreanToggle;
     [SerializeField] private Toggle _englishToggle;
-
+    [SerializeField] private Toggle _japanToggle;
     private void OnEnable()
     {
         if (CalendarManager.Instance != null)
@@ -84,6 +84,11 @@ public class LobbyUI : MonoBehaviour
     public void OnEnglishToggleChanged(bool isOn)
     {
         if (isOn) StringManager.Instance.SetLanguage(Language.En);
+    }
+
+    public void OnJapanToggleChanged(bool isOn)
+    {
+        if (isOn) StringManager.Instance.SetLanguage(Language.Ja);
     }
 
     // ───── Calendar / Money / Honor ─────

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 public class StudentFactory : MonoBehaviour
 {
@@ -26,7 +27,6 @@ public class StudentFactory : MonoBehaviour
     [SerializeField] Player_PositionDataReader _player_PositionDataReader;
     [Header("Player_PassiveGradeData(패시브 등장 확률 데이터)")]
     [SerializeField] Player_PassiveGradeDataReader _passiveGradeDataReader;
-
     [Header("Player_Reputation(최대 잠재력 범위 관련 데이터)")]
     [SerializeField] Player_ReputationDataReader _reputationDataReader;
 
@@ -34,12 +34,17 @@ public class StudentFactory : MonoBehaviour
     const float SECOND_GRADE_RATE = 0.2f;
     const float THIRD_GRADE_RATE = 0.2f;
 
+    const float RIVAL_FIRST_GRADE_RATE = 0.34f;
+    const float RIVAL_SECOND_GRADE_RATE = 0.33f;
+    const float RIVAL_THIRD_GRADE_RATE = 0.33f;
+
+
     List<Player_StartingStateData> _startingStates = new List<Player_StartingStateData>();
     Player_MaxPotentialData _maxPotential;
     
-    List<string> _firstNames = new List<string>();
-    List<string> _middleNames = new List<string>();
-    List<string> _lastNames = new List<string>();    
+    Dictionary<nation, List<string>>  _firstNames = new Dictionary<nation, List<string>>();
+    Dictionary<nation, List<string>> _middleNames = new Dictionary<nation, List<string>>();
+    Dictionary<nation, List<string>> _lastNames = new Dictionary<nation, List<string>>();    
     
     Dictionary<string, List<Player_VisualData>> _visualDataDict = new Dictionary<string, List<Player_VisualData>>();
     Dictionary<int, List<Player_PassiveData>> _gradePool = new Dictionary<int, List<Player_PassiveData>>();
@@ -52,10 +57,10 @@ public class StudentFactory : MonoBehaviour
         
         newStudent.SetSpecie(GetRandomSpecie());
         newStudent.SetVisual(GetRandomVisual(newStudent.SpecieId));
-        newStudent.SetGrade(GetrRandomGrade());
+        newStudent.SetGrade(GetRandomGrade());
         newStudent.SetPersonality(GetRandomPersonality());
         newStudent.SetTrait(GetRandomTrait());
-        string[] name = GetRandomName();
+        string[] name = GetRandomName(nation.Kr);
         newStudent.SetName(name[0], name[1], name[2]);
         newStudent.SetStat(GetRandomStats(newStudent.Grade));
         SetPassives(newStudent, GetRandomPassive(newStudent));  
@@ -66,11 +71,35 @@ public class StudentFactory : MonoBehaviour
         return newStudent;
     }
 
+    public Student MakeRivalStudentSkeleton(nation nation) //종족, 비주얼, 포지션 추가 설정 요구.
+    {
+        Student newStudent = new Student();
+
+        newStudent.SetStat(GetRandomStats(newStudent.Grade));
+        newStudent.SetGrade(GetRivalRandomGrade());
+        newStudent.SetPersonality(GetRandomPersonality());
+        newStudent.SetTrait(GetRandomTrait());
+        string[] name = GetRandomName(nation);
+        newStudent.SetName(name[0], name[1], name[2]);        
+        SetPassives(newStudent, GetRandomPassive(newStudent));
+
+
+        InitRivalStudent(newStudent);
+
+        return newStudent;
+    }
+
+    
     public void InitStudent(Student target) 
     {
         target.Init(_speciesDataReader, _personalityDataReader, _passiveDataReader, _traitDataReader, _player_PositionDataReader);
         Position bestPosition = DecideBestPosition(target);
         target.SetPosition(bestPosition);
+    }
+
+    public void InitRivalStudent(Student rival)
+    {
+        rival.Init(_speciesDataReader, _personalityDataReader, _passiveDataReader, _traitDataReader, _player_PositionDataReader);
     }
 
     public void InitDatas() 
@@ -79,20 +108,21 @@ public class StudentFactory : MonoBehaviour
         {
             
             Player_NameData nameData = _nameDataReader.DataList[i];
-            if (nameData.nation != nation.Kr)
-            {
-                continue;
-            }
+            nation n = nameData.nation;
+            if (!_firstNames.ContainsKey(n)) _firstNames[n] = new List<string>();
+            if (!_middleNames.ContainsKey(n)) _middleNames[n] = new List<string>();
+            if (!_lastNames.ContainsKey(n)) _lastNames[n] = new List<string>();
+
             switch (nameData.namePart)
             {
                 case namePart.FirstName:
-                    _firstNames.Add(nameData.nameKey);
+                    _firstNames[n].Add(nameData.nameKey);
                     break;
                 case namePart.MiddleName:
-                    _middleNames.Add(nameData.nameKey);
+                    _middleNames[n].Add(nameData.nameKey);
                     break;
                 case namePart.LastName:
-                    _lastNames.Add(nameData.nameKey);
+                    _lastNames[n].Add(nameData.nameKey);
                     break;
             }
         }
@@ -140,11 +170,11 @@ public class StudentFactory : MonoBehaviour
     }
 
 
-    private string[] GetRandomName() 
+    private string[] GetRandomName(nation target) 
     {
-        string first = _firstNames[Random.Range(0, _firstNames.Count)];
-        string middle = _middleNames[Random.Range(0, _middleNames.Count)];
-        string last = _lastNames[Random.Range(0, _lastNames.Count)];
+        string first = _firstNames[target][Random.Range(0, _firstNames[target].Count)];
+        string middle = _middleNames[target][Random.Range(0, _middleNames[target].Count)];
+        string last = _lastNames[target][Random.Range(0, _lastNames[target].Count)];
 
         string[] name = new string[3];
         name[0] = first;
@@ -159,7 +189,26 @@ public class StudentFactory : MonoBehaviour
         return _speciesDataReader.DataList[Random.Range(0, _speciesDataReader.DataList.Count)];
     }
 
-    private Player_VisualData GetRandomVisual(string specieId)
+    public Player_SpeciesData GetRandomSpecieByType(speciesType type)
+    {
+        List< Player_SpeciesData > targets = new List< Player_SpeciesData >();
+        
+
+        foreach (Player_SpeciesData specie in _speciesDataReader.DataList)
+        {
+            if (specie.species == type)
+            {
+                targets.Add( specie );
+            }
+        }
+
+        int randomIndex = Random.Range(0, targets.Count);
+
+
+        return targets[randomIndex];
+    }
+
+    public Player_VisualData GetRandomVisual(string specieId)
     {
         if (_visualDataDict.TryGetValue(specieId, out var value))
         {
@@ -179,7 +228,8 @@ public class StudentFactory : MonoBehaviour
     {
         return _traitDataReader.DataList[Random.Range(0, _traitDataReader.DataList.Count)];
     }
-    private int GetrRandomGrade() 
+
+    private int GetRandomGrade() 
     {
         float random = Random.value; 
 
@@ -188,6 +238,24 @@ public class StudentFactory : MonoBehaviour
             return 1;
         }
         else if (random < FIRST_GRADE_RATE + SECOND_GRADE_RATE)
+        {
+            return 2;
+        }
+        else
+        {
+            return 3;
+        }
+    }
+
+    private int GetRivalRandomGrade()
+    {
+        float random = Random.value;
+
+        if (random < RIVAL_FIRST_GRADE_RATE)
+        {
+            return 1;
+        }
+        else if (random < RIVAL_FIRST_GRADE_RATE + RIVAL_SECOND_GRADE_RATE)
         {
             return 2;
         }
@@ -324,4 +392,6 @@ public class StudentFactory : MonoBehaviour
         int result = (h % repSco) * stepVal;
         return result;
     }
+
+
 }

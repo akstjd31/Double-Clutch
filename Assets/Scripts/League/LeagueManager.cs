@@ -73,4 +73,83 @@ public class LeagueManager : Singleton<LeagueManager>
 
         return null;
     }
+
+    //팀 ID를 비교하여 해당 팀 데이터 반환
+    public Rival_MasterData? GetRivalMasterDataById(string teamId)
+    {
+        if (_leagueFactory == null) return null;
+
+        var dataList = _leagueFactory.GetRivalMasterDataList();
+
+        foreach (var data in dataList)
+        {
+            if (data.teamId.Equals(teamId))
+                return data;
+        }
+
+        return null;
+    }
+    //아키타입 ID를 비교하여 해당 아키타입 데이터 반환
+    public Team_ArchetypeData? GetArchetypeDataById(string teamArchetypeId)
+    {
+        if (_leagueFactory == null) return null;
+
+        var dataList = _leagueFactory.GetArchetypeDataList();
+
+        foreach (var data in dataList)
+        {
+            if (data.teamArchetypeId.Equals(teamArchetypeId))
+                return data;
+        }
+
+        return null;
+    }
+
+    //아키타입 ID를 비교하여 해당 아키타입 데이터 반환
+    public League_LevelData? GetLeagueLevelDataById(string leagueLevelId)
+    {
+        if (_leagueFactory == null) return null;
+
+        var dataList = _leagueFactory.GetLevelDataList();
+
+        foreach (var data in dataList)
+        {
+            if (data.leagueLevelId.Equals(leagueLevelId))
+                return data;
+        }
+
+        return null;
+    }
+
+    //정해진 레벨 데이터 안에서 티어별 가중치 반환
+    public float GetWeightByTier(League_LevelData data, teamTier tier)
+    {
+        switch(tier)
+        {            
+            case teamTier.D: return data.weightPotentialTierD;
+            case teamTier.C: return data.weightPotentialTierC;
+            case teamTier.B: return data.weightPotentialTierB;
+            case teamTier.A: return data.weightPotentialTierA;
+            case teamTier.S: return data.weightPotentialTierS;
+            case teamTier.SS: return data.weightPotentialTierSS;
+            case teamTier.SSS: return data.weightPotentialTierSSS;
+            default: return 0f;                
+        }
+    }
+
+    //정해진 아키타입 데이터 안에서 잠재력별 가중치 반환
+    public float GetWeightByPotential(Team_ArchetypeData data, potential potential)
+    {
+        switch (potential)
+        {
+            case potential.Stat2pt: return data.weight2pt;
+            case potential.Stat3pt: return data.weight3pt;
+            case potential.StatPass: return data.weightPass;
+            case potential.StatSteal: return data.weightSteal;
+            case potential.StatBlock: return data.weightBlock;
+            case potential.StatRebound: return data.weightRebound;
+            
+            default: return 0f;
+        }
+    }
 }
