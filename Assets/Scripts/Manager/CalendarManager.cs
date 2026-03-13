@@ -78,6 +78,8 @@ public class CalendarManager : Singleton<CalendarManager>
 
         // 1. 주차 시작(주차 계산)
         CalcWeek(weekId, gm);
+        //주차가 끝나면 이벤트 쿨다운-HJ
+        EventManager.Instance.WeekendCooldown();
 
         // 2. 시작 컷신 체크
         if (HasExistStartCutscene(weekId))
