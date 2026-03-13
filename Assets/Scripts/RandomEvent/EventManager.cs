@@ -33,7 +33,7 @@ public class EventManager : Singleton<EventManager>
 
     private void Start()
     {
-        LoadGame();
+        //LoadGame();
     }
 
     public void CharacterEvent()
@@ -137,26 +137,26 @@ public class EventManager : Singleton<EventManager>
         }
     }
 
-    public void SaveGame()
-    {
-        if (EventManager.Instance == null) return;
+    //public void SaveGame()
+    //{
+    //    if (EventManager.Instance == null) return;
 
-        // 1. 랜덤이벤트 세이브 데이터 생성
-        var saveData = new RandomEventSaveData(_candidateDictionary);
+    //    // 1. 랜덤이벤트 세이브 데이터 생성
+    //    var saveData = new RandomEventSaveData(_candidateDictionary);
 
-        // 2. ??????? ???? ????????.
+    //    // 2. ??????? ???? ????????.
         
-        SaveLoadManager.Instance.Save<RandomEventSaveData>(SAVE_FILE, saveData);
-    }
+    //    SaveLoadManager.Instance.Save<RandomEventSaveData>(SAVE_FILE, saveData);
+    //}
 
-    public void LoadGame()
-    {
-        if (SaveLoadManager.Instance.TryLoad<RandomEventSaveData>(SAVE_FILE, out var data))
-        {
-            // 1. ???? ????
-            _saveEventList = data.studentEventList;
-            Debug.Log("이벤트 세이브 파일 불러옴");
-        }
-    }
+    //public void LoadGame()
+    //{
+    //    if (SaveLoadManager.Instance.TryLoad<RandomEventSaveData>(SAVE_FILE, out var data))
+    //    {
+    //        // 1. ???? ????
+    //        _saveEventList = data.studentEventList;
+    //        Debug.Log("이벤트 세이브 파일 불러옴");
+    //    }
+    //}
 
 }

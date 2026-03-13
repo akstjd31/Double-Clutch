@@ -216,7 +216,7 @@ public class EventController : MonoBehaviour
         {
             Debug.Log($"패널 닫기");
             _eventPanel.SetActive(false);
-            _eventManager.SaveGame();
+            //_eventManager.SaveGame();
         }
         else
         {
