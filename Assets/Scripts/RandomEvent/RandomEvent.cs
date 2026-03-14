@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+[Serializable]
 public class RandomEvent
 {
     private Event_DataModelReader _Event_DataModelReader;
@@ -18,7 +20,7 @@ public class RandomEvent
     public int CooldownTurn => _currentCooldownTurn;
     public bool IsReady => _isReady;
 
-    public RandomEvent(string eventID, float potentialPercent, int cooldownTurn, string eventPriority)
+    public RandomEvent(string eventID, float potentialPercent, int cooldownTurn, string eventPriority )
     {
         _eventId = eventID;
         _potentialPercent = potentialPercent;
@@ -39,5 +41,11 @@ public class RandomEvent
             _currentCooldownTurn = _cooldownTurn;
             _isReady = true;
         }
+    }
+
+    public void WaitingMode()
+    {
+        Debug.Log($"{_eventId} 대기모드");
+        _isReady = false;
     }
 }

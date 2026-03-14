@@ -166,7 +166,7 @@ public class MatchEngine : MonoBehaviour
             _currentPossession = (_currentPossession == TeamSide.Home) ? TeamSide.Away : TeamSide.Home;
         }
 
-        // 연장전 처리 (4쿼터가 끝났는데 동점일 때만)
+        // 연장전 처리 (3쿼터가 끝났는데 동점일 때만)
         if (targetQuarter >= 4)
         {
 
@@ -185,7 +185,7 @@ public class MatchEngine : MonoBehaviour
 
                 _simQuarter++;
                 _currentPossession = (_currentPossession == TeamSide.Home) ? TeamSide.Away : TeamSide.Home;
-                if (_simQuarter > 8) break;
+                if (_simQuarter > 7) break;
             }
 
             RecordLog("GameEnd");
@@ -257,7 +257,7 @@ public class MatchEngine : MonoBehaviour
 
         if (shooter.PassReceivedBuffTick > 0)
         {
-            float highlightProb = MatchCalculator.GetSynergyBonus(_homeTeam, effectType.HighlightFilm);
+            float highlightProb = MatchCalculator.GetSynergyBonus(attackTeam, effectType.HighlightFilm);
             if (highlightProb > 0)
             {
                 float hDice = UnityEngine.Random.Range(0f, 100f);

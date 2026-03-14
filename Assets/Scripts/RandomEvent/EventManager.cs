@@ -5,11 +5,16 @@ using UnityEngine;
 [System.Serializable]
 public class EventManager : Singleton<EventManager>
 {
+    private const string SAVE_FILE = "RandomEventSave.json";
+    Dictionary<int, List<RandomEvent>> _saveEventList = new();
+
     #region DB
     [SerializeField] private Event_DataModelReader _dataModelReader;
     [SerializeField] private Event_ChoiceDataReader _choiceDataReader;
     #endregion
     [SerializeField] private List<Student> _myStudents;
+
+    [SerializeField] private List<RandomEvent> _randomEvents;
 
     //1. 선수별 이벤트 후보 저장 딕셔너리 : 선수ID, 이벤트 - 이벤트 쿨타임 관리 해야 함.
     private Dictionary<int, List<RandomEvent>> _candidateDictionary = new();
@@ -25,6 +30,12 @@ public class EventManager : Singleton<EventManager>
 
     //학생별 가능한 이벤트 리스트를 딕셔너리에 저장
     //1. 요구 잠재력 조건 만족
+
+    private void Start()
+    {
+        //LoadGame();
+    }
+
     public void CharacterEvent()
     {
         _myStudents = StudentManager.Instance.MyStudents;
@@ -62,6 +73,12 @@ public class EventManager : Singleton<EventManager>
 
         }
         _debugList_candidateDictionary = new List<int>(_candidateDictionary.Keys);
+
+        foreach(var p in _candidateDictionary)
+        {
+            int studentId = p.Key;
+            _randomEvents.AddRange(p.Value);
+        }
     }
 
     public void CreateList()
@@ -77,9 +94,12 @@ public class EventManager : Singleton<EventManager>
             if (!_eventScript.TryGetValue(cId, out Dictionary<int, Event_ChoiceData> chDic))
             {
                 chDic = new();
-                _eventScript.Add(cId, chDic);
+                _eventScript[cId] =  chDic;
             }
-            chDic.Add(data[i].currentId, data[i]);
+            if (!chDic.ContainsKey(data[i].currentId))
+            {
+                chDic.Add(data[i].currentId, data[i]);
+            }
         }
 
         _debugList_eventScript = new List<string>(_eventScript.Keys);
@@ -90,6 +110,7 @@ public class EventManager : Singleton<EventManager>
     //IsReady = false만 쿨타임 감소
     public void WeekendCooldown()
     {
+        Debug.Log($"주차 정산 이벤트 쿨다운 체크");
         var data = _dataModelReader.DataList;
 
         //학생들 전체 검사
@@ -115,5 +136,27 @@ public class EventManager : Singleton<EventManager>
             }
         }
     }
+
+    //public void SaveGame()
+    //{
+    //    if (EventManager.Instance == null) return;
+
+    //    // 1. 랜덤이벤트 세이브 데이터 생성
+    //    var saveData = new RandomEventSaveData(_candidateDictionary);
+
+    //    // 2. ??????? ???? ????????.
+        
+    //    SaveLoadManager.Instance.Save<RandomEventSaveData>(SAVE_FILE, saveData);
+    //}
+
+    //public void LoadGame()
+    //{
+    //    if (SaveLoadManager.Instance.TryLoad<RandomEventSaveData>(SAVE_FILE, out var data))
+    //    {
+    //        // 1. ???? ????
+    //        _saveEventList = data.studentEventList;
+    //        Debug.Log("이벤트 세이브 파일 불러옴");
+    //    }
+    //}
 
 }
