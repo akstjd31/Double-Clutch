@@ -83,7 +83,7 @@ public class LeagueTeamManager : Singleton<LeagueTeamManager>
             }
             team.UpdateTeamStats(teamStats);
         }
-        League_LevelData levelData = LeagueManager.Instance.GetLeagueLevelDataById(leagueLevelId).Value;
+        League_LevelData levelData = LeagueDataManager.Instance.GetLeagueLevelDataById(leagueLevelId).Value;
         //StudentManager.Instance.CurrentTeam.SetTier(levelData.playerTeamTier);
         SaveGame();
     }
@@ -151,8 +151,8 @@ public class LeagueTeamManager : Singleton<LeagueTeamManager>
     {
         List<Stat> newStats = new List<Stat>();
 
-        League_LevelData levelData =  LeagueManager.Instance.GetLeagueLevelDataById(leagueLevelId).Value;
-        Team_ArchetypeData archData = LeagueManager.Instance.GetArchetypeDataById(team.Team_ArchetypeData.Value.teamArchetypeId).Value;
+        League_LevelData levelData =  LeagueDataManager.Instance.GetLeagueLevelDataById(leagueLevelId).Value;
+        Team_ArchetypeData archData = LeagueDataManager.Instance.GetArchetypeDataById(team.Team_ArchetypeData.Value.teamArchetypeId).Value;
 
         // 리그 레벨에 따른 기본 스탯 범위 (예: 10~20 사이에서 랜덤)
         int minBase = levelData.minPotential;
@@ -166,10 +166,10 @@ public class LeagueTeamManager : Singleton<LeagueTeamManager>
             float baseRandom = UnityEngine.Random.Range(minBase, maxBase + 1);
 
             // 2. 팀 티어 가중치 가져오기
-            float archWeight = LeagueManager.Instance.GetWeightByTier(levelData, team.Rival_MasterData.Value.teamTier);
+            float archWeight = LeagueDataManager.Instance.GetWeightByTier(levelData, team.Rival_MasterData.Value.teamTier);
 
             // 3. 팀의 잠재력 가중치 가져오기
-            float potenWeight = LeagueManager.Instance.GetWeightByPotential(archData, type);
+            float potenWeight = LeagueDataManager.Instance.GetWeightByPotential(archData, type);
 
             // 3. 최종 계산: (기본 난수 * 가중치)
             int finalValue = Mathf.FloorToInt(baseRandom * archWeight * potenWeight);

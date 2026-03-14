@@ -5,12 +5,12 @@ using UnityEngine;
 
 public class LeagueTeamSelector : MonoBehaviour
 {
-    private LeagueManager _leagueMgr;
+    private LeagueDataManager _leagueMgr;
     private readonly System.Random _random;
 
     private void Awake()
     {
-        _leagueMgr = this.GetComponent<LeagueManager>();
+        _leagueMgr = this.GetComponent<LeagueDataManager>();
     }
 
     public LeagueTeamSelector(int? seed = null)
