@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 
 /// <summary>
@@ -15,22 +16,22 @@ public class LeagueManager : Singleton<LeagueManager>
         _leagueFactory = this.GetComponent<LeagueFactory>();
     }
 
-    public List<string> CreateLeagueTeams(League_TeamData rule)
+    public List<string> CreateLeagueTeams(League_TeamData? rule)
     {
         if (_leagueFactory == null) return null;
 
         var allTeams = _leagueFactory.GetRivalMasterDataList();
         if (allTeams == null) return null;
 
-        var priorityTeamIds = GetPriorityTeams(rule);
+        var priorityTeamIds = new List<string>(); //GetPriorityTeams(rule);
         string playerTeamId = "Player_Team";    // 임시
         
-        int seed = rule.weekId; // 필요에 따라 사용
+        int seed = rule.Value.weekId; // 필요에 따라 사용
         var selector = new LeagueTeamSelector(seed);
 
         var selectedTeams = selector.SelectTeams
         (
-            rule,
+            rule.Value,
             allTeams,
             priorityTeamIds,
             playerTeamId
@@ -39,52 +40,67 @@ public class LeagueManager : Singleton<LeagueManager>
         return selectedTeams;
     }
 
-    // 이전 리그 상위팀 가져오기
-    private List<string> GetPriorityTeams(League_TeamData? rule)
+    public void SaveLeagueResult(string leagueId, List<string> teams)
     {
-        var result = new List<string>();
-        if (rule == null) return result;
-
-        if (rule.Value.priorityTeamCount <= 0) return result;
-
-        if (string.IsNullOrEmpty(rule.Value.prioritySourceLeagueId) || rule.Value.prioritySourceLeagueId.Equals("-"))
+        if (SaveLoadManager.Instance == null) return;
+        
+        var saveData = new LeagueResultSaveData
         {
-            Debug.LogError($"prioritySourceLeagueId가 비어 있음!");
-            return result;
-        }
+            leagueId = leagueId,
+            teams = new List<string>(teams)
+        };
 
+        string path = leagueId + ".json";
 
-        // 데이터 가져와 순위 정렬
-        var prevLeagueResult = LoadLeagueResult(rule.Value.prioritySourceLeagueId);
-        if (prevLeagueResult == null)
-        {
-            Debug.LogError($"이전 결과 데이터 없음!");
-            return null;
-        }
-
-        if (prevLeagueResult.teams.Count < rule.Value.priorityTeamCount)
-        {
-            Debug.LogError("상위 팀 부족!");
-            return null;
-        }
-
-        // 랭크 기준 정렬
-        prevLeagueResult.teams.Sort((a, b) => a.rank.CompareTo(b.rank));
-
-        for (int i = 0; i < rule.Value.priorityTeamCount; i++)
-        {
-            result.Add(prevLeagueResult.teams[i].teamId);
-        }
-
-        return result;
+        SaveLoadManager.Instance.Save<LeagueResultSaveData>(path, saveData);
     }
+
+    // 이전 리그 상위팀 가져오기
+    // private List<string> GetPriorityTeams(League_TeamData? rule)
+    // {
+    //     var result = new List<string>();
+    //     if (rule == null) return result;
+
+    //     if (rule.Value.priorityTeamCount <= 0) return result;
+
+    //     if (string.IsNullOrEmpty(rule.Value.prioritySourceLeagueId) || rule.Value.prioritySourceLeagueId.Equals("-"))
+    //     {
+    //         Debug.LogError($"prioritySourceLeagueId가 비어 있음!");
+    //         return result;
+    //     }
+
+
+    //     // 데이터 가져와 순위 정렬
+    //     var prevLeagueResult = LoadLeagueResult(rule.Value.prioritySourceLeagueId);
+    //     if (prevLeagueResult == null)
+    //     {
+    //         Debug.LogError($"이전 결과 데이터 없음!");
+    //         return null;
+    //     }
+
+    //     if (prevLeagueResult.teams.Count < rule.Value.priorityTeamCount)
+    //     {
+    //         Debug.LogError("상위 팀 부족!");
+    //         return null;
+    //     }
+
+    //     // 랭크 기준 정렬
+    //     prevLeagueResult.teams.Sort((a, b) => a.rank.CompareTo(b.rank));
+
+    //     for (int i = 0; i < rule.Value.priorityTeamCount; i++)
+    //     {
+    //         result.Add(prevLeagueResult.teams[i].teamId);
+    //     }
+
+    //     return result;
+    // }
 
     private LeagueResultSaveData LoadLeagueResult(string leagueId)
     {
         if (string.IsNullOrEmpty(leagueId))
             return null;
 
-        string path = leagueId; // 임시 (어떤 파일명으로 지정할지 아직 모르겠음)
+        string path = leagueId + ".json"; // 임시 (어떤 파일명으로 지정할지 아직 모르겠음)
         bool loaded = SaveLoadManager.Instance.TryLoad<LeagueResultSaveData>(path, out var data);
 
         if (!loaded)
@@ -94,18 +110,19 @@ public class LeagueManager : Singleton<LeagueManager>
     }
 
     // 위크 ID를 매개변수로 받아 리그 셀렉션 테이블에서 데이터 생성 날짜인지 확인
-    public bool IsCachingDay(int weekId)
+    public League_TeamData? IsTeamSelectionWeek(int weekId)
     {
-        if (_leagueFactory == null) return false;
+        if (_leagueFactory == null) return null;
 
         var dataList = _leagueFactory.GetTeamSelectionDataList();
 
         foreach (var data in dataList)
         {
             if (data.weekId.Equals(weekId))
-                return true;
+                return data;
         }
-        return false;
+
+        return null;
     }
 
     // 리그 ID를 비교하여 해당 데이터 반환

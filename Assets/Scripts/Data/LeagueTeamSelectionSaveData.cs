@@ -5,7 +5,7 @@ using System.Collections.Generic;
 public class LeagueResultSaveData : SaveBase
 {
     public string leagueId;
-    public List<LeagueResultTeamData> teams = new();
+    public List<string> teams = new();
 
     public LeagueResultSaveData() {}
 }

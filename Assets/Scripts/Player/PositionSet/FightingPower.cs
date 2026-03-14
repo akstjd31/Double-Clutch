@@ -54,8 +54,8 @@ public class FightingPower : MonoBehaviour
         _rivalTotalFightingPower = 0;
         
         // 현 week ID 행에 저장된 league ID를 받아온다.
-        var leagueId = CalendarManager.Instance.GetCurrentLeagueId();
-        MatchTeam generatedAwayTeam = EnemyTeamFactory.Instance.CreateEnemyTeam("Team_DOM_03", leagueId);
+        // var leagueId = CalendarManager.Instance.GetCurrentLeagueId();
+        MatchTeam generatedAwayTeam = EnemyTeamFactory.Instance.CreateEnemyTeam("Team_DOM_03", "Test");
         
         if (generatedAwayTeam == null)
         {
