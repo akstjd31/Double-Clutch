@@ -4,14 +4,14 @@ using UnityEngine;
 using UnityEngine.Timeline;
 
 [Serializable]
-public class Team : MonoBehaviour
+public class Team
 {
     //외부에서 세팅해줄 필수 요건
     [SerializeField] Student[] _members = new Student[5];
     [SerializeField] string _teamId;
-    [SerializeField] int _winCount;
-    [SerializeField] int _tieCount;
+    [SerializeField] int _winCount;    
     [SerializeField] int _LoseCount;
+    [SerializeField] bool _isPlayable = false;
 
     //나머지는 데이터에서 조회하기
     Rival_MasterData? _masterData;
@@ -20,6 +20,7 @@ public class Team : MonoBehaviour
     //자주쓰는 값(팀 이름) 캐싱
     [SerializeField] string _teamNameKey;
     [SerializeField] Position[] _positions = new Position[5];
+    [SerializeField] teamTier _teamTier;
 
     //프로퍼티
     public string TeamId => _teamId;
@@ -28,12 +29,19 @@ public class Team : MonoBehaviour
     public Position[] Positions => _positions;
     public Rival_MasterData? Rival_MasterData => _masterData;
     public Team_ArchetypeData? Team_ArchetypeData => _archetypeData;
+    public teamTier TeamTier => _teamTier;
+    public bool IsPlayable => _isPlayable;
 
     public void Init(Rival_MasterData master, Team_ArchetypeData archetype) //가지고 있는 팀 아이디 기반으로 데이터 연결(생성 및 로드 직후 호출)
     {
         _masterData = master;
         _archetypeData = archetype;
         _teamNameKey = master.teamNameKey;
+
+        if (!IsPlayable)
+        {
+            _teamTier = master.teamTier;
+        }
 
         SetupPositionLineup();
     }
@@ -42,8 +50,25 @@ public class Team : MonoBehaviour
     {
         _teamId = teamId;        
     }
-    
 
+    public Team(string teamId, bool isPlayable)
+    {
+        _teamId = teamId;
+        _isPlayable = isPlayable;
+    }
+    
+    public void ClearMembers()
+    {
+        for (int i = 0; i < _members.Length; i++)
+        {
+            _members[i] = null;
+        }        
+    }
+
+    public void SetTier(teamTier tier)
+    {
+        _teamTier = tier;
+    }
     public void SetMember(int index, Student student)
     {
         if (index >= Members.Length)

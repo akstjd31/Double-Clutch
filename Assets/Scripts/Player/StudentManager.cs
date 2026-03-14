@@ -14,11 +14,13 @@ public class StudentManager : Singleton<StudentManager>
     int _recruitLimit = 5; //???? ???? ????
     public int RecruitLimit => GetRecruitLimit();
     public bool IsStable => GetRecruitLimit() == _myStudents.Count;
+    public const string TEAM_ID = "Player_Team";
     // public static StudentManager Instance { get; private set; }
     [SerializeField] StudentFactory _studentFactory; //???? ?????? ????
     [SerializeField] private List<Student> _myStudents = new List<Student>(); //???? ???
+    [SerializeField] Team _currentTeam = new Team(TEAM_ID, true);
     public List<Student> MyStudents => _myStudents;
-
+    public Team CurrentTeam => _currentTeam;
     public int GetRecruitLimit()
     {
         return _recruitLimit + InfraManager.Instance.GetInfraEffectValueByEffectType(infraEffectType.AddRoster);
@@ -43,6 +45,15 @@ public class StudentManager : Singleton<StudentManager>
         LoadGame();
     }
     
+    public void SetCurrentTeam(List<Student> players)
+    {        
+        for (int i = 0; i < players.Count; i++)
+        {
+            _currentTeam.SetMember(i, players[i]);
+        }        
+    }
+
+
     public List<Student> MakeRandomTeam(int n) // n?????? ?????? ???? ??????? ?????? ???
     {
         List<Student> newTeam = new List<Student>();
