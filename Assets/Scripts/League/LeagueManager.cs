@@ -18,7 +18,9 @@ public class LeagueManager : Singleton<LeagueManager>
     public List<string> CreateLeagueTeams(League_TeamData rule)
     {
         if (_leagueFactory == null) return null;
+
         var allTeams = _leagueFactory.GetRivalMasterDataList();
+        if (allTeams == null) return null;
 
         var priorityTeamIds = GetPriorityTeams(rule);
         string playerTeamId = "Player_Team";    // 임시
@@ -38,9 +40,42 @@ public class LeagueManager : Singleton<LeagueManager>
     }
 
     // 이전 리그 상위팀 가져오기
-    private List<string> GetPriorityTeams(League_TeamData rule)
+    private List<string> GetPriorityTeams(League_TeamData? rule)
     {
-        return null;
+        var result = new List<string>();
+        if (rule == null) return null;
+
+        // 데이터 가져와 순위 정렬
+        var prevLeagueResult = LoadLeagueResult(rule.Value.prioritySourceLeagueId);
+        if (prevLeagueResult == null) return null;
+
+        prevLeagueResult.teams.Sort((a, b) => a.rank.CompareTo(b.rank));
+
+        int count = Math.Min(rule.Value.priorityTeamCount, prevLeagueResult.teams.Count);
+
+        for (int i = 0; i < count; i++)
+        {
+            if (string.IsNullOrEmpty(prevLeagueResult.teams[i].teamId))
+                continue;
+
+            result.Add(prevLeagueResult.teams[i].teamId);
+        }
+
+        return result;
+    }
+
+    private LeagueResultSaveData LoadLeagueResult(string leagueId)
+    {
+        if (string.IsNullOrEmpty(leagueId))
+            return null;
+
+        string path = leagueId; // 임시 (어떤 파일명으로 지정할지 아직 모르겠음)
+        bool loaded = SaveLoadManager.Instance.TryLoad<LeagueResultSaveData>(path, out var data);
+
+        if (!loaded)
+            return null;
+
+        return data;
     }
 
     // 위크 ID를 매개변수로 받아 리그 셀렉션 테이블에서 데이터 생성 날짜인지 확인

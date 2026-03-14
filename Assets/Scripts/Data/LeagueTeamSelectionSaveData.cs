@@ -2,18 +2,20 @@ using System;
 using System.Collections.Generic;
 
 [Serializable]
-public class LeagueTeamSelectionSaveData : SaveBase
+public class LeagueResultSaveData : SaveBase
 {
-    public string teamSelectionRuleId;     
-    public int selectedWeekId;          
-    public string entryKey;
-    public List<string> selectedTeamIds = new List<string>();
+    public string leagueId;
+    public List<LeagueResultTeamData> teams = new();
+
+    public LeagueResultSaveData() {}
 }
 
-public enum TeamSelectionAction
+
+[Serializable]
+public class LeagueResultTeamData : SaveBase
 {
-    None,
-    ReuseCache,
-    RunSelection,
-    Error
+    public string teamId;
+    public int rank;
+
+    public LeagueResultTeamData() {}
 }
