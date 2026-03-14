@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Timeline;
 
 /// <summary>
 /// 라이벌 팀 일괄 생성 및 관리
@@ -11,8 +12,63 @@ public class RivalTeamManager : Singleton<RivalTeamManager>
     [SerializeField] LeagueFactory _leagueFactory;
     [SerializeField] StudentFactory _studentFactory;
 
-    List<string> RivalTeamList = new List<string>();
+    List<string> _rivalTeamIdList = new List<string>();
+    Dictionary<string, Team> _rivalTeamList = new Dictionary<string, Team>();
     
+
+    private void Start()
+    {
+        InitDatas();
+    }
+
+    private void InitDatas()
+    {
+        _rivalTeamIdList.Clear();
+        for (int i = 0; i < _leagueFactory.GetRivalMasterDataList().Count; i++)
+        {
+            _rivalTeamIdList.Add(_leagueFactory.GetRivalMasterDataList()[i].teamId);
+        }
+    }
+
+    public void BuildTeams()
+    {
+        var teamDataList = _leagueFactory.GetRivalMasterDataList();
+        var archDataList = _leagueFactory.GetArchetypeDataList();
+
+        foreach (var master in teamDataList)
+        {
+            if (_rivalTeamList.ContainsKey(master.teamId)) continue;
+
+            Team newTeam = new Team(master.teamId);
+
+            // 매니저가 데이터를 찾아서 직접 주입 (Dependency Injection)
+            var arch = archDataList.Find(x => x.teamArchetypeId == master.teamArchetypeId);
+            newTeam.Init(master, arch);
+
+            _rivalTeamList.Add(newTeam.TeamId, newTeam);
+            FillRivalStudents(newTeam);
+        }
+
+    }
+
+    //모든 라이벌 팀의 레벨보정 잠재력 재설정(라이벌 스탯 결정 시기에 호출)
+    public void RefreshAllRivalStats(string leagueLevelId) 
+    {
+        foreach (var team in _rivalTeamList.Values)
+        {
+            // 각 팀원 5명에 대한 스탯을 생성하여 주입
+            List<Stat>[] teamStats = new List<Stat>[5];
+            for (int i = 0; i < 5; i++)
+            {
+                teamStats[i] = GetRivalStatsByLevel(leagueLevelId, team);
+            }
+            team.UpdateTeamStats(teamStats);
+        }
+    }
+
+
+
+    #region 내부 함수
 
     private void FillRivalStudents(Team team) //팀에 선수들 채워넣는 매서드
     {
@@ -31,7 +87,7 @@ public class RivalTeamManager : Singleton<RivalTeamManager>
     }
 
     //리그 레벨과 해당 팀에 알맞는 스탯 생성해서 반환
-    public List<Stat> GetRivalStatsByLevel(string leagueLevelId, Team team)
+    private List<Stat> GetRivalStatsByLevel(string leagueLevelId, Team team)
     {
         List<Stat> newStats = new List<Stat>();
 
@@ -56,7 +112,8 @@ public class RivalTeamManager : Singleton<RivalTeamManager>
             float potenWeight = LeagueManager.Instance.GetWeightByPotential(archData, type);
 
             // 3. 최종 계산: (기본 난수 * 가중치)
-            int finalValue = (int)(baseRandom * archWeight * potenWeight);
+            int finalValue = Mathf.FloorToInt(baseRandom * archWeight * potenWeight);
+            finalValue = Mathf.Clamp(finalValue, 1, 100);
 
             // 4. 기타 수치(라이벌에서는 쓰지 않는 성장률, 최대잠재력 수치)
             int growthRate = 1;
@@ -109,5 +166,7 @@ public class RivalTeamManager : Singleton<RivalTeamManager>
         return result;
     }
 
-    
+    #endregion
+
+
 }

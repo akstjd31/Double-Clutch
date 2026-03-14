@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Timeline;
 
 [Serializable]
 public class Team : MonoBehaviour
@@ -8,6 +9,9 @@ public class Team : MonoBehaviour
     //외부에서 세팅해줄 필수 요건
     [SerializeField] Student[] _members = new Student[5];
     [SerializeField] string _teamId;
+    [SerializeField] int _winCount;
+    [SerializeField] int _tieCount;
+    [SerializeField] int _LoseCount;
 
     //나머지는 데이터에서 조회하기
     Rival_MasterData? _masterData;
@@ -18,38 +22,25 @@ public class Team : MonoBehaviour
     [SerializeField] Position[] _positions = new Position[5];
 
     //프로퍼티
+    public string TeamId => _teamId;
     public string TeamNameKey => _teamNameKey;
     public Student[] Members => _members;
     public Position[] Positions => _positions;
     public Rival_MasterData? Rival_MasterData => _masterData;
     public Team_ArchetypeData? Team_ArchetypeData => _archetypeData;
 
-    public void Init(List<Rival_MasterData> masterDb, List<Team_ArchetypeData> archDb) //가지고 있는 팀 아이디 기반으로 데이터 연결(생성 및 로드 직후 호출)
+    public void Init(Rival_MasterData master, Team_ArchetypeData archetype) //가지고 있는 팀 아이디 기반으로 데이터 연결(생성 및 로드 직후 호출)
     {
-        foreach (var data in masterDb)
-        {
-            if (_teamId == data.teamId)
-            {
-                _masterData = data;
-            }
-        }
-        string archId = _masterData.Value.teamArchetypeId;
-        foreach (var data in archDb)
-        {
-            if (archId == data.teamArchetypeId)
-            {
-                 _archetypeData = data;
-            }
-        }
-        SetupPositionLineup();
+        _masterData = master;
+        _archetypeData = archetype;
+        _teamNameKey = master.teamNameKey;
 
-        _teamNameKey = _masterData.Value.teamNameKey;
+        SetupPositionLineup();
     }
 
-    public Team(string teamId, Student[] members)
+    public Team(string teamId)
     {
-        _teamId = teamId;
-        _members = members;
+        _teamId = teamId;        
     }
     
 
@@ -63,22 +54,15 @@ public class Team : MonoBehaviour
         _members[index] = student;
     }
 
-    //팀 내 모든 선수의 잠재력을 현재 리그에 맞게 재설정
-    public void RemakeTeamStat(string leagueLevelId, StudentFactory factory)
+    
+    public void UpdateTeamStats(List<Stat>[] newStatsForMembers)
     {
         for (int i = 0; i < _members.Length; i++)
         {
-            Student student = _members[i];
-            Position pos = _positions[i];
-
-            List<Stat> newStat = RivalTeamManager.Instance.GetRivalStatsByLevel(leagueLevelId, this);
-
-            // 2. 학생에게 스탯 주입
-            student.SetStat(newStat);
+            _members[i].SetStat(newStatsForMembers[i]);
         }
-
-        Debug.Log($"{_teamId} 팀의 스탯이 {leagueLevelId} 레벨에 맞춰 재설정되었습니다.");
     }
+    
 
     public void SetupPositionLineup()
     {
