@@ -43,21 +43,36 @@ public class LeagueManager : Singleton<LeagueManager>
     private List<string> GetPriorityTeams(League_TeamData? rule)
     {
         var result = new List<string>();
-        if (rule == null) return null;
+        if (rule == null) return result;
+
+        if (rule.Value.priorityTeamCount <= 0) return result;
+
+        if (string.IsNullOrEmpty(rule.Value.prioritySourceLeagueId) || rule.Value.prioritySourceLeagueId.Equals("-"))
+        {
+            Debug.LogError($"prioritySourceLeagueId가 비어 있음!");
+            return result;
+        }
+
 
         // 데이터 가져와 순위 정렬
         var prevLeagueResult = LoadLeagueResult(rule.Value.prioritySourceLeagueId);
-        if (prevLeagueResult == null) return null;
+        if (prevLeagueResult == null)
+        {
+            Debug.LogError($"이전 결과 데이터 없음!");
+            return null;
+        }
 
+        if (prevLeagueResult.teams.Count < rule.Value.priorityTeamCount)
+        {
+            Debug.LogError("상위 팀 부족!");
+            return null;
+        }
+
+        // 랭크 기준 정렬
         prevLeagueResult.teams.Sort((a, b) => a.rank.CompareTo(b.rank));
 
-        int count = Math.Min(rule.Value.priorityTeamCount, prevLeagueResult.teams.Count);
-
-        for (int i = 0; i < count; i++)
+        for (int i = 0; i < rule.Value.priorityTeamCount; i++)
         {
-            if (string.IsNullOrEmpty(prevLeagueResult.teams[i].teamId))
-                continue;
-
             result.Add(prevLeagueResult.teams[i].teamId);
         }
 
