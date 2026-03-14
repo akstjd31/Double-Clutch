@@ -20,11 +20,3 @@ public interface ILeagueRankingCalculator
 {
     List<LeagueStandingData> Calculate(LeagueSaveData saveData);
 }
-
-/// <summary>
-/// 타이 브레이커 규칙
-/// </summary>
-public interface ILeagueTieBreaker
-{
-    int Compare(LeagueStandingData a, LeagueStandingData b);
-}

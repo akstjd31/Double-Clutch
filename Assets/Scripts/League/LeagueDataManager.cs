@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using UnityEngine;
 
 /// <summary>
-/// 팩토리에 있는 데이터를 가지고 원하는 데이터 추출
+/// 리그 관련 마스터 데이터 조회 / 참가 팀 선정 / 리그 저장 데이터 생성 담당
 /// </summary>
 public class LeagueDataManager : Singleton<LeagueDataManager>
 {
@@ -13,25 +12,129 @@ public class LeagueDataManager : Singleton<LeagueDataManager>
     protected override void Awake()
     {
         base.Awake();
-        _leagueFactory = this.GetComponent<LeagueFactory>();
+        _leagueFactory = GetComponent<LeagueFactory>();
     }
 
-    public List<string> CreateLeagueTeams(League_TeamData? rule)
+    /// <summary>
+    /// weekId에 해당하는 팀 선정 룰 반환
+    /// </summary>
+    public League_TeamData? GetTeamSelectionRuleByWeekId(int weekId)
     {
         if (_leagueFactory == null) return null;
 
-        var allTeams = _leagueFactory.GetRivalMasterDataList();
-        if (allTeams == null) return null;
+        var dataList = _leagueFactory.GetTeamSelectionDataList();
+        if (dataList == null) return null;
 
-        var priorityTeamIds = new List<string>(); //GetPriorityTeams(rule);
-        string playerTeamId = "Player_Team";    // 임시
-        
-        int seed = rule.Value.weekId; // 필요에 따라 사용
+        foreach (var data in dataList)
+        {
+            if (data.weekId == weekId)
+                return data;
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// 리그 ID로 리그 마스터 데이터 조회
+    /// </summary>
+    public League_MasterData? GetMasterDataById(string leagueId)
+    {
+        if (_leagueFactory == null) return null;
+        if (string.IsNullOrEmpty(leagueId)) return null;
+
+        var dataList = _leagueFactory.GetMasterDataList();
+        if (dataList == null) return null;
+
+        foreach (var data in dataList)
+        {
+            if (data.leagueId == leagueId)
+                return data;
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// 팀 ID로 라이벌 마스터 데이터 조회
+    /// </summary>
+    public Rival_MasterData? GetRivalMasterDataById(string teamId)
+    {
+        if (_leagueFactory == null) return null;
+        if (string.IsNullOrEmpty(teamId)) return null;
+
+        var dataList = _leagueFactory.GetRivalMasterDataList();
+        if (dataList == null) return null;
+
+        foreach (var data in dataList)
+        {
+            if (data.teamId == teamId)
+                return data;
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// 아키타입 ID로 아키타입 데이터 조회
+    /// </summary>
+    public Team_ArchetypeData? GetArchetypeDataById(string teamArchetypeId)
+    {
+        if (_leagueFactory == null) return null;
+        if (string.IsNullOrEmpty(teamArchetypeId)) return null;
+
+        var dataList = _leagueFactory.GetArchetypeDataList();
+        if (dataList == null) return null;
+
+        foreach (var data in dataList)
+        {
+            if (data.teamArchetypeId == teamArchetypeId)
+                return data;
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// 리그 레벨 ID로 레벨 데이터 조회
+    /// </summary>
+    public League_LevelData? GetLeagueLevelDataById(string leagueLevelId)
+    {
+        if (_leagueFactory == null) return null;
+        if (string.IsNullOrEmpty(leagueLevelId)) return null;
+
+        var dataList = _leagueFactory.GetLevelDataList();
+        if (dataList == null) return null;
+
+        foreach (var data in dataList)
+        {
+            if (data.leagueLevelId == leagueLevelId)
+                return data;
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// 룰에 따라 리그 참가 팀 선정
+    /// </summary>
+    public List<string> CreateLeagueTeams(League_TeamData? rule)
+    {
+        if (_leagueFactory == null) return null;
+        if (rule == null) return null;
+
+        var allTeams = _leagueFactory.GetRivalMasterDataList();
+        if (allTeams == null || allTeams.Count == 0) return null;
+
+        var ruleData = rule.Value;
+
+        var priorityTeamIds = new List<string>(); // 추후 이전 리그 결과 연동
+        string playerTeamId = "Player_Team";
+
+        int seed = ruleData.weekId;
         var selector = new LeagueTeamSelector(seed);
 
-        var selectedTeams = selector.SelectTeams
-        (
-            rule.Value,
+        var selectedTeams = selector.SelectTeams(
+            ruleData,
             allTeams,
             priorityTeamIds,
             playerTeamId
@@ -40,68 +143,78 @@ public class LeagueDataManager : Singleton<LeagueDataManager>
         return selectedTeams;
     }
 
-    public void SaveLeagueResult(string leagueId, List<string> teams)
+    /// <summary>
+    /// 리그 저장 데이터 생성
+    /// </summary>
+    public LeagueSaveData CreateLeagueSaveData(string leagueId, League_TeamData? rule)
     {
-        if (SaveLoadManager.Instance == null) return;
-        
-        var saveData = new LeagueResultSaveData
+        if (string.IsNullOrEmpty(leagueId)) return null;
+        if (rule == null) return null;
+
+        var masterData = GetMasterDataById(leagueId);
+        if (masterData == null)
+        {
+            Debug.LogError($"리그 마스터 데이터를 찾을 수 없습니다. leagueId = {leagueId}");
+            return null;
+        }
+
+        var selectedTeams = CreateLeagueTeams(rule);
+        if (selectedTeams == null || selectedTeams.Count == 0)
+        {
+            Debug.LogError($"리그 참가 팀 생성 실패. leagueId = {leagueId}");
+            return null;
+        }
+
+        var saveData = new LeagueSaveData
         {
             leagueId = leagueId,
-            teams = new List<string>(teams)
+            leagueType = masterData.Value.leagueType.ToString(),
+            currentRoundIndex = 0,
+            isFinished = false,
+            isPlayerEliminated = false,
+            teams = CreateTeamEntries(selectedTeams),
+            matchRecords = CreateMatchRecords(selectedTeams),
+            standings = CreateInitialStandings(selectedTeams)
         };
 
-        string path = leagueId + ".json";
-
-        SaveLoadManager.Instance.Save<LeagueResultSaveData>(path, saveData);
+        return saveData;
     }
 
-    // 이전 리그 상위팀 가져오기
-    // private List<string> GetPriorityTeams(League_TeamData? rule)
-    // {
-    //     var result = new List<string>();
-    //     if (rule == null) return result;
-
-    //     if (rule.Value.priorityTeamCount <= 0) return result;
-
-    //     if (string.IsNullOrEmpty(rule.Value.prioritySourceLeagueId) || rule.Value.prioritySourceLeagueId.Equals("-"))
-    //     {
-    //         Debug.LogError($"prioritySourceLeagueId가 비어 있음!");
-    //         return result;
-    //     }
-
-
-    //     // 데이터 가져와 순위 정렬
-    //     var prevLeagueResult = LoadLeagueResult(rule.Value.prioritySourceLeagueId);
-    //     if (prevLeagueResult == null)
-    //     {
-    //         Debug.LogError($"이전 결과 데이터 없음!");
-    //         return null;
-    //     }
-
-    //     if (prevLeagueResult.teams.Count < rule.Value.priorityTeamCount)
-    //     {
-    //         Debug.LogError("상위 팀 부족!");
-    //         return null;
-    //     }
-
-    //     // 랭크 기준 정렬
-    //     prevLeagueResult.teams.Sort((a, b) => a.rank.CompareTo(b.rank));
-
-    //     for (int i = 0; i < rule.Value.priorityTeamCount; i++)
-    //     {
-    //         result.Add(prevLeagueResult.teams[i].teamId);
-    //     }
-
-    //     return result;
-    // }
-
-    private LeagueResultSaveData LoadLeagueResult(string leagueId)
+    /// <summary>
+    /// 리그 생성 후 즉시 저장
+    /// </summary>
+    public LeagueSaveData CreateAndSaveLeague(string leagueId, League_TeamData? rule)
     {
-        if (string.IsNullOrEmpty(leagueId))
-            return null;
+        var saveData = CreateLeagueSaveData(leagueId, rule);
+        if (saveData == null) return null;
 
-        string path = leagueId + ".json"; // 임시 (어떤 파일명으로 지정할지 아직 모르겠음)
-        bool loaded = SaveLoadManager.Instance.TryLoad<LeagueResultSaveData>(path, out var data);
+        SaveLeague(saveData);
+        return saveData;
+    }
+
+    /// <summary>
+    /// 리그 데이터 저장
+    /// </summary>
+    public void SaveLeague(LeagueSaveData saveData)
+    {
+        if (SaveLoadManager.Instance == null) return;
+        if (saveData == null) return;
+        if (string.IsNullOrEmpty(saveData.leagueId)) return;
+
+        string path = GetLeagueSavePath(saveData.leagueId);
+        SaveLoadManager.Instance.Save<LeagueSaveData>(path, saveData);
+    }
+
+    /// <summary>
+    /// 리그 데이터 로드
+    /// </summary>
+    public LeagueSaveData LoadLeague(string leagueId)
+    {
+        if (SaveLoadManager.Instance == null) return null;
+        if (string.IsNullOrEmpty(leagueId)) return null;
+
+        string path = GetLeagueSavePath(leagueId);
+        bool loaded = SaveLoadManager.Instance.TryLoad<LeagueSaveData>(path, out var data);
 
         if (!loaded)
             return null;
@@ -109,90 +222,103 @@ public class LeagueDataManager : Singleton<LeagueDataManager>
         return data;
     }
 
-    // 위크 ID를 매개변수로 받아 리그 셀렉션 테이블에서 데이터 생성 날짜인지 확인
-    public League_TeamData? IsTeamSelectionWeek(int weekId)
+    private string GetLeagueSavePath(string leagueId)
     {
-        if (_leagueFactory == null) return null;
-
-        var dataList = _leagueFactory.GetTeamSelectionDataList();
-
-        foreach (var data in dataList)
-        {
-            if (data.weekId.Equals(weekId))
-                return data;
-        }
-
-        return null;
+        return $"{leagueId}.json";
     }
 
-    // 리그 ID를 비교하여 해당 데이터 반환
-    public League_MasterData? GetMasterDataById(string leagueId)
+    /// <summary>
+    /// 참가 팀 엔트리 생성
+    /// </summary>
+    private List<LeagueTeamEntry> CreateTeamEntries(List<string> selectedTeamIds)
     {
-        if (_leagueFactory == null) return null;
+        var result = new List<LeagueTeamEntry>();
+        if (selectedTeamIds == null) return result;
 
-        var dataList = _leagueFactory.GetMasterDataList();
-
-        foreach (var data in dataList)
+        for (int i = 0; i < selectedTeamIds.Count; i++)
         {
-            if (data.leagueId.Equals(leagueId))
-                return data;
+            string teamId = selectedTeamIds[i];
+
+            result.Add(new LeagueTeamEntry
+            {
+                teamId = teamId,
+                isPlayerTeam = teamId == "Player_Team",
+                isEliminated = false
+            });
         }
 
-        return null;
+        return result;
     }
 
-    //팀 ID를 비교하여 해당 팀 데이터 반환
-    public Rival_MasterData? GetRivalMasterDataById(string teamId)
+    /// <summary>
+    /// 초기 순위 데이터 생성
+    /// </summary>
+    private List<LeagueStandingData> CreateInitialStandings(List<string> selectedTeamIds)
     {
-        if (_leagueFactory == null) return null;
+        var result = new List<LeagueStandingData>();
+        if (selectedTeamIds == null) return result;
 
-        var dataList = _leagueFactory.GetRivalMasterDataList();
-
-        foreach (var data in dataList)
+        for (int i = 0; i < selectedTeamIds.Count; i++)
         {
-            if (data.teamId.Equals(teamId))
-                return data;
+            result.Add(new LeagueStandingData
+            {
+                teamId = selectedTeamIds[i],
+                rank = i + 1,
+                played = 0,
+                win = 0,
+                lose = 0,
+                points = 0,
+                scored = 0,
+                conceded = 0,
+                goalDiff = 0
+            });
         }
 
-        return null;
+        return result;
     }
-    //아키타입 ID를 비교하여 해당 아키타입 데이터 반환
-    public Team_ArchetypeData? GetArchetypeDataById(string teamArchetypeId)
+
+    /// <summary>
+    /// 경기표 생성
+    /// 일단 단순 라운드 로빈 예시.
+    /// 실제 규칙에 맞게 수정 필요.
+    /// </summary>
+    private List<LeagueMatchRecord> CreateMatchRecords(List<string> selectedTeamIds)
     {
-        if (_leagueFactory == null) return null;
+        var result = new List<LeagueMatchRecord>();
+        if (selectedTeamIds == null || selectedTeamIds.Count < 2) return result;
 
-        var dataList = _leagueFactory.GetArchetypeDataList();
+        int roundIndex = 0;
 
-        foreach (var data in dataList)
+        for (int i = 0; i < selectedTeamIds.Count; i++)
         {
-            if (data.teamArchetypeId.Equals(teamArchetypeId))
-                return data;
+            for (int j = i + 1; j < selectedTeamIds.Count; j++)
+            {
+                result.Add(new LeagueMatchRecord
+                {
+                    roundIndex = roundIndex,
+                    homeTeamId = selectedTeamIds[i],
+                    awayTeamId = selectedTeamIds[j],
+                    isPlayed = false,
+                    homeScore = 0,
+                    awayScore = 0,
+                    specialNote = string.Empty,
+                    replayLogKey = string.Empty
+                });
+
+                roundIndex++;
+            }
         }
 
-        return null;
+        return result;
     }
 
-    //아키타입 ID를 비교하여 해당 아키타입 데이터 반환
-    public League_LevelData? GetLeagueLevelDataById(string leagueLevelId)
-    {
-        if (_leagueFactory == null) return null;
-
-        var dataList = _leagueFactory.GetLevelDataList();
-
-        foreach (var data in dataList)
-        {
-            if (data.leagueLevelId.Equals(leagueLevelId))
-                return data;
-        }
-
-        return null;
-    }
-
-    //정해진 레벨 데이터 안에서 티어별 가중치 반환
+    /// <summary>
+    /// 레벨 데이터에서 티어별 가중치 반환
+    /// </summary>
     public float GetWeightByTier(League_LevelData data, teamTier tier)
     {
-        switch(tier)
-        {            
+        switch (tier)
+        {
             case teamTier.D: return data.weightPotentialTierD;
             case teamTier.C: return data.weightPotentialTierC;
             case teamTier.B: return data.weightPotentialTierB;
@@ -200,11 +326,13 @@ public class LeagueDataManager : Singleton<LeagueDataManager>
             case teamTier.S: return data.weightPotentialTierS;
             case teamTier.SS: return data.weightPotentialTierSS;
             case teamTier.SSS: return data.weightPotentialTierSSS;
-            default: return 0f;                
+            default: return 0f;
         }
     }
 
-    //정해진 아키타입 데이터 안에서 잠재력별 가중치 반환
+    /// <summary>
+    /// 아키타입 데이터에서 잠재력별 가중치 반환
+    /// </summary>
     public float GetWeightByPotential(Team_ArchetypeData data, potential potential)
     {
         switch (potential)
@@ -215,7 +343,6 @@ public class LeagueDataManager : Singleton<LeagueDataManager>
             case potential.StatSteal: return data.weightSteal;
             case potential.StatBlock: return data.weightBlock;
             case potential.StatRebound: return data.weightRebound;
-            
             default: return 0f;
         }
     }

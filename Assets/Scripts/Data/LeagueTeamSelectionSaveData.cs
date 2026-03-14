@@ -12,7 +12,9 @@ public class LeagueSaveData : SaveBase
     public int currentRoundIndex;
     public bool isFinished;
     public bool isPlayerEliminated;
-    public List<string> teams = new();
+    public List<LeagueTeamEntry> teams = new();
+    public List<LeagueMatchRecord> matchRecords = new();
+    public List<LeagueStandingData> standings = new();
 
     public LeagueSaveData() {}
 }
