@@ -12,6 +12,7 @@ public class League_LevelDataReader : DataReaderBase
     internal void UpdateStats(List<GSTU_Cell> list)
     {
         string leagueLvId = null;
+        teamTier teamTier = default;
         bool isRivalTA = false, isRivalPA = false;
         int minP = 0, maxP = 0;
         float wPT_D = 0, wPT_C = 0, wPT_B = 0, wPT_A = 0, wPT_S = 0, wPT_SS = 0, wPT_SSS = 0;
@@ -28,6 +29,16 @@ public class League_LevelDataReader : DataReaderBase
             {
                 case "leagueLevelId":
                     leagueLvId = val;
+                    break;
+                
+                case "playerTeamTier":
+                    if (!string.IsNullOrEmpty(val))
+                    {
+                        // 숫자(enum int)도 대응
+                        if (int.TryParse(val, out var eInt)) teamTier = (teamTier)eInt;
+                        else if (Enum.TryParse(val, true, out teamTier e)) teamTier = e;
+                    }
+
                     break;
 
                 case "isRivalTraitApplied":
@@ -78,7 +89,7 @@ public class League_LevelDataReader : DataReaderBase
 
         var LeagueLvData = new League_LevelData
         (
-            leagueLvId, isRivalTA, isRivalPA, minP, maxP, wPT_D, wPT_C, wPT_B, wPT_A, wPT_S, wPT_SS, wPT_SSS
+            leagueLvId, teamTier, isRivalTA, isRivalPA, minP, maxP, wPT_D, wPT_C, wPT_B, wPT_A, wPT_S, wPT_SS, wPT_SSS
         );
 
         DataList.Add(LeagueLvData);
