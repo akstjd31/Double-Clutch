@@ -1,6 +1,14 @@
 using System.Collections.Generic;
 using System.Linq;
 
+public interface ILeagueRankingCalculator
+{
+    List<LeagueStandingData> Calculate(LeagueSaveData saveData);
+}
+
+/// <summary>
+/// 리그 순위 계산기
+/// </summary>
 public class LeagueRankingCalculator : ILeagueRankingCalculator
 {
     private readonly List<ILeagueTieBreaker> _tieBreakers;

@@ -127,8 +127,8 @@ public class LeagueDataManager : Singleton<LeagueDataManager>
 
         var ruleData = rule.Value;
 
-        var priorityTeamIds = new List<string>(); // 추후 이전 리그 결과 연동
-        string playerTeamId = "Player_Team";
+        var priorityTeamIds = new List<string>();
+        string playerTeamId = "Player_Team";        // 이건 임시 플레이어 팀 ID (아마 변경될 가능성이 높을듯)
 
         int seed = ruleData.weekId;
         var selector = new LeagueTeamSelector(seed);
@@ -165,6 +165,7 @@ public class LeagueDataManager : Singleton<LeagueDataManager>
             return null;
         }
 
+        // 저장될 데이터 디폴트 값
         var saveData = new LeagueSaveData
         {
             leagueId = leagueId,
@@ -201,6 +202,7 @@ public class LeagueDataManager : Singleton<LeagueDataManager>
         if (saveData == null) return;
         if (string.IsNullOrEmpty(saveData.leagueId)) return;
 
+        // 해당 경로에 존재하는 
         string path = GetLeagueSavePath(saveData.leagueId);
         SaveLoadManager.Instance.Save<LeagueSaveData>(path, saveData);
     }

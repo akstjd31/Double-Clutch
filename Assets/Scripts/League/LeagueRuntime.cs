@@ -15,8 +15,3 @@ public class LeagueRuntime
     public bool isFinished => SaveData.isFinished;
     public int CurrentRound => SaveData.currentRoundIndex;
 }
-
-public interface ILeagueRankingCalculator
-{
-    List<LeagueStandingData> Calculate(LeagueSaveData saveData);
-}

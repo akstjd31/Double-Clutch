@@ -2,12 +2,16 @@ using System;
 using UnityEngine;
 using System.Collections.Generic;
 
+/// <summary>
+/// 실제 리그 진행 처리
+/// </summary>
 public class LeagueManager : Singleton<LeagueManager>
 {
-    private ILeagueRankingCalculator _rankingCalculator;
-    private ILeaguePairingGenerator _swissPairingGenerator;
-    private ILeaguePairingGenerator _tournamentPairingGenerator;
+    private ILeagueRankingCalculator _rankingCalculator;            // 순위 계산
+    private ILeaguePairingGenerator _swissPairingGenerator;         // 스위스
+    private ILeaguePairingGenerator _tournamentPairingGenerator;    // 토너먼트
     private LeagueSaveData _currentLeague;
+    public LeagueSaveData CurrentLeague => _currentLeague;
 
     protected override void Awake()
     {
@@ -17,8 +21,7 @@ public class LeagueManager : Singleton<LeagueManager>
         _tournamentPairingGenerator = new TournamentPairingGenerator();
     }
 
-    public LeagueSaveData CurrentLeague => _currentLeague;
-
+    // 리그 시작
     public void StartLeague(LeagueSaveData saveData)
     {
         if (saveData == null) return;
@@ -27,17 +30,20 @@ public class LeagueManager : Singleton<LeagueManager>
         GenerateCurrentRoundMatchesIfNeeded();
         SaveCurrentLeague();
     }
-
+    
+    // 해당 리그 ID에 해당되는 데이터 캐싱 (전에 미리 데이터를 채워놔서 있다는 가정임)
     public void LoadLeague(string leagueId)
     {
         _currentLeague = LeagueDataManager.Instance.LoadLeague(leagueId);
     }
 
+    // 경기 마무리에 따른 처리 (토너먼트 처리, 순위 갱신, 저장)
     public void CompleteMatch(LeagueMatchRecord match, int homeScore, int awayScore, string specialNote = "")
     {
         if (_currentLeague == null || match == null) return;
         if (_currentLeague.isFinished) return;
 
+        // 무승부가 났을 떄??
         if (IsTournament() && homeScore == awayScore)
         {
             Debug.LogError("토너먼트에서는 무승부가 허용되지 않습니다.");
@@ -58,8 +64,10 @@ public class LeagueManager : Singleton<LeagueManager>
         SaveCurrentLeague();
     }
 
+    // 토너먼트 탈락 관련
     private void ApplyTournamentElimination(LeagueMatchRecord match)
     {
+        // 탈락한 팀의 ID
         string loserTeamId = match.homeScore > match.awayScore
             ? match.awayTeamId
             : match.homeTeamId;
@@ -76,6 +84,7 @@ public class LeagueManager : Singleton<LeagueManager>
         }
     }
 
+    // 라운드가 종료되었을 떄
     public void EndRound()
     {
         if (_currentLeague == null) return;
@@ -105,6 +114,7 @@ public class LeagueManager : Singleton<LeagueManager>
         SaveCurrentLeague();
     }
 
+    // 토너먼트가 끝났는지?
     private bool CheckTournamentFinished()
     {
         if (_currentLeague == null) return true;
@@ -120,6 +130,7 @@ public class LeagueManager : Singleton<LeagueManager>
         return aliveCount <= 1;
     }
 
+    // 스위스가 끝났는지?
     private bool CheckSwissFinished()
     {
         if (_currentLeague == null) return true;
@@ -130,6 +141,7 @@ public class LeagueManager : Singleton<LeagueManager>
         return _currentLeague.currentRoundIndex >= masterData.Value.roundCount - 1;
     }
 
+    // 우리 팀이 리그에서 탈락했을 경우
     public void OnPlayerEliminated()
     {
         if (_currentLeague == null) return;
@@ -173,6 +185,7 @@ public class LeagueManager : Singleton<LeagueManager>
         return _currentLeague.leagueType == "Tournament";
     }
 
+    // 라운드가 종료되었는지?
     private bool IsCurrentRoundFinished()
     {
         if (_currentLeague == null) return false;
@@ -193,6 +206,7 @@ public class LeagueManager : Singleton<LeagueManager>
         return hasAnyMatch;
     }
 
+    // 현재 라운드의 경기 매칭을 아직 만들지 않았다면 리스트 생성
     private void GenerateCurrentRoundMatchesIfNeeded()
     {
         if (_currentLeague == null) return;
