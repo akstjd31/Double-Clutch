@@ -5,9 +5,15 @@ public class LeagueRankingCalculator : ILeagueRankingCalculator
 {
     private readonly List<ILeagueTieBreaker> _tieBreakers;
 
-    public LeagueRankingCalculator(List<ILeagueTieBreaker> tieBreakers)
+    public LeagueRankingCalculator()
     {
-        _tieBreakers = tieBreakers;
+        _tieBreakers = new List<ILeagueTieBreaker>
+        {
+            new PointsTieBreaker(),
+            new GoalDiffTieBreaker(),
+            new ScoredTieBreaker(),
+            new WinCountTieBreaker()
+        };
     }
 
     public List<LeagueStandingData> Calculate(LeagueSaveData saveData)

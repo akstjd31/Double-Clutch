@@ -160,18 +160,18 @@ public class CalendarManager : Singleton<CalendarManager>
         }
 
         // 캐싱 데이터 작업이 들어가야 하는 weekId 인지??
-        // var selectionData = LeagueDataManager.Instance.IsTeamSelectionWeek(weekId);
-        // if (selectionData != null)
-        // {
-        //     var teams = LeagueDataManager.Instance.CreateLeagueTeams(selectionData);
+        var selectionData = LeagueDataManager.Instance.GetTeamSelectionRuleByWeekId(weekId);
+        if (selectionData != null)
+        {
+            var teams = LeagueDataManager.Instance.CreateLeagueTeams(selectionData);
 
-        //     for (int i = 0; i < teams.Count; i++)
-        //     {
-        //         Debug.Log($"{i}번째 팀: {teams[i]}");
-        //     }
+            for (int i = 0; i < teams.Count; i++)
+            {
+                Debug.Log($"{i}번째 팀: {teams[i]}");
+            }
 
-        //     LeagueDataManager.Instance.SaveLeagueResult(GetCurrentLeagueId(), teams);
-        // }
+            LeagueDataManager.Instance.CreateAndSaveLeague(GetLeagueIdByWeekId(weekId), selectionData);
+        }
 
         gm.SetWeekId(weekId);
 
@@ -259,13 +259,9 @@ public class CalendarManager : Singleton<CalendarManager>
     }
 
     // 현 저장된 데이터의 weekID의 leagueID
-    public string GetCurrentLeagueId()
+    public string GetLeagueIdByWeekId(int weekId)
     {
         if (_calReader == null) return null;
-
-        var saveData = GameManager.Instance.SaveData;
-        if (saveData == null) return null;
-
-        return _calReader.DataList[saveData.weekId].leagueId;
+        return _calReader.DataList[weekId].leagueId;
     }
 }

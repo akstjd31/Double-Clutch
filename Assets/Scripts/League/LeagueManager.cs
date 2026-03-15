@@ -1,76 +1,87 @@
-public class LeagueManager
+public class LeagueManager : Singleton<LeagueManager>
 {
-    private readonly ILeagueRankingCalculator _rankingCalculator;
-    private readonly ILeagueSaveService _saveService;
+    private ILeagueRankingCalculator _rankingCalculator;
+    private LeagueSaveData _currentLeague;
 
-    private LeagueRuntime _runtime;
-
-    public LeagueManager(ILeagueRankingCalculator rankingCalculator, ILeagueSaveService saveService)
+    protected override void Awake()
     {
-        _rankingCalculator = rankingCalculator;
-        _saveService = saveService;
+        base.Awake();
+        _rankingCalculator = new LeagueRankingCalculator();
     }
+
+    public LeagueSaveData CurrentLeague => _currentLeague;
 
     public void StartLeague(LeagueSaveData saveData)
     {
-        _runtime = new LeagueRuntime(saveData);
-        _saveService.Save(_runtime.SaveData);
+        if (saveData == null) return;
+
+        _currentLeague = saveData;
+        SaveCurrentLeague();
+    }
+
+    public void LoadLeague(string leagueId)
+    {
+        _currentLeague = LeagueDataManager.Instance.LoadLeague(leagueId);
     }
 
     public void CompleteMatch(LeagueMatchRecord record, int homeScore, int awayScore, string specialNote = "")
     {
+        if (_currentLeague == null) return;
+        if (record == null) return;
+
         record.isPlayed = true;
         record.homeScore = homeScore;
         record.awayScore = awayScore;
         record.specialNote = specialNote;
 
         RecalculateStandings();
-        _saveService.Save(_runtime.SaveData);
+        SaveCurrentLeague();
     }
 
     public void EndRound()
     {
-        _runtime.SaveData.currentRoundIndex++;
+        if (_currentLeague == null) return;
+        if (_currentLeague.isFinished) return;
+
+        _currentLeague.currentRoundIndex++;
+
         RecalculateStandings();
-        _saveService.Save(_runtime.SaveData);
 
         if (CheckLeagueFinished())
         {
             FinishLeague();
+            return;
         }
+
+        SaveCurrentLeague();
     }
 
     public void OnPlayerEliminated()
     {
-        _runtime.SaveData.isPlayerEliminated = true;
+        if (_currentLeague == null) return;
+        if (_currentLeague.isFinished) return;
 
-        //SimulateRemainingMatches();
+        _currentLeague.isPlayerEliminated = true;
+
+        // 남은 경기 자동 시뮬레이션
+        // SimulateRemainingMatches();
+
         RecalculateStandings();
         FinishLeague();
     }
 
-    // private void SimulateRemainingMatches()
-    // {
-    //     foreach (var match in _runtime.SaveData.matchRecords)
-    //     {
-    //         if (match.isPlayed) continue;
-
-    //         var result = _simulator.Simulate(match.homeTeamId, match.awayTeamId);
-    //         match.isPlayed = true;
-    //         match.homeScore = result.HomeScore;
-    //         match.awayScore = result.AwayScore;
-    //         match.specialNote = "AUTO_SIMULATED";
-    //     }
-    // }
-
     private void RecalculateStandings()
     {
-        _runtime.SaveData.standings = _rankingCalculator.Calculate(_runtime.SaveData);
+        if (_currentLeague == null) return;
+
+        _currentLeague.standings = _rankingCalculator.Calculate(_currentLeague);
     }
 
     private bool CheckLeagueFinished()
     {
-        foreach (var match in _runtime.SaveData.matchRecords)
+        if (_currentLeague == null) return true;
+
+        foreach (var match in _currentLeague.matchRecords)
         {
             if (!match.isPlayed)
                 return false;
@@ -81,8 +92,17 @@ public class LeagueManager
 
     private void FinishLeague()
     {
-        _runtime.SaveData.isFinished = true;
+        if (_currentLeague == null) return;
+
+        _currentLeague.isFinished = true;
         RecalculateStandings();
-        _saveService.Save(_runtime.SaveData);
+        SaveCurrentLeague();
+    }
+
+    private void SaveCurrentLeague()
+    {
+        if (_currentLeague == null) return;
+
+        LeagueDataManager.Instance.SaveLeague(_currentLeague);
     }
 }
