@@ -55,8 +55,22 @@ public class FightingPower : MonoBehaviour
 
         // 현 week ID 행에 저장된 league ID를 받아온다.
         // var leagueId = CalendarManager.Instance.GetCurrentLeagueId();
-        string opponentTeamId = "Team_DOM_01"; // 리그 데이터가 없을 때를 대비한 기본값 
-        var currentLeague = LeagueManager.Instance.CurrentLeague;
+        var leagueMgr = LeagueManager.Instance;
+        if (leagueMgr == null) return;
+
+        var currentLeague = leagueMgr.CurrentLeague;
+        if (currentLeague == null)
+        {
+            Debug.Log("현 리그 데이터가 널임");
+            return;    
+        }
+
+        string opponentTeamId = leagueMgr.GetOpponentTeamId(currentLeague.matchRecords);
+        if (opponentTeamId == null)
+        {
+            Debug.Log("현 상대 팀 데이터가 없음! (레코드 데이터가 없음)");
+            return;
+        }
 
         if (currentLeague != null)
         {

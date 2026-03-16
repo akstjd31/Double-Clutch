@@ -25,6 +25,8 @@ public static class FilePath
     public const string MY_STUDENT_MATCHING_PATH = "MyStudentMatchingSaveData.json";
     public const string RIVAL_STUDENT_MATCHING_PATH = "RivalStudentMatchingSaveData.json";
     public const string INFRA_PATH = "InfraSaveData.json";
+    public const string LEAGUE_PATH = "LeagueSaveData.json";
+    
 }
 
 public class GameManager : Singleton<GameManager>

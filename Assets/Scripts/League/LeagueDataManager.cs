@@ -14,7 +14,7 @@ public class LeagueDataManager : Singleton<LeagueDataManager>
         base.Awake();
         _leagueFactory = GetComponent<LeagueFactory>();
     }
-    
+
     /// <summary>
     /// 팀 ID가 담긴 리스트들을 해당 테이블에서 찾는 메서드
     /// </summary>
@@ -66,7 +66,7 @@ public class LeagueDataManager : Singleton<LeagueDataManager>
 
         var dataList = _leagueFactory.GetRewardDataList();
         int resultMoney = 0;
-        
+
         foreach (var data in dataList)
         {
             if (data.leagueRewardId.Equals(leagueId))
@@ -250,7 +250,8 @@ public class LeagueDataManager : Singleton<LeagueDataManager>
     {
         var saveData = CreateLeagueSaveData(leagueId, rule);
         if (saveData == null) return null;
-        SaveLeague(saveData);
+        LeagueManager.Instance.StartLeague(saveData);
+
 
         var leagueTeamMgr = LeagueTeamManager.Instance;
         if (leagueTeamMgr == null) return null;
@@ -289,27 +290,38 @@ public class LeagueDataManager : Singleton<LeagueDataManager>
         if (saveData == null) return;
         if (string.IsNullOrEmpty(saveData.leagueId)) return;
 
-        // 해당 경로에 존재하는 
-        string path = GetLeagueSavePath(saveData.leagueId);
-        SaveLoadManager.Instance.Save<LeagueSaveData>(path, saveData);
+        SaveLoadManager.Instance.Save<LeagueSaveData>(FilePath.LEAGUE_PATH, saveData);
     }
 
     /// <summary>
     /// 리그 데이터 로드
     /// </summary>
-    public LeagueSaveData LoadLeague(string leagueId)
+public LeagueSaveData LoadLeague()
+{
+    if (SaveLoadManager.Instance == null)
     {
-        if (SaveLoadManager.Instance == null) return null;
-        if (string.IsNullOrEmpty(leagueId)) return null;
-
-        string path = GetLeagueSavePath(leagueId);
-        bool loaded = SaveLoadManager.Instance.TryLoad<LeagueSaveData>(path, out var data);
-
-        if (!loaded)
-            return null;
-
-        return data;
+        Debug.Log("SaveLoadManager.Instance == null");
+        return null;
     }
+
+    bool loaded = SaveLoadManager.Instance.TryLoad<LeagueSaveData>(FilePath.LEAGUE_PATH, out var data);
+
+    Debug.Log($"loaded : {loaded}");
+
+    if (!loaded)
+    {
+        Debug.Log("리그 저장 데이터 없음");
+        return null;
+    }
+
+    if (data == null)
+    {
+        Debug.Log("로드는 성공했지만 data == null");
+        return null;
+    }
+
+    return data;
+}
 
     private string GetLeagueSavePath(string leagueId)
     {
@@ -455,6 +467,6 @@ public class LeagueDataManager : Singleton<LeagueDataManager>
 
         return null;
     }
-    
+
     public LeagueFactory GetFactory() => _leagueFactory;
 }
