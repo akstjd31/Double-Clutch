@@ -19,7 +19,12 @@ public class EventController : MonoBehaviour
 
     [SerializeField] private List<Student> _myStudents;
 
+    [Header("resultData Dic List")]
+    [SerializeField] private List<string> _debugResultDataList;
+
     [SerializeField] private int _nextId;
+
+
     //현재 진행중인 이벤트 아이디
     private string _eventId;
     private string _currentStudentName = "";
@@ -33,6 +38,14 @@ public class EventController : MonoBehaviour
     //주간 리포트 확인 버튼 클릭 시에 검사 실행됨
     public void EventCheck()
     {
+        _eventString.Init();
+        if (_eventString.ResultData.Count < 1)
+        {
+            Debug.Log($"string 다시 읽어오기");
+            _eventString.SaveEvent();
+        }
+        _debugResultDataList = new(_eventString.ResultData.Keys);
+
         _eventManager = EventManager.Instance;
         _myStudents = StudentManager.Instance.MyStudents;
         _currentStudentNum = 0;
@@ -135,6 +148,11 @@ public class EventController : MonoBehaviour
                         ResultCalculator();
                     }
                     break;
+                default:
+                    {
+                        Debug.Log($"string Table에 없음");
+                    }
+                    break;
             }
         }
         else
@@ -146,6 +164,8 @@ public class EventController : MonoBehaviour
     public void OnClickChoice(int choiceNum)
     {
         var resultDic = _eventString.ResultData;
+        
+
         string selectedResultId = "";
 
         switch (choiceNum)
@@ -172,10 +192,13 @@ public class EventController : MonoBehaviour
         //Debug.Log($"선택지 id : {selectedResultId}");
 
         //resultData에서 nextId값 받아오기
+        
+
         if (resultDic.TryGetValue(selectedResultId, out var value))
         {
             for (int i = 0; i < value.Count; i++)
             {
+                Debug.Log($"{_myStudents[_currentStudentNum].PersonalityData.personality} == {value[i].matchPersonalityId}");
                 //코어성격타입 조건 체크
                 if (_myStudents[_currentStudentNum].PersonalityData.personality == value[i].matchPersonalityId)
                 {
@@ -187,6 +210,7 @@ public class EventController : MonoBehaviour
                 }
                 else
                 {
+                    Debug.Log($"{selectedResultId}");
                     Debug.Log($"해당 성격을 가진 이벤트 없음");
                     Debug.Log($"선수 번호가 맞지 않음");
                 }
@@ -201,6 +225,11 @@ public class EventController : MonoBehaviour
         else
         {
             Debug.Log($"선택지 이후 대사 불러오기 실패..");
+            Debug.Log($"selectedResultId : {selectedResultId}");
+            foreach (var key in resultDic.Keys)
+            {
+                Debug.Log($"resultDic key : {key}");
+            }
         }
     }
 
@@ -220,6 +249,8 @@ public class EventController : MonoBehaviour
         }
         else
         {
+            _currentStudentNum++;
+            //다음 학생으로
             Debug.Log($"다음 이벤트 시작");
             StartEvent();
         }
@@ -281,8 +312,7 @@ public class EventController : MonoBehaviour
                 return;
             }
         }
-        _currentStudentNum++;
-        //다음 학생으로
+        
     }
 
     public void ScreenPlayLanguage()
