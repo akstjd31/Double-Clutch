@@ -19,13 +19,90 @@ public class ResultState : IState
         MatchState matchState = Object.FindFirstObjectByType<MatchState>();
         MatchUIManager uiManager = Object.FindFirstObjectByType<MatchUIManager>();
         MatchEngine matchEngine = Object.FindFirstObjectByType<MatchEngine>();
+        HeadlessMatchSimulator headlessSim = Object.FindFirstObjectByType<HeadlessMatchSimulator>();
 
         if (matchState == null || uiManager == null || matchEngine == null)
         {
             Debug.LogError("[ResultState] MatchState, matchEngine 또는 MatchUIManager를 찾을 수 없습니다.");
             return;
         }
-        int currentMatchId = 1; // 임시 매치 ID (라운드 번호)
+        int currentMatchId = 1; // 기본값 (리그가 진행 중이 아닐 경우 대비)
+        var currentLeague = LeagueManager.Instance.CurrentLeague;
+        string myTeamId = StudentManager.TEAM_ID;
+
+        // 리그 마스터 및 보상 데이터 보관용 변수
+        League_MasterData? masterData = null;
+        League_RewardData? rewardData = null;
+
+        if (currentLeague != null && !currentLeague.isFinished)
+        {
+            // 인덱스는 0부터 시작하므로 +1 처리 (1라운드, 2라운드...)
+            currentMatchId = currentLeague.currentRoundIndex + 1;
+            masterData = LeagueDataManager.Instance.GetMasterDataById(currentLeague.leagueId);
+
+            if (masterData != null)
+            {
+                // 리그 보상 데이터 가져오기
+                rewardData = LeagueDataManager.Instance.GetLeagueRewardDataById(masterData.Value.leagueRewardId);
+            }
+
+            // 유저 경기 결과 기록
+            var myMatch = currentLeague.matchRecords.Find(m =>
+                m.roundIndex == currentLeague.currentRoundIndex &&
+                (m.homeTeamId == myTeamId || m.awayTeamId == myTeamId));
+
+            if (myMatch != null && !myMatch.isPlayed)
+            {
+                // 대진표 상에서 내가 홈인지 어웨이인지 판별
+                bool amIHomeInLeague = (myMatch.homeTeamId == myTeamId);
+
+                // 시뮬레이터(유저가 Home)의 점수를 대진표 위치에 맞게 재배치
+                int reportHomeScore = amIHomeInLeague ? matchState.HomeTeam.Score : matchState.AwayTeam.Score;
+                int reportAwayScore = amIHomeInLeague ? matchState.AwayTeam.Score : matchState.HomeTeam.Score;
+
+                LeagueManager.Instance.CompleteMatch(myMatch, reportHomeScore, reportAwayScore);
+            }
+
+            // NPC 경기 백그라운드 연산 진행
+            if (headlessSim != null && masterData != null)
+            {
+                var unplayedMatches = currentLeague.matchRecords.FindAll(m =>
+                    m.roundIndex == currentLeague.currentRoundIndex && !m.isPlayed);
+
+                string levelId = masterData.Value.leagueLevelId;
+
+                foreach (var match in unplayedMatches)
+                {
+                    if (match.specialNote == "BYE")
+                    {
+                        LeagueManager.Instance.CompleteMatch(match, 1, 0, "BYE");
+                        continue;
+                    }
+
+                    // NPC 팀 생성
+                    Team homeData = LeagueTeamManager.Instance.GetTeamById(match.homeTeamId);
+                    Team awayData = LeagueTeamManager.Instance.GetTeamById(match.awayTeamId);
+
+                    MatchTeam npcHome = EnemyTeamFactory.Instance.ConvertToTeam(TeamSide.Home, homeData);
+                    MatchTeam npcAway = EnemyTeamFactory.Instance.ConvertToTeam(TeamSide.Away, awayData);
+
+                    // 시뮬레이터로 결과 도출 후 기록
+                    if (npcHome != null && npcAway != null)
+                    {
+                        var result = headlessSim.SimulateNPCMatch(npcHome, npcAway);
+                        LeagueManager.Instance.CompleteMatch(match, result.homeScore, result.awayScore);
+                    }
+                }
+            }
+            else
+            {
+                Debug.LogError("[ResultState] HeadlessMatchSimulator를 찾을 수 없어 NPC 경기를 진행할 수 없습니다.");
+            }
+
+            // 라운드 종료 처리 (다음 라운드 대진표 생성 또는 리그 종료 처리 됨)
+            LeagueManager.Instance.EndRound();
+        }
+
         // 리그 보관소에 현재 경기 기록 저장 
         if (LeagueRecordManager.Instance != null)
         {
@@ -36,7 +113,7 @@ public class ResultState : IState
         // 경기 결과 및 기본 보상 산정
         bool isWin = matchState.HomeTeam.Score > matchState.AwayTeam.Score;
 
-        // 추후 LeagueManager 구현 시 League_RewardDataReader에서 받아올 값들 (임시로 Swiss_01 값 적용)
+        // 실제 보상 데이터가 없으면 기본값 세팅 (에러 방지)
         int rewardGoldEach = 100;           // 승리 시 경기당 지원금
         float rewardGoldMultiplier = 0.3f;  // 패배 시 지원금 배율
         
@@ -49,7 +126,6 @@ public class ResultState : IState
         // 인프라 보너스 산정
         float infraBonusPercent = 0f;
 
-        // 추후 InfraManager 구현 시 프런트(RewardGoldBonus)의 infraEffectValue 값을 가져와 적용
         if (InfraManager.Instance != null)
             infraBonusPercent = InfraManager.Instance.GetInfraEffectValueByEffectType(infraEffectType.RewardGoldBonus);
 
@@ -93,6 +169,24 @@ public class ResultState : IState
         float totalMultiplier = 1f + infraBonusPercent + passiveBonusPercent;
         int finalRewardAmount = Mathf.RoundToInt(baseGold * totalMultiplier);
 
+
+        if (currentLeague != null && currentLeague.isFinished && rewardData != null)
+        {
+            // 순위표에서 내 팀 찾기
+            var myStanding = currentLeague.standings.Find(s => s.teamId == myTeamId);
+
+            // 내가 1등(우승)이라면
+            if (myStanding != null && myStanding.rank == 1)
+            {
+                // 우승 상금을 최종 획득 골드에 합산
+                finalRewardAmount += rewardData.Value.rewardGoldWin;
+
+                // 우승 명성 지급
+                _gm.SetHonor(_gm.SaveData.honor + rewardData.Value.rewardFameWin);
+                Debug.Log($"[리그 우승!] 상금 {rewardData.Value.rewardGoldWin}G 및 명성 {rewardData.Value.rewardFameWin} 획득!");
+            }
+        }
+
         // 지원금 획득 (GameManager 안에서 Save까지 자동 진행됨)
         _gm.SetMoney(_gm.SaveData.money + finalRewardAmount);
 
@@ -130,6 +224,11 @@ public class ResultState : IState
     public void Update() { }
     public void GoToLobby()
     {
+        if (LeagueManager.Instance.CurrentLeague != null && LeagueManager.Instance.CurrentLeague.isFinished)
+        {
+            ApplyLeagueEndConditionDrop(LeagueManager.Instance.CurrentLeague.currentRoundIndex + 1);
+        }
+
         // 껍데기 데이터 저장
         var data = new StudentSaveData();
         SaveLoadManager.Instance.Save<StudentSaveData>(FilePath.MY_STUDENT_MATCHING_PATH, data);
@@ -148,7 +247,6 @@ public class ResultState : IState
         string name = manager.GetString(nameKey[0]) + manager.GetString(nameKey[1]) + manager.GetString(nameKey[2]);
         return name;
     }
-    // 추후 LeagueManager 등에서 "리그 전체 일정이 완전히 끝났을 때" 1회 호출할 함수
     public void ApplyLeagueEndConditionDrop(int totalRounds)
     {
         // 중복 방지를 위한 HashSet

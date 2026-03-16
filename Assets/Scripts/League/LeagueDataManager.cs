@@ -348,4 +348,23 @@ public class LeagueDataManager : Singleton<LeagueDataManager>
             default: return 0f;
         }
     }
+    /// <summary>
+    /// 리그 보상 ID로 보상 데이터 조회
+    /// </summary>
+    public League_RewardData? GetLeagueRewardDataById(string rewardId)
+    {
+        if (_leagueFactory == null) return null;
+        if (string.IsNullOrEmpty(rewardId)) return null;
+
+        var dataList = _leagueFactory.GetRewardDataList();
+        if (dataList == null) return null;
+
+        foreach (var data in dataList)
+        {
+            if (data.leagueRewardId == rewardId)
+                return data;
+        }
+
+        return null;
+    }
 }

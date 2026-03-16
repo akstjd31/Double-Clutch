@@ -36,6 +36,24 @@ public class MatchSimState : IState
             return;
         }
 
+        string myTeamId = StudentManager.TEAM_ID;
+        string opponentTeamId = "Team_DOM_01"; // 리그 데이터가 없을 때를 대비한 기본값
+
+        var currentLeague = LeagueManager.Instance.CurrentLeague;
+        if (currentLeague != null)
+        {
+            // 현재 라운드의 내 매치 기록 찾기
+            var myMatch = currentLeague.matchRecords.Find(m =>
+                m.roundIndex == currentLeague.currentRoundIndex &&
+                (m.homeTeamId == myTeamId || m.awayTeamId == myTeamId));
+
+            if (myMatch != null)
+            {
+                // 내가 홈이면 어웨이가 적, 내가 어웨이면 홈이 적
+                opponentTeamId = myMatch.homeTeamId == myTeamId ? myMatch.awayTeamId : myMatch.homeTeamId;
+            }
+        }
+
         // 저장된 '출전 명단' 5명씩을 가져옵니다.
         MatchTeam homeTeam = EnemyTeamFactory.Instance.ConvertToTeam(TeamSide.Home, LeagueTeamManager.Instance.GetTeamById("id")); //이부분 실제 경기하는 팀들로 받아와야 함!!!!!!!
         MatchTeam awayTeam = EnemyTeamFactory.Instance.ConvertToTeam(TeamSide.Away, LeagueTeamManager.Instance.GetTeamById("id"));

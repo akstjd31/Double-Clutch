@@ -52,18 +52,37 @@ public class FightingPower : MonoBehaviour
         }
 
         _rivalTotalFightingPower = 0;
-        
+
         // 현 week ID 행에 저장된 league ID를 받아온다.
         // var leagueId = CalendarManager.Instance.GetCurrentLeagueId();
+        string opponentTeamId = "Team_DOM_01"; // 리그 데이터가 없을 때를 대비한 기본값 
+        var currentLeague = LeagueManager.Instance.CurrentLeague;
+
+        if (currentLeague != null)
+        {
+            string myTeamId = StudentManager.TEAM_ID;
+
+            // 현재 라운드의 내 매치 기록 찾기
+            var myMatch = currentLeague.matchRecords.Find(m =>
+                m.roundIndex == currentLeague.currentRoundIndex &&
+                (m.homeTeamId == myTeamId || m.awayTeamId == myTeamId));
+
+            if (myMatch != null)
+            {
+                // 내가 홈이면 어웨이가 적, 내가 어웨이면 홈이 적
+                opponentTeamId = myMatch.homeTeamId == myTeamId ? myMatch.awayTeamId : myMatch.homeTeamId;
+            }
+        }
+
         MatchTeam homeTeam = EnemyTeamFactory.Instance.ConvertToTeam(TeamSide.Home, StudentManager.Instance.CurrentTeam);
-        MatchTeam generatedAwayTeam = EnemyTeamFactory.Instance.ConvertToTeam(TeamSide.Away, LeagueTeamManager.Instance.GetTeamById("임시 아이디")); //이부분 실제 상대팀으로 바꿔줘야 함!!!!!
-        
+        MatchTeam generatedAwayTeam = EnemyTeamFactory.Instance.ConvertToTeam(TeamSide.Away, LeagueTeamManager.Instance.GetTeamById(opponentTeamId));
+
         if (generatedAwayTeam == null)
         {
-            Debug.LogError("?? ?? ???? ????!");
+            Debug.LogError("적 팀 생성 실패");
             return;
         }
-        Debug.Log($"[???? ???] ???? 1?? ???? 2???? ????: {generatedAwayTeam.Roster[0].GetStat(MatchStatType.TwoPoint)}");
+        Debug.Log($"[생성 확인] 상대 1번 선수 2점슛 스탯: {generatedAwayTeam.Roster[0].GetStat(MatchStatType.TwoPoint)}");
 
         if (_rivalMatchingStudentList != null && _rivalMatchingStudentList.Count > 0)
         {
