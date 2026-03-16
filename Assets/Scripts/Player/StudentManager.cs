@@ -51,6 +51,8 @@ public class StudentManager : Singleton<StudentManager>
         {
             _currentTeam.SetMember(i, players[i]);
         }        
+
+        Debug.Log("팀 생성 완료!");
     }
 
 
@@ -146,4 +148,6 @@ public class StudentManager : Singleton<StudentManager>
         base.OnApplicationQuit();
         SaveGame();
     }
+
+    public StudentFactory GetFactory() => _studentFactory;
 }
