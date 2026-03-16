@@ -12,6 +12,7 @@ public class MainUI : MonoBehaviour
             _startButton.onClick.AddListener(OnClickGameStart);
     }
 
+
     private void OnDisable()
     {
         if (_startButton != null)

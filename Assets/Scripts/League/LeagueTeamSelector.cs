@@ -51,7 +51,7 @@ public class LeagueTeamSelector
             // 이 과정에서 이미 플레이어는 상위 팀에 포함되어 있기 때문에 따로 플레이어 부분의 ID 추가 처리는 안함.
             for (int i = 0; i < rule.priorityTeamCount; i++)
             {
-                var prevData = LeagueDataManager.Instance.LoadLeague(rule.prioritySourceLeagueId);
+                var prevData = LeagueDataManager.Instance.LoadLeague();
                 if (prevData == null)
                 {
                     Debug.LogError("이전 리그의 데이터가 없습니다!");

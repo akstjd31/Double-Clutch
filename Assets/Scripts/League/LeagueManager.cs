@@ -8,10 +8,11 @@ using System.Collections.Generic;
 public class LeagueManager : Singleton<LeagueManager>
 {
     public const string PLAYER_TEAM_ID = "Player_Team";                // 플레이어 팀임을 구분짓는 스트링 키
+    private LeagueDataManager _leagueDataMgr;
     private ILeagueRankingCalculator _rankingCalculator;            // 순위 계산
     private ILeaguePairingGenerator _swissPairingGenerator;         // 스위스
     private ILeaguePairingGenerator _tournamentPairingGenerator;    // 토너먼트
-    private LeagueSaveData _currentLeague;
+    [SerializeField] private LeagueSaveData _currentLeague;
     public LeagueSaveData CurrentLeague => _currentLeague;
 
     protected override void Awake()
@@ -20,6 +21,12 @@ public class LeagueManager : Singleton<LeagueManager>
         _rankingCalculator = new LeagueRankingCalculator();
         _swissPairingGenerator = new SwissPairingGenerator();
         _tournamentPairingGenerator = new TournamentPairingGenerator();
+        _leagueDataMgr = this.GetComponent<LeagueDataManager>();
+    }
+
+    private void Start()
+    {
+        LoadLeague();
     }
 
     // 리그 시작
@@ -33,9 +40,22 @@ public class LeagueManager : Singleton<LeagueManager>
     }
     
     // 해당 리그 ID에 해당되는 데이터 캐싱 (전에 미리 데이터를 채워놔서 있다는 가정임)
-    public void LoadLeague(string leagueId)
+    public void LoadLeague()
     {
-        _currentLeague = LeagueDataManager.Instance.LoadLeague(leagueId);
+        if (_leagueDataMgr == null) return;
+        _currentLeague = _leagueDataMgr.LoadLeague();
+    }
+
+    public string GetOpponentTeamId(List<LeagueMatchRecord> records)
+    {
+        if (records == null) return null;
+        foreach (var record in records)
+        {
+            if (record.homeTeamId.Equals(PLAYER_TEAM_ID))
+                return record.awayTeamId;
+        }
+
+        return null;
     }
 
     // 경기 마무리에 따른 처리 (토너먼트 처리, 순위 갱신, 저장)
