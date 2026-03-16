@@ -109,7 +109,7 @@ public class Event_ChoiceDataReaderEditor : Editor
         // 3) 아무것도 못 찾으면 0~(안전하게) 500까지 시도 (최후의 안전장치)
         // 시트가 작으면 이걸로도 통과함
         var fallback = new List<int>();
-        for (int i = 0; i < 1000; i++) fallback.Add(i);
+        for (int i = 0; i < 1600; i++) fallback.Add(i);
         return fallback;
     }
 

@@ -53,9 +53,10 @@ public class FightingPower : MonoBehaviour
 
         _rivalTotalFightingPower = 0;
         
-        // Çö week ID Çà¿¡ ÀúÀåµÈ league ID¸¦ ¹Ş¾Æ¿Â´Ù.
+        // í˜„ week ID í–‰ì— ì €ì¥ëœ league IDë¥¼ ë°›ì•„ì˜¨ë‹¤.
         // var leagueId = CalendarManager.Instance.GetCurrentLeagueId();
-        MatchTeam generatedAwayTeam = EnemyTeamFactory.Instance.CreateEnemyTeam("Team_DOM_03", "Test");
+        MatchTeam homeTeam = EnemyTeamFactory.Instance.ConvertToTeam(TeamSide.Home, StudentManager.Instance.CurrentTeam);
+        MatchTeam generatedAwayTeam = EnemyTeamFactory.Instance.ConvertToTeam(TeamSide.Away, LeagueTeamManager.Instance.GetTeamById("ì„ì‹œ ì•„ì´ë””")); //ì´ë¶€ë¶„ ì‹¤ì œ ìƒëŒ€íŒ€ìœ¼ë¡œ ë°”ê¿”ì¤˜ì•¼ í•¨!!!!!
         
         if (generatedAwayTeam == null)
         {
@@ -131,11 +132,11 @@ public class FightingPower : MonoBehaviour
     {
         // CalendarManager.Instance.NextTurn();
 
-        // [µğ¹ö±×] GameManager·Î ³Ñ±â±â Á÷Àü¿¡ ½ºÅÈÀÌ »ì¾ÆÀÖ´ÂÁö È®ÀÎ
+        // [ë””ë²„ê·¸] GameManagerë¡œ ë„˜ê¸°ê¸° ì§ì „ì— ìŠ¤íƒ¯ì´ ì‚´ì•„ìˆëŠ”ì§€ í™•ì¸
         if (MyMatchingStudentList != null && MyMatchingStudentList.Count > 0)
         {
             var testStd = MyMatchingStudentList[0];
-            Debug.Log($"<color=yellow>[¾À ÀüÈ¯ Á÷Àü È®ÀÎ]</color> {testStd.Name} ¼±¼ö¸¦ ½Ã¹Ä·¹ÀÌÅÍ·Î º¸³À´Ï´Ù! ÇöÀç 2Á¡½¸ ½ºÅÈ: {testStd.GetCurrentStat(potential.Stat2pt)}");
+            Debug.Log($"<color=yellow>[ì”¬ ì „í™˜ ì§ì „ í™•ì¸]</color> {testStd.Name} ì„ ìˆ˜ë¥¼ ì‹œë®¬ë ˆì´í„°ë¡œ ë³´ëƒ…ë‹ˆë‹¤! í˜„ì¬ 2ì ìŠ› ìŠ¤íƒ¯: {testStd.GetCurrentStat(potential.Stat2pt)}");
         }
 
         GameManager.Instance.LoadMatchSceneWithData("Test_Simul", MyMatchingStudentList, RivalMatchingStudentList);

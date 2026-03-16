@@ -5,6 +5,7 @@ using System;
 public struct League_LevelData
 {
     public string leagueLevelId;
+    public teamTier playerTeamTier;       // 새로 생김
     public bool isRivalTraitApplied;
     public bool isRivalPassiveApplied;
     public int minPotential;
@@ -17,9 +18,10 @@ public struct League_LevelData
     public float weightPotentialTierSS;
     public float weightPotentialTierSSS;
 
-    public League_LevelData(string leagueLvId, bool isRivalTA, bool isRivalPA, int minP, int maxP, float wPT_D, float wPT_C, float wPT_B, float wPT_A, float wPT_S, float wPT_SS, float wPT_SSS)
+    public League_LevelData(string leagueLvId, teamTier playerTeamTier, bool isRivalTA, bool isRivalPA, int minP, int maxP, float wPT_D, float wPT_C, float wPT_B, float wPT_A, float wPT_S, float wPT_SS, float wPT_SSS)
     {
         leagueLevelId = leagueLvId;
+        this.playerTeamTier = playerTeamTier;
         isRivalTraitApplied = isRivalTA;
         isRivalPassiveApplied = isRivalPA;
         minPotential = minP;
