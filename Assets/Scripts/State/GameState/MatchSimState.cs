@@ -55,8 +55,8 @@ public class MatchSimState : IState
         }
 
         // 저장된 '출전 명단' 5명씩을 가져옵니다.
-        MatchTeam homeTeam = EnemyTeamFactory.Instance.ConvertToTeam(TeamSide.Home, LeagueTeamManager.Instance.GetTeamById("id")); //이부분 실제 경기하는 팀들로 받아와야 함!!!!!!!
-        MatchTeam awayTeam = EnemyTeamFactory.Instance.ConvertToTeam(TeamSide.Away, LeagueTeamManager.Instance.GetTeamById("id"));
+        MatchTeam homeTeam = EnemyTeamFactory.Instance.ConvertToTeam(TeamSide.Home, StudentManager.Instance.CurrentTeam); 
+        MatchTeam awayTeam = EnemyTeamFactory.Instance.ConvertToTeam(TeamSide.Away, LeagueTeamManager.Instance.GetTeamById(opponentTeamId));
 
         // 초기화 및 시작
         _state.InitializeMatch(homeTeam, awayTeam);
