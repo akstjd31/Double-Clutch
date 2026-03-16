@@ -74,9 +74,8 @@ public class StudentFactory : MonoBehaviour
     public Student MakeRivalStudentSkeleton(nation nation) //종족, 비주얼, 포지션 추가 설정 요구.
     {
         Student newStudent = new Student();
-
-        newStudent.SetStat(GetRandomStats(newStudent.Grade));
         newStudent.SetGrade(GetRivalRandomGrade());
+        newStudent.SetStat(GetRandomStats(newStudent.Grade));
         newStudent.SetPersonality(GetRandomPersonality());
         newStudent.SetTrait(GetRandomTrait());
         string[] name = GetRandomName(nation);
