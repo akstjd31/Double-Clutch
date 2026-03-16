@@ -19,7 +19,25 @@ public class LeagueTeamManager : Singleton<LeagueTeamManager>
 
     public Team GetTeamById(string teamId)
     {
-        return _currentTeamDict[teamId];
+        // 딕셔너리에 해당 팀이 존재하면 안전하게 꺼내서 반환
+        if (_currentTeamDict.TryGetValue(teamId, out Team team))
+        {
+            return team;
+        }
+
+        // 만약 리그 추첨에서 떨어졌거나 하드코딩으로 인해 팀을 찾을 수 없다면?
+        Debug.LogWarning($"[LeagueTeamManager] '{teamId}' 팀이 현재 참가 명단에 없습니다! 게임 튕김을 방지하기 위해 임의의 NPC 팀을 반환합니다.");
+
+        // 참가 중인 팀 리스트를 뒤져서, 유저 팀이 아닌 첫 번째 NPC 팀을 대신 던져줍니다.
+        foreach (var fallbackTeam in _currentLeagueTeamList)
+        {
+            if (fallbackTeam.TeamId != StudentManager.TEAM_ID)
+            {
+                return fallbackTeam;
+            }
+        }
+
+        return null; // 최악의 경우 (리그에 NPC가 아예 0명일 때)
     }
 
     public List<Team> GetAllTeams()

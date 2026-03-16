@@ -25,7 +25,14 @@ public class EnemyTeamFactory : MonoBehaviour
 
     public MatchTeam ConvertToTeam(TeamSide side, Team team)
     {
-        MatchTeam matchTeam = new MatchTeam(side, team.TeamNameKey, team.Team_ArchetypeData.Value.teamArchetypeId);
+        string archetypeId = team.Team_ArchetypeData.HasValue ? team.Team_ArchetypeData.Value.teamArchetypeId : string.Empty;
+
+        // 팀 이름이 혹시 비어있으면 임시 이름 부여
+        string teamName = string.IsNullOrEmpty(team.TeamNameKey) ?
+                          GameManager.Instance.SaveData.schoolName :
+                          StringManager.Instance.GetString(team.TeamNameKey);
+
+        MatchTeam matchTeam = new MatchTeam(side, teamName, archetypeId);
 
         // 용병이나 적군을 위한 임시 ID 시작 번호
         int startId = side == TeamSide.Home ? 10000 : 20000;
@@ -33,6 +40,8 @@ public class EnemyTeamFactory : MonoBehaviour
 
         for (int i = 0; i < members.Length; i++)
         {
+            if (members[i] == null) continue;
+
             Position finalPos = members[i].MatchPosition != Position.None ? members[i].MatchPosition : members[i].Position;
 
             // 정식 학생(ID 0 이상)이면 고유 ID 사용, 용병(ID -1)이나 적군이면 임시 ID 부여
