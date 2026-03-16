@@ -56,8 +56,10 @@ public class Team
     {
         _teamId = teamId;
         _isPlayable = isPlayable;
-
-        _teamNameKey = "Player";
+        if (IsPlayable)
+        {
+            _teamNameKey = GameManager.Instance.SaveData.schoolName;
+        }        
     }
     
     public void ClearMembers()
