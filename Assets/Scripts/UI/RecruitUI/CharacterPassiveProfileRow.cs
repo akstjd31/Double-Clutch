@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 
 public class CharacterPassiveProfileRow : MonoBehaviour, IPointerUpHandler, IPointerDownHandler
 {
-    const string DEFAULT_TEXT = "∫ÒæÓ ¿÷¿Ω";
+    const string DEFAULT_TEXT = "ÎπÑÏñ¥ ÏûàÏùå";
     Player_PassiveData _data;
     bool _isEmpty = true;
     [SerializeField] TextMeshProUGUI _passiveText;
@@ -37,7 +37,7 @@ public class CharacterPassiveProfileRow : MonoBehaviour, IPointerUpHandler, IPoi
     public void SetPassiveText()
     {
         if (_isEmpty) return;
-        _passiveText.text = StringManager.Instance.GetString(_data.skillName);
+        StringManager.Instance.GetString(_data.skillName, _passiveText);
     }
 
     public void OnPointerUp(PointerEventData eventData)

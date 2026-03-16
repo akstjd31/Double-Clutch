@@ -15,6 +15,8 @@ public class StringManager : Singleton<StringManager>
 {
     public static event Action OnLanguageChanged;
 
+    private Dictionary<TMP_Text, TMP_FontAsset> _originalFonts = new Dictionary<TMP_Text, TMP_FontAsset>();
+
     Language _language;
     public Language CurrentLanguage => _language;
 
@@ -95,5 +97,19 @@ public class StringManager : Singleton<StringManager>
             Debug.LogWarning($"stringKey [{key}]가 stringTable에 없습니다.");
             return key;
         }
+    }
+
+    public string GetString(string key, TMP_Text target)
+    {
+        // 처음 호출 시 원본 폰트 저장
+        if (!_originalFonts.ContainsKey(target))
+            _originalFonts[target] = target.font;
+
+        string text = GetString(key);
+        target.text = text;
+
+        var font = GetFont();
+        target.font = font != null ? font : _originalFonts[target]; // null이면 원본 복원
+        return text;
     }
 }

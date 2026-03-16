@@ -38,9 +38,9 @@ public class TrainingBox : MonoBehaviour
     private void Refresh()
     {
         if (_command == null) return;
-        _trainingName.text = StringManager.Instance.GetString(_command.GetNameKey());
-        _trainingDesc.text = StringManager.Instance.GetString(_command.GetDescKey());
-        _trainingcost.text = StringManager.Instance.GetString(_command.GetCost().ToString() + "G");
+        StringManager.Instance.GetString(_command.GetNameKey(), _trainingName);
+        StringManager.Instance.GetString(_command.GetDescKey(), _trainingDesc);
+        StringManager.Instance.GetString(_command.GetCost().ToString() + "G", _trainingcost);
     }
 
     public void SetStudent(Student target)
