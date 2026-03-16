@@ -23,7 +23,7 @@ public class LeagueSaveData : SaveBase
 /// 참가 팀 정보
 /// </summary>
 [Serializable]
-public class LeagueTeamEntry
+public class LeagueTeamEntry : SaveBase
 {
     public string teamId;
     public bool isPlayerTeam;
@@ -34,7 +34,7 @@ public class LeagueTeamEntry
 /// 경기 기록
 /// </summary>
 [Serializable]
-public class LeagueMatchRecord
+public class LeagueMatchRecord : SaveBase
 {
     public int roundIndex;      // 라운드 번호
     public string homeTeamId;   // 우리 ID
@@ -52,7 +52,7 @@ public class LeagueMatchRecord
 /// 순위용 데이터
 /// </summary>
 [Serializable]
-public class LeagueStandingData
+public class LeagueStandingData : SaveBase
 {
     public string teamId;   // 팀 ID
     public int rank;        // 순위
