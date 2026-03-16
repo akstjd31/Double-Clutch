@@ -76,7 +76,7 @@ public class LeagueTeamManager : Singleton<LeagueTeamManager>
 
     //모든 라이벌 팀의 레벨보정 잠재력 재설정(라이벌 스탯 결정 시기에 호출)
     // + 플레이어 팀의 티어 재설정
-    public void RefreshAllRivalStats(string leagueLevelId) 
+    public void RefreshAllRivalStats(string leagueLevelId, bool isPassiveOn) 
     {
         foreach (var team in _allTeamDict.Values)
         {
@@ -89,8 +89,8 @@ public class LeagueTeamManager : Singleton<LeagueTeamManager>
             for (int i = 0; i < 5; i++)
             {
                 teamStats[i] = GetRivalStatsByLevel(leagueLevelId, team);
-            }
-            team.UpdateTeamStats(teamStats);
+            }            
+            team.UpdateTeamStats(teamStats, isPassiveOn);
         }
         League_LevelData levelData = LeagueDataManager.Instance.GetLeagueLevelDataById(leagueLevelId).Value;
         //StudentManager.Instance.CurrentTeam.SetTier(levelData.playerTeamTier);
