@@ -27,16 +27,22 @@ public class EventUI : MonoBehaviour
 
     //bool _isFirstText = true;
     int _textTurn;
+    Color dim;
+
+    private void Start()
+    {
+        dim = new Color(0.6f, 0.6f, 0.6f);
+    }
 
     private void OnEnable()
     {
         //_isFirstText = true;
-        _textTurn = 1;
+        _textTurn = 0;
         TextInit();
         ImageInit();
     }
 
-    public void UpdateText(string name, string scriptText, string speakDirection)
+    public void UpdateText(string name, string scriptText, string speakDirection, bool isNameTagOn)
     {
         TextBubbleScript textBubbleScript;
         GameObject textBubble;
@@ -50,8 +56,11 @@ public class EventUI : MonoBehaviour
         }
 
         //리스트의 말풍선, 스크립트 가져오기
-        textBubble = _bubbleList[_textTurn - 1];
+        textBubble = _bubbleList[_textTurn];
         textBubbleScript = textBubble.GetComponent<TextBubbleScript>();
+        var nameTag = textBubble.transform.GetChild(0).gameObject;
+
+        nameTag.SetActive(isNameTagOn);
 
         //맨 앞으로 이동시킨 뒤 활성화
         textBubble.transform.SetSiblingIndex(0);
@@ -59,6 +68,18 @@ public class EventUI : MonoBehaviour
 
         textBubbleScript.NameText.text = name;
         textBubbleScript.PrintText.text = scriptText;
+
+        if(_textTurn > 0)
+        {
+            //이전 말풍선 어둡게 처리
+            var beforeBubble = _bubbleList[_textTurn-1].gameObject.GetComponent<Image>();
+            var beforenameTag = beforeBubble.transform.GetChild(0).gameObject.GetComponent<Image>(); ;
+            var continueIcon = beforeBubble.transform.GetChild(2).gameObject.GetComponent<Image>(); ;
+
+            beforenameTag.color = dim;
+            beforeBubble.color = dim;
+            continueIcon.color = dim;
+        }
 
         UpdateImage(speakDirection);
         _textTurn++;
@@ -94,8 +115,6 @@ public class EventUI : MonoBehaviour
 
     public void ImageInit()
     {
-        Color dim = new Color(0.6f, 0.6f, 0.6f);
-
         //색 초기화
         for (int i = 0; i < _characterImage.Length; i++)
         {
@@ -110,10 +129,18 @@ public class EventUI : MonoBehaviour
     public void TextInit()
     {
         //텍스트 비우기
-        _textTurn = 1;
+        _textTurn = 0;
         for (int i = 0; i < _bubbleList.Count; i++)
         {
             _bubbleList[i].SetActive(false);
+            //색 초기화
+            var beforeBubble = _bubbleList[i].GetComponent<Image>();
+            var beforenameTag = beforeBubble.transform.GetChild(0).gameObject.GetComponent<Image>();
+            var continueIcon = beforeBubble.transform.GetChild(2).gameObject.GetComponent<Image>(); ;
+
+            beforeBubble.color = Color.white;
+            beforenameTag.color = Color.white;
+            continueIcon.color = Color.white;
         }
     }
 

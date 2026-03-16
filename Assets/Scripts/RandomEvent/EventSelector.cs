@@ -8,6 +8,7 @@ public class EventSelector : MonoBehaviour
 
     //2. 이벤트 순서 결정 - 매번 새로 작성해야 함.
     private Queue<string> _screenplayIdList = new();
+    private Queue<int> _studentidQueue = new();
     [Header("이벤트 순서")]
     [SerializeField] private List<string> _debugList_screenplayIdList;
 
@@ -16,6 +17,7 @@ public class EventSelector : MonoBehaviour
     private Dictionary<int, List<RandomEvent>> _candidateDictionary;
 
     public Queue<string> ScreenplayIdList => _screenplayIdList;
+    public Queue<int> StudentidQueue => _studentidQueue;
 
     private void OnEnable()
     {
@@ -35,6 +37,7 @@ public class EventSelector : MonoBehaviour
         List<RandomEvent> events = new List<RandomEvent>();
         var data = _dataModelReader.DataList;
         _screenplayIdList.Clear();
+        _studentidQueue.Clear();
 
 
         //학생들 전체 검사
@@ -56,31 +59,20 @@ public class EventSelector : MonoBehaviour
 
             Debug.Log($"events {events.Count}");
 
-            //Debug.Log($"------[2차 후보]------");
-            //foreach (var n in events)
-            //{
-            //    Debug.Log($"{i} - {n.EventId}");
-            //}
-            //Debug.Log($"----------------------");
-
             //우선순위가 같은 이벤트가 2개 이상이라면 그 중에 하나만 뽑기
             //Q. 우선순위가 같은 세개의 이벤트 중에 하나를 뽑았는데 뽑힌 이벤트가 발생확률이 낮으면 아무 이벤트도 발생하지 않을 수 있나?
             if (events.Count > 1)
             {
                 int random = Random.Range(0, events.Count);
-                //Debug.Log($"------[결과]------");
-                //Debug.Log($"이벤트 리스트에 추가 {events[random].EventId}");
-                //Debug.Log($"----------------------");
                 PersonalityEvent(_myStudents[i], events[random]);
+                _studentidQueue.Enqueue(_myStudents[i].StudentId);
             }
             else if (events.Count == 1)
             {
                 //발생확률 체크
                 //이벤트발생 리스트에 넣기.
                 PersonalityEvent(_myStudents[i], events[0]);
-                //Debug.Log($"------[결과]------");
-                //Debug.Log($"후보 추가 {events[0].EventId}");
-                //Debug.Log($"----------------------");
+                _studentidQueue.Enqueue(_myStudents[i].StudentId);
             }
         }
         _debugList_screenplayIdList = new List<string>(_screenplayIdList);
