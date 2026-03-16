@@ -15,6 +15,8 @@ public class StringManager : Singleton<StringManager>
 {
     public static event Action OnLanguageChanged;
 
+    private Dictionary<TMP_Text, TMP_FontAsset> _originalFonts = new Dictionary<TMP_Text, TMP_FontAsset>();
+
     Language _language;
     public Language CurrentLanguage => _language;
 
@@ -96,4 +98,35 @@ public class StringManager : Singleton<StringManager>
             return key;
         }
     }
+
+    public string GetString(string key, TMP_Text target)
+    {
+        // 처음 호출 시 원본 폰트 저장
+        if (!_originalFonts.ContainsKey(target))
+            _originalFonts[target] = target.font;
+
+        string text = GetString(key);
+        target.text = text;
+
+        if (!_fontLockedTexts.Contains(target))
+        {
+            var font = GetFont();
+            target.font = font != null ? font : _originalFonts[target];
+        }
+        return text;
+    }
+    public void ApplyFont(TMP_Text target)
+    {
+        if (_fontLockedTexts.Contains(target)) return;
+        if (!_originalFonts.ContainsKey(target))
+            _originalFonts[target] = target.font;
+        var font = GetFont();
+        target.font = font != null ? font : _originalFonts[target];
+    }
+
+    private static HashSet<TMP_Text> _fontLockedTexts = new HashSet<TMP_Text>();
+
+    public static void RegisterFontLock(TMP_Text text) => _fontLockedTexts.Add(text);
+    public static void UnregisterFontLock(TMP_Text text) => _fontLockedTexts.Remove(text);
+
 }

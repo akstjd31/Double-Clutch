@@ -37,7 +37,7 @@ public class PassiveProfileBox : MonoBehaviour, IPointerUpHandler, IPointerDownH
     public void SetPassiveText()
     {
         if (_isEmpty) return;
-        _passiveText.text = StringManager.Instance.GetString(_data.skillName);
+        StringManager.Instance.GetString(_data.skillName, _passiveText);
     }
 
     public void OnPointerUp(PointerEventData eventData)

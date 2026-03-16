@@ -16,13 +16,23 @@ public class EventController : MonoBehaviour
 
     [Header("순서")]
     [SerializeField] int _currentStudentNum;
+    private Queue<int> _studentTurnQueue;
+
+    [Header("학생 순서")]
+    [SerializeField] private List<int> _debugList_studentidList;
+
 
     [SerializeField] private List<Student> _myStudents;
 
+    [Header("resultData Dic List")]
+    [SerializeField] private List<string> _debugResultDataList;
+
     [SerializeField] private int _nextId;
+
+
     //현재 진행중인 이벤트 아이디
     private string _eventId;
-    private string _currentStudentName = "";
+    private string _currentSpeakerName = "";
     private Event_ResultData _selectedResultData;
 
     private Dictionary<string, string> _stringTable;
@@ -35,15 +45,29 @@ public class EventController : MonoBehaviour
     {
         _eventManager = EventManager.Instance;
         _myStudents = StudentManager.Instance.MyStudents;
-        _currentStudentNum = 0;
+
+        _eventManager.LoadGame();
+
+        _eventString.Init();
+        if (_eventString.ResultData.Count < 1)
+        {
+            Debug.Log($"string 다시 읽어오기");
+            _eventString.SaveEvent();
+        }
+        _debugResultDataList = new(_eventString.ResultData.Keys);
 
         _eventManager.CharacterEvent();
         _eventManager.CreateList();
         _eventSelector.EventSelect();
 
+        _studentTurnQueue = _eventSelector.StudentidQueue;
+        _debugList_studentidList = new List<int>(_studentTurnQueue);
+
+        //이벤트가 0개 이상이면 이벤트 실행
         Debug.Log($"ScreenplayIdList : {_eventSelector.ScreenplayIdList.Count}개");
         if (_eventSelector.ScreenplayIdList.Count > 0)
         {
+            _currentStudentNum = _studentTurnQueue.Dequeue();
             _eventPanel.SetActive(true);
             StartEvent();
         }
@@ -56,6 +80,8 @@ public class EventController : MonoBehaviour
     public void StartEvent()
     {
         Debug.Log($"랜덤이벤트 시작");
+
+        
 
         if (_eventSelector.ScreenplayIdList.Count < 1)
         {
@@ -72,30 +98,52 @@ public class EventController : MonoBehaviour
         Debug.Log($"이번 스크립트 : {_eventId}, 학생 {_currentStudentNum}의 이벤트");
         if (!_eventManager.EventScript.TryGetValue(_eventId, out var Dic))
         {
-            _currentStudentNum++;
+            _currentStudentNum = _studentTurnQueue.Dequeue();
             Debug.LogWarning($"스크립트 없음 : {_eventId}, 다음 학생 {_currentStudentNum}");
             StartEvent();
             return;
         }
 
 
-        StringManager manager = StringManager.Instance;
-        string nameSet =
-            manager.GetString(_myStudents[_currentStudentNum].Name[0]) +
-            manager.GetString(_myStudents[_currentStudentNum].Name[1]) +
-            manager.GetString(_myStudents[_currentStudentNum].Name[2]);
-        _currentStudentName = nameSet;
-
+        
         _screenPlayDic = Dic;
         _nextId = _screenPlayDic[1].currentId;
         Debug.Log($"시작 이벤트 id : {_screenPlayDic[1].scriptId}");
+
         OnClickContinue();
     }
    
+    
+    private void ReadName()
+    {
+        StringManager manager = StringManager.Instance;
+        Debug.Log($"시트 이름 : {_screenPlayDic[_nextId].playerName}");
+        if (_screenPlayDic[_nextId].playerName == "{TName}")
+        {
+            string nameSet =
+                        manager.GetString(_myStudents[_currentStudentNum].Name[0]) +
+                        manager.GetString(_myStudents[_currentStudentNum].Name[1]) +
+                        manager.GetString(_myStudents[_currentStudentNum].Name[2]);
+            _currentSpeakerName = nameSet;
+        }
+        else if (_screenPlayDic[_nextId].playerName == "{ME}")
+        {
+            _currentSpeakerName = GameManager.Instance.SaveData.coachName;
+        }
+        else
+        {
+            _currentSpeakerName = "";
+        }
+    }
+
 
     public void OnClickContinue()
     {
         string script = "대사 불러오기 실패";
+
+        ReadName();
+
+        Debug.Log($"스피커 이름 : {_currentSpeakerName}");
 
         ScreenPlayLanguage();
 
@@ -110,7 +158,7 @@ public class EventController : MonoBehaviour
                     {
                         //언어에 따라서 다른 딕셔너리 선택해야 함
                         script = _stringTable[_screenPlayDic[_nextId].textKey];
-                        _eventUI.UpdateText(_currentStudentName, script, _screenPlayDic[_nextId].speakDirection);
+                        _eventUI.UpdateText(_currentSpeakerName, script, _screenPlayDic[_nextId].speakDirection, false);
 
                         choice[0] = _stringTable[_screenPlayDic[_nextId].choice01];
                         choice[1] = _stringTable[_screenPlayDic[_nextId].choice02];
@@ -121,7 +169,7 @@ public class EventController : MonoBehaviour
                 case textType.Desc:
                     {
                         script = _stringTable[_screenPlayDic[_nextId].textKey];
-                        _eventUI.UpdateText(_currentStudentName, script, _screenPlayDic[_nextId].speakDirection);
+                        _eventUI.UpdateText(_currentSpeakerName, script, _screenPlayDic[_nextId].speakDirection, false);
                         _nextId++;
                     }
                     break;
@@ -129,10 +177,15 @@ public class EventController : MonoBehaviour
                     {
                         //텍스트는 출력, 버튼 누르면 결과 팝업 떠야 함.
                         script = _eventString.KoScreenPlay[_screenPlayDic[_nextId].textKey];
-                        _eventUI.UpdateText(_currentStudentName, script, _screenPlayDic[_nextId].speakDirection);
+                        _eventUI.UpdateText(_currentSpeakerName, script, _screenPlayDic[_nextId].speakDirection, true);
 
                         //캐릭터 능력치 변동 적용
                         ResultCalculator();
+                    }
+                    break;
+                default:
+                    {
+                        Debug.Log($"string Table에 없음");
                     }
                     break;
             }
@@ -146,6 +199,8 @@ public class EventController : MonoBehaviour
     public void OnClickChoice(int choiceNum)
     {
         var resultDic = _eventString.ResultData;
+        
+
         string selectedResultId = "";
 
         switch (choiceNum)
@@ -172,10 +227,13 @@ public class EventController : MonoBehaviour
         //Debug.Log($"선택지 id : {selectedResultId}");
 
         //resultData에서 nextId값 받아오기
+        
+
         if (resultDic.TryGetValue(selectedResultId, out var value))
         {
             for (int i = 0; i < value.Count; i++)
             {
+                Debug.Log($"{_myStudents[_currentStudentNum].PersonalityData.personality} == {value[i].matchPersonalityId}");
                 //코어성격타입 조건 체크
                 if (_myStudents[_currentStudentNum].PersonalityData.personality == value[i].matchPersonalityId)
                 {
@@ -187,6 +245,7 @@ public class EventController : MonoBehaviour
                 }
                 else
                 {
+                    Debug.Log($"{selectedResultId}");
                     Debug.Log($"해당 성격을 가진 이벤트 없음");
                     Debug.Log($"선수 번호가 맞지 않음");
                 }
@@ -194,13 +253,18 @@ public class EventController : MonoBehaviour
 
             Debug.Log($"다음 대사 ID : {_nextId}");
             //선택한 대사 미리 넣어두기
-            _eventUI.UpdateText("", choice[choiceNum], "");
+            _eventUI.UpdateText(_currentSpeakerName, choice[choiceNum], "", false);
             //다음 대사로 넘어 가기
             OnClickContinue();
         }
         else
         {
             Debug.Log($"선택지 이후 대사 불러오기 실패..");
+            Debug.Log($"selectedResultId : {selectedResultId}");
+            foreach (var key in resultDic.Keys)
+            {
+                Debug.Log($"resultDic key : {key}");
+            }
         }
     }
 
@@ -216,13 +280,15 @@ public class EventController : MonoBehaviour
         {
             Debug.Log($"패널 닫기");
             _eventPanel.SetActive(false);
-            //_eventManager.SaveGame();
         }
         else
         {
+            _currentStudentNum = _studentTurnQueue.Dequeue();
+            //다음 학생으로
             Debug.Log($"다음 이벤트 시작");
             StartEvent();
         }
+        _eventManager.SaveGame();
     }
 
     
@@ -281,8 +347,7 @@ public class EventController : MonoBehaviour
                 return;
             }
         }
-        _currentStudentNum++;
-        //다음 학생으로
+        
     }
 
     public void ScreenPlayLanguage()

@@ -30,7 +30,7 @@ public class PassiveExplainBox : MonoBehaviour
         if (_skillNameText == null || _skillDescText == null) return;
         if (StringManager.Instance == null) return;
 
-        _skillNameText.text = StringManager.Instance.GetString(_data.Value.skillName ?? "");
+        StringManager.Instance.GetString(_data.Value.skillName ?? "", _skillNameText);
         string originDesc = StringManager.Instance.GetString(_data.Value.passiveDesc ?? "");
         string valueString = string.Empty;
 
@@ -55,5 +55,7 @@ public class PassiveExplainBox : MonoBehaviour
 
         string formattedDesc = originDesc.Replace("{effectValue}", valueString);
         _skillDescText.text = formattedDesc;
+        var font = StringManager.Instance.GetFont();
+        if (font != null) _skillDescText.font = font;
     }
 }

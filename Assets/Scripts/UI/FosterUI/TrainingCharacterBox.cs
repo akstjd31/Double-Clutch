@@ -33,6 +33,7 @@ public class TrainingCharacterBox : MonoBehaviour
         _button.onClick.RemoveAllListeners();
         _button.onClick.AddListener(() => StudentUIManager.Instance.OnTrainingCharacterBoxClick(_student));
         _nameText.text = name;
+        manager.ApplyFont(_nameText);
         SetStudentState();
     }
 
@@ -46,13 +47,13 @@ public class TrainingCharacterBox : MonoBehaviour
         {
             cv.alpha = 1f;
             _stateBackGround.color = Color.green;
-            _stateText.text = StringManager.Instance.GetString(_student.CurrentTraining.GetNameKey());
+            StringManager.Instance.GetString(_student.CurrentTraining.GetNameKey(), _stateText);
             return;
         }
         if (_student.State == StudentState.OverWorked)
         {
             cv.alpha = 1f;
-            _stateText.text = "∞˙∑Œ";
+            _stateText.text = "Í≥ºÎ°ú";
             _stateBackGround.color = Color.yellow;
             return;
         }
@@ -60,7 +61,7 @@ public class TrainingCharacterBox : MonoBehaviour
         {
             cv.alpha = 1f;
             _stateBackGround.color = Color.red;
-            _stateText.text = "∫ŒªÛ";
+            _stateText.text = "Î∂ÄÏÉÅ";
             return;
         }
     }

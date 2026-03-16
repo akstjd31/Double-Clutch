@@ -37,7 +37,7 @@ public class CharacterProfilePopUp : MonoBehaviour
         _characterBox.Init(_student);
         _attack.text = _student.Attack.ToString();
         _defense.text = _student.Defense.ToString();
-        _personality.text = StringManager.Instance.GetString(_student.PersonalityData.personalityName);
+        StringManager.Instance.GetString(_student.PersonalityData.personalityName, _personality);
         _passive1.Init(_student.Passive[0]);
         _passive2.Init();
         _passive3.Init();

@@ -45,6 +45,7 @@ public class ProfileDetailsPanel : MonoBehaviour
         _attackText.text = student.Attack.ToString();
         _defenseText.text = student.Defense.ToString();
         _conditionSlider.value = NormalizeConditionValue(student.Condition);
+        manager.ApplyFont(_nameText);
         SetPassiveText(student);
         Refresh();        
     }
@@ -52,8 +53,8 @@ public class ProfileDetailsPanel : MonoBehaviour
     private void Refresh()
     {
         if (_student == null) return;
-        _personalityText.text = StringManager.Instance.GetString(_student.PersonalityData.personalityName);
-        _traitText.text = StringManager.Instance.GetString(_student.TraitData.traitName);
+        StringManager.Instance.GetString(_student.PersonalityData.personalityName, _personalityText);
+        StringManager.Instance.GetString(_student.TraitData.traitName, _traitText);
         MakeTriangle();
     }
 

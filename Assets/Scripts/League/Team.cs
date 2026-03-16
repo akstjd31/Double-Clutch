@@ -80,14 +80,17 @@ public class Team
     }
 
     
-    public void UpdateTeamStats(List<Stat>[] newStatsForMembers)
+    public void UpdateTeamStats(List<Stat>[] newStatsForMembers, bool isPassiveOn)
     {
         for (int i = 0; i < _members.Length; i++)
         {
             _members[i].SetStat(newStatsForMembers[i]);
+            if (isPassiveOn)
+            {
+                _members[i].OnPassiveUpdated();
+            }
         }
-    }
-    
+    }    
 
     public void SetupPositionLineup()
     {

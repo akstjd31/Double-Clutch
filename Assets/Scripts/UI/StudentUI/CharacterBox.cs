@@ -16,7 +16,8 @@ public class CharacterBox : MonoBehaviour
     {        
         StringManager manager = StringManager.Instance;
         string name = manager.GetString(student.Name[0]) + manager.GetString(student.Name[1]) + manager.GetString(student.Name[2]);
-        _nameText.text = name;                     
+        _nameText.text = name;
+        manager.ApplyFont(_nameText);
         _target = student;                
     }
 
