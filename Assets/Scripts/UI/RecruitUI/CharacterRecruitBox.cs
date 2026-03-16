@@ -39,6 +39,7 @@ public class CharacterRecruitBox : MonoBehaviour
         _student = target;
         SetText();
         SetButton();
+        _characterImage.sprite = SpriteManager.Instance.GetSprite(target.VisualData.portraitResource);
     }
 
     public Student GetStudent()
@@ -52,7 +53,7 @@ public class CharacterRecruitBox : MonoBehaviour
         string name = manager.GetString(_student.Name[0]) + manager.GetString(_student.Name[1]) + manager.GetString(_student.Name[2]);
 
         _positionText.text = _student.Position.ToString();
-        _gradeText.text = _student.Grade.ToString() + "ÇĞ³â";
+        _gradeText.text = _student.Grade.ToString() + "í•™ë…„";
         _nameText.text = name;
         _attackText.text = _student.Attack.ToString();
         _defenseText.text = _student.Defense.ToString();
@@ -78,7 +79,7 @@ public class CharacterRecruitBox : MonoBehaviour
         _profileButton.onClick.AddListener(() => StudentUIManager.Instance.OpenProfilePopUp(_student));
     }
 
-    //ÅÍÄ¡ ½Ã ÇÁ·ÎÇÊ ÆË¾÷ µîÀå ±¸Çö
+    //í„°ì¹˜ ì‹œ í”„ë¡œí•„ íŒì—… ë“±ì¥ êµ¬í˜„
     public void OnPointerDown(PointerEventData eventData)
     {
         if (_longPressRoutine != null) StopCoroutine(_longPressRoutine);
@@ -87,7 +88,7 @@ public class CharacterRecruitBox : MonoBehaviour
 
     public void OnPointerUp(PointerEventData eventData)
     {
-        // 2ÃÊ°¡ µÇ±â Àü¿¡ ¼ÕÀ» ¶¼¸é ÆË¾÷ÀÌ ¶ßÁö ¾Êµµ·Ï Å¸ÀÌ¸Ó¸¸ Áß´Ü
+        // 2ì´ˆê°€ ë˜ê¸° ì „ì— ì†ì„ ë–¼ë©´ íŒì—…ì´ ëœ¨ì§€ ì•Šë„ë¡ íƒ€ì´ë¨¸ë§Œ ì¤‘ë‹¨
         if (_longPressRoutine != null)
         {
             StopCoroutine(_longPressRoutine);
@@ -101,7 +102,7 @@ public class CharacterRecruitBox : MonoBehaviour
 
         if (_student != null)
         {
-            StudentUIManager.Instance.OpenProfilePopUp(_student);// ÆË¾÷ÀÌ ¶¹À¸¹Ç·Î ÂüÁ¶¸¦ ºñ¿öÁÜ (¼ÕÀ» ¶ÃÀ» ¶§ StopCoroutine Áßº¹ È£Ãâ ¹æÁö)
+            StudentUIManager.Instance.OpenProfilePopUp(_student);// íŒì—…ì´ ë–´ìœ¼ë¯€ë¡œ ì°¸ì¡°ë¥¼ ë¹„ì›Œì¤Œ (ì†ì„ ë—ì„ ë•Œ StopCoroutine ì¤‘ë³µ í˜¸ì¶œ ë°©ì§€)
             _longPressRoutine = null;
         }
     }
