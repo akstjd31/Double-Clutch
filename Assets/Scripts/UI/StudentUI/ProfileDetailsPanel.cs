@@ -45,6 +45,7 @@ public class ProfileDetailsPanel : MonoBehaviour
         _attackText.text = student.Attack.ToString();
         _defenseText.text = student.Defense.ToString();
         _conditionSlider.value = NormalizeConditionValue(student.Condition);
+        manager.ApplyFont(_nameText);
         SetPassiveText(student);
         Refresh();        
     }

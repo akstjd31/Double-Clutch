@@ -33,6 +33,7 @@ public class TrainingCharacterBox : MonoBehaviour
         _button.onClick.RemoveAllListeners();
         _button.onClick.AddListener(() => StudentUIManager.Instance.OnTrainingCharacterBoxClick(_student));
         _nameText.text = name;
+        manager.ApplyFont(_nameText);
         SetStudentState();
     }
 

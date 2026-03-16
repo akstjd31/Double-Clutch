@@ -108,8 +108,25 @@ public class StringManager : Singleton<StringManager>
         string text = GetString(key);
         target.text = text;
 
-        var font = GetFont();
-        target.font = font != null ? font : _originalFonts[target]; // null이면 원본 복원
+        if (!_fontLockedTexts.Contains(target))
+        {
+            var font = GetFont();
+            target.font = font != null ? font : _originalFonts[target];
+        }
         return text;
     }
+    public void ApplyFont(TMP_Text target)
+    {
+        if (_fontLockedTexts.Contains(target)) return;
+        if (!_originalFonts.ContainsKey(target))
+            _originalFonts[target] = target.font;
+        var font = GetFont();
+        target.font = font != null ? font : _originalFonts[target];
+    }
+
+    private static HashSet<TMP_Text> _fontLockedTexts = new HashSet<TMP_Text>();
+
+    public static void RegisterFontLock(TMP_Text text) => _fontLockedTexts.Add(text);
+    public static void UnregisterFontLock(TMP_Text text) => _fontLockedTexts.Remove(text);
+
 }

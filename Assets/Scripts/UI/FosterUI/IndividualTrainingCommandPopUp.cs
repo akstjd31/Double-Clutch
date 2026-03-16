@@ -22,21 +22,21 @@ public class IndividualTrainingCommandPopUp : MonoBehaviour
     {
         _selectedStudent = student;
 
-        // ±âÁ¸ »ç¿ëÇÏ´ø ¹Ú½º ¹İ³³
+        // ê¸°ì¡´ ì‚¬ìš©í•˜ë˜ ë°•ìŠ¤ ë°˜ë‚©
         foreach (var box in _boxList)
         {
             _pool.Release(box);
         }
         _boxList.Clear();
 
-        // °³ÀÎ ÈÆ·Ã µ¥ÀÌÅÍ »ı¼º ¹× ¹èÄ¡
+        // ê°œì¸ í›ˆë ¨ ë°ì´í„° ìƒì„± ë° ë°°ì¹˜
         var trainingDB = FosterManager.Instance.IndividualTrainingDB.DataList;
         for (int i = 0; i < trainingDB.Count; i++)
         {
             CreateBox(new IndividualTraining(trainingDB[i]));
         }
 
-        // °³ÀÎ ÈŞ½Ä µ¥ÀÌÅÍ »ı¼º ¹× ¹èÄ¡
+        // ê°œì¸ íœ´ì‹ ë°ì´í„° ìƒì„± ë° ë°°ì¹˜
         var restDB = FosterManager.Instance.IndividualRestDB.DataList;
         for (int i = 0; i < restDB.Count; i++)
         {
@@ -45,23 +45,24 @@ public class IndividualTrainingCommandPopUp : MonoBehaviour
 
         StringManager manager = StringManager.Instance;
         string name = manager.GetString(_selectedStudent.Name[0]) + manager.GetString(_selectedStudent.Name[1]) + manager.GetString(_selectedStudent.Name[2]);
-        _nameText.text = name + " À°¼º Ä¿¸Çµå";
+        _nameText.text = name + " ìœ¡ì„± ì»¤ë§¨ë“œ";
+        manager.ApplyFont(_nameText);
     }
 
     private void CreateBox(ITraining command)
     {
-        // Ç®¿¡¼­ ¹Ú½º »ı¼º
+        // í’€ì—ì„œ ë°•ìŠ¤ ìƒì„±
         TrainingBox box = _pool.Get();
         box.transform.SetAsLastSibling();
 
-        // µ¥ÀÌÅÍ ÁÖÀÔ (ÇĞ»ı ¼³Á¤ ÈÄ Init È£Ãâ)
+        // ë°ì´í„° ì£¼ì… (í•™ìƒ ì„¤ì • í›„ Init í˜¸ì¶œ)
         box.Init(command);
         box.SetStudent(_selectedStudent);        
 
         _boxList.Add(box);
     }
         
-    //¼±¼ö °³ÀÎ ÈÆ·Ã ½Ã Æ÷Áö¼Ç º¯°æ ¹öÆ°¿¡ °¢°¢ ¿¬°á
+    //ì„ ìˆ˜ ê°œì¸ í›ˆë ¨ ì‹œ í¬ì§€ì…˜ ë³€ê²½ ë²„íŠ¼ì— ê°ê° ì—°ê²°
     public void OnCClick() => ChangePosition(Position.C);
     public void OnPFClick() => ChangePosition(Position.PF);
     public void OnPGClick() => ChangePosition(Position.PG);
