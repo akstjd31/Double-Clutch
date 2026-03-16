@@ -7,6 +7,7 @@ using System.Collections.Generic;
 /// </summary>
 public class LeagueManager : Singleton<LeagueManager>
 {
+    public const string PLAYER_TEAM = "Player_Team";                // 플레이어 팀임을 구분짓는 스트링 키
     private ILeagueRankingCalculator _rankingCalculator;            // 순위 계산
     private ILeaguePairingGenerator _swissPairingGenerator;         // 스위스
     private ILeaguePairingGenerator _tournamentPairingGenerator;    // 토너먼트
@@ -78,7 +79,7 @@ public class LeagueManager : Singleton<LeagueManager>
             loserEntry.isEliminated = true;
         }
 
-        if (loserTeamId == "Player_Team")
+        if (loserTeamId == PLAYER_TEAM)
         {
             _currentLeague.isPlayerEliminated = true;
         }

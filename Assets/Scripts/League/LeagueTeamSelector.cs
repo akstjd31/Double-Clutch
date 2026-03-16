@@ -3,15 +3,9 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class LeagueTeamSelector : MonoBehaviour
+public class LeagueTeamSelector
 {
-    private LeagueDataManager _leagueMgr;
     private readonly System.Random _random;
-
-    private void Awake()
-    {
-        _leagueMgr = this.GetComponent<LeagueDataManager>();
-    }
 
     public LeagueTeamSelector(int? seed = null)
     {
