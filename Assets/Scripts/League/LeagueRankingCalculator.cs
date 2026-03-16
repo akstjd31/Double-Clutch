@@ -7,7 +7,7 @@ public interface ILeagueRankingCalculator
 }
 
 /// <summary>
-/// 리그 순위 계산기
+/// 리그 순위 계산기 (5.2.2 참고)
 /// </summary>
 public class LeagueRankingCalculator : ILeagueRankingCalculator
 {
@@ -17,10 +17,10 @@ public class LeagueRankingCalculator : ILeagueRankingCalculator
     {
         _tieBreakers = new List<ILeagueTieBreaker>
         {
-            new PointsTieBreaker(),
-            new GoalDiffTieBreaker(),
-            new ScoredTieBreaker(),
-            new WinCountTieBreaker()
+            new WinCountTieBreaker(),
+            // new PointsTieBreaker(),
+            new GoalDiffTieBreaker()
+            // new ScoredTieBreaker(),
         };
     }
 
@@ -84,6 +84,7 @@ public class LeagueRankingCalculator : ILeagueRankingCalculator
 
         var standings = standingMap.Values.ToList();
 
+        // 타이 브레이커에 따른 정렬
         standings.Sort(CompareTeams);
 
         for (int i = 0; i < standings.Count; i++)

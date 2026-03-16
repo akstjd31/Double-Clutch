@@ -7,7 +7,7 @@ using System.Collections.Generic;
 /// </summary>
 public class LeagueManager : Singleton<LeagueManager>
 {
-    public const string PLAYER_TEAM = "Player_Team";                // 플레이어 팀임을 구분짓는 스트링 키
+    public const string PLAYER_TEAM_ID = "Player_Team";                // 플레이어 팀임을 구분짓는 스트링 키
     private ILeagueRankingCalculator _rankingCalculator;            // 순위 계산
     private ILeaguePairingGenerator _swissPairingGenerator;         // 스위스
     private ILeaguePairingGenerator _tournamentPairingGenerator;    // 토너먼트
@@ -79,7 +79,7 @@ public class LeagueManager : Singleton<LeagueManager>
             loserEntry.isEliminated = true;
         }
 
-        if (loserTeamId == PLAYER_TEAM)
+        if (loserTeamId == PLAYER_TEAM_ID)
         {
             _currentLeague.isPlayerEliminated = true;
         }
@@ -115,11 +115,12 @@ public class LeagueManager : Singleton<LeagueManager>
         SaveCurrentLeague();
     }
 
-    // 토너먼트가 끝났는지?
+    // 토너먼트가 끝났는지? (남은 팀 수로 비교)
     private bool CheckTournamentFinished()
     {
         if (_currentLeague == null) return true;
 
+        // 1팀 남으면 끝남 처리
         int aliveCount = 0;
 
         foreach (var team in _currentLeague.teams)
@@ -131,7 +132,7 @@ public class LeagueManager : Singleton<LeagueManager>
         return aliveCount <= 1;
     }
 
-    // 스위스가 끝났는지?
+    // 스위스가 끝났는지? (라운드로 비교)
     private bool CheckSwissFinished()
     {
         if (_currentLeague == null) return true;
@@ -142,7 +143,7 @@ public class LeagueManager : Singleton<LeagueManager>
         return _currentLeague.currentRoundIndex >= masterData.Value.roundCount - 1;
     }
 
-    // 우리 팀이 리그에서 탈락했을 경우
+    // 우리 팀이 리그에서 탈락했을 경우 (시즌 아웃 확인 후 )
     public void OnPlayerEliminated()
     {
         if (_currentLeague == null) return;
@@ -153,8 +154,8 @@ public class LeagueManager : Singleton<LeagueManager>
         // 남은 경기 자동 시뮬레이션
         // SimulateRemainingMatches();
 
-        RecalculateStandings();
-        FinishLeague();
+        // RecalculateStandings();
+        // FinishLeague();
     }
 
     private void RecalculateStandings()
@@ -162,6 +163,7 @@ public class LeagueManager : Singleton<LeagueManager>
         if (_currentLeague == null) return;
 
         _currentLeague.standings = _rankingCalculator.Calculate(_currentLeague);
+
     }
 
     private void FinishLeague()
@@ -171,6 +173,38 @@ public class LeagueManager : Singleton<LeagueManager>
         _currentLeague.isFinished = true;
         RecalculateStandings();
         SaveCurrentLeague();
+
+        // 플레이어 팀이 우승했을 시 보상 처리
+        var firstStanding = _currentLeague.standings[0];
+        if (firstStanding == null)
+        {
+            Debug.LogError("스탠딩 데이터가 없음!");
+            return;
+        }
+
+        // 돈 계산
+        var leagueDataMgr = LeagueDataManager.Instance;
+        if (leagueDataMgr == null) return;
+
+        var calMoney = leagueDataMgr.CalculateLeagueMoney(_currentLeague.leagueId, GetPlayerStandingData());
+
+        var gameMgr = GameManager.Instance;
+        if (gameMgr == null) return;
+
+        gameMgr.SetMoney(gameMgr.SaveData.money + calMoney);
+    }
+
+    private LeagueStandingData GetPlayerStandingData()
+    {
+        if (_currentLeague == null) return null;
+
+        foreach (var standing in _currentLeague.standings)
+        {
+            if (standing.teamId.Equals(PLAYER_TEAM_ID))
+                return standing;
+        }
+
+        return null;
     }
 
     private void SaveCurrentLeague()
@@ -222,7 +256,6 @@ public class LeagueManager : Singleton<LeagueManager>
         if (IsTournament())
         {
             matches = _tournamentPairingGenerator.GenerateRoundMatches(_currentLeague, _currentLeague.currentRoundIndex);
-
         }
         else
         {

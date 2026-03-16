@@ -35,6 +35,46 @@ public class LeagueDataManager : Singleton<LeagueDataManager>
     }
 
     /// <summary>
+    /// 지원금 계산 후 반영
+    /// </summary>
+    public int CalculateLeagueMoney(string leagueId, LeagueStandingData playerStanding)
+    {
+        if (_leagueFactory == null) return 0;
+        if (string.IsNullOrEmpty(leagueId)) return 0;
+
+        var dataList = _leagueFactory.GetRewardDataList();
+        int resultMoney = 0;
+        
+        foreach (var data in dataList)
+        {
+            if (data.leagueRewardId.Equals(leagueId))
+            {
+                // (승리횟수 * rewardGoldEach) + (패배횟수 * rewardGoldEach * rewardGoldMultiplier) + (우승여부 * rewardGoldWin)
+                resultMoney = (playerStanding.win * data.rewardGoldEach) +
+                         (int)(playerStanding.lose * data.rewardGoldEach * data.rewardGoldMultiplier) +
+                         ((playerStanding.rank == 1 ? 1 : 0) * data.rewardGoldWin);
+
+                return resultMoney;
+            }
+        }
+
+        return resultMoney;
+    }
+
+    public int CalculateLeagueFame(string leagueId, LeagueStandingData playerStanding)
+    {
+        if (_leagueFactory == null) return 0;
+        if (string.IsNullOrEmpty(leagueId)) return 0;
+
+        var dataList = _leagueFactory.GetRewardDataList();
+        int resultFame = 0;
+
+        // 선수별 명성 누적값은 선수 데이터가 필요
+
+        return resultFame;
+    }
+
+    /// <summary>
     /// 리그 ID로 리그 마스터 데이터 조회
     /// </summary>
     public League_MasterData? GetMasterDataById(string leagueId)
@@ -128,7 +168,7 @@ public class LeagueDataManager : Singleton<LeagueDataManager>
         var ruleData = rule.Value;
 
         var priorityTeamIds = new List<string>();
-        string playerTeamId = LeagueManager.PLAYER_TEAM;
+        string playerTeamId = LeagueManager.PLAYER_TEAM_ID;
 
         int seed = ruleData.weekId;
         var selector = new LeagueTeamSelector(seed);

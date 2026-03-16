@@ -7,15 +7,15 @@ public interface ILeagueTieBreaker
 }
 
 // 승점 우선
-public class PointsTieBreaker : ILeagueTieBreaker
-{
-    public int Compare(LeagueStandingData a, LeagueStandingData b)
-    {
-        return b.points.CompareTo(a.points);
-    }
-}
+// public class PointsTieBreaker : ILeagueTieBreaker
+// {
+//     public int Compare(LeagueStandingData a, LeagueStandingData b)
+//     {
+//         return b.points.CompareTo(a.points);
+//     }
+// }
 
-// 득실차 우선
+// 2. 득실차 우선
 public class GoalDiffTieBreaker : ILeagueTieBreaker
 {
     public int Compare(LeagueStandingData a, LeagueStandingData b)
@@ -25,15 +25,15 @@ public class GoalDiffTieBreaker : ILeagueTieBreaker
 }
 
 // 다득점 우선
-public class ScoredTieBreaker : ILeagueTieBreaker
-{
-    public int Compare(LeagueStandingData a, LeagueStandingData b)
-    {
-        return b.scored.CompareTo(a.scored);
-    }
-}
+// public class ScoredTieBreaker : ILeagueTieBreaker
+// {
+//     public int Compare(LeagueStandingData a, LeagueStandingData b)
+//     {
+//         return b.scored.CompareTo(a.scored);
+//     }
+// }
 
-// 승수 우선
+// 1. 승수 우선
 public class WinCountTieBreaker : ILeagueTieBreaker
 {
     public int Compare(LeagueStandingData a, LeagueStandingData b)

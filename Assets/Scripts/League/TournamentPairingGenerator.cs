@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
 
+/// <summary>
+/// 토너먼트 (5.2 참고)
+/// </summary>
 public class TournamentPairingGenerator : ILeaguePairingGenerator
 {
     public List<LeagueMatchRecord> GenerateRoundMatches(LeagueSaveData saveData, int roundIndex)
@@ -14,7 +17,7 @@ public class TournamentPairingGenerator : ILeaguePairingGenerator
         if (aliveTeams.Count < 2)
             return result;
 
-        // 첫 라운드는 초기 시드 순서 / 이후 라운드는 생존 팀 순서
+        // 첫 라운드는 초기 시드 순서 / 이후 라운드는 생존 팀 순서 (무조건 2의 n승)
         for (int i = 0; i < aliveTeams.Count; i += 2)
         {
             if (i + 1 >= aliveTeams.Count)
