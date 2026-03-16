@@ -1,9 +1,12 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 // 경기 하나의 전체 기록을 담을 통
+[Serializable]
 public class MatchResultRecord
 {
+    public int MatchId; // 딕셔너리의 Key값을 복구하기 위한 변수
     public string HomeTeamName;
     public string AwayTeamName;
     public int HomeScore;
@@ -12,9 +15,19 @@ public class MatchResultRecord
     public List<int> HomePlayerIds = new List<int>(); // 리그 결산때 상태이상체크용
 }
 
+// SaveLoadManager 호환을 위한 데이터 컨테이너 클래스 (SaveBase 상속)
+[Serializable]
+public class LeagueRecordSaveData : SaveBase
+{
+    public List<MatchResultRecord> recordList = new List<MatchResultRecord>();
+}
+
 public class LeagueRecordManager : MonoBehaviour
 {
     public static LeagueRecordManager Instance;
+
+    // 저장용 파일 이름 정의
+    private const string SAVE_FILE = "LeagueRecordSave.json";
 
     // 경기 ID(또는 라운드 번호)를 키값으로 하여 경기 기록을 저장하는 딕셔너리
     private Dictionary<int, MatchResultRecord> _leagueRecords = new Dictionary<int, MatchResultRecord>();
@@ -33,11 +46,18 @@ public class LeagueRecordManager : MonoBehaviour
         }
     }
 
+    private void Start()
+    {
+        // 씬이 로드될 때 저장된 경기 기록 불러오기
+        LoadGame();
+    }
+
     // 경기 종료 시 엔진에서 이 함수를 호출해 기록을 저장합니다.
     public void SaveMatchRecord(int matchId, MatchState state, List<MatchLogData> fullLogs)
     {
         MatchResultRecord record = new MatchResultRecord()
         {
+            MatchId = matchId,
             HomeTeamName = state.HomeTeam.TeamName,
             AwayTeamName = state.AwayTeam.TeamName,
             HomeScore = state.HomeTeam.Score,
@@ -52,6 +72,7 @@ public class LeagueRecordManager : MonoBehaviour
 
         _leagueRecords[matchId] = record;
         Debug.Log($"[LeagueRecordManager] {matchId}번 경기 기록 저장 완료! (총 로그 수: {fullLogs.Count}개)");
+        SaveGame();
     }
 
     // 나중에 지난 경기 로그를 불러올 때 쓸 함수
@@ -69,6 +90,7 @@ public class LeagueRecordManager : MonoBehaviour
     {
         _leagueRecords.Clear();
         Debug.Log("[LeagueRecordManager] 리그가 종료되어 모든 경기 로그가 초기화되었습니다.");
+        SaveGame();
     }
     
     // 특정 경기의 특정 쿼터 로그만 쏙 뽑아서 반환해 주는 함수
@@ -84,5 +106,32 @@ public class LeagueRecordManager : MonoBehaviour
 
         // 기록이 없으면 빈 리스트 반환
         return new List<MatchLogData>();
+    }
+
+    public void SaveGame()
+    {
+        if (SaveLoadManager.Instance == null) return;
+
+        // 딕셔너리는 JsonUtility로 직렬화가 불가능하므로, 리스트로 변환하여 컨테이너에 담음
+        LeagueRecordSaveData saveData = new LeagueRecordSaveData();
+        saveData.recordList = new List<MatchResultRecord>(_leagueRecords.Values);
+
+        SaveLoadManager.Instance.Save(SAVE_FILE, saveData);
+    }
+
+    public void LoadGame()
+    {
+        if (SaveLoadManager.Instance == null) return;
+
+        if (SaveLoadManager.Instance.TryLoad<LeagueRecordSaveData>(SAVE_FILE, out var data))
+        {
+            _leagueRecords.Clear();
+            foreach (var record in data.recordList)
+            {
+                // 리스트의 데이터를 다시 딕셔너리로 복구
+                _leagueRecords[record.MatchId] = record;
+            }
+            Debug.Log($"[LeagueRecordManager] {data.recordList.Count}개의 경기 기록 파일 로드 성공!");
+        }
     }
 }

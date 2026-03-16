@@ -227,7 +227,7 @@ public class MatchEngine : MonoBehaviour
                 DoShoot(_ballHolder, attackTeam, defendTeam, distToHoop, hoopPos, true, attackTactics, defendTactics, true);
             }
 
-            if (action == 0)
+            else if (action == 0)
             {
                 // 슛을 시도했는데 마침 0초가 됨 -> 버저비터 찬스! (마지막 매개변수 true 전달)
                 DoShoot(_ballHolder, attackTeam, defendTeam, distToHoop, hoopPos, true, attackTactics, defendTactics);

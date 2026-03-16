@@ -227,6 +227,10 @@ public class ResultState : IState
         if (LeagueManager.Instance.CurrentLeague != null && LeagueManager.Instance.CurrentLeague.isFinished)
         {
             ApplyLeagueEndConditionDrop(LeagueManager.Instance.CurrentLeague.currentRoundIndex + 1);
+            if (LeagueRecordManager.Instance != null)
+            {
+                LeagueRecordManager.Instance.ClearLeagueRecords();
+            }
         }
 
         // 껍데기 데이터 저장
