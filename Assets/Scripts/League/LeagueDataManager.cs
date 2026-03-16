@@ -14,6 +14,28 @@ public class LeagueDataManager : Singleton<LeagueDataManager>
         base.Awake();
         _leagueFactory = GetComponent<LeagueFactory>();
     }
+    
+    /// <summary>
+    /// 팀 ID가 담긴 리스트들을 해당 테이블에서 찾는 메서드
+    /// </summary>
+    public List<Rival_MasterData> GetRivalDatasByTeamIds(List<string> teamIds)
+    {
+        if (_leagueFactory == null) return null;
+
+        var dataList = _leagueFactory.GetRivalMasterDataList();
+        if (dataList == null) return null;
+
+        var rivalList = new List<Rival_MasterData>();
+        foreach (var data in dataList)
+        {
+            if (teamIds.Contains(data.teamId))
+            {
+                rivalList.Add(data);
+            }
+        }
+
+        return rivalList;
+    }
 
     /// <summary>
     /// weekId에 해당하는 팀 선정 룰 반환
@@ -228,9 +250,34 @@ public class LeagueDataManager : Singleton<LeagueDataManager>
     {
         var saveData = CreateLeagueSaveData(leagueId, rule);
         if (saveData == null) return null;
-
         SaveLeague(saveData);
+
+        var leagueTeamMgr = LeagueTeamManager.Instance;
+        if (leagueTeamMgr == null) return null;
+        leagueTeamMgr.InitDatas(saveData);
+
+        var masterData = GetMasterDataById(leagueId);
+        leagueTeamMgr.RefreshAllRivalStats(masterData.Value.leagueLevelId, IsPassiveApplied(masterData.Value.leagueLevelId));
+
         return saveData;
+    }
+
+
+    /// <summary>
+    /// 리그레벨ID로 패시브 유무 확인하기
+    /// </summary>
+    private bool IsPassiveApplied(string leagueLvId)
+    {
+        if (_leagueFactory == null) return false;
+
+        var dataList = _leagueFactory.GetLevelDataList();
+        foreach (var data in dataList)
+        {
+            if (data.leagueLevelId.Equals(leagueLvId))
+                return data.isRivalPassiveApplied;
+        }
+
+        return false;
     }
 
     /// <summary>
@@ -388,6 +435,7 @@ public class LeagueDataManager : Singleton<LeagueDataManager>
             default: return 0f;
         }
     }
+
     /// <summary>
     /// 리그 보상 ID로 보상 데이터 조회
     /// </summary>
@@ -407,4 +455,6 @@ public class LeagueDataManager : Singleton<LeagueDataManager>
 
         return null;
     }
+    
+    public LeagueFactory GetFactory() => _leagueFactory;
 }
