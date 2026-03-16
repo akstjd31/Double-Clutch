@@ -236,7 +236,7 @@ public class LeagueDataManager : Singleton<LeagueDataManager>
             isFinished = false,
             isPlayerEliminated = false,
             teams = CreateTeamEntries(selectedTeams),
-            matchRecords = CreateMatchRecords(selectedTeams),
+            matchRecords = new List<LeagueMatchRecord>(),
             standings = CreateInitialStandings(selectedTeams)
         };
 

@@ -88,7 +88,7 @@ public class CalendarManager : Singleton<CalendarManager>
         }
 
         // 3. 페이즈 체크
-        // if (!CheckPhaseType(weekId)) return;
+        if (!CheckPhaseType(weekId)) return;
 
         // 4. 종료 컷신 체크
         if (HasExistEndCutscene(weekId))
@@ -198,35 +198,35 @@ public class CalendarManager : Singleton<CalendarManager>
     public bool HasExistStartCutscene(int weekId) => _calReader.DataList[weekId - 1].startCutscene.Equals("");
 
     public bool HasExistEndCutscene(int weekId) => _calReader.DataList[weekId - 1].endCutscene.Equals("");
-    // public bool CheckPhaseType(int weekId)
-    // {
-    //     if (_calReader == null) return false;
+     public bool CheckPhaseType(int weekId)
+     {
+         if (_calReader == null) return false;
 
-    //     switch (_calReader.DataList[weekId].phase)
-    //     {
-    //         case phaseType.League:
-    //             var leagueDataMgr = LeagueDataManager.Instance;
-    //             if (leagueDataMgr == null) return false;
+         switch (_calReader.DataList[weekId - 1].phase)
+         {
+             case phaseType.League:
+                 var leagueDataMgr = LeagueDataManager.Instance;
+                 if (leagueDataMgr == null) return false;
 
-    //             var selectionData = leagueDataMgr.GetTeamSelectionRuleByWeekId(weekId);
-    //             if (selectionData == null) return false;
+                 var selectionData = leagueDataMgr.GetTeamSelectionRuleByWeekId(weekId);
+                 if (selectionData == null) return false;
 
-    //             var teams = LeagueDataManager.Instance.CreateLeagueTeams(selectionData);
-    //             if (teams == null) return false;
+                 var teams = LeagueDataManager.Instance.CreateLeagueTeams(selectionData);
+                 if (teams == null) return false;
 
-    //             for (int i = 0; i < teams.Count; i++)
-    //             {
-    //                 Debug.Log($"{i}번째 팀: {teams[i]}");
-    //             }
+                 for (int i = 0; i < teams.Count; i++)
+                 {
+                     Debug.Log($"{i}번째 팀: {teams[i]}");
+                 }
 
-    //             LeagueDataManager.Instance.CreateAndSaveLeague(GetLeagueIdByWeekId(weekId), selectionData);
-    //             return true;
+                 LeagueDataManager.Instance.CreateAndSaveLeague(GetLeagueIdByWeekId(weekId), selectionData);
+                 return true;
 
-    //         // 경우에 따라 작성 (이벤트일떄) phaseType.Event ..
-    //     }
+             // 경우에 따라 작성 (이벤트일떄) phaseType.Event ..
+         }
 
-    //     return IsEndPhase;
-    // }
+         return IsEndPhase;
+     }
 
     public Calendar GetCalendar() => this.calendar;
     public phaseType CurrentGetPhaseType()
@@ -277,6 +277,6 @@ public class CalendarManager : Singleton<CalendarManager>
     public string GetLeagueIdByWeekId(int weekId)
     {
         if (_calReader == null) return null;
-        return _calReader.DataList[weekId].leagueId;
+        return _calReader.DataList[weekId - 1].leagueId;
     }
 }

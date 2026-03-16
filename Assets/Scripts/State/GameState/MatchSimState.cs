@@ -54,6 +54,38 @@ public class MatchSimState : IState
             }
         }
 
+        // 혹시라도 상대팀 ID를 못 찾으면 임시로 아무 팀이나 잡도록 합니다.
+        if (string.IsNullOrEmpty(opponentTeamId))
+        {
+            Debug.LogWarning($"<color=red>[FightingPower]</color> 이번 주차 대진표에서 상대팀 ID를 찾지 못했습니다! 임시로 'Team_DOM_01'을 할당합니다.");
+            opponentTeamId = "Team_DOM_01";
+        }
+
+        // _homeRoster를 이용해 Home 팀 생성
+        Team tempHomeTeam = new Team(myTeamId, true);
+        if (_homeRoster != null && _homeRoster.Count > 0)
+        {
+            for (int i = 0; i < _homeRoster.Count; i++)
+                tempHomeTeam.SetMember(i, _homeRoster[i]);
+        }
+        else
+        {
+            tempHomeTeam = StudentManager.Instance.CurrentTeam; // 로스터가 없으면 예비용
+        }
+
+        //_awayRoster를 이용해 Away 팀 생성
+        Team tempAwayTeam = new Team(opponentTeamId, false);
+        if (_awayRoster != null && _awayRoster.Count > 0)
+        {
+            for (int i = 0; i < _awayRoster.Count; i++)
+                tempAwayTeam.SetMember(i, _awayRoster[i]);
+        }
+        else
+        {
+            // 최후의 수단
+            tempAwayTeam = LeagueTeamManager.Instance.GetTeamById(opponentTeamId);
+        }
+
         // 저장된 '출전 명단' 5명씩을 가져옵니다.
         MatchTeam homeTeam = EnemyTeamFactory.Instance.ConvertToTeam(TeamSide.Home, StudentManager.Instance.CurrentTeam); 
         MatchTeam awayTeam = EnemyTeamFactory.Instance.ConvertToTeam(TeamSide.Away, LeagueTeamManager.Instance.GetTeamById(opponentTeamId));
