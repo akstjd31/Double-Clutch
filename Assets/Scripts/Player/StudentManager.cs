@@ -106,7 +106,7 @@ public class StudentManager : Singleton<StudentManager>
     public void SaveGame()
     {
         // 1. ?????? ??????? ??? ??????.
-        StudentSaveData saveData = new StudentSaveData(_idCount, _myStudents);
+        StudentSaveData saveData = new StudentSaveData(_idCount, _myStudents, _currentTeam);
 
         // 2. ??????? ???? ????????.
         if (SaveLoadManager.Instance != null)
