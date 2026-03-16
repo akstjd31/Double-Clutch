@@ -36,6 +36,7 @@ public class Team
     {
         _masterData = master;
         _archetypeData = archetype;
+
         _teamNameKey = master.teamNameKey;
 
         if (!IsPlayable)
@@ -55,6 +56,8 @@ public class Team
     {
         _teamId = teamId;
         _isPlayable = isPlayable;
+
+        _teamNameKey = "Player";
     }
     
     public void ClearMembers()
