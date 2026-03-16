@@ -280,7 +280,7 @@ public class CharacterList : MonoBehaviour
         PlayerPrefs.SetInt(PrefKeys.MATCH_PREP_UI_INDEX, 2);
         _fightingPower.gameObject.SetActive(true);
         _fightingPower.Init();
-        _fightingPower.SaveRivalMachingStudentData();
+        //_fightingPower.SaveRivalMachingStudentData();
         gameObject.SetActive(false);
     }
 
@@ -413,7 +413,7 @@ public class CharacterList : MonoBehaviour
             
         }
 
-        var batchData = new StudentSaveData(MAX_BATCH_COUNT, sList);
+        var batchData = new StudentSaveData(MAX_BATCH_COUNT, sList, StudentManager.Instance.CurrentTeam);
 
         if (SaveLoadManager.Instance == null) return;
         SaveLoadManager.Instance.Save(FilePath.MY_STUDENT_MATCHING_PATH, batchData);

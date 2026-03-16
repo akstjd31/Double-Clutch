@@ -135,17 +135,17 @@ public class FightingPower : MonoBehaviour
         _myFightingPowerText.text = _myTotalFightingPower.ToString();
     }
 
-    public void SaveRivalMachingStudentData()
-    {
-        if (_rivalMatchingStudentList.Count < 1 || _rivalMatchingStudentList == null) return;
+    //public void SaveRivalMachingStudentData()
+    //{
+    //    if (_rivalMatchingStudentList.Count < 1 || _rivalMatchingStudentList == null) return;
 
-        int rivalCnt = _rivalMatchingStudentList.Count;
+    //    int rivalCnt = _rivalMatchingStudentList.Count;
 
-        var rivalData = new StudentSaveData(rivalCnt, _rivalMatchingStudentList);
+    //    var rivalData = new StudentSaveData(rivalCnt, _rivalMatchingStudentList);
 
-        if (SaveLoadManager.Instance == null) return;
-        SaveLoadManager.Instance.Save(FilePath.RIVAL_STUDENT_MATCHING_PATH, rivalData);
-    }
+    //    if (SaveLoadManager.Instance == null) return;
+    //    SaveLoadManager.Instance.Save(FilePath.RIVAL_STUDENT_MATCHING_PATH, rivalData);
+    //}
 
     public void OnClickStartMatch()
     {
