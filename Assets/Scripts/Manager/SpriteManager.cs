@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class SpriteManager : Singleton<SpriteManager>
 {
-    ResourceDataReader _db;
+    [SerializeField] ResourceDataReader _db;
 
     // [ID : 전체경로]를 미리 저장해서 검색 속도를 최적화
     private Dictionary<string, string> _pathIndex = new Dictionary<string, string>();
@@ -11,8 +11,9 @@ public class SpriteManager : Singleton<SpriteManager>
     // 이미 로드된 스프라이트 재사용 (메모리 관리)
     private Dictionary<string, Sprite> _spriteCache = new Dictionary<string, Sprite>();
 
-    private void Start()
+    protected override void Awake()
     {
+        base.Awake();
         InitPathTable();
     }
 
@@ -48,6 +49,10 @@ public class SpriteManager : Singleton<SpriteManager>
     public Sprite GetSprite(string resourceId)
     {
         // 1. 이미 불러온 적이 있는지 확인
+        if (!_spriteCache.ContainsKey(resourceId))
+        {
+            Debug.Log("해당 리소스 키 캐시에 없음");
+        }
         if (_spriteCache.TryGetValue(resourceId, out Sprite cachedSprite))
         {
             return cachedSprite;
