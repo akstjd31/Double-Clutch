@@ -53,7 +53,7 @@ public class CalendarManager : Singleton<CalendarManager>
         if (GameManager.Instance.SaveData == null) return;
 
         int weekId = GameManager.Instance.SaveData.weekId;
-        
+
         var data = _calReader.DataList[weekId - 1];
 
         calendar.month = data.month;
@@ -65,7 +65,7 @@ public class CalendarManager : Singleton<CalendarManager>
     public void NextTurn()
     {
         if (_calReader == null) return;
-        
+
         var gm = GameManager.Instance;
         if (gm == null) return;
 
@@ -159,20 +159,6 @@ public class CalendarManager : Singleton<CalendarManager>
             gm.SetMoney(m + (100 * accSub));
         }
 
-        // 캐싱 데이터 작업이 들어가야 하는 weekId 인지??
-        var selectionData = LeagueDataManager.Instance.GetTeamSelectionRuleByWeekId(weekId);
-        if (selectionData != null)
-        {
-            var teams = LeagueDataManager.Instance.CreateLeagueTeams(selectionData);
-
-            for (int i = 0; i < teams.Count; i++)
-            {
-                Debug.Log($"{i}번째 팀: {teams[i]}");
-            }
-
-            LeagueDataManager.Instance.CreateAndSaveLeague(GetLeagueIdByWeekId(weekId), selectionData);
-        }
-
         gm.SetWeekId(weekId);
 
         // 이벤트 페이즈면서 어떤 날인지 구분하는게 필요함. (ex. 졸업, 영입 등)
@@ -188,7 +174,7 @@ public class CalendarManager : Singleton<CalendarManager>
     public bool IsFundingDay() => calendar.week == 1;
 
     public bool CheckEventDay(int weekId) => _calReader.DataList[weekId - 1].phase.Equals(phaseType.Event);
-   
+
 
     // 일단 컷신 부분은 패스(-)
     public bool HasExistStartCutscene(int weekId) => _calReader.DataList[weekId - 1].startCutscene.Equals("");
@@ -196,19 +182,30 @@ public class CalendarManager : Singleton<CalendarManager>
     public bool HasExistEndCutscene(int weekId) => _calReader.DataList[weekId - 1].endCutscene.Equals("");
     public bool CheckPhaseType(int weekId)
     {
-        // var curPhaseType = _calReader.DataList[weekId].phase;
+        if (_calReader == null) return false;
 
-        // 페이즈 타입에 따른 시스템 시작
-        // switch (curPhaseType)
-        // {
-        //     case phaseType.Training:
+        switch (_calReader.DataList[weekId].phase)
+        {
+            case phaseType.League:
+                var leagueDataMgr = LeagueDataManager.Instance;
+                if (leagueDataMgr == null) return false;
 
-        //         break;
-        //     case phaseType.League:
-        //         break;
-        //     case phaseType.Event:
-        //         break;
-        // }
+                var selectionData = leagueDataMgr.GetTeamSelectionRuleByWeekId(weekId);
+                if (selectionData == null) return false;
+
+                var teams = LeagueDataManager.Instance.CreateLeagueTeams(selectionData);
+                if (teams == null) return false;
+
+                for (int i = 0; i < teams.Count; i++)
+                {
+                    Debug.Log($"{i}번째 팀: {teams[i]}");
+                }
+
+                LeagueDataManager.Instance.CreateAndSaveLeague(GetLeagueIdByWeekId(weekId), selectionData);
+                return true;
+            
+            // 경우에 따라 작성 (이벤트일떄) phaseType.Event ..
+        }
 
         return IsEndPhase;
     }
@@ -238,8 +235,8 @@ public class CalendarManager : Singleton<CalendarManager>
         }
 
         for (int i = start; i < end; i++)
-                descList.Add(_calReader.DataList[i].desc);
-            
+            descList.Add(_calReader.DataList[i].desc);
+
         return descList;
     }
 
@@ -254,7 +251,7 @@ public class CalendarManager : Singleton<CalendarManager>
 
         for (int i = start; i < end; i++)
             descList.Add(_calReader.DataList[i].desc);
-        
+
         return descList;
     }
 

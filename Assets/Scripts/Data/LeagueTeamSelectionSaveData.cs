@@ -49,7 +49,7 @@ public class LeagueMatchRecord : SaveBase
 }
 
 /// <summary>
-/// 순위용 데이터
+/// 최종 순위 (이 데이터는 팀 추출 단계에서 이전 리그의 상위 팀을 가져올 수도 있기 때문에 필요로 하는 데이터임)
 /// </summary>
 [Serializable]
 public class LeagueStandingData : SaveBase
