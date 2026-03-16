@@ -17,12 +17,21 @@ public class LeagueTeamManager : Singleton<LeagueTeamManager>
     //플레이어 팀을 포함한 모든 팀 목록
     List<string> _allTeamIdList = new List<string>();    
     List<Team> _allTeamList = new List<Team>();
-    SerializedDictionary<string, Team> _allTeamDict = new SerializedDictionary<string, Team>();
-    
+    Dictionary<string, Team> _allTeamDict = new Dictionary<string, Team>();    
 
     private void Start()
     {
         InitDatas();
+    }
+
+    public Team GetTeamById(string teamId)
+    {
+        return _allTeamDict[teamId];
+    }
+
+    public List<Team> GetAllTeams()
+    {
+        return _allTeamList;
     }
 
     private void InitDatas() //리스트에 아이디만 채워넣기

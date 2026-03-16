@@ -5,17 +5,17 @@ public class EnemyTeamFactory : MonoBehaviour
 {
     public static EnemyTeamFactory Instance;
 
-    [Header("Data Readers")]
-    [SerializeField] private Rival_MasterDataReader _rivalReader;
-    [SerializeField] private Team_ArchetypeDataReader _archetypeReader;
-    [SerializeField] private League_LevelDataReader _leagueLevelReader;
-    [SerializeField] private Player_SpeciesDataReader _speciesReader;
-    [SerializeField] private Player_NameDataReader _nameReader;
+    //[Header("Data Readers")]
+    //[SerializeField] private Rival_MasterDataReader _rivalReader;
+    //[SerializeField] private Team_ArchetypeDataReader _archetypeReader;
+    //[SerializeField] private League_LevelDataReader _leagueLevelReader;
+    //[SerializeField] private Player_SpeciesDataReader _speciesReader;
+    //[SerializeField] private Player_NameDataReader _nameReader;
 
-    // Àû±º »ı¼º¿¡ ÇÊ¿äÇÑ ¸®´õ 3Á¾
-    [SerializeField] private Player_VisualDataReader _visualReader;
-    [SerializeField] private Player_PassiveDataReader _passiveReader;
-    [SerializeField] private Player_TraitDataReader _traitReader;
+    //// ì êµ° ìƒì„±ì— í•„ìš”í•œ ë¦¬ë” 3ì¢…
+    //[SerializeField] private Player_VisualDataReader _visualReader;
+    //[SerializeField] private Player_PassiveDataReader _passiveReader;
+    //[SerializeField] private Player_TraitDataReader _traitReader;
 
 
     private void Awake()
@@ -23,209 +23,252 @@ public class EnemyTeamFactory : MonoBehaviour
         Instance = this;
     }
 
-    // ¶óÀÌ¹ú ÆÀ ID¿Í ¸®±× ·¹º§ ID¸¦ ¹Ş¾Æ¼­ ¿Ï¼ºµÈ Àû ÆÀÀ» ¹İÈ¯
-    public MatchTeam CreateEnemyTeam(string rivalTeamId, string leagueLevelId)
+    public MatchTeam ConvertToTeam(TeamSide side, Team team)
     {
-        //  °¢ Å×ÀÌºí¿¡¼­ ÀÏÄ¡ÇÏ´Â µ¥ÀÌÅÍ Ã£±â
-        var rivalData = _rivalReader.DataList.Find(x => x.teamId == rivalTeamId);
-        var archetypeData = _archetypeReader.DataList.Find(x => x.teamArchetypeId == rivalData.teamArchetypeId);
-        var levelData = _leagueLevelReader.DataList.Find(x => x.leagueLevelId == leagueLevelId);
+        MatchTeam matchTeam = new MatchTeam(side, team.TeamNameKey, team.Team_ArchetypeData.Value.teamArchetypeId);
 
-        if (string.IsNullOrEmpty(rivalData.teamId) || string.IsNullOrEmpty(archetypeData.teamArchetypeId))
+        // ìš©ë³‘ì´ë‚˜ ì êµ°ì„ ìœ„í•œ ì„ì‹œ ID ì‹œì‘ ë²ˆí˜¸
+        int startId = side == TeamSide.Home ? 10000 : 20000;
+        Student[] members = team.Members;
+
+        for (int i = 0; i < members.Length; i++)
         {
-            Debug.LogError($"Àû±º »ı¼º ½ÇÆĞ! µ¥ÀÌÅÍ¸¦ Ã£À» ¼ö ¾ø½À´Ï´Ù. (Rival:{rivalTeamId} / Level:{leagueLevelId})");
-            return null;
+            Position finalPos = members[i].MatchPosition != Position.None ? members[i].MatchPosition : members[i].Position;
+
+            // ì •ì‹ í•™ìƒ(ID 0 ì´ìƒ)ì´ë©´ ê³ ìœ  ID ì‚¬ìš©, ìš©ë³‘(ID -1)ì´ë‚˜ ì êµ°ì´ë©´ ì„ì‹œ ID ë¶€ì—¬
+            int matchPlayerId = (members[i].StudentId >= 0) ? members[i].StudentId : (startId + i);
+
+            matchTeam.AddPlayer(ConvertStudentToMatchPlayer(members[i], matchPlayerId, finalPos));
         }
 
-        //  ÆÀ Æ¼¾î¿¡ µû¸¥ ÀáÀç·Â(½ºÅÈ) ¹èÀ² ±¸ÇÏ±â
-        float tierWeight = GetTierWeight(rivalData.teamTier, levelData);
+        return matchTeam;
+    }
 
-        //  ±âº» ½ºÅÈ ¹üÀ§ ¼³Á¤ (ÃÖ¼Ò~ÃÖ´ëÄ¡¿¡ Æ¼¾î °¡ÁßÄ¡ °öÇÏ±â)
-        int minStat = Mathf.RoundToInt(levelData.minPotential * tierWeight);
-        int maxStat = Mathf.RoundToInt(levelData.maxPotential * tierWeight);
+    public MatchPlayer ConvertStudentToMatchPlayer(Student s, int id, Position pos)
+    {
+        Dictionary<MatchStatType, int> stats = new Dictionary<MatchStatType, int>();
 
-        // ÆÀ ÀÌ¸§ (StringManager¸¦ °ÅÃÄ¼­ ¹ø¿ªµÈ ÀÌ¸§À» °¡Á®¿È)
-        string teamName = StringManager.Instance != null ? StringManager.Instance.GetString(rivalData.teamNameKey) : rivalData.teamNameKey;
+        stats.Add(MatchStatType.TwoPoint, s.GetCurrentStat(potential.Stat2pt));
+        stats.Add(MatchStatType.ThreePoint, s.GetCurrentStat(potential.Stat3pt));
+        stats.Add(MatchStatType.Pass, s.GetCurrentStat(potential.StatPass));
+        stats.Add(MatchStatType.Steal, s.GetCurrentStat(potential.StatSteal));
+        stats.Add(MatchStatType.Block, s.GetCurrentStat(potential.StatBlock));
+        stats.Add(MatchStatType.Rebound, s.GetCurrentStat(potential.StatRebound));
 
-        // ¾ÆÅ°Å¸ÀÔ ID¸¦ ÆÀ Àü¼ú(TeamColorId)·Î ³Ñ°ÜÁÜ
-        MatchTeam enemyTeam = new MatchTeam(TeamSide.Away, teamName, archetypeData.teamArchetypeId);
+        string actualVisualKey = s.VisualData.playerImageResource;
+        if (string.IsNullOrEmpty(actualVisualKey)) actualVisualKey = "Default_Player_Sprite";
+        MatchPlayer matchPlayer = new MatchPlayer(id, s.Name, pos, stats, actualVisualKey, s.Passive);
+        matchPlayer.TraitId = s.TraitId;
+        return matchPlayer;
+    }
 
-        //  ¾ÆÅ°Å¸ÀÔ¿¡ ¸í½ÃµÈ Æ÷Áö¼Ç ÀÎ¿ø¼ö¸¸Å­ 5¸í ±¸¼º
-        List<Position> teamPositions = new List<Position>()
-        {
-            Position.PG,
-            Position.SG,
-            Position.SF,
-            Position.PF,
-            Position.C
-        };
 
-        //  Á¾Á· ¹èÁ¤ (±âÈ¹¼­ 4.2.2: ÃÖ¼Ò ÀÎ¿ø + °¡ÁßÄ¡ ÃßÃ·)
-        List<speciesType> teamSpecies = GenerateSpeciesList(rivalData);
 
-        //  5¸íÀÇ ¼±¼ö »ı¼º
-        for (int i = 0; i < teamPositions.Count; i++)
-        {
-            Position pos = teamPositions[i];
-            speciesType currentSpecies = teamSpecies[i];
 
-            // ÀÌ¸§ ·ÎÄÃ¶óÀÌÂ¡ (±âÈ¹¼­ 4.2.3)
-            string[] playerName = GenerateRivalName(rivalData.teamsector);
+
+    // ë¼ì´ë²Œ íŒ€ IDì™€ ë¦¬ê·¸ ë ˆë²¨ IDë¥¼ ë°›ì•„ì„œ ì™„ì„±ëœ ì  íŒ€ì„ ë°˜í™˜
+    //public MatchTeam CreateEnemyTeam(string rivalTeamId, string leagueLevelId)
+    //{
+    //    //  ê° í…Œì´ë¸”ì—ì„œ ì¼ì¹˜í•˜ëŠ” ë°ì´í„° ì°¾ê¸°
+    //    var rivalData = _rivalReader.DataList.Find(x => x.teamId == rivalTeamId);
+    //    var archetypeData = _archetypeReader.DataList.Find(x => x.teamArchetypeId == rivalData.teamArchetypeId);
+    //    var levelData = _leagueLevelReader.DataList.Find(x => x.leagueLevelId == leagueLevelId);
+
+    //    if (string.IsNullOrEmpty(rivalData.teamId) || string.IsNullOrEmpty(archetypeData.teamArchetypeId))
+    //    {
+    //        Debug.LogError($"ì êµ° ìƒì„± ì‹¤íŒ¨! ë°ì´í„°ë¥¼ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤. (Rival:{rivalTeamId} / Level:{leagueLevelId})");
+    //        return null;
+    //    }
+
+    //    //  íŒ€ í‹°ì–´ì— ë”°ë¥¸ ì ì¬ë ¥(ìŠ¤íƒ¯) ë°°ìœ¨ êµ¬í•˜ê¸°
+    //    float tierWeight = GetTierWeight(rivalData.teamTier, levelData);
+
+    //    //  ê¸°ë³¸ ìŠ¤íƒ¯ ë²”ìœ„ ì„¤ì • (ìµœì†Œ~ìµœëŒ€ì¹˜ì— í‹°ì–´ ê°€ì¤‘ì¹˜ ê³±í•˜ê¸°)
+    //    int minStat = Mathf.RoundToInt(levelData.minPotential * tierWeight);
+    //    int maxStat = Mathf.RoundToInt(levelData.maxPotential * tierWeight);
+
+    //    // íŒ€ ì´ë¦„ (StringManagerë¥¼ ê±°ì³ì„œ ë²ˆì—­ëœ ì´ë¦„ì„ ê°€ì ¸ì˜´)
+    //    string teamName = StringManager.Instance != null ? StringManager.Instance.GetString(rivalData.teamNameKey) : rivalData.teamNameKey;
+
+    //    // ì•„í‚¤íƒ€ì… IDë¥¼ íŒ€ ì „ìˆ (TeamColorId)ë¡œ ë„˜ê²¨ì¤Œ
+    //    MatchTeam enemyTeam = new MatchTeam(TeamSide.Away, teamName, archetypeData.teamArchetypeId);
+
+    //    //  ì•„í‚¤íƒ€ì…ì— ëª…ì‹œëœ í¬ì§€ì…˜ ì¸ì›ìˆ˜ë§Œí¼ 5ëª… êµ¬ì„±
+    //    List<Position> teamPositions = new List<Position>()
+    //    {
+    //        Position.PG,
+    //        Position.SG,
+    //        Position.SF,
+    //        Position.PF,
+    //        Position.C
+    //    };
+
+    //    //  ì¢…ì¡± ë°°ì • (ê¸°íšì„œ 4.2.2: ìµœì†Œ ì¸ì› + ê°€ì¤‘ì¹˜ ì¶”ì²¨)
+    //    List<speciesType> teamSpecies = GenerateSpeciesList(rivalData);
+
+    //    //  5ëª…ì˜ ì„ ìˆ˜ ìƒì„±
+    //    for (int i = 0; i < teamPositions.Count; i++)
+    //    {
+    //        Position pos = teamPositions[i];
+    //        speciesType currentSpecies = teamSpecies[i];
+
+    //        // ì´ë¦„ ë¡œì»¬ë¼ì´ì§• (ê¸°íšì„œ 4.2.3)
+    //        string[] playerName = GenerateRivalName(rivalData.teamsector);
             
-            var stats = new Dictionary<MatchStatType, int>();
-            stats[MatchStatType.TwoPoint] = Mathf.RoundToInt(Random.Range(minStat, maxStat + 1) * archetypeData.weight2pt);
-            stats[MatchStatType.ThreePoint] = Mathf.RoundToInt(Random.Range(minStat, maxStat + 1) * archetypeData.weight3pt);
-            stats[MatchStatType.Pass] = Mathf.RoundToInt(Random.Range(minStat, maxStat + 1) * archetypeData.weightPass);
-            stats[MatchStatType.Block] = Mathf.RoundToInt(Random.Range(minStat, maxStat + 1) * archetypeData.weightBlock);
-            stats[MatchStatType.Steal] = Mathf.RoundToInt(Random.Range(minStat, maxStat + 1) * archetypeData.weightSteal);
-            stats[MatchStatType.Rebound] = Mathf.RoundToInt(Random.Range(minStat, maxStat + 1) * archetypeData.weightRebound);
+    //        var stats = new Dictionary<MatchStatType, int>();
+    //        stats[MatchStatType.TwoPoint] = Mathf.RoundToInt(Random.Range(minStat, maxStat + 1) * archetypeData.weight2pt);
+    //        stats[MatchStatType.ThreePoint] = Mathf.RoundToInt(Random.Range(minStat, maxStat + 1) * archetypeData.weight3pt);
+    //        stats[MatchStatType.Pass] = Mathf.RoundToInt(Random.Range(minStat, maxStat + 1) * archetypeData.weightPass);
+    //        stats[MatchStatType.Block] = Mathf.RoundToInt(Random.Range(minStat, maxStat + 1) * archetypeData.weightBlock);
+    //        stats[MatchStatType.Steal] = Mathf.RoundToInt(Random.Range(minStat, maxStat + 1) * archetypeData.weightSteal);
+    //        stats[MatchStatType.Rebound] = Mathf.RoundToInt(Random.Range(minStat, maxStat + 1) * archetypeData.weightRebound);
 
 
-            // ¿ÜÇü(Visual) µ¥ÀÌÅÍ ÃßÃ· (Á¾Á·¿¡ ¸ÂÃç¼­)
-            string resourceKey = "Enemy_Resource_Default";
-            if (_visualReader != null && _speciesReader != null)
-            {
-                // ÇöÀç Á¾Á· Å¸ÀÔ(¿¹: Animal)¿¡ ÇØ´çÇÏ´Â ±¸Ã¼Àû Á¾Á· ID(È£¶ûÀÌ, Åä³¢ µî) ¸ñ·Ï Ã£±â
-                List<string> validSpeciesIds = _speciesReader.DataList.FindAll(s => s.species == currentSpecies).ConvertAll(s => s.speciesId);
-                // ±× Á¾Á· IDµé¿¡ ÇØ´çÇÏ´Â ¿ÜÇü(Visual) ¸ñ·Ï Ã£±â
-                List<Player_VisualData> validVisuals = _visualReader.DataList.FindAll(v => validSpeciesIds.Contains(v.speciesId));
+    //        // ì™¸í˜•(Visual) ë°ì´í„° ì¶”ì²¨ (ì¢…ì¡±ì— ë§ì¶°ì„œ)
+    //        string resourceKey = "Enemy_Resource_Default";
+    //        if (_visualReader != null && _speciesReader != null)
+    //        {
+    //            // í˜„ì¬ ì¢…ì¡± íƒ€ì…(ì˜ˆ: Animal)ì— í•´ë‹¹í•˜ëŠ” êµ¬ì²´ì  ì¢…ì¡± ID(í˜¸ë‘ì´, í† ë¼ ë“±) ëª©ë¡ ì°¾ê¸°
+    //            List<string> validSpeciesIds = _speciesReader.DataList.FindAll(s => s.species == currentSpecies).ConvertAll(s => s.speciesId);
+    //            // ê·¸ ì¢…ì¡± IDë“¤ì— í•´ë‹¹í•˜ëŠ” ì™¸í˜•(Visual) ëª©ë¡ ì°¾ê¸°
+    //            List<Player_VisualData> validVisuals = _visualReader.DataList.FindAll(v => validSpeciesIds.Contains(v.speciesId));
 
-                if (validVisuals.Count > 0)
-                {
-                    resourceKey = validVisuals[Random.Range(0, validVisuals.Count)].playerImageResource;
-                }
-            }
+    //            if (validVisuals.Count > 0)
+    //            {
+    //                resourceKey = validVisuals[Random.Range(0, validVisuals.Count)].playerImageResource;
+    //            }
+    //        }
 
-            //  ÆĞ½Ãºê(Passive) µ¥ÀÌÅÍ ÃßÃ· (¸®±× ·¹º§ ¼³Á¤¿¡ µû¶ó)
-            List<Player_PassiveData> assignedPassives = new List<Player_PassiveData>();
-            if (levelData.isRivalPassiveApplied && _passiveReader != null)
-            {
-                var matchPassives = _passiveReader.DataList.FindAll(p =>
-                    p.effectType.ToString().StartsWith("Prob") ||
-                    p.effectType.ToString().StartsWith("Rate")
-                );
+    //        //  íŒ¨ì‹œë¸Œ(Passive) ë°ì´í„° ì¶”ì²¨ (ë¦¬ê·¸ ë ˆë²¨ ì„¤ì •ì— ë”°ë¼)
+    //        List<Player_PassiveData> assignedPassives = new List<Player_PassiveData>();
+    //        if (levelData.isRivalPassiveApplied && _passiveReader != null)
+    //        {
+    //            var matchPassives = _passiveReader.DataList.FindAll(p =>
+    //                p.effectType.ToString().StartsWith("Prob") ||
+    //                p.effectType.ToString().StartsWith("Rate")
+    //            );
 
-                if (matchPassives.Count > 0)
-                {
-                    assignedPassives.Add(matchPassives[UnityEngine.Random.Range(0, matchPassives.Count)]);
-                }
-            }
+    //            if (matchPassives.Count > 0)
+    //            {
+    //                assignedPassives.Add(matchPassives[UnityEngine.Random.Range(0, matchPassives.Count)]);
+    //            }
+    //        }
 
-            //  Æ¯¼º(Trait) µ¥ÀÌÅÍ ÃßÃ· (ÃßÈÄ ½Ã³ÊÁö ¿¬»êÀ» À§ÇØ)
-            string assignedTraitId = string.Empty;
-            if (levelData.isRivalTraitApplied && _traitReader != null)
-            {
-                if (_traitReader.DataList.Count > 0)
-                {
-                    assignedTraitId = _traitReader.DataList[Random.Range(0, _traitReader.DataList.Count)].traitId;
-                }
-            }
+    //        //  íŠ¹ì„±(Trait) ë°ì´í„° ì¶”ì²¨ (ì¶”í›„ ì‹œë„ˆì§€ ì—°ì‚°ì„ ìœ„í•´)
+    //        string assignedTraitId = string.Empty;
+    //        if (levelData.isRivalTraitApplied && _traitReader != null)
+    //        {
+    //            if (_traitReader.DataList.Count > 0)
+    //            {
+    //                assignedTraitId = _traitReader.DataList[Random.Range(0, _traitReader.DataList.Count)].traitId;
+    //            }
+    //        }
 
-            Debug.Log($"[¶óÀÌ¹ú »ı¼º] {playerName}({pos}) | 2Á¡:{stats[MatchStatType.TwoPoint]}, 3Á¡:{stats[MatchStatType.ThreePoint]}, ºí·Ï:{stats[MatchStatType.Block]}, ½ºÆ¿:{stats[MatchStatType.Steal]}, ¸®¹Ù:{stats[MatchStatType.Rebound]} | Àû¿ëµÈ Æ¼¾î ¹èÀ²: {tierWeight}");
+    //        Debug.Log($"[ë¼ì´ë²Œ ìƒì„±] {playerName}({pos}) | 2ì :{stats[MatchStatType.TwoPoint]}, 3ì :{stats[MatchStatType.ThreePoint]}, ë¸”ë¡:{stats[MatchStatType.Block]}, ìŠ¤í‹¸:{stats[MatchStatType.Steal]}, ë¦¬ë°”:{stats[MatchStatType.Rebound]} | ì ìš©ëœ í‹°ì–´ ë°°ìœ¨: {tierWeight}");
 
-            MatchPlayer player = new MatchPlayer(
-                id: 20000 + i,
-                name: playerName,
-                pos: pos,
-                initStats: stats,
-                resourceKey: resourceKey,
-                passives: assignedPassives
-            );
-            player.TraitId = assignedTraitId;
-            enemyTeam.AddPlayer(player);
-        }
+    //        MatchPlayer player = new MatchPlayer(
+    //            id: 20000 + i,
+    //            name: playerName,
+    //            pos: pos,
+    //            initStats: stats,
+    //            resourceKey: resourceKey,
+    //            passives: assignedPassives
+    //        );
+    //        player.TraitId = assignedTraitId;
+    //        enemyTeam.AddPlayer(player);
+    //    }
 
-        return enemyTeam;
-    }
+    //    return enemyTeam;
+    //}
 
-    private float GetTierWeight(teamTier tier, League_LevelData levelData)
-    {
-        switch (tier)
-        {
-            case teamTier.D: return levelData.weightPotentialTierD;
-            case teamTier.C: return levelData.weightPotentialTierC;
-            case teamTier.B: return levelData.weightPotentialTierB;
-            case teamTier.A: return levelData.weightPotentialTierA;
-            case teamTier.S: return levelData.weightPotentialTierS;
-            case teamTier.SS: return levelData.weightPotentialTierSS;
-            case teamTier.SSS: return levelData.weightPotentialTierSSS;
-            default: return 1.0f;
-        }
-    }
-    // Á¾Á· ÃßÃ· ·ÎÁ÷
-    private List<speciesType> GenerateSpeciesList(Rival_MasterData rivalData)
-    {
-        List<speciesType> result = new List<speciesType>();
+    //private float GetTierWeight(teamTier tier, League_LevelData levelData)
+    //{
+    //    switch (tier)
+    //    {
+    //        case teamTier.D: return levelData.weightPotentialTierD;
+    //        case teamTier.C: return levelData.weightPotentialTierC;
+    //        case teamTier.B: return levelData.weightPotentialTierB;
+    //        case teamTier.A: return levelData.weightPotentialTierA;
+    //        case teamTier.S: return levelData.weightPotentialTierS;
+    //        case teamTier.SS: return levelData.weightPotentialTierSS;
+    //        case teamTier.SSS: return levelData.weightPotentialTierSSS;
+    //        default: return 1.0f;
+    //    }
+    //}
+    // ì¢…ì¡± ì¶”ì²¨ ë¡œì§
+    //private List<speciesType> GenerateSpeciesList(Rival_MasterData rivalData)
+    //{
+    //    List<speciesType> result = new List<speciesType>();
 
-        //  ÃÖ¼Ò ÀÎ¿ø¸¸Å­ ¹«Á¶°Ç ¹èÁ¤ (Android·Î ¼±¾ğÇÏ½Å º¯¼ö¸í »ç¿ë)
-        for (int i = 0; i < rivalData.minHumanoidCount; i++) result.Add(speciesType.Humanoid);
-        for (int i = 0; i < rivalData.minHumanCount; i++) result.Add(speciesType.Human);
-        for (int i = 0; i < rivalData.minAnimalCount; i++) result.Add(speciesType.Animal);
+    //    //  ìµœì†Œ ì¸ì›ë§Œí¼ ë¬´ì¡°ê±´ ë°°ì • (Androidë¡œ ì„ ì–¸í•˜ì‹  ë³€ìˆ˜ëª… ì‚¬ìš©)
+    //    for (int i = 0; i < rivalData.minHumanoidCount; i++) result.Add(speciesType.Humanoid);
+    //    for (int i = 0; i < rivalData.minHumanCount; i++) result.Add(speciesType.Human);
+    //    for (int i = 0; i < rivalData.minAnimalCount; i++) result.Add(speciesType.Animal);
 
-        //  ³²Àº ÀÚ¸®´Â °¡ÁßÄ¡¿¡ µû¶ó ·£´ı ¹èÁ¤
-        int remain = 5 - result.Count;
-        float totalWeight = rivalData.weightHumanoid + rivalData.weightHuman + rivalData.weightAnimal;
+    //    //  ë‚¨ì€ ìë¦¬ëŠ” ê°€ì¤‘ì¹˜ì— ë”°ë¼ ëœë¤ ë°°ì •
+    //    int remain = 5 - result.Count;
+    //    float totalWeight = rivalData.weightHumanoid + rivalData.weightHuman + rivalData.weightAnimal;
 
-        for (int i = 0; i < remain; i++)
-        {
-            if (totalWeight <= 0)
-            {
-                result.Add(speciesType.Human); // °¡ÁßÄ¡ ÇÕÀÌ 0ÀÏ °æ¿ìÀÇ ¾ÈÀü ÀåÄ¡
-                continue;
-            }
+    //    for (int i = 0; i < remain; i++)
+    //    {
+    //        if (totalWeight <= 0)
+    //        {
+    //            result.Add(speciesType.Human); // ê°€ì¤‘ì¹˜ í•©ì´ 0ì¼ ê²½ìš°ì˜ ì•ˆì „ ì¥ì¹˜
+    //            continue;
+    //        }
 
-            float rand = Random.Range(0f, totalWeight);
-            if (rand < rivalData.weightHumanoid)
-                result.Add(speciesType.Humanoid);
-            else if (rand < rivalData.weightHumanoid + rivalData.weightHuman)
-                result.Add(speciesType.Human);
-            else
-                result.Add(speciesType.Animal);
-        }
+    //        float rand = Random.Range(0f, totalWeight);
+    //        if (rand < rivalData.weightHumanoid)
+    //            result.Add(speciesType.Humanoid);
+    //        else if (rand < rivalData.weightHumanoid + rivalData.weightHuman)
+    //            result.Add(speciesType.Human);
+    //        else
+    //            result.Add(speciesType.Animal);
+    //    }
 
-        // Æ÷Áö¼Çº°·Î ·£´ıÇÏ°Ô µé¾î°¥ ¼ö ÀÖµµ·Ï ¸®½ºÆ® ¼ÅÇÃ
-        for (int i = 0; i < result.Count; i++)
-        {
-            int rnd = Random.Range(0, result.Count);
-            var temp = result[i];
-            result[i] = result[rnd];
-            result[rnd] = temp;
-        }
+    //    // í¬ì§€ì…˜ë³„ë¡œ ëœë¤í•˜ê²Œ ë“¤ì–´ê°ˆ ìˆ˜ ìˆë„ë¡ ë¦¬ìŠ¤íŠ¸ ì…”í”Œ
+    //    for (int i = 0; i < result.Count; i++)
+    //    {
+    //        int rnd = Random.Range(0, result.Count);
+    //        var temp = result[i];
+    //        result[i] = result[rnd];
+    //        result[rnd] = temp;
+    //    }
 
-        return result;
-    }
-    // ÀÌ¸§ »ı¼º ·ÎÁ÷
-    private string[] GenerateRivalName(teamSector sector)
-    {
-        string[] name = new string[3];
+    //    return result;
+    //}
+    //// ì´ë¦„ ìƒì„± ë¡œì§
+    //private string[] GenerateRivalName(teamSector sector)
+    //{
+    //    string[] name = new string[3];
 
-        // DOM(±¹³»)ÀÌ¸é ÇÑ±¹ ÀÌ¸§, OS(ÇØ¿Ü)ÀÌ°Å³ª NA(¾Èµå·ÎÀÌµå)¸é ¿Ü±¹ ÀÌ¸§ »ç¿ë
-        nation targetNation = (sector == teamSector.DOM) ? nation.Kr : nation.Us;
+    //    // DOM(êµ­ë‚´)ì´ë©´ í•œêµ­ ì´ë¦„, OS(í•´ì™¸)ì´ê±°ë‚˜ NA(ì•ˆë“œë¡œì´ë“œ)ë©´ ì™¸êµ­ ì´ë¦„ ì‚¬ìš©
+    //    nation targetNation = (sector == teamSector.DOM) ? nation.Kr : nation.Us;
 
-        List<string> firsts = new List<string>();
-        List<string> middles = new List<string>();
-        List<string> lasts = new List<string>();
+    //    List<string> firsts = new List<string>();
+    //    List<string> middles = new List<string>();
+    //    List<string> lasts = new List<string>();
 
-        foreach (var data in _nameReader.DataList)
-        {
-            if (data.nation == targetNation)
-            {
-                if (data.namePart == namePart.FirstName) firsts.Add(data.nameKey);
-                else if (data.namePart == namePart.MiddleName) middles.Add(data.nameKey);
-                else if (data.namePart == namePart.LastName) lasts.Add(data.nameKey);
-            }
-        }
+    //    foreach (var data in _nameReader.DataList)
+    //    {
+    //        if (data.nation == targetNation)
+    //        {
+    //            if (data.namePart == namePart.FirstName) firsts.Add(data.nameKey);
+    //            else if (data.namePart == namePart.MiddleName) middles.Add(data.nameKey);
+    //            else if (data.namePart == namePart.LastName) lasts.Add(data.nameKey);
+    //        }
+    //    }
 
-        string f = firsts.Count > 0 ? firsts[Random.Range(0, firsts.Count)] : "";
-        string m = middles.Count > 0 ? middles[Random.Range(0, middles.Count)] : "";
-        string l = lasts.Count > 0 ? lasts[Random.Range(0, lasts.Count)] : "";
+    //    string f = firsts.Count > 0 ? firsts[Random.Range(0, firsts.Count)] : "";
+    //    string m = middles.Count > 0 ? middles[Random.Range(0, middles.Count)] : "";
+    //    string l = lasts.Count > 0 ? lasts[Random.Range(0, lasts.Count)] : "";
 
-        // ÇÑ±¹Àº "¼º+°¡¿îµ¥+³¡", ¹Ì±¹Àº "First Name + Last Name" Á¶ÇÕ => ¹«Á¶°Ç first , middle, last Á¶ÇÕÀ¸·Î º¯°æ.
-        name[0] = f;
-        name[1] = m;
-        name[2] = l;
+    //    // í•œêµ­ì€ "ì„±+ê°€ìš´ë°+ë", ë¯¸êµ­ì€ "First Name + Last Name" ì¡°í•© => ë¬´ì¡°ê±´ first , middle, last ì¡°í•©ìœ¼ë¡œ ë³€ê²½.
+    //    name[0] = f;
+    //    name[1] = m;
+    //    name[2] = l;
 
-        return name;        
-    }
+    //    return name;        
+    //}
 
 }
