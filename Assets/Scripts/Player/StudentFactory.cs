@@ -92,14 +92,14 @@ public class StudentFactory : MonoBehaviour
     
     public void InitStudent(Student target) 
     {
-        target.Init(_speciesDataReader, _personalityDataReader, _passiveDataReader, _traitDataReader, _player_PositionDataReader);
+        target.Init(_speciesDataReader, _personalityDataReader, _passiveDataReader, _traitDataReader, _player_PositionDataReader, _visualDataReader);
         Position bestPosition = DecideBestPosition(target);
         target.SetPosition(bestPosition);
     }
 
     public void InitRivalStudent(Student rival)
     {
-        rival.Init(_speciesDataReader, _personalityDataReader, _passiveDataReader, _traitDataReader, _player_PositionDataReader);
+        rival.Init(_speciesDataReader, _personalityDataReader, _passiveDataReader, _traitDataReader, _player_PositionDataReader, _visualDataReader);
     }
 
     public void InitDatas() 
