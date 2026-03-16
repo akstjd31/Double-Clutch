@@ -4,6 +4,7 @@ using UnityEngine.UI;
 
 public class TrainingCharacterBox : MonoBehaviour
 {
+    [SerializeField] Image _studentImage;
     [SerializeField] Button _button;
     [SerializeField] Image _stateBackGround;
     [SerializeField] TextMeshProUGUI _nameText;
@@ -26,6 +27,8 @@ public class TrainingCharacterBox : MonoBehaviour
     public void Init(Student student)
     {
         _student = student;
+
+        _studentImage.sprite = SpriteManager.Instance.GetSprite(_student.VisualData.portraitResource);
 
         StringManager manager = StringManager.Instance;
         string name = manager.GetString(_student.Name[0]) + manager.GetString(_student.Name[1]) + manager.GetString(_student.Name[2]);
