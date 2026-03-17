@@ -217,8 +217,13 @@ public class ResultState : IState
                 }
                 else
                 {
-                    // 아직 리그 진행 중이면 결산창을 안 띄우고 바로 로비로 복귀
-                    GoToLobby();
+                    // 다음 라운드 진입 시  '선수 배치창'이 뜨도록 UI 인덱스 초기화
+                    PlayerPrefs.SetInt(PrefKeys.MATCH_PREP_UI_INDEX, 1);
+                    PlayerPrefs.Save();
+
+                    // 리그 진행 중이라면: 대회 대진표 띄움 
+                    // (onActionClick을 null로 넘기면 SwissBoardPanel이 알아서 MatchPrepState로 넘겨줍니다)
+                    uiManager.ShowSwissBoardPanel(null, "다음 경기 준비");
                 }
             }
          );
