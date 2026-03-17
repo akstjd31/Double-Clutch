@@ -1,5 +1,6 @@
 using System;
-using System.Data.SqlTypes;
+using System.Collections.Generic;
+
 
 [Serializable]
 public class PlayerSaveData : SaveBase
@@ -10,4 +11,9 @@ public class PlayerSaveData : SaveBase
     public int money;
     public int weekId;          // 테이블 주 ID
     public int year;            // 연차
+
+    public string currentProfileImage;
+
+    public List<GraduationRecord> graduationRecord = new List<GraduationRecord>();
+
 }

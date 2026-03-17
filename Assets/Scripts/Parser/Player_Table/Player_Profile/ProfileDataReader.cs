@@ -11,7 +11,8 @@ public class ProfileDataReader : DataReaderBase
     internal void UpdateStats(List<GSTU_Cell> list, int rowIndex)
     {
         string profileId = null;
-        int visualId = 0, unlockCount = 0;
+        string visualId = null;
+        int unlockCount = 0;
         bool isDefault = false;
         string playerImage = null;
 
@@ -31,7 +32,7 @@ public class ProfileDataReader : DataReaderBase
                     break;
 
                 case "visualId":
-                    int.TryParse(val, out visualId);
+                    visualId = val;
                     break;
 
                 case "unlockCount":
