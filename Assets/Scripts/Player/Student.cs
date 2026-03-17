@@ -45,6 +45,7 @@ public class Student
     int _conditionChange;
     [SerializeField] private Position _matchPosition;
     ITraining _currentTraining;
+    [SerializeField] int _totalFame = 0;     // 누적 명성치
     
 
 
@@ -76,6 +77,7 @@ public class Student
     public ITraining CurrentTraining => _currentTraining;
     public int AwardCount { get { return _awardCount; } set { _awardCount = value; } }
     public List<potential> ChangedPotentials => _changedPotentials;
+    public int TotalFame => _totalFame;
     public void ResetTrainingSchedule()
     {
         _currentTraining = null;
@@ -357,7 +359,13 @@ public class Student
             _changedPotentials.Add(pot);
         }
     }
+    
+    public void AddFame(int fame)
+    {
+        _totalFame += fame;
+    }
     #endregion
+
 
 
 

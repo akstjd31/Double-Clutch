@@ -114,11 +114,12 @@ public class ResultState : IState
         bool isWin = matchState.HomeTeam.Score > matchState.AwayTeam.Score;
 
         // 실제 보상 데이터가 없으면 기본값 세팅 (에러 방지)
-        int rewardGoldEach = 100;           // 승리 시 경기당 지원금
-        float rewardGoldMultiplier = 0.3f;  // 패배 시 지원금 배율
+        int rewardGoldEach = rewardData.Value.rewardGoldEach;                // 승리 시 경기당 지원금
+        float rewardGoldMultiplier = rewardData.Value.rewardGoldMultiplier;  // 패배 시 지원금 배율
         
         // 아직 리그 미구현으로 주석처리
-        //int rewardFameWin = 20;             // 리그 최종 우승 시 명성
+        int rewardFameWin = rewardData.Value.rewardFameWin;                     // 리그 최종 우승 시 명성
+        int finalParticipationFame = rewardData.Value.finalParticipationFame;   // 결승 출전 시 선수별 명성 누적 값
 
         // 승패에 따른 기본 지급금 계산
         int baseGold = isWin ? rewardGoldEach : Mathf.RoundToInt(rewardGoldEach * rewardGoldMultiplier);
@@ -169,6 +170,14 @@ public class ResultState : IState
         float totalMultiplier = 1f + infraBonusPercent + passiveBonusPercent;
         int finalRewardAmount = Mathf.RoundToInt(baseGold * totalMultiplier);
 
+        // 결승 진출 시 선수들의 명성 누적값 적용
+        if (currentLeague != null && currentLeague.teams.Count < 3 && StudentManager.Instance != null)
+        {
+            foreach (var std in StudentManager.Instance.CurrentTeam.Members)
+            {
+                std.AddFame(finalParticipationFame);
+            }
+        }
 
         if (currentLeague != null && currentLeague.isFinished && rewardData != null)
         {
@@ -181,8 +190,9 @@ public class ResultState : IState
                 // 우승 상금을 최종 획득 골드에 합산
                 finalRewardAmount += rewardData.Value.rewardGoldWin;
 
-                // 우승 명성 지급
-                _gm.SetHonor(_gm.SaveData.honor + rewardData.Value.rewardFameWin);
+                // 리그 우승 명성치 획득
+                _gm.SetHonor(_gm.SaveData.honor + rewardFameWin);
+
                 Debug.Log($"[리그 우승!] 상금 {rewardData.Value.rewardGoldWin}G 및 명성 {rewardData.Value.rewardFameWin} 획득!");
             }
         }

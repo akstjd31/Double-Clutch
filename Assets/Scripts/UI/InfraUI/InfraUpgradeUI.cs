@@ -1,11 +1,13 @@
-using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
+using UnityEngine;
+using UnityEngine.InputSystem.XR;
+using UnityEngine.UI;
 
 
 public class InfraUpgradeUI : MonoBehaviour
 {
-    private InfraController _currentInfraController = null;
+    private InfraController _controller;
+    private Infra _infra;
     [SerializeField] private TextMeshProUGUI _title;
     [SerializeField] private TextMeshProUGUI _nameText;
     [SerializeField] private TextMeshProUGUI _levelText;
@@ -13,38 +15,70 @@ public class InfraUpgradeUI : MonoBehaviour
     [SerializeField] private Button _upgradeButton;
     [SerializeField] private ReconfirmUI _reconfirmUI;
 
+    [Header("업그레이드 배경리소스")]
+    [SerializeField] private Image _backGroundImage;
+    [SerializeField] private Sprite _clinic;
+    [SerializeField] private Sprite _dormitory;
+    [SerializeField] private Sprite _frontOffice;
+    [SerializeField] private Sprite _analyticsRoom;
+    [SerializeField] private Sprite _conditioningGym;
+
+
     private void Awake()
     {
         
     }
-
+    private void OnEnable()
+    {
+        StringManager.OnLanguageChanged += Refresh;
+    }
     private void OnDisable()
     {
+        StringManager.OnLanguageChanged -= Refresh;
         _upgradeButton.onClick.RemoveAllListeners();
-        _currentInfraController.Upgraded -= UpdateLevelText;
+        if (_controller != null)
+            _controller.Upgraded -= UpdateLevelText;
     }
 
-    public void Init(InfraController iController, Infra infra)
+    public void Init(InfraController controller, Infra infra)
     {
-        _title.text = infra.name;
-        _nameText.text = infra.name;
+        if (_controller != null)
+            _controller.Upgraded -= UpdateLevelText;
 
-        UpdateLevelText(infra.currentLevel);
+        _controller = controller;
+        _infra = infra;
 
-        var valueStr = TextParser.GetKeys(infra.desc);
-        var fommatted = FormatInfraDescText(infra.desc, "{" + valueStr[0] + "}", iController.GetCurrentInfraEffectValue());
-        _effectDescText.text = fommatted;
+        _upgradeButton.interactable = !(_infra.currentLevel >= _infra.maxLevel);
+        _controller.Upgraded += UpdateLevelText;
 
-        _currentInfraController = iController;
+        SetBackGroundImage(infra.infraEffectType);
 
-        if (_upgradeButton == null) return;
-
-        // 최대 레벨에 도달하지 않은 경우에만 활성화
-        _upgradeButton.interactable = infra.currentLevel < infra.maxLevel;
-
-        _currentInfraController.Upgraded += UpdateLevelText;
+        Refresh();
     }
-    
+    private void Refresh()
+    {
+        if (_infra == null) return;
+        if (StringManager.Instance == null) return;
+
+        StringManager.Instance.GetString(_infra.nameKey, _title);
+        StringManager.Instance.GetString(_infra.nameKey, _nameText);
+
+        _levelText.text = _infra.currentLevel.ToString();
+
+        string originDesc = StringManager.Instance.GetString(_infra.descKey);
+        var keys = TextParser.GetKeys(originDesc);
+        if (keys != null && keys.Count > 0)
+        {
+            int value = _controller.GetCurrentInfraEffectValue();
+            _effectDescText.text = originDesc.Replace("{" + keys[0] + "}", value.ToString());
+        }
+        else
+        {
+            _effectDescText.text = originDesc;
+        }
+        StringManager.Instance.ApplyFont(_effectDescText);
+    }
+
     public void UpdateLevelText(int level)
     {
         _levelText.text = level.ToString();
@@ -52,12 +86,39 @@ public class InfraUpgradeUI : MonoBehaviour
 
     public void OnClickUpgradeButton()
     {
-        if (_currentInfraController == null) return;
+        if (_controller == null) return;
         _reconfirmUI.gameObject.SetActive(true);
-
-        _reconfirmUI.Init(_currentInfraController);
+        _reconfirmUI.Init(_controller);
     }
 
     // 중괄호로 되어있는 부분을 처리 및 전체 문자열을 반환 (이 부분은 UI 스크립트에서 작성해야할듯?)
     private string FormatInfraDescText(string desc, string target, int infraEffectValue) => desc.Replace(target, infraEffectValue.ToString());
+
+    private void SetBackGroundImage(infraEffectType type)
+    {
+        Sprite background = null;
+        switch (type)
+        {
+            case infraEffectType.RestCostDiscount:
+                background = _clinic;
+                break;
+            case infraEffectType.AddRoster:
+                background = _dormitory;
+                break;
+            case infraEffectType.RewardGoldBonus:
+                background = _frontOffice;
+                break;
+            case infraEffectType.AddTactic:
+                background = _analyticsRoom;
+                break;
+            case infraEffectType.TrainingBonus:
+                background = _conditioningGym;
+                break;
+            default:
+                background = _frontOffice;
+                break;
+        }
+
+        _backGroundImage.sprite = background;
+    }
 }

@@ -62,6 +62,8 @@ public class InfraController : MonoBehaviour
             (
                 name: data.Value.desc,
                 desc: infraMgr.GetInfraDescByEffectType(_infraEffectType),
+                nameKey: data.Value.infraNameKey,  
+                descKey: data.Value.infraDescKey,
                 maxLevel: infraMgr.GetMaxLevelByEffectType(_infraEffectType),
                 groupId: data.Value.group
             );

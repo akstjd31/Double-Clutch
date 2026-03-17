@@ -458,7 +458,8 @@ public class MatchEngine : MonoBehaviour
         if (success)
         {
             Vector2 dir = (hoopPos - dribbler.LogicPosition).normalized; List<MatchPlayer> allPlayers = new List<MatchPlayer>();
-            float moveDist = Mathf.Min(UnityEngine.Random.Range(0.1f, 0.2f), MAX_MOVE_PER_TICK);
+            float currentDistToHoop = MatchCalculator.CalculateDistance(dribbler.LogicPosition, hoopPos);
+            float moveDist = Mathf.Min(UnityEngine.Random.Range(0.1f, 0.2f), MAX_MOVE_PER_TICK, currentDistToHoop);
             dribbler.LogicPosition += dir * moveDist;
             RecordLog("Dribble", dribbler);
         }

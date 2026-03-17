@@ -35,7 +35,18 @@ public class LeagueManager : Singleton<LeagueManager>
         if (saveData == null) return;
 
         _currentLeague = saveData;
-        GenerateCurrentRoundMatchesIfNeeded();
+
+        try
+        {
+            // 1라운드(0 인덱스) 대진표 생성
+            GenerateCurrentRoundMatchesIfNeeded();
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"[StartLeague] 대진표 생성 중 에러 발생: {e.Message}");
+        }
+
+        // 대진표까지 생성된 온전한 데이터를 최종 저장
         SaveCurrentLeague();
     }
     
@@ -218,20 +229,6 @@ public class LeagueManager : Singleton<LeagueManager>
             Debug.LogError("스탠딩 데이터가 없음!");
             return;
         }
-
-        // 돈 계산
-        var leagueDataMgr = LeagueDataManager.Instance;
-        if (leagueDataMgr == null) return;
-
-        var calMoney = leagueDataMgr.CalculateLeagueMoney(_currentLeague.leagueId, GetPlayerStandingData());
-
-        var gameMgr = GameManager.Instance;
-        if (gameMgr == null) return;
-
-        gameMgr.SetMoney(gameMgr.SaveData.money + calMoney);
-
-        CalendarManager.Instance.CalcWeek(GameManager.Instance.SaveData.weekId, GameManager.Instance);
-
     }
 
     public bool IsPlayerSeasonOut()
@@ -253,20 +250,7 @@ public class LeagueManager : Singleton<LeagueManager>
 
         return false;
     }
-
-    private LeagueStandingData GetPlayerStandingData()
-    {
-        if (_currentLeague == null) return null;
-
-        foreach (var standing in _currentLeague.standings)
-        {
-            if (standing.teamId.Equals(PLAYER_TEAM_ID))
-                return standing;
-        }
-
-        return null;
-    }
-
+    
     private void SaveCurrentLeague()
     {
         if (_currentLeague == null) return;

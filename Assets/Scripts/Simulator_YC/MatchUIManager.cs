@@ -85,8 +85,11 @@ public class MatchUIManager : MonoBehaviour
 
     [Header("Playback Speed UI")]
     [SerializeField] private MatchReplayer _replayer; // 배속을 조절할 리플레이어 참조
-    [SerializeField] private TextMeshProUGUI _textSpeedButton; // 버튼 위에 "1.0x"라고 표시될 텍스트
-
+    [SerializeField] private Image _speedButton; // 버튼 위에 "1.0x"라고 표시될 텍스트
+    [SerializeField] private Sprite _x1;
+    [SerializeField] private Sprite _x2;
+    [SerializeField] private Sprite _x4;
+    [SerializeField] private Sprite _x8;
     // 기획서 기준 배속 단계
     private float[] _speedSteps = { 1.0f, 2.0f, 4.0f, 8.0f };
     private int _currentSpeedIndex = 0; // 현재 선택된 배속의 인덱스
@@ -505,10 +508,24 @@ public class MatchUIManager : MonoBehaviour
         _replayer.PlaybackSpeed = newSpeed;
 
         // 버튼 텍스트 갱신
-        if (_textSpeedButton != null)
+        if (_speedButton != null)
         {
-            _textSpeedButton.text = $"{newSpeed:F1}x";
+            SwitchSpeedButtonSprite(_currentSpeedIndex);
         }
+    }
+
+    private void SwitchSpeedButtonSprite(int index)
+    {
+        Sprite speedButton = null;
+        switch (index)
+        {
+            case 0: speedButton = _x1; break;
+            case 1: speedButton = _x2; break;
+            case 2: speedButton = _x4; break;
+            case 3: speedButton = _x8; break;
+        }
+
+        _speedButton.sprite = speedButton;
     }
     // 스킵 시 진행 중이던 컷인 연출을 즉시 없애기 위한 헬퍼 함수
     public void ForceCloseCutIn()

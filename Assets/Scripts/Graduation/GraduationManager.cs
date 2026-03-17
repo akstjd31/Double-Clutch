@@ -80,7 +80,11 @@ public class GraduationManager : MonoBehaviour
         for (int i = 0; i < _graduationStudentList.Count; i++)
         {
             StudentManager.Instance.ReleaseStudent(_graduationStudentList[i]);
-        }
+
+            // 졸업한 선수의 누적 명성치를 실제로 데이터에 갱신시키기
+            GameManager.Instance.SetHonor(GameManager.Instance.SaveData.honor + _graduationStudentList[i].TotalFame);
+            GameManager.Instance.AddGraduationCount(_graduationStudentList[i].VisualId);
+        }        
         StudentManager.Instance.SaveGame();
     }
 
