@@ -14,8 +14,13 @@ public class LeagueTeamManager : Singleton<LeagueTeamManager>
 
     // 리그 전 캐싱 데이터에 담긴 선수 목록  
     [SerializeField] List<string> _currentLeagueTeamIdList = new List<string>();
-    List<Team> _currentLeagueTeamList = new List<Team>();
-    Dictionary<string, Team> _currentTeamDict = new Dictionary<string, Team>();    
+    [SerializeField] List<Team> _currentLeagueTeamList = new List<Team>();
+    [SerializeField] SerializedDictionary<string, Team> _currentTeamDict = new SerializedDictionary<string, Team>();    
+
+    private void Start()
+    {
+        LoadGame();
+    }
 
     public Team GetTeamById(string teamId)
     {
@@ -78,9 +83,10 @@ public class LeagueTeamManager : Singleton<LeagueTeamManager>
             // 매니저가 데이터를 찾아서 직접 주입 (Dependency Injection)
             var arch = archDataList.Find(x => x.teamArchetypeId == master.teamArchetypeId);
             newTeam.Init(master, arch);
+            FillRivalStudents(ref newTeam);
             _currentLeagueTeamList.Add(newTeam);
             _currentTeamDict.Add(newTeam.TeamId, newTeam);
-            FillRivalStudents(newTeam);
+            
         }
 
         SaveGame();
@@ -151,7 +157,7 @@ public class LeagueTeamManager : Singleton<LeagueTeamManager>
         }
     }
 
-    private void FillRivalStudents(Team team) //팀에 선수들 채워넣는 매서드
+    private void FillRivalStudents(ref Team team) //팀에 선수들 채워넣는 매서드
     {
         List<speciesType> speciesList = GenerateSpeciesList(team.Rival_MasterData.Value);
         var studentFactory = StudentManager.Instance.GetFactory();
@@ -159,12 +165,13 @@ public class LeagueTeamManager : Singleton<LeagueTeamManager>
         for (int i = 0; i < team.Members.Length; i++)
         {
             Student rival = studentFactory.MakeRivalStudentSkeleton(team.Rival_MasterData.Value.nation);
-            team.SetMember(i, rival);
+            // rival.SetStudentId(i);
             rival.SetSpecie(studentFactory.GetRandomSpecieByType(speciesList[i]));
             rival.SetVisual(studentFactory.GetRandomVisual(rival.SpecieId));
             Position targetPos = team.Positions[i];
             rival.SetPosition(targetPos);
             rival.SetMatchPosition(targetPos);            
+            team.SetMember(i, rival);
         }
     }
 
