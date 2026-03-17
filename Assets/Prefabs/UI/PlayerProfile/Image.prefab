@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 8770537607377101560}
   - component: {fileID: 2622124251786848841}
   m_Layer: 5
-  m_Name: LockImage
+  m_Name: IconImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -58,7 +58,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.9843138, g: 0.81568635, b: 0.5254902, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -87,13 +87,15 @@ GameObject:
   - component: {fileID: 8992213137644067186}
   - component: {fileID: 4905802920062156722}
   - component: {fileID: 3355558202498343233}
+  - component: {fileID: 4024362480091832375}
+  - component: {fileID: 1009323752133593697}
   m_Layer: 5
   m_Name: Image
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &80523207909733065
 RectTransform:
   m_ObjectHideFlags: 0
@@ -196,6 +198,37 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &4024362480091832375
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5596951190422976488}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c04f24466f403b742a26375ce3024fae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ProfileIcon
+  _image: {fileID: 2622124251786848841}
+  _frame: {fileID: 4905802920062156722}
+  _button: {fileID: 3355558202498343233}
+  _outLine: {fileID: 1009323752133593697}
+--- !u!114 &1009323752133593697
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5596951190422976488}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e19747de3f5aca642ab2be37e372fb86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Outline
+  m_EffectColor: {r: 1, g: 0, b: 0.015686275, a: 1}
+  m_EffectDistance: {x: 5, y: -5}
+  m_UseGraphicAlpha: 1
 --- !u!1 &8662191279165715657
 GameObject:
   m_ObjectHideFlags: 0
@@ -208,7 +241,7 @@ GameObject:
   - component: {fileID: 8213396105431065655}
   - component: {fileID: 7255406836197356938}
   m_Layer: 5
-  m_Name: Lock
+  m_Name: Frame
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -4,12 +4,12 @@ using System;
 public struct ProfileData
 {
     public string profileId;
-    public int visualId;
+    public string visualId;
     public int unlockCount;
     public bool isDefault;
     public string playerImage;
 
-    public ProfileData(string profileId, int visualId, int unlockCount, bool isDefault, string playerImage)
+    public ProfileData(string profileId, string visualId, int unlockCount, bool isDefault, string playerImage)
     {
         this.profileId = profileId;
         this.visualId = visualId;

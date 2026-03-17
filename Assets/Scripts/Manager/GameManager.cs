@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -221,5 +222,38 @@ public class GameManager : Singleton<GameManager>
         // 다음 넘어갈 씬과 상태를 세팅하고 로딩 씬으로 이동
         SetNextFlow(sceneName, matchState);
         _sm.ChangeState<LoadingState>();
+    }
+
+    
+    public int GetGraduationCount(string visualId)//프로필 해금을 위한 졸업생 종족(비주얼) 카운트.
+    {
+        // 리스트에서 ID가 일치하는 첫 번째 요소를 찾고, 없으면 null 반환
+        var record = SaveData.graduationRecord.FirstOrDefault(x => x.visualId == visualId);
+
+        // 찾았다면 count를, 못 찾았다면 0을 반환
+        return record != null ? record.count : 0;
+    }
+
+    public void AddGraduationCount(string visualId)
+    {
+        var record = SaveData.graduationRecord.FirstOrDefault(x => x.visualId == visualId);
+
+        if (record != null)
+        {
+            record.count++; // 이미 있으면 1 증가
+        }
+        else
+        {
+            // 없으면 새로 만들어서 리스트에 추가
+            SaveData.graduationRecord.Add(new GraduationRecord { visualId = visualId, count = 1 });
+        }
+
+        OnDataChanged?.Invoke();
+    }
+
+    public void SetCurrentProfileIcon(string imageKey)
+    {
+        SaveData.currentProfileImage = imageKey;
+        OnDataChanged?.Invoke();
     }
 }

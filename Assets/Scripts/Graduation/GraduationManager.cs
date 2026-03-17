@@ -80,7 +80,8 @@ public class GraduationManager : MonoBehaviour
         for (int i = 0; i < _graduationStudentList.Count; i++)
         {
             StudentManager.Instance.ReleaseStudent(_graduationStudentList[i]);
-        }
+            GameManager.Instance.AddGraduationCount(_graduationStudentList[i].VisualId);
+        }        
         StudentManager.Instance.SaveGame();
     }
 
