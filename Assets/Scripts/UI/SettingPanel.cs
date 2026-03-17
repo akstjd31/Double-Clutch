@@ -26,6 +26,10 @@ public class SettingPanel : MonoBehaviour
     [Header("진동 토글")]
     [SerializeField] Toggle _viberationToggle;
 
+    [Header("기타 버튼")]
+    [SerializeField] Button _userPolicyButton;
+    [SerializeField] Button _privacyPolicyButton;
+
     private void Start()
     {
         //------------------------------------------------------------
@@ -47,6 +51,9 @@ public class SettingPanel : MonoBehaviour
         _sfxMuteToggle.onValueChanged.RemoveAllListeners();
 
         _viberationToggle.onValueChanged.RemoveAllListeners();
+
+        _userPolicyButton.onClick.RemoveAllListeners();
+        _privacyPolicyButton.onClick.RemoveAllListeners();
 
         //------------------------------------------------------------
         // 구독 연결
@@ -71,14 +78,16 @@ public class SettingPanel : MonoBehaviour
 
         _viberationToggle.onValueChanged.AddListener(manager.ToggleVibration);
 
+        _userPolicyButton.onClick.AddListener(OpenUserPolicy);
+        _privacyPolicyButton.onClick.AddListener(OpenPrivacyPolicy);
+
 
         //------------------------------------------------------------
         // 초기값 세팅
         //------------------------------------------------------------        
-        if (manager.SettingData.fps == 30) _fps30.isOn = true;
 
-        else _fps60.isOn = true;
-
+        if (manager.SettingData == null || manager.SettingData.fps == 60) _fps60.isOn = true;
+        else _fps30.isOn = true;
 
         _masterVolSlider.value = manager.SettingData.masterVol;
         _bgmVolSlider.value = manager.SettingData.bgmVol;
@@ -114,8 +123,21 @@ public class SettingPanel : MonoBehaviour
         if (isOn) StringManager.Instance.SetLanguage(Language.Ja);
     }
 
+    private void OpenPrivacyPolicy()
+    {
+        SettingManager.Instance.OpenPrivacyPolicy();
+    }
+
+    private void OpenUserPolicy()
+    {
+        SettingManager.Instance.OpenUserPolicy();
+    }
+
+
+
     public void OnQuitSetting()
     {
         SettingManager.Instance.OnQuitSetting();
     }
+
 }

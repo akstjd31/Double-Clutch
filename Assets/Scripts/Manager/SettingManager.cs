@@ -6,6 +6,10 @@ public class SettingManager : Singleton<SettingManager>
     [SerializeField] SettingSaveData _settingData;
     const string SAVE_FILE = "SettingSave.json";
 
+    [Header("외부 링크")]
+    [SerializeField] private string _privacyPolicy = "https://sites.google.com/view/doubleclutch-policy/개인정보-처리방침";
+    [SerializeField] private string _userPolicy = "https://sites.google.com/view/doubleclutch-policy/이용약관-및-환불정책";
+
     public SettingSaveData SettingData => _settingData;
     private void Start()
     {
@@ -70,6 +74,22 @@ public class SettingManager : Singleton<SettingManager>
     public void ToggleVibration(bool isOn) //진동 기능 토글
     {
         _settingData.isVibOn = isOn;
+    }
+
+    public void OpenPrivacyPolicy()
+    {
+        if (!string.IsNullOrEmpty(_privacyPolicy))
+        {
+            Application.OpenURL(_privacyPolicy);
+        }
+    }
+
+    public void OpenUserPolicy()
+    {
+        if (!string.IsNullOrEmpty(_userPolicy))
+        {
+            Application.OpenURL(_userPolicy);
+        }
     }
 
     public void OnQuitSetting() //설정 창 닫을 때 호출
