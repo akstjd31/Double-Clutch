@@ -37,6 +37,7 @@ public class ProfileUI : MonoBehaviour
 
     [Header("아이콘 설정 및 해금")]
     [Header("Pagination & Pool")]
+    [SerializeField] private Image _currentLobbyProfileImage;
     [SerializeField] private Image _currentIcon;
     [SerializeField] private ProfileIcon _profilePrefab;
     [SerializeField] private GameObject _pagePanelPrefab;
@@ -58,20 +59,36 @@ public class ProfileUI : MonoBehaviour
         _pool = new GenericObjectPool<ProfileIcon>(_profilePrefab, this.transform);
     }
 
+    private void Start()
+    {        
+        RefreshProfileList();
+        if (GameManager.Instance.SaveData == null || string.IsNullOrEmpty(GameManager.Instance.SaveData.currentProfileImage))
+        {
+            if (_currentLobbyProfileImage != null)
+            _currentLobbyProfileImage.sprite = SpriteManager.Instance.GetSprite(_profileDataReader.DataList[0].playerImage);
+        }
+        else
+        {
+            _currentLobbyProfileImage.sprite = SpriteManager.Instance.GetSprite(GameManager.Instance.SaveData.currentProfileImage);
+        }
+            
+    }
+
     private void OnEnable()
     {
         if (_confirmButton != null)
             _confirmButton.onClick.AddListener(OnClickConfirmButton);
+
+        // 페이지 버튼 이벤트 연결 추가
+        if (_prevButton != null) _prevButton.onClick.AddListener(() => ChangePage(-1));
+        if (_nextButton != null) _nextButton.onClick.AddListener(() => ChangePage(1));
 
         if (!_isFirstTime)
         {
             GameManager gameManager = GameManager.Instance;
             SpriteManager spriteManager = SpriteManager.Instance;
 
-            // 페이지 버튼 이벤트 연결 추가
-            if (_prevButton != null) _prevButton.onClick.AddListener(() => ChangePage(-1));
-            if (_nextButton != null) _nextButton.onClick.AddListener(() => ChangePage(1));
-
+            
             string currentImg = gameManager.SaveData?.currentProfileImage;
 
             if (_selectedData == null && _profileDataReader.DataList.Count > 0)
@@ -198,12 +215,13 @@ public class ProfileUI : MonoBehaviour
             var data = new PlayerSaveData { schoolName = _schoolNameField.text, coachName = _playerNameField.text, weekId = 9, year = 0 };
             gm.InitData(data);
             CalendarManager.Instance.CalcWeek(data.weekId, gm);
-            GameManager.Instance.Dispatch(UIAction.Main_Start);
+            gm.Dispatch(UIAction.Main_Start);
         }
 
         if (_selectedData.HasValue && _selectedData.Value.playerImage != null)
         {
-            GameManager.Instance.SetCurrentProfileIcon(_selectedData.Value.playerImage);
+            gm.SetCurrentProfileIcon(_selectedData.Value.playerImage);
+            _currentLobbyProfileImage.sprite = _currentIcon.sprite;
         }
 
         this.gameObject.SetActive(false);
@@ -281,9 +299,15 @@ public class ProfileUI : MonoBehaviour
     }
 
     public void RefreshProfileList()
-    {
+    {        
         foreach (var icon in _activeIcons) _pool.Release(icon);
         _activeIcons.Clear();
+
+        if (_pageWindow == null)
+        {
+            return;
+        }
+
         foreach (Transform child in _pageWindow) Destroy(child.gameObject);
         _pages.Clear(); // 페이지 리스트 초기화
         _currentPageIndex = 0; // 초기화 시 인덱스 리셋 추가

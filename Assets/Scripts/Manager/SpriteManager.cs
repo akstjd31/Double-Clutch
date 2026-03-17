@@ -49,10 +49,10 @@ public class SpriteManager : Singleton<SpriteManager>
     public Sprite GetSprite(string resourceId)
     {
         // 1. 이미 불러온 적이 있는지 확인
-        if (!_spriteCache.ContainsKey(resourceId))
-        {
-            Debug.Log("해당 리소스 키 캐시에 없음");
-        }
+        //if (!_spriteCache.ContainsKey(resourceId))
+        //{
+        //    Debug.Log("해당 리소스 키 캐시에 없음");
+        //}
         if (_spriteCache.TryGetValue(resourceId, out Sprite cachedSprite))
         {
             return cachedSprite;
