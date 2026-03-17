@@ -31,6 +31,7 @@ public static class FilePath
 
 public class GameManager : Singleton<GameManager>
 {
+    public const string CHEAT_CODE = "0123";        // 치트 코드
     public const int MAX_MONEY = 999999;
 
     [Header("Data")]
