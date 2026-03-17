@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Data;
 using UnityEngine;
 using UnityEngine.LightTransport;
 
@@ -65,6 +66,8 @@ public class EventController : MonoBehaviour
 
         _studentTurnQueue = _eventSelector.StudentidQueue;
         _debugList_studentidList = new List<int>(_studentTurnQueue);
+
+        _eventUI.UIStart();
 
         //이벤트가 0개 이상이면 이벤트 실행
         Debug.Log($"ScreenplayIdList : {_eventSelector.ScreenplayIdList.Count}개");
@@ -343,11 +346,12 @@ public class EventController : MonoBehaviour
         Debug.Log($"resultScriptKey : {_selectedResultData.resultScriptKey}");
         //resultData 딕셔너리 필요
         _eventUI.UpdateEventResult(
-            _selectedResultData.statusChange, //상태변경
             _selectedResultData.potentialChangeType, //잠재력
             _selectedResultData.potentialChangeValue, //잠재력 값
             _stringTable[_selectedResultData.resultScriptKey], //결과텍스트
-            _selectedResultData.reactionPortraitId);
+            _selectedResultData.reactionPortraitId); //이미지
+        _eventUI.UpdateState(_selectedResultData.statusChange, _myStudents[_currentStudentNum].State.ToString());//상태변경
+        Debug.Log($"아이디 못불러옴 {_selectedResultData.reactionPortraitId} ");
 
         //선수 컨디션 변경
         var beforeConditon = _myStudents[_currentStudentNum].Condition.ToString();
