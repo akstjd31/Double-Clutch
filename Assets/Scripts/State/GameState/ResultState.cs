@@ -118,7 +118,8 @@ public class ResultState : IState
         float rewardGoldMultiplier = rewardData.Value.rewardGoldMultiplier;  // 패배 시 지원금 배율
         
         // 아직 리그 미구현으로 주석처리
-        int rewardFameWin = rewardData.Value.rewardFameWin;             // 리그 최종 우승 시 명성
+        int rewardFameWin = rewardData.Value.rewardFameWin;                     // 리그 최종 우승 시 명성
+        int finalParticipationFame = rewardData.Value.finalParticipationFame;   // 결승 출전 시 선수별 명성 누적 값
 
         // 승패에 따른 기본 지급금 계산
         int baseGold = isWin ? rewardGoldEach : Mathf.RoundToInt(rewardGoldEach * rewardGoldMultiplier);
@@ -181,14 +182,8 @@ public class ResultState : IState
                 // 우승 상금을 최종 획득 골드에 합산
                 finalRewardAmount += rewardData.Value.rewardGoldWin;
 
-                // 우승한 팀의 선수들 명성치 누적시키기
-                foreach (var std in StudentManager.Instance.CurrentTeam.Members)
-                {
-                    std.AddFame(rewardFameWin);
-                }
-
-                // 후 저장
-                StudentManager.Instance.SaveGame();
+                // 리그 우승 명성치 획득
+                _gm.SetHonor(_gm.SaveData.honor + rewardFameWin);
 
                 Debug.Log($"[리그 우승!] 상금 {rewardData.Value.rewardGoldWin}G 및 명성 {rewardData.Value.rewardFameWin} 획득!");
             }
