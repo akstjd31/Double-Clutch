@@ -12,10 +12,12 @@ public enum CheatButton
 public class CheatPanelUI : MonoBehaviour
 {
     [SerializeField] private GameObject _tabAreaObj;
+    [SerializeField] private GameObject _inputAreaObj;
     [SerializeField] private Button[] _buttons;
     [SerializeField] private TextMeshProUGUI _titleText;
     [SerializeField] private TMP_InputField _inputField;
     [SerializeField] private Button _confirmButton;
+    [SerializeField] private Button _backButton;
 
     private CheatButton _currentCheatButton;
 
@@ -33,6 +35,7 @@ public class CheatPanelUI : MonoBehaviour
             _buttons[index].onClick.AddListener(() => OnClickButton((CheatButton)index));
         }
 
+        _backButton.onClick.AddListener(OnClickBackButton);
         _confirmButton.onClick.RemoveAllListeners();
     }
 
@@ -48,10 +51,16 @@ public class CheatPanelUI : MonoBehaviour
 
         if (_confirmButton != null)
             _confirmButton.onClick.RemoveAllListeners();
+
+        if (_backButton != null)
+            _backButton.onClick.RemoveAllListeners();
     }
 
     public void OnClickButton(CheatButton cheatBtn)
     {
+        if (!_inputAreaObj.activeSelf)
+            _inputAreaObj.SetActive(true);
+
         _currentCheatButton = cheatBtn;
 
         string title = cheatBtn switch
@@ -63,20 +72,37 @@ public class CheatPanelUI : MonoBehaviour
         };
 
         _titleText.text = title;
+        _inputField.text = "";
 
         _confirmButton.onClick.RemoveAllListeners();
         _confirmButton.onClick.AddListener(() => OnClickConfirmButton(_currentCheatButton));
     }
 
+    public void OnClickBackButton()
+    {
+        _inputField.text = "";
+        _inputAreaObj.SetActive(false);
+
+        this.gameObject.SetActive(false);
+    }
+
     public void OnClickConfirmButton(CheatButton cheatBtn)
     {
+        if (string.IsNullOrWhiteSpace(_inputField.text)) return;
+        if (!int.TryParse(_inputField.text, out var num)) return;
+        
+        var gameMgr = GameManager.Instance;
+        if (gameMgr == null) return;
+
         switch (cheatBtn)
         {
             case CheatButton.Money:
-                Debug.Log("지원금 설정");
+                gameMgr.SetMoney(num);
+                Debug.Log($"지원금 설정 완료! 현재 보유 지원금: {gameMgr.SaveData.money}");
                 break;
             case CheatButton.Fame:
-                Debug.Log("명성 설정");
+                gameMgr.SetHonor(num);
+                Debug.Log($"명성 설정 완료! 현재 보유 명성: {gameMgr.SaveData.honor}");
                 break;
             case CheatButton.Student:
                 Debug.Log("선수 설정");
