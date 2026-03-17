@@ -229,18 +229,6 @@ public class LeagueManager : Singleton<LeagueManager>
             Debug.LogError("스탠딩 데이터가 없음!");
             return;
         }
-
-        // 돈 계산
-        var leagueDataMgr = LeagueDataManager.Instance;
-        if (leagueDataMgr == null) return;
-
-        var calMoney = leagueDataMgr.CalculateLeagueMoney(_currentLeague.leagueId, GetPlayerStandingData());
-
-        var gameMgr = GameManager.Instance;
-        if (gameMgr == null) return;
-
-        gameMgr.SetMoney(gameMgr.SaveData.money + calMoney);
-
     }
 
     public bool IsPlayerSeasonOut()
@@ -262,20 +250,7 @@ public class LeagueManager : Singleton<LeagueManager>
 
         return false;
     }
-
-    private LeagueStandingData GetPlayerStandingData()
-    {
-        if (_currentLeague == null) return null;
-
-        foreach (var standing in _currentLeague.standings)
-        {
-            if (standing.teamId.Equals(PLAYER_TEAM_ID))
-                return standing;
-        }
-
-        return null;
-    }
-
+    
     private void SaveCurrentLeague()
     {
         if (_currentLeague == null) return;

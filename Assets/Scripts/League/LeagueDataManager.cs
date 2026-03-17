@@ -55,32 +55,23 @@ public class LeagueDataManager : Singleton<LeagueDataManager>
 
         return null;
     }
-
+    
     /// <summary>
-    /// 지원금 계산 후 반영
+    /// 리그 보상 데이터 반환
     /// </summary>
-    public int CalculateLeagueMoney(string leagueId, LeagueStandingData playerStanding)
+    public League_RewardData? GetRewardDataByLeagueId(string leagueId)
     {
-        if (_leagueFactory == null) return 0;
-        if (string.IsNullOrEmpty(leagueId)) return 0;
+        if (_leagueFactory == null) return null;
+        if (string.IsNullOrEmpty(leagueId)) return null;    
 
         var dataList = _leagueFactory.GetRewardDataList();
-        int resultMoney = 0;
-
         foreach (var data in dataList)
         {
             if (data.leagueRewardId.Equals(leagueId))
-            {
-                // (승리횟수 * rewardGoldEach) + (패배횟수 * rewardGoldEach * rewardGoldMultiplier) + (우승여부 * rewardGoldWin)
-                resultMoney = (playerStanding.win * data.rewardGoldEach) +
-                         (int)(playerStanding.lose * data.rewardGoldEach * data.rewardGoldMultiplier) +
-                         ((playerStanding.rank == 1 ? 1 : 0) * data.rewardGoldWin);
-
-                return resultMoney;
-            }
+                return data;
         }
 
-        return resultMoney;
+        return null;
     }
 
     public int CalculateLeagueFame(string leagueId, LeagueStandingData playerStanding)

@@ -114,11 +114,12 @@ public class ResultState : IState
         bool isWin = matchState.HomeTeam.Score > matchState.AwayTeam.Score;
 
         // 실제 보상 데이터가 없으면 기본값 세팅 (에러 방지)
-        int rewardGoldEach = 100;           // 승리 시 경기당 지원금
-        float rewardGoldMultiplier = 0.3f;  // 패배 시 지원금 배율
+        var data = LeagueDataManager.Instance.GetRewardDataByLeagueId(currentLeague.leagueId);
+        int rewardGoldEach = data.Value.rewardGoldEach;                // 승리 시 경기당 지원금
+        float rewardGoldMultiplier = data.Value.rewardGoldMultiplier;  // 패배 시 지원금 배율
         
         // 아직 리그 미구현으로 주석처리
-        //int rewardFameWin = 20;             // 리그 최종 우승 시 명성
+        int rewardFameWin = data.Value.rewardFameWin;             // 리그 최종 우승 시 명성
 
         // 승패에 따른 기본 지급금 계산
         int baseGold = isWin ? rewardGoldEach : Mathf.RoundToInt(rewardGoldEach * rewardGoldMultiplier);
