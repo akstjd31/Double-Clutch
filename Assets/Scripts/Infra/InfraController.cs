@@ -12,9 +12,9 @@ public class InfraController : MonoBehaviour
     private Button button;
     [SerializeField] private infraEffectType _infraEffectType;
     [SerializeField] private List<int> _needCost;
-    
+
     private Infra infra;
-    
+
     public event Action<int> Upgraded;
     private bool initComplete = false;                     // 초기 세팅이 완료되었는지 여부 확인
     private Coroutine _warningCoroutine;
@@ -27,8 +27,8 @@ public class InfraController : MonoBehaviour
         if (button == null) return;
         button.onClick.AddListener(OnClickInfraButton);
     }
-    
-    private void OnEnable() 
+
+    private void OnEnable()
     {
         Init();
     }
@@ -57,14 +57,16 @@ public class InfraController : MonoBehaviour
 
         // 저장된 데이터 유무에 따른 불러오는 방식
         if (saveData == null)
-        {        
+        {
             infra = new Infra
-            (
-                name: data.Value.desc,
-                desc: infraMgr.GetInfraDescByEffectType(_infraEffectType),
-                maxLevel: infraMgr.GetMaxLevelByEffectType(_infraEffectType),
-                groupId: data.Value.group
-            );
+(
+    name: data.Value.desc,
+    desc: infraMgr.GetInfraDescByEffectType(_infraEffectType),
+    nameKey: data.Value.infraNameKey,   // 추가
+    descKey: data.Value.infraDescKey,   // 추가
+    maxLevel: infraMgr.GetMaxLevelByEffectType(_infraEffectType),
+    groupId: data.Value.group
+);
 
             infra.SetInfraEffectValueList(infraMgr.GetValueListByEffectType(_infraEffectType));
         }
@@ -78,7 +80,7 @@ public class InfraController : MonoBehaviour
         Debug.Log($"[{infra.name}] 기초 세팅 완료!");
         infraMgr.SetInfra(infra);
         initComplete = true;
-    }     
+    }
 
     private void OnClickInfraButton()
     {
@@ -113,13 +115,13 @@ public class InfraController : MonoBehaviour
         if (infra.infraEffectValue == null) return -1;
         return infra.infraEffectValue[infra.currentLevel];
     }
-    
+
     public int GetCostByNextLevel()
     {
         if (_needCost == null) return -1;
         if (infra.currentLevel + 1 < infra.maxLevel)
             return _needCost[infra.currentLevel + 1];
-        
+
         return _needCost[infra.maxLevel];
     }
 
@@ -127,8 +129,8 @@ public class InfraController : MonoBehaviour
     public bool HasEnoughUpgradeCost()
     {
         if (GameManager.Instance == null) return false;
-        
+
         var money = GameManager.Instance.SaveData.money;
-        return money > GetCostByNextLevel(); 
+        return money > GetCostByNextLevel();
     }
 }
