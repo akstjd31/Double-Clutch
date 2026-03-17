@@ -169,20 +169,31 @@ public class CalendarManager : Singleton<CalendarManager>
         }
 
         var leagueDataMgr = LeagueDataManager.Instance;
-        if (leagueDataMgr != null)
+        if (leagueDataMgr != null && !CheckEventDay(weekId))
         {
-            var selectionData = leagueDataMgr.GetTeamSelectionRuleByWeekId(weekId);
-            if (selectionData != null)
+            string leagueId = GetLeagueIdByWeekId(weekId);
+            // 이번 주차 캘린더에 리그 일정이 있다면!
+            if (!string.IsNullOrEmpty(leagueId) && leagueId != "-")
             {
-                var teams = LeagueDataManager.Instance.CreateLeagueTeams(selectionData);
-                if (teams == null) return;
+                var masterData = leagueDataMgr.GetMasterDataById(leagueId);
 
-                for (int i = 0; i < teams.Count; i++)
+                // 마스터 데이터에 팀 생성 규칙이 명시되어 있다면
+                if (masterData.HasValue && masterData.Value.isSelectionRequired)
                 {
-                    Debug.Log($"{i}번째 팀: {teams[i]}");
-                }
+                    string ruleId = masterData.Value.teamSelectionRuleId;
 
-                LeagueDataManager.Instance.CreateAndSaveLeague(GetLeagueIdByWeekId(weekId), selectionData);
+                    var selectionData = leagueDataMgr.GetTeamSelectionRuleById(ruleId);
+
+                    if (selectionData != null)
+                    {
+                        LeagueDataManager.Instance.CreateAndSaveLeague(leagueId, selectionData);
+                        Debug.Log($"[{leagueId}] 리그 및 팀 생성 완료! (적용된 룰: {ruleId})");
+                    }
+                    else
+                    {
+                        Debug.LogError($"팀 생성 룰을 찾을 수 없습니다! Rule ID: {ruleId}");
+                    }
+                }
             }
         }
 
@@ -205,21 +216,7 @@ public class CalendarManager : Singleton<CalendarManager>
          switch (_calReader.DataList[weekId - 1].phase)
          {
              case phaseType.League:
-                 var leagueDataMgr = LeagueDataManager.Instance;
-                 if (leagueDataMgr == null) return false;
-
-                 var selectionData = leagueDataMgr.GetTeamSelectionRuleByWeekId(weekId);
-                 if (selectionData == null) return false;
-
-                 var teams = LeagueDataManager.Instance.CreateLeagueTeams(selectionData);
-                 if (teams == null) return false;
-
-                 for (int i = 0; i < teams.Count; i++)
-                 {
-                     Debug.Log($"{i}번째 팀: {teams[i]}");
-                 }
-
-                 LeagueDataManager.Instance.CreateAndSaveLeague(GetLeagueIdByWeekId(weekId), selectionData);
+                 
                  return true;
 
              // 경우에 따라 작성 (이벤트일떄) phaseType.Event ..
