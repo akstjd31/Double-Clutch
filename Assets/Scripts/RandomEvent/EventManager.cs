@@ -1,0 +1,196 @@
+using NUnit.Framework;
+using System.Collections.Generic;
+using UnityEngine;
+
+[System.Serializable]
+public class EventManager : Singleton<EventManager>
+{
+    private const string SAVE_FILE = "RandomEventSave.json";
+    Dictionary<int, List<RandomEvent>> _saveEventList = new();
+
+    #region DB
+    [SerializeField] private Event_DataModelReader _dataModelReader;
+    [SerializeField] private Event_ChoiceDataReader _choiceDataReader;
+    #endregion
+    [SerializeField] private List<Student> _myStudents;
+
+    [SerializeField] private List<RandomEvent> _randomEvents;
+
+    //1. 선수별 이벤트 후보 저장 딕셔너리 : 선수ID, 이벤트 - 이벤트 쿨타임 관리 해야 함.
+    private Dictionary<int, List<RandomEvent>> _candidateDictionary = new();
+    [SerializeField] private List<int> _debugList_candidateDictionary;
+
+    //2. <이벤트 스크립트 id, 출력텍스트 리스트>를 저장한 딕셔너리
+    private Dictionary<string, Dictionary<int, Event_ChoiceData>> _eventScript = new();
+    [SerializeField] private List<string> _debugList_eventScript;
+
+
+    public Dictionary<int, List<RandomEvent>> CandidateDictionary => _candidateDictionary;
+    public Dictionary<string, Dictionary<int, Event_ChoiceData>> EventScript => _eventScript;
+
+    //학생별 가능한 이벤트 리스트를 딕셔너리에 저장
+    //1. 요구 잠재력 조건 만족
+
+    private void Awake()
+    {
+        base.Awake();
+        LoadGame();
+    }
+
+    public void CharacterEvent()
+    {
+        _myStudents = StudentManager.Instance.MyStudents;
+
+        if(_candidateDictionary.Count > 0)
+        {
+            _debugList_candidateDictionary = new List<int>(_candidateDictionary.Keys);
+
+            foreach (var p in _candidateDictionary)
+            {
+                int studentId = p.Key;
+                _randomEvents.AddRange(p.Value);
+            }
+            return;
+        }
+
+        var data = _dataModelReader.DataList;
+        _candidateDictionary.Clear();
+
+
+        //학생들 전체 검사
+        for (int i = 0; i < _myStudents.Count; i++)
+        {
+            var studentID = _myStudents[i].StudentId;
+
+            //등록되지 않은 ID면 새로 딕셔너리에 등록
+            if (_candidateDictionary.ContainsKey(studentID) == false)
+            {
+                _candidateDictionary.Add(studentID, new List<RandomEvent>());
+            }
+
+            //모든 이벤트 수만큼 검사
+            for (int j = 0; j < data.Count; j++)
+            {
+                //스텟 검사
+                if (_myStudents[i].GetCurrentStat(data[j].mainPotentialType) >= data[j].requiredPotentialValue)
+                {
+                    //이벤트 id랑 쿨타임 저장
+                    _candidateDictionary[studentID].Add(new RandomEvent(data[j].eventId, data[j].potentialPercent, data[j].cooldownTurn, data[j].eventPriority));
+                }
+            }
+            //Debug.Log($"------[1차 후보]------");
+            //foreach (var n in _candidateDictionary[studentID])
+            //{
+            //    Debug.Log($"{i} - {n.EventId}");
+            //}
+            //Debug.Log($"----------------------");
+
+        }
+        _debugList_candidateDictionary = new List<int>(_candidateDictionary.Keys);
+
+        foreach(var p in _candidateDictionary)
+        {
+            int studentId = p.Key;
+            _randomEvents.AddRange(p.Value);
+        }
+    }
+
+    public void CreateList()
+    {
+        var data = _choiceDataReader.DataList;
+
+        //시트 개수만큼 반복
+        for (int i = 0; i < data.Count; i++)
+        {
+            string cId = data[i].scriptId;
+
+            //ID 키값으로 딕셔너리가 없으면 새로 생성
+            if (!_eventScript.TryGetValue(cId, out Dictionary<int, Event_ChoiceData> chDic))
+            {
+                chDic = new();
+                _eventScript[cId] =  chDic;
+            }
+            if (!chDic.ContainsKey(data[i].currentId))
+            {
+                chDic.Add(data[i].currentId, data[i]);
+            }
+        }
+
+        _debugList_eventScript = new List<string>(_eventScript.Keys);
+     }
+
+
+    //주차가 끝나면 모든 학생이 가지고 있는 이벤트
+    //IsReady = false만 쿨타임 감소
+    public void WeekendCooldown()
+    {
+        Debug.Log($"주차 정산 이벤트 쿨다운 체크");
+        var data = _dataModelReader.DataList;
+
+        //학생들 전체 검사
+        for (int i = 0; i < _myStudents.Count; i++)
+        {
+            var studentID = _myStudents[i].StudentId;
+
+            //딕셔너리에 등록되지 않은 학생은 스킵
+            if (_candidateDictionary.ContainsKey(studentID) == false)
+            {
+                Debug.Log($"{studentID} 학생 스킵");
+                continue;
+            }
+
+            //딕셔너리>학생>이벤트리스트 개수만큼 체크
+            for (int j = 0; j < _candidateDictionary[studentID].Count; j++)
+            {
+                //준비되지 않은 이벤트만 감소
+                if (_candidateDictionary[studentID][j].IsReady == true)
+                {
+                    Debug.Log($"{_candidateDictionary[studentID][j].EventId} 이벤트 스킵");
+                    continue;
+                }
+                //쿨다운 값 감소
+                Debug.Log($"{studentID}번 학생 {_candidateDictionary[studentID][j].EventId} 주차 감소");
+                _candidateDictionary[studentID][j].Cooldown();
+            }
+        }
+
+        _debugList_eventScript = new List<string>(_eventScript.Keys);
+        SaveGame();
+    }
+
+    public void SaveGame()
+    {
+        Debug.Log($"세이브 딕셔너리 수 : {_candidateDictionary.Count}");
+        if (EventManager.Instance == null) return;
+
+        // 1. 랜덤이벤트 세이브 데이터 생성
+        var saveData = new RandomEventSaveData();
+
+        foreach (var kv in _candidateDictionary)
+        {
+            saveData.studentEventList.Add(new StudentEventEntry
+            {
+                studentId = kv.Key,
+                events = new List<RandomEvent>(kv.Value)
+            });
+        }
+
+        SaveLoadManager.Instance.Save(SAVE_FILE, saveData);
+    }
+
+    public void LoadGame()
+    {
+        if (SaveLoadManager.Instance.TryLoad<RandomEventSaveData>(SAVE_FILE, out var data))
+        {
+            _candidateDictionary.Clear();
+
+            foreach (var entry in data.studentEventList)
+            {
+                _candidateDictionary.Add(entry.studentId, entry.events);
+            }
+
+            Debug.Log("이벤트 세이브 파일 불러옴");
+        }
+    }
+
+}

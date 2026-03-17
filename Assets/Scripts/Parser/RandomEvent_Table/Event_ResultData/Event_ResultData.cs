@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 
 [Serializable]
@@ -15,14 +15,14 @@ public struct Event_ResultData
     public int conditionChange;
     public string statusChange;
     public string reactionPortraitId;
-    public string resultscriptKey;
+    public string resultScriptKey;
 
     public string seId;
     public string floatingText;
 
     public Event_ResultData(
         string resultId, string choiceId, string scriptId, int nextId, personalityType matchPersonalityId, potential potentialChangeType,
-        int potentialChangeValue, int conditionChange, string statusChange, string reactionPortraitId, string resultscriptKey,
+        int potentialChangeValue, int conditionChange, string statusChange, string reactionPortraitId, string resultScriptKey,
         string seId, string floatingText
         )
     {
@@ -37,7 +37,7 @@ public struct Event_ResultData
         this.conditionChange = conditionChange;
         this.statusChange = statusChange;
         this.reactionPortraitId = reactionPortraitId;
-        this.resultscriptKey = resultscriptKey;
+        this.resultScriptKey = resultScriptKey;
 
         this.seId = seId;
         this.floatingText = floatingText;

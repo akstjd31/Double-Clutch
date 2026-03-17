@@ -130,7 +130,7 @@ public class StudentUIManager : MonoBehaviour
     public void RefreshStartFosterButton(bool isInteractable, int currentCount, int maxCount)
     {
         _startFosterButton.interactable = isInteractable;
-        _startFosterButtonCount.text = $"육성 시작 {currentCount} / {maxCount}";
+        _startFosterButtonCount.text = $"{currentCount} / {maxCount}";
     }
 
     public void OpenConditionWarningPopUp(List<Student> targets, int cost)

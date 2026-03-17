@@ -3,31 +3,31 @@ using UnityEngine;
 [System.Serializable]
 public class MatchLogData
 {
-    public float GameTime;      // ³²Àº ½Ã°£
-    public int Quarter;         // ÄõÅÍ
-    public string LogText;      // ·Î±× ÅØ½ºÆ®
+    public float GameTime;      // ë‚¨ì€ ì‹œê°„
+    public int Quarter;         // ì¿¼í„°
+    public string LogText;      // ë¡œê·¸ í…ìŠ¤íŠ¸
     public int TeamId;          // 0: Home, 1: Away
-    public int PlayerId;        // ¼±¼ö ID
-    public string PlayerName;   // ¼±¼ö ÀÌ¸§
+    public int PlayerId;        // ì„ ìˆ˜ ID
+    public string PlayerName;   // ì„ ìˆ˜ ì´ë¦„
 
-    // ÀÌº¥Æ® Å¸ÀÔ: "QUARTER_START", "MOVE", "SHOOT", "GOAL", "MISS", "PASS", "STEAL", "DRIBBLE", "BLOCK", "REBOUND", "MATCH_END"
+    // ì´ë²¤íŠ¸ íƒ€ì…: "QUARTER_START", "MOVE", "SHOOT", "GOAL", "MISS", "PASS", "STEAL", "DRIBBLE", "BLOCK", "REBOUND", "MATCH_END"
     public string EventType;
 
-    public bool IsSuccess;      // ¼º°ø ¿©ºÎ
-    public int ScoreAdded;      // µæÁ¡ (2 or 3)
+    public bool IsSuccess;      // ì„±ê³µ ì—¬ë¶€
+    public int ScoreAdded;      // ë“ì  (2 or 3)
 
-    // ¿¬Ãâ¿ë µ¥ÀÌÅÍ
-    public bool IsCutIn;        // ÄÆÀÎ ¿¬Ãâ ¿©ºÎ
+    // ì—°ì¶œìš© ë°ì´í„°
+    public bool IsCutIn;        // ì»·ì¸ ì—°ì¶œ ì—¬ë¶€
     public string CutInType;    // "DUNK", "3PT", "BUZZER"
 
-    // »ç¿îµå ¿¬Ãâ¿ë Å¸ÀÔ
+    // ì‚¬ìš´ë“œ ì—°ì¶œìš© íƒ€ì…
     public string SfxType;
 
-    public Vector2 BallPos;     // °øÀÌ À§Ä¡ÇØ¾ß ÇÒ ³í¸® ÁÂÇ¥ (0~1)
+    public Vector2 BallPos;     // ê³µì´ ìœ„ì¹˜í•´ì•¼ í•  ë…¼ë¦¬ ì¢Œí‘œ (0~1)
 
-    // ¿ÀÇÁº¼ ¹«ºê ¿¬ÃâÀ» À§ÇØ 10¸í ¼±¼öÀÇ ÁÂÇ¥¸¦ ¸Å ÅÏ ÀúÀå
+    // ì˜¤í”„ë³¼ ë¬´ë¸Œ ì—°ì¶œì„ ìœ„í•´ 10ëª… ì„ ìˆ˜ì˜ ì¢Œí‘œë¥¼ ë§¤ í„´ ì €ì¥
     public Vector2[] HomePositions = new Vector2[5];
     public Vector2[] AwayPositions = new Vector2[5];
-    // »ı¼ºÀÚ ¾øÀÌ ±âº» »ı¼ºÀÚ »ç¿ë
+    // ìƒì„±ì ì—†ì´ ê¸°ë³¸ ìƒì„±ì ì‚¬ìš©
     public MatchLogData() { }
 }

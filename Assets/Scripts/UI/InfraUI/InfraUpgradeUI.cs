@@ -1,11 +1,13 @@
-using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
+using UnityEngine;
+using UnityEngine.InputSystem.XR;
+using UnityEngine.UI;
 
 
 public class InfraUpgradeUI : MonoBehaviour
 {
-    private Infra _currentInfra = null;
+    private InfraController _controller;
+    private Infra _infra;
     [SerializeField] private TextMeshProUGUI _title;
     [SerializeField] private TextMeshProUGUI _nameText;
     [SerializeField] private TextMeshProUGUI _levelText;
@@ -17,34 +19,55 @@ public class InfraUpgradeUI : MonoBehaviour
     {
         
     }
-
+    private void OnEnable()
+    {
+        StringManager.OnLanguageChanged += Refresh;
+    }
     private void OnDisable()
     {
+        StringManager.OnLanguageChanged -= Refresh;
         _upgradeButton.onClick.RemoveAllListeners();
-        _currentInfra.Upgraded -= UpdateLevelText;
+        if (_controller != null)
+            _controller.Upgraded -= UpdateLevelText;
     }
 
-    public void Init(Infra infra)
+    public void Init(InfraController controller, Infra infra)
     {
-        _title.text = infra.Name;
-        _nameText.text = infra.Name;
+        if (_controller != null)
+            _controller.Upgraded -= UpdateLevelText;
 
-        UpdateLevelText(infra.CurrentLevel);
+        _controller = controller;
+        _infra = infra;
 
-        var valueStr = TextParser.GetKeys(infra.Desc);
-        var fommatted = FormatInfraDescText(infra.Desc, "{" + valueStr[0] + "}", infra.GetValueByLevel());
-        _effectDescText.text = fommatted;
+        _upgradeButton.interactable = !(_infra.currentLevel >= _infra.maxLevel);
+        _controller.Upgraded += UpdateLevelText;
 
-        _currentInfra = infra;
-
-        if (_upgradeButton == null) return;
-
-        // 최대 레벨에 도달하지 않은 경우에만 활성화
-        _upgradeButton.interactable = !infra.IsReachedMaxLevel();
-
-        _currentInfra.Upgraded += UpdateLevelText;
+        Refresh();
     }
-    
+    private void Refresh()
+    {
+        if (_infra == null) return;
+        if (StringManager.Instance == null) return;
+
+        StringManager.Instance.GetString(_infra.nameKey, _title);
+        StringManager.Instance.GetString(_infra.nameKey, _nameText);
+
+        _levelText.text = _infra.currentLevel.ToString();
+
+        string originDesc = StringManager.Instance.GetString(_infra.descKey);
+        var keys = TextParser.GetKeys(originDesc);
+        if (keys != null && keys.Count > 0)
+        {
+            int value = _controller.GetCurrentInfraEffectValue();
+            _effectDescText.text = originDesc.Replace("{" + keys[0] + "}", value.ToString());
+        }
+        else
+        {
+            _effectDescText.text = originDesc;
+        }
+        StringManager.Instance.ApplyFont(_effectDescText);
+    }
+
     public void UpdateLevelText(int level)
     {
         _levelText.text = level.ToString();
@@ -52,10 +75,9 @@ public class InfraUpgradeUI : MonoBehaviour
 
     public void OnClickUpgradeButton()
     {
-        if (_currentInfra == null) return;
+        if (_controller == null) return;
         _reconfirmUI.gameObject.SetActive(true);
-
-        _reconfirmUI.Init(_currentInfra);
+        _reconfirmUI.Init(_controller);
     }
 
     // 중괄호로 되어있는 부분을 처리 및 전체 문자열을 반환 (이 부분은 UI 스크립트에서 작성해야할듯?)

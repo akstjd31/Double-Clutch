@@ -9,25 +9,25 @@ public class MatchReplayer : MonoBehaviour
     [Header("UI & References")]
     [SerializeField] private MatchUIManager _uiManager;
     [SerializeField] private MatchState _matchState;
-    [SerializeField] private RectTransform _courtPanel; // CourtPanel ¿¬°áÇÒ °÷
+    [SerializeField] private RectTransform _courtPanel; // CourtPanel ì—°ê²°í•  ê³³
 
-    // ¹è¼Ó ±â´É (ÀÎ½ºÆåÅÍ¿¡¼­ 1, 2, 8 µîÀ¸·Î Á¶Àı °¡´É)
+    // ë°°ì† ê¸°ëŠ¥ (ì¸ìŠ¤í™í„°ì—ì„œ 1, 2, 8 ë“±ìœ¼ë¡œ ì¡°ì ˆ ê°€ëŠ¥)
     [Header("Playback Settings")]
     [Range(1f, 10f)]
     public float PlaybackSpeed = 1.0f;
 
-    // °ø UI ¿ÀºêÁ§Æ®
+    // ê³µ UI ì˜¤ë¸Œì íŠ¸
     private GameObject _ballUI;
 
-    // È¨/¾î¿şÀÌ °ñ´ë UI ¿ÀºêÁ§Æ®
+    // í™ˆ/ì–´ì›¨ì´ ê³¨ëŒ€ UI ì˜¤ë¸Œì íŠ¸
     private RectTransform _homeHoopUI;
     private RectTransform _awayHoopUI;
 
-    // ¿Àµğ¿À °ü·Ã ÄÄÆ÷³ÍÆ® Ãß°¡
+    // ì˜¤ë””ì˜¤ ê´€ë ¨ ì»´í¬ë„ŒíŠ¸ ì¶”ê°€
     [Header("Audio Settings")]
     [SerializeField] private AudioSource _audioSource;
-    [SerializeField] private AudioClip _sfxCheer; // 2Á¡½¸ ÇÔ¼º »ç¿îµå
-    [SerializeField] private AudioClip _sfxClap;  // ½ºÆ¿ ¹Ú¼ö »ç¿îµå
+    [SerializeField] private AudioClip _sfxCheer; // 2ì ìŠ› í•¨ì„± ì‚¬ìš´ë“œ
+    [SerializeField] private AudioClip _sfxClap;  // ìŠ¤í‹¸ ë°•ìˆ˜ ì‚¬ìš´ë“œ
 
     public RectTransform CourtPanel => _courtPanel;
     private List<MatchLogData> _logs;
@@ -41,7 +41,7 @@ public class MatchReplayer : MonoBehaviour
     {
         _logs = logs;
 
-        // ±âÁ¸ ¼±¼ö ¿ÀºêÁ§Æ® ÀüºÎ Á¤¸® ÈÄ »õ·Î »ı¼º
+        // ê¸°ì¡´ ì„ ìˆ˜ ì˜¤ë¸Œì íŠ¸ ì „ë¶€ ì •ë¦¬ í›„ ìƒˆë¡œ ìƒì„±
         CleanUpVisuals();
 
         SpawnPlayerCircles(_matchState.HomeTeam, Color.blue);
@@ -73,7 +73,7 @@ public class MatchReplayer : MonoBehaviour
     }
 
 
-    // ¼±¼ö µ¿±×¶ó¹Ì »ı¼º
+    // ì„ ìˆ˜ ë™ê·¸ë¼ë¯¸ ìƒì„±
     private void SpawnPlayerCircles(MatchTeam team, Color color)
     {
         if (team == null || team.Roster == null) return;
@@ -81,17 +81,24 @@ public class MatchReplayer : MonoBehaviour
         {
             if (player.VisualObject == null)
             {
-                player.VisualObject = CreateCircleUI(player.PlayerName, color, 30f);
+                player.VisualObject = CreateCircleUI(MakeName(player.PlayerName), color, 30f);
                 player.VisualObject.GetComponent<RectTransform>().anchoredPosition
                     = LogicToUIPos(player.LogicPosition);
             }
         }
     }
 
-    // °ñ´ë »ı¼º
+    private string MakeName(string[] nameKey)
+    {
+        StringManager manager = StringManager.Instance;
+        string name = manager.GetString(nameKey[0]) + manager.GetString(nameKey[1]) + manager.GetString(nameKey[2]);
+        return name;
+    }
+
+    // ê³¨ëŒ€ ìƒì„±
     private void SpawnHoops()
     {
-        // ÀÌ¹Ì ÀÖÀ¸¸é »ı¼º ¾È ÇÔ
+        // ì´ë¯¸ ìˆìœ¼ë©´ ìƒì„± ì•ˆ í•¨
         if (_homeHoopUI != null && _awayHoopUI != null) return;
 
         GameObject homeHoop = CreateCircleUI("HomeHoop", Color.blue, 20f);
@@ -104,36 +111,36 @@ public class MatchReplayer : MonoBehaviour
         _awayHoopUI.anchoredPosition = LogicToUIPos(new Vector2(0.5f, 0.95f));
     }
 
-    // °ø »ı¼º
+    // ê³µ ìƒì„±
     private void SpawnBall()
     {
-        // ÀÌ¹Ì ÀÖÀ¸¸é »ı¼º ¾È ÇÔ
+        // ì´ë¯¸ ìˆìœ¼ë©´ ìƒì„± ì•ˆ í•¨
         if (_ballUI != null) return;
         _ballUI = CreateCircleUI("Ball", Color.yellow, 20f);
     }
 
-    // UI µ¿±×¶ó¹Ì ¿ÀºêÁ§Æ® »ı¼º °øÅë ÇÔ¼ö
+    // UI ë™ê·¸ë¼ë¯¸ ì˜¤ë¸Œì íŠ¸ ìƒì„± ê³µí†µ í•¨ìˆ˜
     private GameObject CreateCircleUI(string name, Color color, float size)
     {
         GameObject obj = new GameObject(name);
         obj.transform.SetParent(_courtPanel, false);
 
-        // RectTransform ¼³Á¤
+        // RectTransform ì„¤ì •
         RectTransform rt = obj.AddComponent<RectTransform>();
         rt.sizeDelta = new Vector2(size, size);
 
-        // Image ÄÄÆ÷³ÍÆ®·Î µ¿±×¶ó¹Ì Ç¥Çö
+        // Image ì»´í¬ë„ŒíŠ¸ë¡œ ë™ê·¸ë¼ë¯¸ í‘œí˜„
         UnityEngine.UI.Image img = obj.AddComponent<UnityEngine.UI.Image>();
         img.color = color;
-        img.sprite = CreateCircleSprite(); // µ¿±×¶ó¹Ì ½ºÇÁ¶óÀÌÆ® »ı¼º
+        img.sprite = CreateCircleSprite(); // ë™ê·¸ë¼ë¯¸ ìŠ¤í”„ë¼ì´íŠ¸ ìƒì„±
 
         return obj;
     }
 
-    // µ¿±×¶ó¹Ì ½ºÇÁ¶óÀÌÆ® »ı¼º ÇÔ¼ö
+    // ë™ê·¸ë¼ë¯¸ ìŠ¤í”„ë¼ì´íŠ¸ ìƒì„± í•¨ìˆ˜
     private Sprite CreateCircleSprite()
     {
-        // À¯´ÏÆ¼ ±âº» ¿øÇü ½ºÇÁ¶óÀÌÆ® »ç¿ë
+        // ìœ ë‹ˆí‹° ê¸°ë³¸ ì›í˜• ìŠ¤í”„ë¼ì´íŠ¸ ì‚¬ìš©
         Texture2D tex = new Texture2D(64, 64);
         Vector2 center = new Vector2(32, 32);
         float radius = 30f;
@@ -168,7 +175,7 @@ public class MatchReplayer : MonoBehaviour
         _isSkipping = false;
         _currentLogIndex = 0;
 
-        // ½ÇÇàÇÑ ÄÚ·çÆ¾À» º¯¼ö¿¡ ´ã¾ÆµÒ (³ªÁß¿¡ °­Á¦ Á¤ÁöÇÏ±â À§ÇÔ)
+        // ì‹¤í–‰í•œ ì½”ë£¨í‹´ì„ ë³€ìˆ˜ì— ë‹´ì•„ë‘  (ë‚˜ì¤‘ì— ê°•ì œ ì •ì§€í•˜ê¸° ìœ„í•¨)
         _replayCoroutine = StartCoroutine(ReplayRoutine());
     }
 
@@ -255,14 +262,14 @@ public class MatchReplayer : MonoBehaviour
         if (_isSkipping) return;
         _isSkipping = true;
 
-        // Àç»ı ÁßÀÌ´ø ¿¬Ãâ ÄÚ·çÆ¾ °­Á¦ Á¤Áö
+        // ì¬ìƒ ì¤‘ì´ë˜ ì—°ì¶œ ì½”ë£¨í‹´ ê°•ì œ ì •ì§€
         if (_replayCoroutine != null)
         {
             StopCoroutine(_replayCoroutine);
             _replayCoroutine = null;
         }
 
-        // ³²Àº ·Î±×µéÀ» ¼ø½Ä°£¿¡ µ¹¸®¸é¼­ Á¡¼ö¸¸ ÇÑ¹æ¿¡ ÇÕ»ê
+        // ë‚¨ì€ ë¡œê·¸ë“¤ì„ ìˆœì‹ê°„ì— ëŒë¦¬ë©´ì„œ ì ìˆ˜ë§Œ í•œë°©ì— í•©ì‚°
         for (int i = _currentLogIndex; i < _logs.Count; i++)
         {
             var log = _logs[i];
@@ -273,14 +280,14 @@ public class MatchReplayer : MonoBehaviour
             }
         }
 
-        // »óÅÂ °»½Å (¸¶Áö¸· ·Î±×ÀÇ ½Ã°£/ÄõÅÍ·Î ¸ÂÃã)
+        // ìƒíƒœ ê°±ì‹  (ë§ˆì§€ë§‰ ë¡œê·¸ì˜ ì‹œê°„/ì¿¼í„°ë¡œ ë§ì¶¤)
         if (_logs.Count > 0)
         {
             var lastLog = _logs[_logs.Count - 1];
             _matchState.SetReplayState(lastLog.Quarter, lastLog.GameTime);
         }
 
-        // UI ÃÖ½ÅÈ­ ¹× ÁøÇà ÁßÀÌ´ø ÄÆÀÎ °­Á¦ Á¾·á
+        // UI ìµœì‹ í™” ë° ì§„í–‰ ì¤‘ì´ë˜ ì»·ì¸ ê°•ì œ ì¢…ë£Œ
         if (_uiManager != null)
         {
             _uiManager.UpdateScoreBoard(_matchState);
@@ -288,7 +295,7 @@ public class MatchReplayer : MonoBehaviour
             _uiManager.ForceCloseCutIn();
         }
 
-        // ´ÙÀ½ ´Ü°è(ÇÏÇÁÅ¸ÀÓ ¶Ç´Â °æ±â Á¾·á)·Î Áï½Ã ³Ñ¾î°¨
+        // ë‹¤ìŒ ë‹¨ê³„(í•˜í”„íƒ€ì„ ë˜ëŠ” ê²½ê¸° ì¢…ë£Œ)ë¡œ ì¦‰ì‹œ ë„˜ì–´ê°
         OnReplayEnded?.Invoke();
     }
 }

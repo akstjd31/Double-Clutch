@@ -119,6 +119,93 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &312164447
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 312164450}
+  - component: {fileID: 312164449}
+  - component: {fileID: 312164448}
+  - component: {fileID: 312164451}
+  m_Layer: 0
+  m_Name: LeagueManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &312164448
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 312164447}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6bc22f05a9e82aa4aac27a5267383c77, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LeagueFactory
+  _leagueMasterReader: {fileID: 11400000, guid: 5b177a0437888e44581b761c7f8b41ed, type: 2}
+  _leagueTeamSelectionReader: {fileID: 11400000, guid: 02e2dc6aad86a2247a80a20f8514c442, type: 2}
+  _rivalMasterReader: {fileID: 11400000, guid: f9addf54606d27d45b6fc885787057fe, type: 2}
+  _archetypeReader: {fileID: 11400000, guid: 716634fb00f78bc41842041e37c5a086, type: 2}
+  _leagueLevelReader: {fileID: 11400000, guid: 1f2b51ab93100da4997214738663e46e, type: 2}
+  _leagueRewardReader: {fileID: 11400000, guid: 227fdc63c25e5d34eb1ba4bf55150b3d, type: 2}
+--- !u!114 &312164449
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 312164447}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b44810d2cf4f598478461f7197c9dc7a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LeagueManager
+  dontDestroyOnLoad: 1
+--- !u!4 &312164450
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 312164447}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &312164451
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 312164447}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 23f77fed43046dd44b4fb12a75154dbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LeagueManager
+  dontDestroyOnLoad: 1
+  _currentLeague:
+    leagueId: 
+    leagueType: 
+    currentRoundIndex: 0
+    isFinished: 0
+    isPlayerEliminated: 0
+    teams: []
+    matchRecords: []
+    standings: []
 --- !u!1 &400084806
 GameObject:
   m_ObjectHideFlags: 0
@@ -149,7 +236,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   dontDestroyOnLoad: 1
-  saveData:
+  _saveData:
     schoolName: 
     coachName: 
     honor: 0
@@ -181,8 +268,9 @@ GameObject:
   m_Component:
   - component: {fileID: 748093095}
   - component: {fileID: 748093094}
+  - component: {fileID: 748093096}
   m_Layer: 0
-  m_Name: Audio Source
+  m_Name: AudioManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -200,10 +288,10 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: -6996804981200380284, guid: d40ad877423231947b112e9374d99f80, type: 2}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
-  m_PlayOnAwake: 1
-  m_Volume: 1
+  m_PlayOnAwake: 0
+  m_Volume: 0.26
   m_Pitch: 1
-  Loop: 0
+  Loop: 1
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
@@ -300,6 +388,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &748093096
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 748093093}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 94c1228eeeccf3d4c85bfef25439e082, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AudioManager
+  dontDestroyOnLoad: 1
+  _reader: {fileID: 11400000, guid: 7ea8353004daa3f4f9585ab06a2689b9, type: 2}
+  _mixer: {fileID: 24100000, guid: d40ad877423231947b112e9374d99f80, type: 2}
 --- !u!1 &756173926
 GameObject:
   m_ObjectHideFlags: 0
@@ -376,6 +479,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::StringManager
   dontDestroyOnLoad: 1
   _stringDB: {fileID: 11400000, guid: 3d7ca27fff3aac04fa55cabfa1a34912, type: 2}
+  _randomEventStringDB: {fileID: 11400000, guid: c39d8b4c4c2084a41a610e2efa4ae585, type: 2}
+  _koFont: {fileID: 0}
+  _enFont: {fileID: 0}
+  _jaFont: {fileID: 11400000, guid: ac23ba9c213e9604d922e6c1a8a0da90, type: 2}
 --- !u!4 &775522538
 Transform:
   m_ObjectHideFlags: 0
@@ -422,7 +529,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::InfraManager
   dontDestroyOnLoad: 1
   _reader: {fileID: 11400000, guid: ebb2227aff3db674b9ce488ad7b00ae3, type: 2}
-  MaxLevelData:
+  _infraDescData:
     _serializedList: []
 --- !u!4 &979961057
 Transform:
@@ -431,6 +538,55 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 979961055}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1279324329
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1279324331}
+  - component: {fileID: 1279324330}
+  m_Layer: 0
+  m_Name: LeagueTeamManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1279324330
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1279324329}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d9bd57833abe0248beae80001b3e7e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LeagueTeamManager
+  dontDestroyOnLoad: 1
+  _currentLeagueTeamIdList: []
+  _currentLeagueTeamList: []
+  _currentTeamDict:
+    _serializedList: []
+--- !u!4 &1279324331
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1279324329}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -485,6 +641,103 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1602226385
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1602226387}
+  - component: {fileID: 1602226386}
+  m_Layer: 0
+  m_Name: SpriteManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1602226386
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1602226385}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: db4aff78e8866c14e9db41f26a7a4d51, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SpriteManager
+  dontDestroyOnLoad: 1
+  _db: {fileID: 11400000, guid: 7ea8353004daa3f4f9585ab06a2689b9, type: 2}
+--- !u!4 &1602226387
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1602226385}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1613157974
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1613157976}
+  - component: {fileID: 1613157975}
+  m_Layer: 0
+  m_Name: EventManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1613157975
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1613157974}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: edbc4066ebf83e04bb700f4f600180f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EventManager
+  dontDestroyOnLoad: 1
+  _dataModelReader: {fileID: 11400000, guid: c9e37057e7e0bc6498ce9a158fb6aedc, type: 2}
+  _choiceDataReader: {fileID: 11400000, guid: e7bef3e8648703341b1d0efce4c97341, type: 2}
+  _myStudents: []
+  _randomEvents: []
+  _debugList_candidateDictionary: 
+  _debugList_eventScript: []
+--- !u!4 &1613157976
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1613157974}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 761.8638, y: 1392.069, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1721351876
 GameObject:
   m_ObjectHideFlags: 0
@@ -497,7 +750,7 @@ GameObject:
   - component: {fileID: 1721351878}
   - component: {fileID: 1721351877}
   m_Layer: 0
-  m_Name: studentManager
+  m_Name: StudentManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -525,6 +778,8 @@ MonoBehaviour:
   _maxPotentialDataReader: {fileID: 11400000, guid: 0f3b55f1a7ec312478342fa7591dee7f, type: 2}
   _growthRateDataReader: {fileID: 11400000, guid: 708221a0b03602549aedd908f595b50e, type: 2}
   _player_PositionDataReader: {fileID: 11400000, guid: ccfb84439d03e0e48b23450141f23f81, type: 2}
+  _passiveGradeDataReader: {fileID: 11400000, guid: 132b2e66c183b784694107031115f3e6, type: 2}
+  _reputationDataReader: {fileID: 11400000, guid: 9eec3daf085a9dc4bbae874939b77e1c, type: 2}
 --- !u!114 &1721351878
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -540,6 +795,90 @@ MonoBehaviour:
   dontDestroyOnLoad: 1
   _studentFactory: {fileID: 1721351877}
   _myStudents: []
+  _currentTeam:
+    _members:
+    - _studentId: -1
+      _name: []
+      _specieId: 
+      _visualId: 
+      _personalityId: 
+      _passiveIdList: []
+      _traitId: 
+      _grade: -1
+      _stats: []
+      _position: 0
+      _state: 0
+      _condition: 100
+      _cureCount: 0
+      _awardCount: 0
+      _matchPosition: 0
+    - _studentId: -1
+      _name: []
+      _specieId: 
+      _visualId: 
+      _personalityId: 
+      _passiveIdList: []
+      _traitId: 
+      _grade: -1
+      _stats: []
+      _position: 0
+      _state: 0
+      _condition: 100
+      _cureCount: 0
+      _awardCount: 0
+      _matchPosition: 0
+    - _studentId: -1
+      _name: []
+      _specieId: 
+      _visualId: 
+      _personalityId: 
+      _passiveIdList: []
+      _traitId: 
+      _grade: -1
+      _stats: []
+      _position: 0
+      _state: 0
+      _condition: 100
+      _cureCount: 0
+      _awardCount: 0
+      _matchPosition: 0
+    - _studentId: -1
+      _name: []
+      _specieId: 
+      _visualId: 
+      _personalityId: 
+      _passiveIdList: []
+      _traitId: 
+      _grade: -1
+      _stats: []
+      _position: 0
+      _state: 0
+      _condition: 100
+      _cureCount: 0
+      _awardCount: 0
+      _matchPosition: 0
+    - _studentId: -1
+      _name: []
+      _specieId: 
+      _visualId: 
+      _personalityId: 
+      _passiveIdList: []
+      _traitId: 
+      _grade: -1
+      _stats: []
+      _position: 0
+      _state: 0
+      _condition: 100
+      _cureCount: 0
+      _awardCount: 0
+      _matchPosition: 0
+    _teamId: Player_Team
+    _winCount: 0
+    _LoseCount: 0
+    _isPlayable: 1
+    _teamNameKey: 
+    _positions: 0000000000000000000000000000000000000000
+    _teamTier: 0
 --- !u!4 &1721351879
 Transform:
   m_ObjectHideFlags: 0
@@ -704,3 +1043,7 @@ SceneRoots:
   - {fileID: 775522538}
   - {fileID: 1721351879}
   - {fileID: 748093095}
+  - {fileID: 312164450}
+  - {fileID: 1279324331}
+  - {fileID: 1613157976}
+  - {fileID: 1602226387}

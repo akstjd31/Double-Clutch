@@ -10,8 +10,49 @@ public static class MatchCalculator
     public static float LastShootStat;
     public static float LastBlockPressure;
 
-    // [±âÈ¹¼­ 3.1] Á¾È¾ºñ º¸Á¤°ª 1.87 (9:16)
+    // [ê¸°íšì„œ 3.1] ì¢…íš¡ë¹„ ë³´ì •ê°’ 1.87 (16:9)
     private const float ASPECT_RATIO = 1.87f;
+
+    // íŒ€ì˜ í™œì„±í™”ëœ ì‹œë„ˆì§€ í•©ì‚°ì„ ê°€ì ¸ì˜¤ëŠ” í—¬í¼ í•¨ìˆ˜
+    public static float GetSynergyBonus(MatchTeam team, effectType type)
+    {
+        if (team == null || team.ActiveSynergies == null) return 0f;
+        float bonus = 0f;
+        foreach (var syn in team.ActiveSynergies)
+        {
+            if (syn.effectType == type) bonus += syn.effectValue;
+        }
+        return bonus;
+    }
+    public static float GetMaxSynergyBonus(MatchTeam team, effectType type)
+    {
+        if (team == null || team.ActiveSynergies == null) return 0f;
+        float maxBonus = 0f;
+        foreach (var syn in team.ActiveSynergies)
+        {
+            // í•©ì‚°(+=)í•˜ì§€ ì•Šê³ , ê¸°ì¡´ ê°’ë³´ë‹¤ í¬ë©´ ë®ì–´ì”Œì›€ (ìµœëŒ“ê°’ë§Œ ì¶”ì¶œ)
+            if (syn.effectType == type && syn.effectValue > maxBonus)
+            {
+                maxBonus = syn.effectValue;
+            }
+        }
+        return maxBonus;
+    }
+    // 'ëª¨ë“  ëŠ¥ë ¥ì¹˜' ì¦ê° ì‹œë„ˆì§€ 3ì¢… ì¼ê´„ í•©ì‚° í•¨ìˆ˜
+    public static float GetAllStatBonus(MatchTeam team)
+    {
+        if (team == null) return 0f;
+        return GetSynergyBonus(team, effectType.AbsoluteTrust)
+             - GetSynergyBonus(team, effectType.Discordance)
+             - GetSynergyBonus(team, effectType.DifferentDreams);
+    }
+    // ìŠ¤íƒ¯ì„ ê°€ì ¸ì˜¬ ë•Œ ìë™ìœ¼ë¡œ 'ëª¨ë“  ëŠ¥ë ¥ì¹˜' ì‹œë„ˆì§€ë¥¼ ë°œë¼ì£¼ëŠ” ë˜í¼ í•¨ìˆ˜ (ê¸°ë³¸)
+    public static float GetPlayerStat(MatchPlayer player, MatchStatType statType, MatchTeam playerTeam)
+    {
+        float stat = player.GetStat(statType);
+        if (playerTeam != null && playerTeam.Roster.Contains(player)) stat += GetAllStatBonus(playerTeam);
+        return Mathf.Max(0, stat);
+    }
 
     public static float CalculateDistance(Vector2 p1, Vector2 p2)
     {
@@ -20,7 +61,7 @@ public static class MatchCalculator
         return Mathf.Sqrt(dx * dx + dy * dy);
     }
 
-    // ¼±ºĞ°ú Á¡ »çÀÌÀÇ ÃÖ´Ü °Å¸® °è»ê (ÆĞ½º °æ·Î Â÷´Ü¿ë)
+    // ì„ ë¶„ê³¼ ì  ì‚¬ì´ì˜ ìµœë‹¨ ê±°ë¦¬ ê³„ì‚° (íŒ¨ìŠ¤ ê²½ë¡œ ì°¨ë‹¨ìš©)
     public static float DistancePointToLineSegment(Vector2 point, Vector2 start, Vector2 end)
     {
         Vector2 line = end - start;
@@ -58,75 +99,117 @@ public static class MatchCalculator
         return nearest;
     }
 
-    // [±âÈ¹¼­ 6.2] Çàµ¿ °áÁ¤
-    public static int DecideAction(MatchPlayer player, float distToHoop, TeamTactics tactics, List<MatchPlayer> teammates, List<MatchPlayer> enemies)
+    // [ê¸°íšì„œ 6.2] í–‰ë™ ê²°ì •
+    public static int DecideAction(MatchPlayer player, float distToHoop, TeamTactics tactics, MatchTeam attackTeam, MatchTeam defendTeam, float interceptDist, float remainTime)
     {
-        // ¹ë·±½º °ª °¡Á®¿À±â
-        float penDistHoop = MatchDataProxy.Instance.GetBalance("Pen_Dist_Hoop");
-        float penBlock = MatchDataProxy.Instance.GetBalance("Pen_Def_Block");
-        float penSteal = MatchDataProxy.Instance.GetBalance("Pen_Def_Steal");
+        // ë°¸ëŸ°ìŠ¤ ê°’ ê°€ì ¸ì˜¤ê¸°
+        float attackerPassBonus = GetSynergyBonus(attackTeam, effectType.SystemBasket);
+        float defenderBlockBonus = GetSynergyBonus(defendTeam, effectType.SuffocatingDefense);
+        float attackerStealDebuff = GetSynergyBonus(attackTeam, effectType.AnkleBreaker);
+
         float wShotBase = MatchDataProxy.Instance.GetBalance("W_Shot_Base");
         float wPassBase = MatchDataProxy.Instance.GetBalance("W_Pass_Base");
         float wDribBase = MatchDataProxy.Instance.GetBalance("W_Dribble_Base");
+
+        float penDistHoop = MatchDataProxy.Instance.GetBalance("Pen_Dist_Hoop");
+        float penBlock = MatchDataProxy.Instance.GetBalance("Pen_Def_Block");
+        float penSteal = MatchDataProxy.Instance.GetBalance("Pen_Def_Steal");
+
+        float wBlockBase = MatchDataProxy.Instance.GetBalance("W_Block_Base");
+        float wStealBase = MatchDataProxy.Instance.GetBalance("W_Steal_Base");
+        float wDribbleBonus = MatchDataProxy.Instance.GetBalance("W_Dribble_Bonus");
+        float wDistBonus = MatchDataProxy.Instance.GetBalance("W_Dist_Bonus");
+        float wDefault = MatchDataProxy.Instance.GetBalance("W_Default");
         float minShootScore = MatchDataProxy.Instance.GetBalance("Min_Shoot_Score");
 
-        float nearestEnemyDist;
-        MatchPlayer nearestEnemy = GetNearestPlayer(player, enemies, out nearestEnemyDist);
 
-        // ½¸ Á¡¼ö °ø½Ä
-        float shootStat = (distToHoop > 0.35f) ? player.GetStat(MatchStatType.ThreePoint) : player.GetStat(MatchStatType.TwoPoint);
-        float enemyBlock = (nearestEnemy != null) ? nearestEnemy.GetStat(MatchStatType.Block) : 0f;
+        float nearestEnemyDist;
+        MatchPlayer nearestEnemy = GetNearestPlayer(player, defendTeam.Roster, out nearestEnemyDist);
+
+        // ìŠ› ì ìˆ˜ ê³µì‹
+        // [ë¸”ë½ ì ìš©] ì§ˆì‹ìˆ˜ë¹„ ë³´ë„ˆìŠ¤ ì ìš©
+        float blockStat = (nearestEnemy != null) ? GetPlayerStat(nearestEnemy, MatchStatType.Block, defendTeam) : 0f;
+        if (nearestEnemy != null) blockStat += defenderBlockBonus;
+
+        float shootStat = (distToHoop > 0.35f) ? GetPlayerStat(player, MatchStatType.ThreePoint, attackTeam) : GetPlayerStat(player, MatchStatType.TwoPoint, attackTeam);
         float wShoot = (distToHoop > 0.35f) ? tactics.bonusThreePoint : tactics.bonusTwoPoint;
 
         LastShootStat = shootStat;
-        LastBlockPressure = enemyBlock * (1f / (nearestEnemyDist + penBlock));
+        LastBlockPressure = blockStat * (1f / (nearestEnemyDist + penBlock));
 
         float scoreShoot = (shootStat * wShoot * wShotBase)
-                         - (distToHoop * penDistHoop * wShoot)
-                         - (enemyBlock * (1f / (nearestEnemyDist + penBlock)) * wShoot);
+                         + (100f / (distToHoop + 1f))
+                         - (blockStat * (1f / (nearestEnemyDist + penBlock)) * wBlockBase);
 
-        // ÆĞ½º Á¡¼ö °ø½Ä
 
-        float interceptDist = MatchDataProxy.Instance.GetBalance("Pen_Intercept_Dist");
+        // íŠ¹ìˆ˜ ì¡°ê±´ ì‹œë„ˆì§€ë¥¼ AI ìŠ› íŒë‹¨ ì ìˆ˜ì— ë°˜ì˜
+        float aiBonusScore = 0f;
+        string activeSynergyLog = ""; // ë””ë²„ê·¸ ë¡œê·¸ìš©
+
+        // íŠ¸ëœì§€ì…˜ ë§ˆìŠ¤í„° (íŒ¨ìŠ¤ë¥¼ ë°›ì€ ì„ ìˆ˜ì˜ 2ì  ìŠ› ì ìˆ˜ ë¡œì§ + effectValue)
+        // ì—”ì§„ì—ì„œ ë°©ê¸ˆ ë§‰ íŒ¨ìŠ¤ë¥¼ ë°›ì•˜ìœ¼ë©´ 4í‹±ì„ ë¶€ì—¬í•˜ë¯€ë¡œ, í‹±ì´ '3'ì¼ ë•Œê°€ ë°”ë¡œ ì§í›„ 1í‹±ì…ë‹ˆë‹¤.
+        if (distToHoop <= 0.35f && player.PassReceivedBuffTick == 3)
+        {
+            aiBonusScore += GetSynergyBonus(attackTeam, effectType.TransitionMaster);
+            activeSynergyLog += "[íŠ¸ëœì§€ì…˜ë§ˆìŠ¤í„°] ";
+        }
+        scoreShoot += aiBonusScore;
+
+        // íŒ¨ìŠ¤ ì ìˆ˜ ê³µì‹
+
         float maxPassScore = -999f;
-        foreach (var mate in teammates)
+        foreach (var mate in attackTeam.Roster)
         {
             if (mate == player) continue;
 
             float mateNearestEnemyDist;
-            GetNearestPlayer(mate, enemies, out mateNearestEnemyDist);
+            GetNearestPlayer(mate, defendTeam.Roster, out mateNearestEnemyDist);
 
             int hasEnemyOnPath = 0;
             float pathEnemySteal = 0f;
-            foreach (var e in enemies)
+            float closestDist = float.MaxValue;
+            foreach (var e in defendTeam.Roster)
             {
                 if (DistancePointToLineSegment(e.LogicPosition, player.LogicPosition, mate.LogicPosition) < interceptDist)
                 {
-                    hasEnemyOnPath = 1;
-                    pathEnemySteal = e.GetStat(MatchStatType.Steal);
-                    break;
+                    float distToPasser = CalculateDistance(player.LogicPosition, e.LogicPosition);
+                    if (distToPasser < closestDist)
+                    {
+                        closestDist = distToPasser;
+                        hasEnemyOnPath = 1;
+                        // [ìŠ¤í‹¸ ë””ë²„í”„ ì ìš©] ê³µê²© ì‹œ, ê¸¸ëª©ì— ìˆëŠ” ìƒëŒ€ì˜ ìŠ¤í‹¸ ëŠ¥ë ¥ì¹˜ ê°ì†Œ (ì•µí´ ë¸Œë ˆì´ì»¤)
+                        float eSteal = GetPlayerStat(e, MatchStatType.Steal, defendTeam);
+                        eSteal = Mathf.Max(0, eSteal - attackerStealDebuff);
+                        pathEnemySteal = eSteal;
+                    }
                 }
             }
-
-            float currentPassScore = (mate.GetStat(MatchStatType.Pass) * tactics.bonusPass * wPassBase)
-                                   + (mateNearestEnemyDist * penDistHoop)
-                                   - (hasEnemyOnPath * pathEnemySteal * tactics.bonusPass);
+            // [íŒ¨ìŠ¤ ë³´ë„ˆìŠ¤ ì ìš©] ì‹œìŠ¤í…œ ë°”ìŠ¤ì¼“ ì ìš©
+            float matePassStat = GetPlayerStat(mate, MatchStatType.Pass, attackTeam);
+            matePassStat += attackerPassBonus;
+            float currentPassScore = (matePassStat * tactics.bonusPass * wPassBase)
+                                   + (mateNearestEnemyDist * wDistBonus)
+                                   - (hasEnemyOnPath * pathEnemySteal * wStealBase);
 
             if (currentPassScore > maxPassScore) maxPassScore = currentPassScore;
         }
         float scorePass = maxPassScore;
 
-        // µå¸®ºí Á¡¼ö °ø½Ä
-        float enemySteal = (nearestEnemy != null) ? nearestEnemy.GetStat(MatchStatType.Steal) : 0f;
+        // ë“œë¦¬ë¸” ì ìˆ˜ ê³µì‹
+        float dribblerPassStat = GetPlayerStat(player, MatchStatType.Pass, attackTeam);
+        dribblerPassStat += attackerPassBonus; // ë“œë¦¬ë¸”(íŒ¨ìŠ¤ê¸°ë°˜) ìƒìŠ¹
 
-        float scoreDribble = (player.GetStat(MatchStatType.Pass) * tactics.bonusDribble * wDribBase)
-                           + (nearestEnemyDist * penDistHoop * tactics.bonusDribble)
-                           + (distToHoop * penDistHoop * tactics.bonusDribble)
-                           - (enemySteal * (1f / (nearestEnemyDist + penSteal)) * tactics.bonusDribble);
+        float enemySteal = (nearestEnemy != null) ? GetPlayerStat(nearestEnemy, MatchStatType.Steal, defendTeam) : 0f;
+        if (nearestEnemy != null) enemySteal = Mathf.Max(0, enemySteal - attackerStealDebuff); //  ìŠ¤í‹¸ ê°ì†Œ
 
-        if (distToHoop > 0.5f)
+        float scoreDribble = (dribblerPassStat * tactics.bonusDribble * wDribBase)
+                           + (nearestEnemyDist * wDribbleBonus)
+                           + (distToHoop * wDistBonus)
+                           - (enemySteal * (1f / (nearestEnemyDist + penSteal)) * wStealBase);
+
+        if (distToHoop > 0.84f && remainTime > 0f)
         {
-            scoreShoot = -999f; // °Å¸®°¡ 0.5(ÇÏÇÁ¶óÀÎ) ¹ÛÀÌ¸é ½¸ Á¡¼ö¸¦ ¸¶ÀÌ³Ê½º·Î °íÁ¤ÇØ Àı´ë ¾È ½î°Ô ¸¸µê ( ¿ª½ÀÀÌ³ª °ø¼öÀüÈ¯Áß¿¡ ³ë¸¶Å© ¹ß»ıÀ¸·Î ÀÎÇÑ È®Á¤ °ñ ¿À·ù ¹æÁö )
+            scoreShoot = -999f; // ê±°ë¦¬ê°€ 0.8415(í•˜í”„ë¼ì¸) ë°–ì´ë©´ ìŠ› ì ìˆ˜ë¥¼ ë§ˆì´ë„ˆìŠ¤ë¡œ ê³ ì •í•´ ì ˆëŒ€ ì•ˆ ì˜ê²Œ ë§Œë“¦ ( ì—­ìŠµì´ë‚˜ ê³µìˆ˜ì „í™˜ì¤‘ì— ë…¸ë§ˆí¬ ë°œìƒìœ¼ë¡œ ì¸í•œ í™•ì • ê³¨ ì˜¤ë¥˜ ë°©ì§€ )
         }
         else
         {
@@ -140,177 +223,240 @@ public static class MatchCalculator
         LastDribbleScore = scoreDribble;
 
         float total = scoreShoot + scorePass + scoreDribble;
-        if (total <= 0) return 1;
+        int chosenAction = 1;
+        if (total <= 0)
+        {
+            chosenAction = 1;
+        }
+        else
+        {
+            float rand = Random.Range(0, total);
+            if (rand < scoreShoot) chosenAction = 0;
+            else if (rand < scoreShoot + scorePass) chosenAction = 1;
+            else chosenAction = 2;
+        }
 
-        float rand = Random.Range(0, total);
-        if (rand < scoreShoot) return 0;
-        else if (rand < scoreShoot + scorePass) return 1;
-        else return 2;
+        string actionName = chosenAction == 0 ? "ìŠ›" : (chosenAction == 1 ? "íŒ¨ìŠ¤" : "ë“œë¦¬ë¸”");
+
+        string playerName = MakeName(player.PlayerName);
+
+        // ê¸°íšì„œ ì›ë³¸ ê³µì‹ì´ ê·¸ëŒ€ë¡œ ë³´ì´ëŠ” í–‰ë™ ê²°ì • ë””ë²„ê·¸ ë¡œê·¸!
+        Debug.Log($"<color=#FFFF00>[í–‰ë™ ê²°ì • ë””ë²„ê·¸]</color> {playerName} (ê³¨ëŒ€ê±°ë¦¬:{distToHoop:F2}, ìˆ˜ë¹„ê±°ë¦¬:{nearestEnemyDist:F2})\n" +
+                  $"â–¶ ìŠ› ê³µì‹: ({shootStat:F1}*{wShoot:F1}*{wShotBase}) + (100/({distToHoop:F2}+1)) - ({blockStat:F1}*(1/({nearestEnemyDist:F2}+{penBlock}))*{wBlockBase}) = {scoreShoot:F2}\n" +
+                  $"â–¶ ë“œë¦¬ë¸” ê³µì‹: ({dribblerPassStat:F1}*{tactics.bonusDribble:F1}*{wDribBase}) + ({nearestEnemyDist:F2}*{wDribbleBonus}) + ({distToHoop:F2}*{wDistBonus}) - ({enemySteal:F1}*(1/({nearestEnemyDist:F2}+{penSteal}))*{wStealBase}) = {scoreDribble:F2}\n" +
+                  $"â–¶ íŒ¨ìŠ¤ ì ìˆ˜: ìµœê³  íš¨ìœ¨ ëŒ€ìƒ íƒìƒ‰ ê²°ê³¼ = {scorePass:F2}\n" +
+                  $"â–¶ ë°œë™ëœ íŒë‹¨ ì‹œë„ˆì§€: {(string.IsNullOrEmpty(activeSynergyLog) ? "ì—†ìŒ" : activeSynergyLog)}\n" +
+                  $"â–¶ <color=#00FF00>ìµœì¢… AI ì„ íƒ: {actionName}</color> (ìŠ›:{scoreShoot:F1} / íŒ¨ìŠ¤:{scorePass:F1} / ë“œë¦¬ë¸”:{scoreDribble:F1})");
+
+        return chosenAction;
     }
 
 
-    // ½¸ ¼º°ø È®·ü
-    public static bool CalculateShootSuccess(MatchPlayer attacker, float distance, MatchTeam attackTeam, MatchTeam defendTeam, TeamTactics attackTactics, TeamTactics defendTactics)
+    // ìŠ› ì„±ê³µ í™•ë¥ 
+    public static bool CalculateShootSuccess(MatchPlayer attacker, float distance, MatchTeam attackTeam, MatchTeam defendTeam, TeamTactics attackTactics, TeamTactics defendTactics, float blockDist)
     {
-        float shootStat = (distance > 0.35f) ? attacker.GetStat(MatchStatType.ThreePoint, attackTactics.bonusThreePoint) : attacker.GetStat(MatchStatType.TwoPoint, attackTactics.bonusTwoPoint);
 
-        // ¹İ°æ 0.05 ³» °¡Àå °¡±î¿î ¼öºñ¼öÀÇ ºí·Ï ½ºÅÈ Àû¿ë
-        float blockDist = MatchDataProxy.Instance.GetBalance("Def_Block_Dist");
-        if (blockDist <= 0f) blockDist = 0.15f;
+        List<MatchPlayer> enemies = defendTeam.Roster;
+
+        float shootStat = (distance > 0.35f) ? GetPlayerStat(attacker, MatchStatType.ThreePoint, attackTeam) : GetPlayerStat(attacker, MatchStatType.TwoPoint, attackTeam);
+
+        shootStat *= (distance > 0.35f) ? attackTactics.bonusThreePoint : attackTactics.bonusTwoPoint;
+
         float blockStat = 0f;
-        float minEnemyDist;
-        MatchPlayer nearestEnemy = GetNearestPlayer(attacker, defendTeam.Roster, out minEnemyDist);
+
+        MatchPlayer nearestEnemy = GetNearestPlayer(attacker, enemies, out float minEnemyDist);
+
         if (nearestEnemy != null && minEnemyDist <= blockDist)
         {
-            blockStat = nearestEnemy.GetStat(MatchStatType.Block, defendTactics.bonusBlock);
+            blockStat = GetPlayerStat(nearestEnemy, MatchStatType.Block, defendTeam);
+            // [ì‹œë„ˆì§€] ë¸”ë½ ìŠ¤íƒ¯ ì¦ê°€ (ì§ˆì‹ ìˆ˜ë¹„)
+            blockStat += GetSynergyBonus(defendTeam, effectType.SuffocatingDefense);
+            // ê°€ì¥ ë§ˆì§€ë§‰ì— ì „ìˆ  ë°°ìœ¨ ê³±í•˜ê¸°
+            blockStat *= defendTactics.bonusBlock;
         }
-        Debug.Log($"[¼öºñ Ã¼Å©] °ø°İ¼ö À§Ä¡: {attacker.LogicPosition} | ¼öºñ¼ö À§Ä¡: {nearestEnemy.LogicPosition} | ÃÖ´Ü°Å¸®: {minEnemyDist:F4} | ¼öºñ¹ßµ¿?: {minEnemyDist <= blockDist}");
 
-        float denominator = shootStat + blockStat;
-        if (denominator <= 0) denominator = 1f;
 
-        float prob = (shootStat / denominator) * 100f;
+        string defPosStr = nearestEnemy != null ? nearestEnemy.LogicPosition.ToString() : "ì—†ìŒ";
+        Debug.Log($"[ìˆ˜ë¹„ ì²´í¬] ê³µê²©ìˆ˜ ìœ„ì¹˜: {attacker.LogicPosition} | ìˆ˜ë¹„ìˆ˜ ìœ„ì¹˜: {defPosStr} | ìµœë‹¨ê±°ë¦¬: {minEnemyDist:F4} | ìˆ˜ë¹„ë°œë™?: {minEnemyDist <= blockDist}");
 
         float penDistHoop = MatchDataProxy.Instance.GetBalance("Pen_Dist_Hoop");
-        prob -= (distance * penDistHoop);
+        float distancePenalty = 1f + (distance * penDistHoop);
+
+        // ê³µì‹: { 33 + (ê³µê²©ìˆ˜ ìŠ› * 0.67) / (100 + ì  ë¸”ë¡ * ê±°ë¦¬ í˜ë„í‹°) } * 100
+        float calcStat = (shootStat * 0.67f) / (100f + blockStat * distancePenalty);
+        float prob = 33f + (calcStat * 100f);
+
+        float extraBonus = 0f;
+        string activeSynergyLog = ""; // ë””ë²„ê·¸ ë¡œê·¸ìš©
 
 
-        effectType targetEffect = (distance > 0.35f) ? effectType.Prob3pt : effectType.Prob2pt;
-        if (distance <= 0.05f) targetEffect = effectType.ProbDunk;
+        int scoreGap = attackTeam.SimulatedScore - defendTeam.SimulatedScore;
 
-        float passiveBonus = 0f;
-        //foreach (var p in attacker.Passives)
-        //{
-        //    if (p.effectType == targetEffect)
-        //    {
-        //        if (CheckPassiveCondition(p, attackTeam, defendTeam))
-        //        {
-        //            passiveBonus += (p.effectValue * 100f);
-        //        }
-        //    }
-        //}
-        prob += passiveBonus; // ÃÖÁ¾ È®·ü¿¡ ÆĞ½Ãºê ´õÇÏ±â
+
+        // ìŠ¹ë¶€ì‚¬ì˜ ì‹¬ì¥ (10ì  ì°¨ ì´ìƒ ì§€ê³  ìˆì„ ë•Œ 3ì ìŠ› í™•ë¥  ì¦ê°€)
+        if (distance > 0.35f && scoreGap <= -10)
+        {
+            extraBonus += GetSynergyBonus(attackTeam, effectType.ClutchHeart); // í™•ë¥ ì´ë¯€ë¡œ 100ì„ ê³±í•´ % ë‹¨ìœ„ë¡œ ë§ì¶¤
+            activeSynergyLog += "[ìŠ¹ë¶€ì‚¬ì˜ì‹¬ì¥] ";
+        }
+
+        // ê³ ë¦´ë¼ ë©í¬ (ê±°ë¦¬ 0.01 ~ 0.05 ì‚¬ì´ì¼ ë•Œ ìŠ› ì„±ê³µë¥  ì¦ê°€ - íŒ¨ìŠ¤ ë¬´ê´€)
+        if (distance >= 0.01f && distance <= 0.05f)
+        {
+            extraBonus += GetSynergyBonus(attackTeam, effectType.GorillaDunk);
+            activeSynergyLog += "[ê³ ë¦´ë¼ë©í¬] ";
+        }
+
+        // íŒ¨ìŠ¤ ì—°ê³„ ì‹œë„ˆì§€ (íŒ¨ìŠ¤ë°›ì€ ì§í›„ 3í‹± ì´ë‚´ì¼ ë•Œë§Œ ë°œë™)
+        if (attacker.PassReceivedBuffTick > 0)
+        {
+            if (distance > 0.35f) // 3ì  (ìŠ¤í˜ì´ìŠ¤ ì˜¤í¼ë ˆì´í„°)
+            {
+                extraBonus += GetMaxSynergyBonus(attackTeam, effectType.SpaceOperator);
+                activeSynergyLog += "[ìŠ¤í˜ì´ìŠ¤ì˜¤í¼ë ˆì´í„°] ";
+            }
+            else  // 2ì  (ì»·ì¸ í”Œë ˆì´)
+            {
+                extraBonus += GetMaxSynergyBonus(attackTeam, effectType.CutInPlay);
+                activeSynergyLog += "[ì»·ì¸í”Œë ˆì´] ";
+            }
+                
+        }
+        prob += extraBonus;
         float dice = Random.Range(0f, 100f);
         bool isSuccess = dice <= prob;
 
-        string eName = nearestEnemy != null ? nearestEnemy.PlayerName : "¾øÀ½";
-        Debug.Log($"<color=#FF8C00>[½¸ µğ¹ö±×]</color> {attacker.PlayerName} ½¸ ½Ãµµ (°Å¸®:{distance:F2})\n" +
-                  $"¢º °ø°İ ½¸½ºÅÈ: {shootStat} | ¼öºñ({eName}) ºí·Ï½ºÅÈ: {blockStat} (°Å¸®:{minEnemyDist:F2})\n" +
-                  $"¢º °ø½Ä: ({shootStat} / {denominator:F2}) * 100 - ({distance:F2} * {penDistHoop}) = {prob - passiveBonus:F2}% | ÆĞ½Ãºê: +{passiveBonus}%\n" +
-                  $"¢º <color=#00FF00>ÃÖÁ¾È®·ü: {prob:F2}%</color> | ÁÖ»çÀ§: {dice:F2} => {(isSuccess ? "<b>°ñ!</b>" : "<b>³ë°ñ</b>")}");
+        string attackerName = MakeName(attacker.PlayerName);
+        string eName = nearestEnemy != null ? MakeName(nearestEnemy.PlayerName) : "ì—†ìŒ";
+        Debug.Log($"<color=#FF8C00>[ìŠ› ë””ë²„ê·¸]</color> {attackerName} ìŠ› ì‹œë„ (ê³¨ëŒ€ê±°ë¦¬:{distance:F2})\n" +
+              $"â–¶ ê³µê²© ìŠ›ìŠ¤íƒ¯: {shootStat} | ìˆ˜ë¹„({eName}) ë¸”ë¡ìŠ¤íƒ¯: {blockStat} (ìˆ˜ë¹„ê±°ë¦¬:{minEnemyDist:F2})\n" +
+              $"â–¶ ë°œë™ëœ í™•ë¥  ì¶”ê°€ ì‹œë„ˆì§€: {(string.IsNullOrEmpty(activeSynergyLog) ? "ì—†ìŒ" : activeSynergyLog)}\n" +
+              $"â–¶ ê³µì‹: 33 + ( ({shootStat} * 0.67) / (100 + {blockStat} * {distancePenalty:F2}) ) * 100\n" +
+              $"â–¶ ì ìš©: 33 + {calcStat * 100f:F2} + ì¶”ê°€í™•ë¥ ë³´ì •({extraBonus:F4}%) = {prob:F4}%\n" +
+              $"â–¶ <color=#00FF00>ìµœì¢…í™•ë¥ : {prob:F4}%</color> | ì£¼ì‚¬ìœ„: {dice:F4} => {(isSuccess ? "<b>ê³¨!</b>" : "<b>ë…¸ê³¨</b>")}");
 
         return isSuccess;
     }
 
-    // ÆĞ½º ¼º°ø È®·ü
-    public static bool CalculatePassSuccess(MatchPlayer passer, MatchPlayer receiver, MatchTeam attackTeam, MatchTeam defendTeam, TeamTactics attackTactics, TeamTactics defendTactics, out MatchPlayer interceptor)
+    // íŒ¨ìŠ¤ ì„±ê³µ í™•ë¥ 
+    public static bool CalculatePassSuccess(MatchPlayer passer, MatchPlayer receiver, MatchTeam attackTeam, MatchTeam defendTeam, TeamTactics attackTactics, TeamTactics defendTactics, float interceptDist, out MatchPlayer interceptor)
     {
         interceptor = null;
         MatchPlayer pathEnemy = null;
 
-        // ÃÖ´Ü °Å¸® 0.03 ¹Ì¸¸ÀÎ Àû Å½»ö
-        foreach (var e in defendTeam.Roster)
+        List<MatchPlayer> enemies = defendTeam.Roster;
+
+        // ìµœë‹¨ ê±°ë¦¬ 0.03 ë¯¸ë§Œ (interceptDist)ì¸ ì  íƒìƒ‰
+        float closestDist = float.MaxValue;
+        foreach (var e in enemies)
         {
-            if (DistancePointToLineSegment(e.LogicPosition, passer.LogicPosition, receiver.LogicPosition) < 0.03f)
+            if (DistancePointToLineSegment(e.LogicPosition, passer.LogicPosition, receiver.LogicPosition) < interceptDist)
             {
-                pathEnemy = e;
-                break;
+                float distToPasser = CalculateDistance(passer.LogicPosition, e.LogicPosition);
+                if (distToPasser < closestDist)
+                {
+                    closestDist = distToPasser;
+                    pathEnemy = e;
+                }
             }
         }
 
-        if (pathEnemy == null) return true; // ¹æÇØ ¾øÀ¸¸é 100% ¼º°ø
+        if (pathEnemy == null)
+        {
+            Debug.Log($"<color=#00BFFF>[íŒ¨ìŠ¤ ë””ë²„ê·¸]</color> {passer.PlayerName} -> {receiver.PlayerName}\n" +
+                      $"â–¶ íŒ¨ìŠ¤ ê²½ë¡œì— ë°©í•´í•˜ëŠ” ì ì´ ì—†ìŠµë‹ˆë‹¤. (100% ì•ˆì „í•œ íŒ¨ìŠ¤ ì„±ê³µ)");
+            return true;
+        }
 
-        float passStat = passer.GetStat(MatchStatType.Pass, attackTactics.bonusPass);
-        float stealStat = pathEnemy.GetStat(MatchStatType.Steal, defendTactics.bonusSteal);
+        float passStat = GetPlayerStat(passer, MatchStatType.Pass, attackTeam);
+        float stealStat = GetPlayerStat(pathEnemy, MatchStatType.Steal, defendTeam);
 
-        // ½ºÆ¿ ÆĞ½Ãºê ·ÎÁ÷ Ãß°¡!
-        float stealPassiveBonus = 0f;
-        //foreach (var p in pathEnemy.Passives)
-        //{
-        //    if (p.effectType == effectType.ProbSteal)
-        //    {
-        //        // ¼öºñ¼ö(pathEnemy) ÀÔÀåÀÌ¹Ç·Î ³» ÆÀÀÌ defendTeam, Àû ÆÀÀÌ attackTeam
-        //        if (CheckPassiveCondition(p, defendTeam, attackTeam))
-        //        {
-        //            stealPassiveBonus += (p.effectValue * 100f);
-        //        }
-        //    }
-        //}
+        passStat += GetSynergyBonus(attackTeam, effectType.SystemBasket);
+        stealStat = Mathf.Max(0, stealStat - GetSynergyBonus(attackTeam, effectType.AnkleBreaker));
 
+        passStat *= attackTactics.bonusPass;
+        stealStat *= defendTactics.bonusSteal;
+
+        // ê¸°ë³¸ íŒ¨ìŠ¤ ì„±ê³µ í™•ë¥ 
         float prob = (passStat / (passStat + stealStat)) * 100f;
-        prob -= stealPassiveBonus;
-
-
         float dice = Random.Range(0f, 100f);
         bool success = dice <= prob;
 
-        Debug.Log($"<color=#00BFFF>ÆĞ½º µğ¹ö±×</color> {passer.PlayerName}->{receiver.PlayerName} (Â÷´Ü½Ãµµ:{pathEnemy.PlayerName})\n" +
-                  $"¢º °ø°İ ÆĞ½º½ºÅÈ: {passStat} | ¼öºñ ½ºÆ¿½ºÅÈ: {stealStat}\n" +
-                  $"¢º °ø½Ä: ({passStat} / {passStat + stealStat}) * 100 = {prob + stealPassiveBonus:F2}% | ¼öºñÆĞ½Ãºê: -{stealPassiveBonus}%\n" +
-                  $"¢º <color=#00FF00>ÃÖÁ¾È®·ü: {prob:F2}%</color> | ÁÖ»çÀ§: {dice:F2} => {(success ? "<b>¼º°ø</b>" : "<b>Â÷´Ü´çÇÔ</b>")}");
+        string passerName = MakeName(passer.PlayerName);
+        string receiverName = MakeName(receiver.PlayerName);
+        string enemyName = MakeName(pathEnemy.PlayerName);
+
+        Debug.Log($"<color=#00BFFF>[íŒ¨ìŠ¤ ë””ë²„ê·¸]</color> {passerName} -> {receiverName} (ì°¨ë‹¨ì‹œë„:{enemyName})\n" +
+                  $"â–¶ ê³µê²© íŒ¨ìŠ¤ìŠ¤íƒ¯: {passStat:F2} | ìˆ˜ë¹„ ìŠ¤í‹¸ìŠ¤íƒ¯: {stealStat:F2} (ì°¨ë‹¨íŒì •ê±°ë¦¬: {interceptDist:F2})\n" +
+                  $"â–¶ ê³µì‹: (({passStat:F2} / ({passStat:F2} + {stealStat:F2})) * 100) = {prob:F2}%\n" +
+                  $"â–¶ <color=#00FF00>ìµœì¢…í™•ë¥ : {prob:F2}%</color> | ì£¼ì‚¬ìœ„: {dice:F2} => {(success ? "<b>íŒ¨ìŠ¤ ì„±ê³µ</b>" : "<b>ì°¨ë‹¨ë‹¹í•¨!</b>")}");
 
         if (!success) interceptor = pathEnemy;
         return success;
     }
 
-    // µå¸®ºí ¼º°ø È®·ü
-    public static bool CalculateDribbleSuccess(MatchPlayer dribbler, List<MatchPlayer> enemies, TeamTactics attackTactics, TeamTactics defendTactics)
+    // ë“œë¦¬ë¸” ì„±ê³µ í™•ë¥ 
+    public static bool CalculateDribbleSuccess(MatchPlayer dribbler, MatchTeam attackTeam, MatchTeam defendTeam, TeamTactics attackTactics, TeamTactics defendTactics, float dribbleBlockDist)
     {
-        float minEnemyDist;
-        MatchPlayer nearestEnemy = GetNearestPlayer(dribbler, enemies, out minEnemyDist);
+        List<MatchPlayer> enemies = defendTeam.Roster;
 
-        if (nearestEnemy == null || minEnemyDist > 0.1f) return true; // ÁÖº¯¿¡ ¾øÀ¸¸é ¼º°ø
+        MatchPlayer nearestEnemy = GetNearestPlayer(dribbler, enemies, out float minEnemyDist);
 
-        float dribbleStat = dribbler.GetStat(MatchStatType.Pass, attackTactics.bonusDribble);
-        float stealStat = nearestEnemy.GetStat(MatchStatType.Steal, defendTactics.bonusSteal);
+        string dribblerName = MakeName(dribbler.PlayerName);
 
-        float prob = (dribbleStat / (dribbleStat + stealStat)) * 100f;
+        if (nearestEnemy == null)
+        {
+            Debug.Log($"<color=#DA70D6>[ë“œë¦¬ë¸” ë””ë²„ê·¸]</color> {dribblerName} ë“œë¦¬ë¸” ì´ë™\n" +
+                      $"â–¶ ì½”íŠ¸ ìœ„ì— ë§¤ì¹˜ì—… ëŒ€ìƒ(ìˆ˜ë¹„ìˆ˜)ì´ ì¡´ì¬í•˜ì§€ ì•ŠìŠµë‹ˆë‹¤!\n" +
+                      $"â–¶ ë°©í•´ ì—†ìŒ! 100% ì•ˆì „í•œ ë“œë¦¬ë¸” ì„±ê³µ");
+            return true;
+        }
+
+        string enemyName = MakeName(nearestEnemy.PlayerName);
+
+        if (minEnemyDist > dribbleBlockDist)
+        {
+            Debug.Log($"<color=#DA70D6>[ë“œë¦¬ë¸” ë””ë²„ê·¸]</color> {dribblerName} ë…¸ë§ˆí¬ ëŒíŒŒ\n" +
+                      $"â–¶ ìˆ˜ë¹„ìˆ˜({enemyName})ì™€ì˜ ìµœë‹¨ê±°ë¦¬ê°€ {dribbleBlockDist} ë°–ì…ë‹ˆë‹¤. (ê±°ë¦¬:{minEnemyDist:F2})\n" +
+                      $"â–¶ ë°©í•´ ì—†ìŒ! 100% ì•ˆì „í•œ ë“œë¦¬ë¸” ì„±ê³µ");
+            return true;
+        }
+
+        float dribbleStat = GetPlayerStat(dribbler, MatchStatType.Pass, attackTeam);
+        float stealStat = GetPlayerStat(nearestEnemy, MatchStatType.Steal, defendTeam);
+
+
+        // ì•„êµ° ë“œë¦¬ë¸” ì‹œ: íŒ¨ìŠ¤(ë“œë¦¬ë¸”ì˜ ê¸°ë°˜ ìŠ¤íƒ¯) ì¦ê°€, ì  ìŠ¤í‹¸ ê°ì†Œ
+        dribbleStat += GetSynergyBonus(attackTeam, effectType.SystemBasket);
+        stealStat = Mathf.Max(0, stealStat - GetSynergyBonus(attackTeam, effectType.AnkleBreaker));
+
+        dribbleStat *= attackTactics.bonusDribble;
+        stealStat *= defendTactics.bonusSteal;
+
+        // ë°¸ëŸ°ìŠ¤ ê°€ì¤‘ì¹˜ ì ìš©
+        float wStealBalance = MatchDataProxy.Instance.GetBalance("W_Steal_Base");
+        if (wStealBalance <= 0f) wStealBalance = 1.0f;
+
+        float weightedStealStat = stealStat * wStealBalance;
+
+        float prob = (dribbleStat / (dribbleStat + weightedStealStat)) * 100f;
+
         float dice = Random.Range(0f, 100f);
         bool success = dice <= prob;
 
-        Debug.Log($"<color=#DA70D6>µå¸®ºí µğ¹ö±×</color> {dribbler.PlayerName} (¼öºñ¼ö:{nearestEnemy.PlayerName}, °Å¸®:{minEnemyDist:F2})\n" +
-                  $"¢º °ø°İ µå¸®ºí(ÆĞ½º)½ºÅÈ: {dribbleStat} | ¼öºñ ½ºÆ¿½ºÅÈ: {stealStat}\n" +
-                  $"¢º <color=#00FF00>ÃÖÁ¾È®·ü: ({dribbleStat}/{dribbleStat + stealStat})*100 = {prob:F2}%</color> | ÁÖ»çÀ§: {dice:F2} => {(success ? "<b>¼º°ø</b>" : "<b>½ºÆ¿´çÇÔ</b>")}");
+        Debug.Log($"<color=#DA70D6>[ë“œë¦¬ë¸” ë””ë²„ê·¸]</color> {dribblerName} ëŒíŒŒ ê²½í•©! (ìˆ˜ë¹„ìˆ˜: {enemyName}, ê±°ë¦¬:{minEnemyDist:F2})\n" +
+                  $"â–¶ ê³µê²© ë“œë¦¬ë¸”(íŒ¨ìŠ¤)ìŠ¤íƒ¯: {dribbleStat:F2} | ìˆ˜ë¹„ ìŠ¤í‹¸ìŠ¤íƒ¯: {stealStat:F2} (ê°€ì¤‘ì¹˜ {wStealBalance}ë°° ì ìš© -> {weightedStealStat:F2})\n" +
+                  $"â–¶ ê³µì‹: (({dribbleStat:F2} / ({dribbleStat:F2} + {weightedStealStat:F2})) * 100) = {prob:F2}%\n" +
+                  $"â–¶ <color=#00FF00>ìµœì¢… ëŒíŒŒ í™•ë¥ : {prob:F2}%</color> | ì£¼ì‚¬ìœ„: {dice:F2} => {(success ? "<b>ëŒíŒŒ ì„±ê³µ(ì „ì§„)!</b>" : "<b>ìˆ˜ë¹„ì— ë§‰í˜(ì¢Œìš°ì´ë™)</b>")}");
 
         return success;
 
     }
-    // ÆĞ½Ãºê ¹ßµ¿ Á¶°ÇÀ» ¹ü¿ëÀûÀ¸·Î °Ë»çÇÏ´Â ÇÔ¼ö (triggerCond,triggerValue°¡ »ç¶óÁü)
-    //public static bool CheckPassiveCondition(Player_PassiveData p, MatchTeam myTeam, MatchTeam enemyTeam)
-    //{
-    //    // triggerCond´Â EnumÀÌ¹Ç·Î NoneÀÏ ¶§ »ó½Ã ¹ßµ¿À¸·Î Ã³¸®ÇÕ´Ï´Ù.
-    //    if (p.triggerCond == triggerCond.None)
-    //        return true;
 
-    //    switch (p.triggerCond)
-    //    {
-    //        case triggerCond.ScoreGap: // ¿ì¸® ÆÀÀÌ Æ¯Á¤ Á¡¼öÂ÷ ÀÌ»ó Áö°í ÀÖÀ» ¶§ ¹ßµ¿
-    //            return (enemyTeam.SimulatedScore - myTeam.SimulatedScore) >= p.triggerValue;
-
-    //        case triggerCond.Random: // ¸¸¾à 0º¸´Ù Å« °ªÀÌ µé¾î¿Â´Ù¸é ÇØ´ç °ªÀ» È®·ü(%)·Î Ãë±Ş
-    //            if (p.triggerValue == 0) return true;
-    //            return UnityEngine.Random.Range(0, 100) < p.triggerValue;
-
-    //        case triggerCond.ReboundDiff: // ¸®¹Ù¿îµå°¡ Æ¯Á¤ ¼öÄ¡ ÀÌ»ó ¹Ğ¸± ¶§
-    //            return (myTeam.ReboundCount - enemyTeam.ReboundCount) <= p.triggerValue;
-
-    //        case triggerCond.Stat2ptLow: // 2Á¡½¸ ¼º°ø·üÀÌ ³·À» ¶§
-    //            float pt2Rate = myTeam.Try2pt == 0 ? 0 : ((float)myTeam.Succ2pt / myTeam.Try2pt) * 100f;
-    //            return myTeam.Try2pt > 0 && pt2Rate <= p.triggerValue;
-
-    //        case triggerCond.Stat3ptLow: // 3Á¡½¸ ¼º°ø·üÀÌ ³·À» ¶§
-    //            float pt3Rate = myTeam.Try3pt == 0 ? 0 : ((float)myTeam.Succ3pt / myTeam.Try3pt) * 100f;
-    //            return myTeam.Try3pt > 0 && pt3Rate <= p.triggerValue;
-
-    //        default:
-    //            return true;
-    //    }
-    //}
-
-    // ¸®¹Ù¿îµå °¡ÁßÄ¡ ÃßÃ·
-    public static MatchPlayer CalculateReboundWinner(Vector2 ballDropPos, List<MatchPlayer> allPlayers)
+    // ë¦¬ë°”ìš´ë“œ ê°€ì¤‘ì¹˜ ì¶”ì²¨
+    public static MatchPlayer CalculateReboundWinner(Vector2 ballDropPos, List<MatchPlayer> allPlayers, MatchTeam homeTeam, MatchTeam awayTeam, TeamTactics homeTactics, TeamTactics awayTactics)
     {
-        // ³«±¸ ÁöÁ¡ ¹İ°æ 0.35 ³»ÀÇ ÈÄº¸ ¼±Á¤
+        // ë‚™êµ¬ ì§€ì  ë°˜ê²½ 0.35 ë‚´ì˜ í›„ë³´ ì„ ì •
         List<MatchPlayer> candidates = new List<MatchPlayer>();
         foreach (var p in allPlayers)
         {
@@ -320,21 +466,43 @@ public static class MatchCalculator
             }
         }
 
-        if (candidates.Count == 0) return allPlayers[Random.Range(0, allPlayers.Count)]; // ¾Æ¹«µµ ¾øÀ¸¸é ¿ÏÀü ·£´ı
+        if (candidates.Count == 0) return allPlayers[Random.Range(0, allPlayers.Count)]; // ì•„ë¬´ë„ ì—†ìœ¼ë©´ ì™„ì „ ëœë¤
 
-        // Ticket °è»ê ¹× ÃÑÇÕ
+
+        // Ticket ê³„ì‚° ë° ì´í•©
+        float homeIronWall = GetSynergyBonus(homeTeam, effectType.IronWall);
+        float awayIronWall = GetSynergyBonus(awayTeam, effectType.IronWall);
         float totalTicket = 0f;
         List<float> tickets = new List<float>();
 
         for (int i = 0; i < candidates.Count; i++)
         {
-            float dist = CalculateDistance(candidates[i].LogicPosition, ballDropPos);
-            float ticket = candidates[i].GetStat(MatchStatType.Rebound) * (1.0f - dist);
+            var p = candidates[i];
+            float dist = CalculateDistance(p.LogicPosition, ballDropPos);
+
+            MatchTeam playerTeam = homeTeam.Roster.Contains(p) ? homeTeam : awayTeam;
+            float finalReboundStat = GetPlayerStat(p, MatchStatType.Rebound, playerTeam);
+
+            // [ì‹œë„ˆì§€] ë‚œê³µë¶ˆë½ ìŠ¤íƒ¯ ë¶€ì—¬
+            if (playerTeam == homeTeam)
+            {
+                finalReboundStat += homeIronWall;
+                finalReboundStat *= homeTactics.bonusRebound;
+            }
+            else
+            {
+                finalReboundStat += awayIronWall;
+                finalReboundStat *= awayTactics.bonusRebound;
+            }
+
+            float baseTicket = finalReboundStat * (1.0f - dist);
+
+            float ticket = Mathf.Max(0.1f, baseTicket); // í‹°ì¼“ì´ ìŒìˆ˜ê°€ ë˜ì§€ ì•Šë„ë¡ ìµœì†Œ ë³´ì¥
             tickets.Add(ticket);
             totalTicket += ticket;
         }
 
-        // °¡ÁßÄ¡ ·£´ı
+        // ê°€ì¤‘ì¹˜ ëœë¤
         float rand = Random.Range(0, totalTicket);
         float current = 0f;
         for (int i = 0; i < candidates.Count; i++)
@@ -344,5 +512,12 @@ public static class MatchCalculator
         }
 
         return candidates[0];
+    }
+
+    private static string MakeName(string[] nameKey)
+    {
+        StringManager manager = StringManager.Instance;
+        string name = manager.GetString(nameKey[0]) + manager.GetString(nameKey[1]) + manager.GetString(nameKey[2]);
+        return name;
     }
 }

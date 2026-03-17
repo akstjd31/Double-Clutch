@@ -12,12 +12,20 @@ public class StudentManager : Singleton<StudentManager>
 
     int _idCount = 0; //???? ???? ?? ?��??? ???? id ?????(????/?��? ???)
     int _recruitLimit = 5; //???? ???? ????
-    public int RecruitLimit => _recruitLimit;
-    public bool IsStable => _recruitLimit == _myStudents.Count;
+    public int RecruitLimit => GetRecruitLimit();
+    public bool IsStable => GetRecruitLimit() == _myStudents.Count;
+    public const string TEAM_ID = "Player_Team";
     // public static StudentManager Instance { get; private set; }
     [SerializeField] StudentFactory _studentFactory; //???? ?????? ????
     [SerializeField] private List<Student> _myStudents = new List<Student>(); //???? ???
+    [SerializeField] Team _currentTeam;
     public List<Student> MyStudents => _myStudents;
+    public Team CurrentTeam => _currentTeam;
+    public int GetRecruitLimit()
+    {
+        return _recruitLimit + InfraManager.Instance.GetInfraEffectValueByEffectType(infraEffectType.AddRoster);
+    }
+
     protected override void Awake()
     {
         base.Awake();
@@ -37,6 +45,18 @@ public class StudentManager : Singleton<StudentManager>
         LoadGame();
     }
     
+    public void SetCurrentTeam(List<Student> players)
+    {
+        _currentTeam = new Team(TEAM_ID, true);
+        for (int i = 0; i < players.Count; i++)
+        {
+            _currentTeam.SetMember(i, players[i]);
+        }        
+
+        Debug.Log("팀 생성 완료!");
+    }
+
+
     public List<Student> MakeRandomTeam(int n) // n?????? ?????? ???? ??????? ?????? ???
     {
         List<Student> newTeam = new List<Student>();
@@ -44,7 +64,7 @@ public class StudentManager : Singleton<StudentManager>
         {
             newTeam.Add(_studentFactory.MakeRandomStudent());
         }
-        return newTeam;        
+        return newTeam;
     }
 
     public Student MakeRandomStudent()
@@ -66,7 +86,7 @@ public class StudentManager : Singleton<StudentManager>
 
         newStudent.SetStudentId(_idCount++);
 
-        SaveGame();
+        //SaveGame();
     }
 
     public void ReleaseStudent(Student target)
@@ -74,7 +94,7 @@ public class StudentManager : Singleton<StudentManager>
         _myStudents.Remove(target);
         Debug.Log($"{target.Name} 선수가 팀을 떠났습니다.");
 
-        SaveGame();
+        //SaveGame();
     }
 
     // ??? ?��? ??? ????????
@@ -89,7 +109,7 @@ public class StudentManager : Singleton<StudentManager>
     public void SaveGame()
     {
         // 1. ?????? ??????? ??? ??????.
-        StudentSaveData saveData = new StudentSaveData(_idCount, _myStudents);
+        StudentSaveData saveData = new StudentSaveData(_idCount, _myStudents, _currentTeam);
 
         // 2. ??????? ???? ????????.
         if (SaveLoadManager.Instance != null)
@@ -103,6 +123,7 @@ public class StudentManager : Singleton<StudentManager>
             // 1. ???? ????
             _idCount = data.lastIdCount;
             _myStudents = data.studentList;
+            _currentTeam = data.currentTeam;
 
             // 2. ???? ???? ?��?? ?��????? ScriptableObject(SO) ?????? ????????!
             // ?????? ??? ??? DB?? ????? ??? Init ????? ????.
@@ -116,9 +137,19 @@ public class StudentManager : Singleton<StudentManager>
         }
     }
 
+    public void OnInfraUpdated()
+    {
+        foreach (var student in _myStudents)
+        {
+            student.OnInfraUpdated();
+        }
+    }
+
     protected override void OnApplicationQuit()
     {
         base.OnApplicationQuit();
         SaveGame();
     }
+
+    public StudentFactory GetFactory() => _studentFactory;
 }

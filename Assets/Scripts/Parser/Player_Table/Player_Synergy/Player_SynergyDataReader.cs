@@ -14,6 +14,7 @@ public class Player_SynergyDataReader : DataReaderBase
         string synergyName = null, synergyDesc = null;
         effectType eType = default;
         float eValue = 0;
+        string synergyResource = null;  
 
         for (int i = 0; i < list.Count; i++)
         {
@@ -57,12 +58,15 @@ public class Player_SynergyDataReader : DataReaderBase
                 case "synergyDesc":
                     synergyDesc = val;
                     break;
+                case "synergyResource":
+                    synergyResource = val;
+                    break;
             }
         }
 
         var synergyData = new PlayerSynergyData
         (
-            synergyId, traitId1, traitId2, synergyName, eType, eValue, synergyDesc
+            synergyId, traitId1, traitId2, synergyName, eType, eValue, synergyDesc, synergyResource
         );
 
         DataList.Add(synergyData);

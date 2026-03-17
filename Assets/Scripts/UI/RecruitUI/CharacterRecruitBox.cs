@@ -4,7 +4,8 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System.Collections;
 
-public class CharacterRecruitBox : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
+public class CharacterRecruitBox : MonoBehaviour
+    //IPointerDownHandler, IPointerUpHandler
 {
     [SerializeField] Image _characterImage;
     [SerializeField] TextMeshProUGUI _positionText;
@@ -14,6 +15,7 @@ public class CharacterRecruitBox : MonoBehaviour, IPointerDownHandler, IPointerU
     [SerializeField] TextMeshProUGUI _defenseText;    
     [SerializeField] Toggle _toggleButton;
     [SerializeField] Outline _outLine;
+    [SerializeField] Button _profileButton;
 
     private Student _student;
     private bool isSelected = false;
@@ -36,6 +38,8 @@ public class CharacterRecruitBox : MonoBehaviour, IPointerDownHandler, IPointerU
     {
         _student = target;
         SetText();
+        SetButton();
+        _characterImage.sprite = SpriteManager.Instance.GetSprite(target.VisualData.portraitResource);
     }
 
     public Student GetStudent()
@@ -45,9 +49,12 @@ public class CharacterRecruitBox : MonoBehaviour, IPointerDownHandler, IPointerU
 
     private void SetText()
     {
+        StringManager manager = StringManager.Instance;
+        string name = manager.GetString(_student.Name[0]) + manager.GetString(_student.Name[1]) + manager.GetString(_student.Name[2]);
+
         _positionText.text = _student.Position.ToString();
-        _gradeText.text = _student.Grade.ToString() + "ÇĞ³â";
-        _nameText.text = _student.Name;
+        _gradeText.text = _student.Grade.ToString() + "í•™ë…„";
+        _nameText.text = name;
         _attackText.text = _student.Attack.ToString();
         _defenseText.text = _student.Defense.ToString();
     }
@@ -66,8 +73,13 @@ public class CharacterRecruitBox : MonoBehaviour, IPointerDownHandler, IPointerU
         }
     }
 
+    private void SetButton()
+    {
+        _profileButton.onClick.RemoveAllListeners();
+        _profileButton.onClick.AddListener(() => StudentUIManager.Instance.OpenProfilePopUp(_student));
+    }
 
-    //ÅÍÄ¡ ½Ã ÇÁ·ÎÇÊ ÆË¾÷ µîÀå ±¸Çö
+    //í„°ì¹˜ ì‹œ í”„ë¡œí•„ íŒì—… ë“±ì¥ êµ¬í˜„
     public void OnPointerDown(PointerEventData eventData)
     {
         if (_longPressRoutine != null) StopCoroutine(_longPressRoutine);
@@ -76,7 +88,7 @@ public class CharacterRecruitBox : MonoBehaviour, IPointerDownHandler, IPointerU
 
     public void OnPointerUp(PointerEventData eventData)
     {
-        // 2ÃÊ°¡ µÇ±â Àü¿¡ ¼ÕÀ» ¶¼¸é ÆË¾÷ÀÌ ¶ßÁö ¾Êµµ·Ï Å¸ÀÌ¸Ó¸¸ Áß´Ü
+        // 2ì´ˆê°€ ë˜ê¸° ì „ì— ì†ì„ ë–¼ë©´ íŒì—…ì´ ëœ¨ì§€ ì•Šë„ë¡ íƒ€ì´ë¨¸ë§Œ ì¤‘ë‹¨
         if (_longPressRoutine != null)
         {
             StopCoroutine(_longPressRoutine);
@@ -90,7 +102,7 @@ public class CharacterRecruitBox : MonoBehaviour, IPointerDownHandler, IPointerU
 
         if (_student != null)
         {
-            StudentUIManager.Instance.OpenProfilePopUp(_student);// ÆË¾÷ÀÌ ¶¹À¸¹Ç·Î ÂüÁ¶¸¦ ºñ¿öÁÜ (¼ÕÀ» ¶ÃÀ» ¶§ StopCoroutine Áßº¹ È£Ãâ ¹æÁö)
+            StudentUIManager.Instance.OpenProfilePopUp(_student);// íŒì—…ì´ ë–´ìœ¼ë¯€ë¡œ ì°¸ì¡°ë¥¼ ë¹„ì›Œì¤Œ (ì†ì„ ë—ì„ ë•Œ StopCoroutine ì¤‘ë³µ í˜¸ì¶œ ë°©ì§€)
             _longPressRoutine = null;
         }
     }

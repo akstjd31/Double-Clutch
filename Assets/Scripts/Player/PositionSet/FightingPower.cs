@@ -1,41 +1,32 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-/// <summary>
-/// FightingPower�� ������ ��ũ��Ʈ
-/// ��ġ�� ���� ������ PositionSet���� �޾ƿͼ� ���ݷ� �ջ� �� UI�� ǥ��
-/// </summary>
+
 public class FightingPower : MonoBehaviour
 {
-    /// <summary>    
-    /// CharacterBox�� Init �޼��� ���ڰ����� �л��� ������ �ش� CharacterBox UI�� �ڵ����� ǥ�õ˴ϴ�.
-    /// �ٽ� ����, �� FightingPower�� Init �޼��� �ȿ���, _rivalList�� ����ִ� CharacterBox�� ���� ��� Init���ֽø� �˴ϴ�.
-    /// _rivalList�� ���̾��Ű���� �̹� �Ҵ� ä�����ҽ��ϴ�. 
-    /// </summary>
-    [SerializeField] CharacterList _characterList; // ��ġ�� �л� ���� �޾ƿ� ��ġ ȭ�� UI
-    [SerializeField] MercenaryMaker _mercenaryMaker; // �뺴 ������
+    [SerializeField] CharacterList _characterList;
+    [SerializeField] MercenaryMaker _mercenaryMaker;
 
-    [SerializeField] TextMeshProUGUI _mySchoolName; //UI(�츮 �� �б� �̸�)
-    [SerializeField] TextMeshProUGUI _myFightingPowerText; //UI(�츮 �� ������ (���ݷ� + ����� ���ջ�))
+    [SerializeField] TextMeshProUGUI _mySchoolName;
+    [SerializeField] TextMeshProUGUI _myFightingPowerText;
 
-    [SerializeField] TextMeshProUGUI _rivalSchoolName;//UI(��� �� �б� �̸�)
-    [SerializeField] TextMeshProUGUI _rivalFightingPowerText;//UI(��� �� �б� �̸�)
+    [SerializeField] TextMeshProUGUI _rivalSchoolName;
+    [SerializeField] TextMeshProUGUI _rivalFightingPowerText;
 
 
-    [SerializeField] CharacterPowerBox[] _fightingList = new CharacterPowerBox[5]; //�츮�� ���� ��â UI(���� �л� �� ��)
-    [SerializeField] CharacterPowerBox[] _rivalList = new CharacterPowerBox[5]; //����� ���� ��â UI(���� �л� �� ��)
+    [SerializeField] CharacterPowerBox[] _fightingList = new CharacterPowerBox[5];
+    [SerializeField] CharacterPowerBox[] _rivalList = new CharacterPowerBox[5];
 
-    int _myTotalFightingPower = 0; //�츮�� ���� ����
-    int _rivalTotalFightingPower = 0; //����� ���� ����
+    int _myTotalFightingPower = 0;
+    int _rivalTotalFightingPower = 0;
 
     private List<Student> _myMatchingStudentList = new List<Student>();
     private List<Student> _rivalMatchingStudentList = new List<Student>();
-    public List<Student> MyMatchingStudentList => _myMatchingStudentList; // ��⿡ �����ϴ� �츮 �л� ����Ʈ ������Ƽ(�ܺ� ȣ���)
-    public List<Student> RivalMatchingStudentList => _rivalMatchingStudentList; // ��⿡ �����ϴ� ����� �л� ����Ʈ ������Ƽ(�ܺ� ȣ���)
+    public List<Student> MyMatchingStudentList => _myMatchingStudentList;
+    public List<Student> RivalMatchingStudentList => _rivalMatchingStudentList;
 
     public void Init()
     {
-        // ���� ���� �����Ͱ� �����Ѵٸ�?
         if (SaveLoadManager.Instance != null)
         {
             var myData = new StudentSaveData();
@@ -48,7 +39,6 @@ public class FightingPower : MonoBehaviour
         }
         
         _myTotalFightingPower = 0;
-        // �����Ͱ� ����� �ε�Ǿ��ٸ� �Ʒ� �۾��� �� �ʿ� ����.
         if (_myMatchingStudentList.Count > 0 && _myMatchingStudentList != null)
         {
             for (int i = 0; i < Mathf.Min(_myMatchingStudentList.Count, _fightingList.Length); i++)
@@ -60,61 +50,53 @@ public class FightingPower : MonoBehaviour
                 _myTotalFightingPower += (s.Attack + s.Defense);
             }
         }
-        // �����Ͱ� ���� ��
-        // else
-        // {
-        //     // CharacterList���� ���� ��ġ�� ī�� �迭�� ������
-        //     PlayerCard[] placedCards = _characterList.PositionCards;
-
-        //     for (int i = 0; i < _fightingList.Length; i++)
-        //     {
-        //         Student targetStudent = null;
-
-        //         // 1. �ش� ���Կ� ������ ��ġ�� ī�尡 �ִ��� Ȯ��
-        //         if (placedCards[i] != null && placedCards[i].Player != null)
-        //         {
-        //             targetStudent = placedCards[i].Player;
-        //         }
-        //         // 2. ī�尡 ���ٸ� �뺴 ����
-        //         else
-        //         {
-        //             // �ε��� i�� ���������� ��ȯ (0:PG, 1:SG, 2:SF, 3:PF, 4:C ��� ����)
-        //             Position targetPos = (Position)i + 1;
-        //             targetStudent = _mercenaryMaker.MakeMercenary(targetPos);
-        //             targetStudent.OnStatChanged();
-        //         }
-
-        //         // 3. CharacterPowerBox�� ���� ���� (�뺴 ����)
-        //         if (targetStudent != null)
-        //         {
-        //             _rivalList[i].Init(targetStudent);
-        //             _myTotalFightingPower += (_rivalList[i].Attack + _rivalList[i].Defense);
-
-        //             _myMatchingStudentList.Add(targetStudent);
-
-        //             Debug.Log($"[�Ʊ� ����] {targetStudent.Name}({targetStudent.Position}) | 2��:{targetStudent.GetCurrentStat(potential.Stat2pt)}, 3��:{targetStudent.GetCurrentStat(potential.Stat3pt)}, ����:{targetStudent.GetCurrentStat(potential.StatBlock)}, ��ƿ:{targetStudent.GetCurrentStat(potential.StatSteal)}, ����:{targetStudent.GetCurrentStat(potential.StatRebound)}");
-        //         }
-        //     }
-        // }
-
-
-        //���⼭ _rivalList �迭 �� ��� CharacterBox�� ����� �л�(Student Ŭ����)���� Init���ֽø� �˴ϴ�.
-        //�ùķ����Ϳ� ���������� Init �� _rivalMatchingStudentList�� Add�� ���ֽø� �˴ϴ�.
-
-        //�ùķ����Ϳ��� ��⿡ ������ �����ϴ� �л� ������ �������� ���ؼ��� MyMatchingStudentList �� RivalMatchingStudentList�� ���� �����Ͻø� �˴ϴ�.
 
         _rivalTotalFightingPower = 0;
 
-        // �� �� ���� (�׽�Ʈ�� ID �Է�)
-        MatchTeam generatedAwayTeam = EnemyTeamFactory.Instance.CreateEnemyTeam("Team_DOM_03", "LV_Swiss_03");
-        
-        // ���� ������ ���� ������ �� ������ �ȵƴٸ� ����
-        if (generatedAwayTeam == null)
+        // 현 week ID 행에 저장된 league ID를 받아온다.
+        // var leagueId = CalendarManager.Instance.GetCurrentLeagueId();
+        var leagueMgr = LeagueManager.Instance;
+        if (leagueMgr == null) return;
+
+        var currentLeague = leagueMgr.CurrentLeague;
+        if (currentLeague == null)
         {
-            Debug.LogError("�� �� ���� ����!");
+            Debug.Log("현 리그 데이터가 널임");
+            return;    
+        }
+
+        string opponentTeamId = leagueMgr.GetOpponentTeamId(currentLeague.matchRecords);
+        if (opponentTeamId == null)
+        {
+            Debug.Log("현 상대 팀 데이터가 없음! (레코드 데이터가 없음)");
             return;
         }
-        Debug.Log($"[���丮 Ȯ��] ���� 1�� ���� 2���� ����: {generatedAwayTeam.Roster[0].GetStat(MatchStatType.TwoPoint)}");
+
+        if (currentLeague != null)
+        {
+            string myTeamId = StudentManager.TEAM_ID;
+
+            // 현재 라운드의 내 매치 기록 찾기
+            var myMatch = currentLeague.matchRecords.Find(m =>
+                m.roundIndex == currentLeague.currentRoundIndex &&
+                (m.homeTeamId == myTeamId || m.awayTeamId == myTeamId));
+
+            if (myMatch != null)
+            {
+                // 내가 홈이면 어웨이가 적, 내가 어웨이면 홈이 적
+                opponentTeamId = myMatch.homeTeamId == myTeamId ? myMatch.awayTeamId : myMatch.homeTeamId;
+            }
+        }
+
+        MatchTeam homeTeam = EnemyTeamFactory.Instance.ConvertToTeam(TeamSide.Home, StudentManager.Instance.CurrentTeam);
+        MatchTeam generatedAwayTeam = EnemyTeamFactory.Instance.ConvertToTeam(TeamSide.Away, LeagueTeamManager.Instance.GetTeamById(opponentTeamId));
+
+        if (generatedAwayTeam == null)
+        {
+            Debug.LogError("적 팀 생성 실패");
+            return;
+        }
+        Debug.Log($"[생성 확인] 상대 1번 선수 2점슛 스탯: {generatedAwayTeam.Roster[0].GetStat(MatchStatType.TwoPoint)}");
 
         if (_rivalMatchingStudentList != null && _rivalMatchingStudentList.Count > 0)
         {
@@ -133,10 +115,9 @@ public class FightingPower : MonoBehaviour
                 MatchPlayer mp = generatedAwayTeam.Roster[i];
                 Student rivalStudent = new Student();
 
-                rivalStudent.SetName(mp.PlayerName);
+                rivalStudent.SetName(mp.PlayerName[0], mp.PlayerName[1], mp.PlayerName[2]);
                 rivalStudent.SetPosition(mp.MainPosition);
 
-                // ���丮���� ���� ���� �״�� �̽�
                 var mappedStats = new List<Stat>
         {
             new Stat(potential.Stat2pt, mp.GetStat(MatchStatType.TwoPoint), 99, 1),
@@ -148,9 +129,8 @@ public class FightingPower : MonoBehaviour
         };
 
                 rivalStudent.SetStat(mappedStats);
-                rivalStudent.OnStatChanged(); // ���ݷ�, ���� ����
+                rivalStudent.OnStatChanged();
 
-                // UI�� ���� ����
                 _rivalList[i].Init(rivalStudent);
                 _rivalMatchingStudentList.Add(rivalStudent);
 
@@ -169,22 +149,20 @@ public class FightingPower : MonoBehaviour
         _myFightingPowerText.text = _myTotalFightingPower.ToString();
     }
 
-    // ���̹��� ��ġ�� �� ���� ��ϵ��� �����ϴ� �޼���
-    public void SaveRivalMachingStudentData()
-    {
-        if (_rivalMatchingStudentList.Count < 1 || _rivalMatchingStudentList == null) return;
+    //public void SaveRivalMachingStudentData()
+    //{
+    //    if (_rivalMatchingStudentList.Count < 1 || _rivalMatchingStudentList == null) return;
 
-        int rivalCnt = _rivalMatchingStudentList.Count;
+    //    int rivalCnt = _rivalMatchingStudentList.Count;
 
-        var rivalData = new StudentSaveData(rivalCnt, _rivalMatchingStudentList);
+    //    var rivalData = new StudentSaveData(rivalCnt, _rivalMatchingStudentList);
 
-        if (SaveLoadManager.Instance == null) return;
-        SaveLoadManager.Instance.Save(FilePath.RIVAL_STUDENT_MATCHING_PATH, rivalData);
-    }
+    //    if (SaveLoadManager.Instance == null) return;
+    //    SaveLoadManager.Instance.Save(FilePath.RIVAL_STUDENT_MATCHING_PATH, rivalData);
+    //}
 
     public void OnClickStartMatch()
     {
-        // // �׽�Ʈ ��
         // CalendarManager.Instance.NextTurn();
 
         // [디버그] GameManager로 넘기기 직전에 스탯이 살아있는지 확인

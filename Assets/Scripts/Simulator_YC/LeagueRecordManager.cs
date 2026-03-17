@@ -1,26 +1,40 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-// °æ±â ÇÏ³ªÀÇ ÀüÃ¼ ±â·ÏÀ» ´ãÀ» Åë
+// ê²½ê¸° í•˜ë‚˜ì˜ ì „ì²´ ê¸°ë¡ì„ ë‹´ì„ í†µ
+[Serializable]
 public class MatchResultRecord
 {
+    public int MatchId; // ë”•ì…”ë„ˆë¦¬ì˜ Keyê°’ì„ ë³µêµ¬í•˜ê¸° ìœ„í•œ ë³€ìˆ˜
     public string HomeTeamName;
     public string AwayTeamName;
     public int HomeScore;
     public int AwayScore;
-    public List<MatchLogData> FullLogs; // 1~4ÄõÅÍ ÀüÃ¼ ·Î±×
+    public List<MatchLogData> FullLogs; // 1~4ì¿¼í„° ì „ì²´ ë¡œê·¸
+    public List<int> HomePlayerIds = new List<int>(); // ë¦¬ê·¸ ê²°ì‚°ë•Œ ìƒíƒœì´ìƒì²´í¬ìš©
+}
+
+// SaveLoadManager í˜¸í™˜ì„ ìœ„í•œ ë°ì´í„° ì»¨í…Œì´ë„ˆ í´ë˜ìŠ¤ (SaveBase ìƒì†)
+[Serializable]
+public class LeagueRecordSaveData : SaveBase
+{
+    public List<MatchResultRecord> recordList = new List<MatchResultRecord>();
 }
 
 public class LeagueRecordManager : MonoBehaviour
 {
     public static LeagueRecordManager Instance;
 
-    // °æ±â ID(¶Ç´Â ¶ó¿îµå ¹øÈ£)¸¦ Å°°ªÀ¸·Î ÇÏ¿© °æ±â ±â·ÏÀ» ÀúÀåÇÏ´Â µñ¼Å³Ê¸®
+    // ì €ì¥ìš© íŒŒì¼ ì´ë¦„ ì •ì˜
+    private const string SAVE_FILE = "LeagueRecordSave.json";
+
+    // ê²½ê¸° ID(ë˜ëŠ” ë¼ìš´ë“œ ë²ˆí˜¸)ë¥¼ í‚¤ê°’ìœ¼ë¡œ í•˜ì—¬ ê²½ê¸° ê¸°ë¡ì„ ì €ì¥í•˜ëŠ” ë”•ì…”ë„ˆë¦¬
     private Dictionary<int, MatchResultRecord> _leagueRecords = new Dictionary<int, MatchResultRecord>();
 
     private void Awake()
     {
-        // ¾ÀÀÌ ³Ñ¾î°¡µµ ÆÄ±«µÇÁö ¾Ê´Â ½Ì±ÛÅæ ¼¼ÆÃ
+        // ì”¬ì´ ë„˜ì–´ê°€ë„ íŒŒê´´ë˜ì§€ ì•ŠëŠ” ì‹±ê¸€í†¤ ì„¸íŒ…
         if (Instance == null)
         {
             Instance = this;
@@ -32,50 +46,92 @@ public class LeagueRecordManager : MonoBehaviour
         }
     }
 
-    // °æ±â Á¾·á ½Ã ¿£Áø¿¡¼­ ÀÌ ÇÔ¼ö¸¦ È£ÃâÇØ ±â·ÏÀ» ÀúÀåÇÕ´Ï´Ù.
+    private void Start()
+    {
+        // ì”¬ì´ ë¡œë“œë  ë•Œ ì €ì¥ëœ ê²½ê¸° ê¸°ë¡ ë¶ˆëŸ¬ì˜¤ê¸°
+        LoadGame();
+    }
+
+    // ê²½ê¸° ì¢…ë£Œ ì‹œ ì—”ì§„ì—ì„œ ì´ í•¨ìˆ˜ë¥¼ í˜¸ì¶œí•´ ê¸°ë¡ì„ ì €ì¥í•©ë‹ˆë‹¤.
     public void SaveMatchRecord(int matchId, MatchState state, List<MatchLogData> fullLogs)
     {
         MatchResultRecord record = new MatchResultRecord()
         {
+            MatchId = matchId,
             HomeTeamName = state.HomeTeam.TeamName,
             AwayTeamName = state.AwayTeam.TeamName,
             HomeScore = state.HomeTeam.Score,
             AwayScore = state.AwayTeam.Score,
-            FullLogs = new List<MatchLogData>(fullLogs) // µ¥ÀÌÅÍ º¹»çÇØ¼­ ÀúÀå
+            FullLogs = new List<MatchLogData>(fullLogs) // ë°ì´í„° ë³µì‚¬í•´ì„œ ì €ì¥
         };
 
+        foreach (var player in state.HomeTeam.Roster)
+        {
+            record.HomePlayerIds.Add(player.PlayerId);
+        }
+
         _leagueRecords[matchId] = record;
-        Debug.Log($"[LeagueRecordManager] {matchId}¹ø °æ±â ±â·Ï ÀúÀå ¿Ï·á! (ÃÑ ·Î±× ¼ö: {fullLogs.Count}°³)");
+        Debug.Log($"[LeagueRecordManager] {matchId}ë²ˆ ê²½ê¸° ê¸°ë¡ ì €ì¥ ì™„ë£Œ! (ì´ ë¡œê·¸ ìˆ˜: {fullLogs.Count}ê°œ)");
+        SaveGame();
     }
 
-    // ³ªÁß¿¡ Áö³­ °æ±â ·Î±×¸¦ ºÒ·¯¿Ã ¶§ ¾µ ÇÔ¼ö
+    // ë‚˜ì¤‘ì— ì§€ë‚œ ê²½ê¸° ë¡œê·¸ë¥¼ ë¶ˆëŸ¬ì˜¬ ë•Œ ì“¸ í•¨ìˆ˜
     public MatchResultRecord GetMatchRecord(int matchId)
     {
-        Debug.Log($"[·Î±× È®ÀÎ] °á»êÃ¢¿¡¼­ ¿äÃ»ÇÑ ID: {matchId}");
+        Debug.Log($"[ë¡œê·¸ í™•ì¸] ê²°ì‚°ì°½ì—ì„œ ìš”ì²­í•œ ID: {matchId}");
         if (_leagueRecords.ContainsKey(matchId))
             return _leagueRecords[matchId];
-        Debug.LogWarning($"[·Î±× ¿¡·¯] {matchId}¹ø ±â·ÏÀÌ ¾ø½À´Ï´Ù! ÇöÀç ÀúÀåµÈ ID ¸ñ·Ï: {string.Join(", ", _leagueRecords.Keys)}");
+        Debug.LogWarning($"[ë¡œê·¸ ì—ëŸ¬] {matchId}ë²ˆ ê¸°ë¡ì´ ì—†ìŠµë‹ˆë‹¤! í˜„ì¬ ì €ì¥ëœ ID ëª©ë¡: {string.Join(", ", _leagueRecords.Keys)}");
         return null;
     }
 
-    // ±âÈ¹ ¿äÃ»: ¸®±×°¡ ³¡³ª¸é ·Î±×¸¦ ½Ï Á¤¸®ÇÏ´Â ÇÔ¼ö
+    // ê¸°íš ìš”ì²­: ë¦¬ê·¸ê°€ ëë‚˜ë©´ ë¡œê·¸ë¥¼ ì‹¹ ì •ë¦¬í•˜ëŠ” í•¨ìˆ˜
     public void ClearLeagueRecords()
     {
         _leagueRecords.Clear();
-        Debug.Log("[LeagueRecordManager] ¸®±×°¡ Á¾·áµÇ¾î ¸ğµç °æ±â ·Î±×°¡ ÃÊ±âÈ­µÇ¾ú½À´Ï´Ù.");
+        Debug.Log("[LeagueRecordManager] ë¦¬ê·¸ê°€ ì¢…ë£Œë˜ì–´ ëª¨ë“  ê²½ê¸° ë¡œê·¸ê°€ ì´ˆê¸°í™”ë˜ì—ˆìŠµë‹ˆë‹¤.");
+        SaveGame();
     }
-    // Æ¯Á¤ °æ±âÀÇ Æ¯Á¤ ÄõÅÍ ·Î±×¸¸ ½ï »Ì¾Æ¼­ ¹İÈ¯ÇØ ÁÖ´Â ÇÔ¼ö
+    
+    // íŠ¹ì • ê²½ê¸°ì˜ íŠ¹ì • ì¿¼í„° ë¡œê·¸ë§Œ ì™ ë½‘ì•„ì„œ ë°˜í™˜í•´ ì£¼ëŠ” í•¨ìˆ˜
     public List<MatchLogData> GetLogsByQuarter(int matchId, int targetQuarter)
     {
         MatchResultRecord record = GetMatchRecord(matchId);
 
         if (record != null && record.FullLogs != null)
         {
-            // ÀüÃ¼ ·Î±× Áß¿¡¼­ Quarter °ªÀÌ targetQuarter¿Í ÀÏÄ¡ÇÏ´Â °Í¸¸ °É·¯¼­ ¸®½ºÆ®·Î ¸¸µê
+            // ì „ì²´ ë¡œê·¸ ì¤‘ì—ì„œ Quarter ê°’ì´ targetQuarterì™€ ì¼ì¹˜í•˜ëŠ” ê²ƒë§Œ ê±¸ëŸ¬ì„œ ë¦¬ìŠ¤íŠ¸ë¡œ ë§Œë“¦
             return record.FullLogs.FindAll(log => log.Quarter == targetQuarter);
         }
 
-        // ±â·ÏÀÌ ¾øÀ¸¸é ºó ¸®½ºÆ® ¹İÈ¯
+        // ê¸°ë¡ì´ ì—†ìœ¼ë©´ ë¹ˆ ë¦¬ìŠ¤íŠ¸ ë°˜í™˜
         return new List<MatchLogData>();
+    }
+
+    public void SaveGame()
+    {
+        if (SaveLoadManager.Instance == null) return;
+
+        // ë”•ì…”ë„ˆë¦¬ëŠ” JsonUtilityë¡œ ì§ë ¬í™”ê°€ ë¶ˆê°€ëŠ¥í•˜ë¯€ë¡œ, ë¦¬ìŠ¤íŠ¸ë¡œ ë³€í™˜í•˜ì—¬ ì»¨í…Œì´ë„ˆì— ë‹´ìŒ
+        LeagueRecordSaveData saveData = new LeagueRecordSaveData();
+        saveData.recordList = new List<MatchResultRecord>(_leagueRecords.Values);
+
+        SaveLoadManager.Instance.Save(SAVE_FILE, saveData);
+    }
+
+    public void LoadGame()
+    {
+        if (SaveLoadManager.Instance == null) return;
+
+        if (SaveLoadManager.Instance.TryLoad<LeagueRecordSaveData>(SAVE_FILE, out var data))
+        {
+            _leagueRecords.Clear();
+            foreach (var record in data.recordList)
+            {
+                // ë¦¬ìŠ¤íŠ¸ì˜ ë°ì´í„°ë¥¼ ë‹¤ì‹œ ë”•ì…”ë„ˆë¦¬ë¡œ ë³µêµ¬
+                _leagueRecords[record.MatchId] = record;
+            }
+            Debug.Log($"[LeagueRecordManager] {data.recordList.Count}ê°œì˜ ê²½ê¸° ê¸°ë¡ íŒŒì¼ ë¡œë“œ ì„±ê³µ!");
+        }
     }
 }

@@ -13,6 +13,7 @@ public class PassiveBox : MonoBehaviour
     [SerializeField] private Button[] _buttons = new Button[3];
 
     [SerializeField] private Player_PassiveDataReader _passiveDataReader;
+    [SerializeField] private Player_PassiveGradeDataReader _passiveGradeDataReader;
 
     //가져올 스킬 리스트
     private List<Player_PassiveData> _passiveDataList;
@@ -90,6 +91,17 @@ public class PassiveBox : MonoBehaviour
             //패시브 스킬 리스트 가져오기
             _passiveDataList = new List<Player_PassiveData>(student.GetAvailablePassives(_passiveDataReader.DataList));
 
+
+            Dictionary<int, List<Player_PassiveData>> gradePool = new Dictionary<int, List<Player_PassiveData>>();
+            foreach (var passive in _passiveDataList)
+            {
+                if (!gradePool.ContainsKey(passive.grade))
+                {
+                    gradePool[passive.grade] = new List<Player_PassiveData>();
+                }                    
+                gradePool[passive.grade].Add(passive);
+            }
+
             for (int i = 0; i < 3; i++)
             {
                 if (_passiveDataList.Count == 0)
@@ -98,22 +110,55 @@ public class PassiveBox : MonoBehaviour
                     ButtonInit();
                     return;
                 }
+                int weightedRandom = GetWeightedRandomGrade();                
 
-                int randomN = Random.Range(0, _passiveDataList.Count);
+                Player_PassiveData selectedSkill;
 
-                _skillName[i].text = _passiveDataList[randomN].skillName;
-                _skillDetail[i].text = _passiveDataList[randomN].passiveDesc;
+                if (gradePool.ContainsKey(weightedRandom) && gradePool[weightedRandom].Count > 0)
+                {
+                    int randomN = Random.Range(0, gradePool[weightedRandom].Count);
+                    selectedSkill = gradePool[weightedRandom][randomN];
+                }
+                else
+                {
+                    // 해당 등급이 없으면 전체 가용 리스트에서 랜덤 추출
+                    int randomN = Random.Range(0, _passiveDataList.Count);
+                    selectedSkill = _passiveDataList[randomN];
+                }
 
-                _selectSkillList.Add(_passiveDataList[randomN]);
-                Debug.Log($"{_passiveDataList[randomN].skillName}추가");
+                _skillName[i].text = selectedSkill.skillName;                    
+                _skillDetail[i].text = selectedSkill.passiveDesc;
 
-                _passiveDataList.RemoveAt(randomN);
+                _selectSkillList.Add(selectedSkill);
+                Debug.Log($"{selectedSkill}추가");
+
+                _passiveDataList.Remove(selectedSkill);
+                if (gradePool.ContainsKey(selectedSkill.grade))
+                {
+                    gradePool[selectedSkill.grade].Remove(selectedSkill);
+                }
             }
             _selectSkillSave[_graduationManager.PromotionStudentList[_graduationManager.Turn]] = new List<Player_PassiveData>(_selectSkillList);
         }
         ButtonInit();
     }
 
+    private int GetWeightedRandomGrade()
+    {
+        float randomPoint = Random.value;
+        float cumulative = 0;
+        var gradeData = _passiveGradeDataReader.DataList;
+
+        for (int i = 0; i < gradeData.Count; i++)
+        {
+            cumulative += gradeData[i].spawnRate;
+            if (randomPoint <= cumulative)
+            {
+                return gradeData[i].gradeId;
+            }
+        }
+        return 1;
+    }
 
     public void OnClickSkillBox(Button button)
     {

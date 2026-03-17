@@ -17,7 +17,9 @@ public class FosterManager : MonoBehaviour
     [Header("Team_RestDataReader(팀 휴식 데이터)")]
     [SerializeField] Team_RestDataReader _team_RestDB;
     [Header("Team_Position_MappingDataReader(팀 포지션 매핑 데이터)")]
-    [SerializeField] Team_Position_MappingDataReader _Team_Position_MappingDB;
+    [SerializeField] Team_Position_MappingDataReader _team_Position_MappingDB;
+    [Header("Team_Position_MappingDataReader(훈련 카테고리 매핑 데이터)")]
+    [SerializeField] Training_MappingDataReader _training_MappingDB;
 
     public Individual_TrainingDataReader IndividualTrainingDB => _individual_TrainingDB;
     public Individual_RestDataReader IndividualRestDB => _individual_RestDB;
@@ -136,7 +138,7 @@ public class FosterManager : MonoBehaviour
             Debug.Log($"개인 스케줄 실행 시도 (개수: {_schedules.Count})");
             foreach (var training in _schedules.Values)
             {
-                training.StartAction();
+                training.StartAction();                
             }
             Debug.Log("개인 스케줄 실행 완료");
         }        
@@ -146,8 +148,7 @@ public class FosterManager : MonoBehaviour
         _schedules.Clear(); //내부 카운트 및 UI 상태 초기화
         _scheduleCost = 0;
         _teamSchedule = null;
-        UpdateScheduleState(); 
-        Debug.Log("Foster 로직 종료, UI 호출 직전"); // 이 로그가 찍히는지 확인!
+        UpdateScheduleState();         
         StudentUIManager.Instance.OpenWeeklyTrainingReportPopUp(StudentManager.Instance.MyStudents);
     }
     
@@ -221,7 +222,7 @@ public class FosterManager : MonoBehaviour
 
     public Team_Position_MappingData GetPositionMapping(Student student)
     {
-        foreach (var data in _Team_Position_MappingDB.DataList)
+        foreach (var data in _team_Position_MappingDB.DataList)
         {
             if (data.position == student.Position)
             {
@@ -230,5 +231,18 @@ public class FosterManager : MonoBehaviour
         }
         Debug.LogWarning($"{student.Position} 포지션에 대한 매핑 데이터를 찾을 수 없습니다.");
         return default;
+    }
+
+    public Training_MappingData GetTrainingMapping(potential potential)
+    {
+        foreach(var data in _training_MappingDB.DataList)
+        {
+            if (data.potential == potential)
+            {
+                return data;
+            }
+        }
+        Debug.LogWarning($"{potential} 잠재력에 대한 매핑 데이터를 찾을 수 없습니다.");
+        return default;        
     }
 }

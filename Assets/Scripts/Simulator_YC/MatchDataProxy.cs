@@ -1,18 +1,18 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-// Àü¼ú µ¥ÀÌÅÍ ±¸Á¶Ã¼ (½ºÅÈ º¸Á¤°ª ÀúÀå¿ë)
+// ì „ìˆ  ë°ì´í„° êµ¬ì¡°ì²´ (ìŠ¤íƒ¯ ë³´ì •ê°’ ì €ì¥ìš©)
 public struct TeamTactics
 {
-    public float bonusTwoPoint;   // 2Á¡½¸ ½ºÅÈ º¸Á¤
-    public float bonusThreePoint; // 3Á¡½¸ ½ºÅÈ º¸Á¤
-    public float bonusPass;       // ÆĞ½º ½ºÅÈ º¸Á¤
-    public float bonusBlock;      // ºí·Ï ½ºÅÈ º¸Á¤
-    public float bonusSteal;      // ½ºÆ¿ ½ºÅÈ º¸Á¤
-    public float bonusRebound;    // ¸®¹Ù¿îµå ½ºÅÈ º¸Á¤
-    public float bonusDribble;    // µå¸®ºí ½ºÅÈ º¸Á¤
+    public float bonusTwoPoint;   // 2ì ìŠ› ìŠ¤íƒ¯ ë³´ì •
+    public float bonusThreePoint; // 3ì ìŠ› ìŠ¤íƒ¯ ë³´ì •
+    public float bonusPass;       // íŒ¨ìŠ¤ ìŠ¤íƒ¯ ë³´ì •
+    public float bonusBlock;      // ë¸”ë¡ ìŠ¤íƒ¯ ë³´ì •
+    public float bonusSteal;      // ìŠ¤í‹¸ ìŠ¤íƒ¯ ë³´ì •
+    public float bonusRebound;    // ë¦¬ë°”ìš´ë“œ ìŠ¤íƒ¯ ë³´ì •
+    public float bonusDribble;    // ë“œë¦¬ë¸” ìŠ¤íƒ¯ ë³´ì •
 
-    // Å×ÀÌºí ¹ÌÁ¤ ¡æ ÀÏ´Ü ÀüºÎ 1.0 (º¸Á¤ ¾øÀ½)
+    // í…Œì´ë¸” ë¯¸ì • â†’ ì¼ë‹¨ ì „ë¶€ 1.0 (ë³´ì • ì—†ìŒ)
     public TeamTactics(float tp = 1.0f, float three = 1.0f, float pass = 1.0f,
                        float block = 1.0f, float steal = 1.0f, float rebound = 1.0f,
                        float dribble = 1.0f)
@@ -33,16 +33,21 @@ public class MatchDataProxy : MonoBehaviour
     public static MatchDataProxy Instance { get; private set; }
 
     [Header("Balance Settings")]
-    [SerializeField] private int W_Shot_Base = 1;     // 101: ½¸ ±âº» °¡ÁßÄ¡
-    [SerializeField] private int W_Pass_Base = 1;     // 102: ÆĞ½º ±âº» °¡ÁßÄ¡
-    [SerializeField] private int W_Dribble_Base = 1;  // 103: µå¸®ºí ±âº» °¡ÁßÄ¡
-    [SerializeField] private float Pen_Dist_Hoop = 0.5f; // 104: °ñ´ë °Å¸® Æä³ÎÆ¼ °è¼ö
-    [SerializeField] private float Pen_Def_Block = 1f;   // 105: ¼öºñ ºí·Ï Æä³ÎÆ¼ °è¼ö
-    [SerializeField] private float Pen_Def_Steal = 1f;   // 106: ¼öºñ ½ºÆ¿ Æä³ÎÆ¼ °è¼ö
-    [SerializeField] private int W_Default = 1;       // 107: ±âº»°ª
-    [SerializeField] private float Pen_Intercept_Dist = 0.03f; // ÆĞ½º Â÷´Ü ÆÇÁ¤ °Å¸® º¯¼ö
-    [SerializeField] private float Min_Shoot_Score = 25f; // ½¸ ½ÃµµÁ¡¼ö ÃÖ¼Ò º¸Àå
-    [SerializeField] private float Def_Block_Dist = 0.15f; // ½¸ ¼öºñ(ºí·Ï) ÆÇÁ¤ °Å¸® º¯¼ö
+    [SerializeField] private int W_Shot_Base = 1;     // 101: ìŠ› ê¸°ë³¸ ê°€ì¤‘ì¹˜
+    [SerializeField] private int W_Pass_Base = 1;     // 102: íŒ¨ìŠ¤ ê¸°ë³¸ ê°€ì¤‘ì¹˜
+    [SerializeField] private int W_Dribble_Base = 1;  // 103: ë“œë¦¬ë¸” ê¸°ë³¸ ê°€ì¤‘ì¹˜
+    [SerializeField] private float Pen_Dist_Hoop = 0.5f; // 104: ê³¨ëŒ€ ê±°ë¦¬ í˜ë„í‹° ê³„ìˆ˜
+    [SerializeField] private float Pen_Def_Block = 1f;   // 105: ìˆ˜ë¹„ ë¸”ë¡ í˜ë„í‹° ê³„ìˆ˜
+    [SerializeField] private float Pen_Def_Steal = 1f;   // 106: ìˆ˜ë¹„ ìŠ¤í‹¸ í˜ë„í‹° ê³„ìˆ˜
+    [SerializeField] private int W_Default = 1;       // 107: ê¸°ë³¸ê°’
+    [SerializeField] private float Pen_Intercept_Dist = 0.03f; // íŒ¨ìŠ¤ ì°¨ë‹¨ íŒì • ê±°ë¦¬ ë³€ìˆ˜
+    [SerializeField] private float Min_Shoot_Score = 25f; // ìŠ› ì‹œë„ì ìˆ˜ ìµœì†Œ ë³´ì¥
+    [SerializeField] private float Def_Block_Dist = 0.15f; // ìŠ› ìˆ˜ë¹„(ë¸”ë¡) íŒì • ê±°ë¦¬ ë³€ìˆ˜
+    [SerializeField] private float W_Block_Base = 1f;
+    [SerializeField] private float W_Steal_Base = 1f;
+    [SerializeField] private float W_Dribble_Bonus = 1.5f;
+    [SerializeField] private float W_Dist_Bonus = 1.2f;
+
     [Header("Data Readers")]
     [SerializeField] private Team_ArchetypeDataReader _archetypeReader;
     private void Awake()
@@ -65,8 +70,12 @@ public class MatchDataProxy : MonoBehaviour
             case "Pen_Intercept_Dist": return Pen_Intercept_Dist;
             case "Min_Shoot_Score": return Min_Shoot_Score;
             case "Def_Block_Dist": return Def_Block_Dist;
+            case "W_Block_Base": return W_Block_Base;
+            case "W_Steal_Base": return W_Steal_Base;
+            case "W_Dribble_Bonus": return W_Dribble_Bonus;
+            case "W_Dist_Bonus": return W_Dist_Bonus;
             default:
-                Debug.LogError($"[MatchDataProxy] ¾Ë ¼ö ¾ø´Â Å°°ª: {key}");
+                Debug.LogError($"[MatchDataProxy] ì•Œ ìˆ˜ ì—†ëŠ” í‚¤ê°’: {key}");
                 return 0f;
         }
     }
@@ -78,7 +87,7 @@ public class MatchDataProxy : MonoBehaviour
             return new TeamTactics(1f, 1f, 1f, 1f, 1f, 1f, 1f);
         }
 
-        // Å×ÀÌºí¿¡¼­ ÀÏÄ¡ÇÏ´Â Àü¼ú ¾ÆÅ°Å¸ÀÔ °Ë»ö
+        // í…Œì´ë¸”ì—ì„œ ì¼ì¹˜í•˜ëŠ” ì „ìˆ  ì•„í‚¤íƒ€ì… ê²€ìƒ‰
         var archetype = _archetypeReader.DataList.Find(x => x.teamArchetypeId == teamColorId);
 
         if (string.IsNullOrEmpty(archetype.teamArchetypeId))
@@ -86,7 +95,7 @@ public class MatchDataProxy : MonoBehaviour
             return new TeamTactics(1f, 1f, 1f, 1f, 1f, 1f, 1f);
         }
 
-        // Å×ÀÌºí µ¥ÀÌÅÍ ±â¹İÀ¸·Î °¡ÁßÄ¡ Àû¿ë (µå¸®ºíÀº Å×ÀÌºí¿¡ ¾øÀ¸¹Ç·Î ±âº»°ª 1.0f)
+        // í…Œì´ë¸” ë°ì´í„° ê¸°ë°˜ìœ¼ë¡œ ê°€ì¤‘ì¹˜ ì ìš© (ë“œë¦¬ë¸”ì€ í…Œì´ë¸”ì— ì—†ìœ¼ë¯€ë¡œ ê¸°ë³¸ê°’ 1.0f)
         return new TeamTactics(
             tp: archetype.weight2pt,
             three: archetype.weight3pt,

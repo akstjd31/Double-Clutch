@@ -360,6 +360,7 @@ GameObject:
   - component: {fileID: 1740348744281420914}
   - component: {fileID: 1842353903062303432}
   - component: {fileID: 4157821540332170377}
+  - component: {fileID: 2045428251143663973}
   m_Layer: 5
   m_Name: StudentBox
   m_TagString: Untagged
@@ -376,7 +377,7 @@ RectTransform:
   m_GameObject: {fileID: 6735671664895110220}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.9058217, y: 0.9058217, z: 0.9058217}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7233097494226777336}
@@ -453,6 +454,21 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &2045428251143663973
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6735671664895110220}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df8e64b75890dcb46bd428a221a2dead, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerScoreRow
+  _textPosition: {fileID: 5139294138454539339}
+  _textName: {fileID: 426867819446312620}
+  _textScore: {fileID: 1234235782465931540}
 --- !u!1 &7130427692620307780
 GameObject:
   m_ObjectHideFlags: 0

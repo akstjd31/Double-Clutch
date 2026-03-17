@@ -9,13 +9,15 @@ public struct League_RewardData
     public int rewardGoldWin;
     public int rewardGoldEach;
     public float rewardGoldMultiplier;
+    public int finalParticipationFame;
 
-    public League_RewardData(string leagueRId, int rewardFW, int rewardGW, int rewardGE, float rewardGM)
+    public League_RewardData(string leagueRId, int rewardFW, int rewardGW, int rewardGE, float rewardGM, int finalParticipationFame)
     {
         leagueRewardId = leagueRId;
         rewardFameWin = rewardFW;
         rewardGoldWin = rewardGW;
         rewardGoldEach = rewardGE;
         rewardGoldMultiplier = rewardGM;
+        this.finalParticipationFame = finalParticipationFame;
     }
 }

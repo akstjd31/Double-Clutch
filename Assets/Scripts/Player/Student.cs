@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public enum StudentState
@@ -11,44 +12,46 @@ public enum StudentState
 [Serializable]
 public class Student
 {
-    //ÀúÀåµÇ´Â µ¥ÀÌÅÍ(-1Àº ¹ÌÇÒ´çÀ» ÀÇ¹Ì)
-    [SerializeField] int _studentId = -1; //ÇĞ»ı ½Äº°¿ë °íÀ¯ id(ÇĞ»ı ¿µÀÔ È®Á¤ ÈÄ ºÎ¿©)
-    [SerializeField] string _name; //ÀÌ¸§
-    [SerializeField] string _specieId = string.Empty; // Á¾Á·
-    [SerializeField] string _visualId = string.Empty; // ºñÁÖ¾ó Id
-    [SerializeField] string _personalityId = string.Empty; // ¼º°İ Id
-    [SerializeField] List<string> _passiveIdList = new List<string>(); //ÆĞ½Ãºê Id
-    [SerializeField] string _traitId = string.Empty; //Æ¯¼º Id
-    [SerializeField] int _grade = -1; //ÇĞ³â
-    [SerializeField] List<Stat> _stats = new List<Stat>(); //½ºÅÈ(ÀáÀç·Â)    
+    //ì €ì¥ë˜ëŠ” ë°ì´í„°(-1ì€ ë¯¸í• ë‹¹ì„ ì˜ë¯¸)
+    [SerializeField] int _studentId = -1; //í•™ìƒ ì‹ë³„ìš© ê³ ìœ  id(í•™ìƒ ì˜ì… í™•ì • í›„ ë¶€ì—¬)
+    [SerializeField] string[] _name; //ì´ë¦„
+    [SerializeField] string _specieId = string.Empty; // ì¢…ì¡±
+    [SerializeField] string _visualId = string.Empty; // ë¹„ì£¼ì–¼ Id
+    [SerializeField] string _personalityId = string.Empty; // ì„±ê²© Id
+    [SerializeField] List<string> _passiveIdList = new List<string>(); //íŒ¨ì‹œë¸Œ Id
+    [SerializeField] string _traitId = string.Empty; //íŠ¹ì„± Id
+    [SerializeField] int _grade = -1; //í•™ë…„
+    [SerializeField] List<Stat> _stats = new List<Stat>(); //ìŠ¤íƒ¯(ì ì¬ë ¥)    
 
     [SerializeField] Position _position;
     [SerializeField] StudentState _state;
     [SerializeField] int _condition = 100;
     [SerializeField] int _cureCount = 0;
+    [SerializeField] int _awardCount = 0;
 
-
-    //°ÔÀÓ ½ÇÇà ÈÄ ºÒ·¯¿À´Â µ¥ÀÌÅÍ
-    Player_SpeciesData _specieData; //Á¾Á·
-    Player_VisualData _visualData; //ºñÁÖ¾ó
-    Player_PersonalityData _personalityData; //¼º°İ
-    List<Player_PassiveData> _passiveDataList = new List<Player_PassiveData>(); //ÆĞ½Ãºê ½ºÅ³
-    Player_TraitData _traitData; //Æ¯¼º
+    //ê²Œì„ ì‹¤í–‰ í›„ ë¶ˆëŸ¬ì˜¤ëŠ” ë°ì´í„°
+    Player_SpeciesData _specieData; //ì¢…ì¡±
+    Player_VisualData _visualData; //ë¹„ì£¼ì–¼
+    Player_PersonalityData _personalityData; //ì„±ê²©
+    List<Player_PassiveData> _passiveDataList = new List<Player_PassiveData>(); //íŒ¨ì‹œë¸Œ ìŠ¤í‚¬
+    Player_TraitData _traitData; //íŠ¹ì„±
     List<Player_PositionData> _positionDataList = new List<Player_PositionData>();
-    Dictionary<potential, Stat> _statDict = new Dictionary<potential, Stat>(); //½ºÅÈ(ÀáÀç·Â)¸ñ·Ï
+    List<potential> _changedPotentials = new List<potential>();
+    Dictionary<potential, Stat> _statDict = new Dictionary<potential, Stat>(); //ìŠ¤íƒ¯(ì ì¬ë ¥)ëª©ë¡
     int _attack;
     int _defense;
     int _attackChange;
     int _defenseChange;
-    Position _matchPosition;
+    int _conditionChange;
+    [SerializeField] private Position _matchPosition;
     ITraining _currentTraining;
     
 
 
 
-    //¿ÜºÎ È£Ãâ¿ë ÇÁ·ÎÆÛÆ¼(Á¶È¸¿ë)
+    //ì™¸ë¶€ í˜¸ì¶œìš© í”„ë¡œí¼í‹°(ì¡°íšŒìš©)
     public int StudentId => _studentId;
-    public string Name => _name;
+    public string[] Name => _name;
     public string SpecieId => _specieId;
     public Player_SpeciesData SpecieData => _specieData;
     public string VisualId => _visualId;
@@ -64,12 +67,15 @@ public class Student
     public int Defense => _defense;
     public int AttackChange => _attackChange;
     public int DefenseChange => _defenseChange;
+    public int ConditionChange => _conditionChange;
     public Position Position => _position;
     public Position MatchPosition => _matchPosition;
     public StudentState State => _state;
     public int Condition => _condition;
     public int CureCount => _cureCount;
     public ITraining CurrentTraining => _currentTraining;
+    public int AwardCount { get { return _awardCount; } set { _awardCount = value; } }
+    public List<potential> ChangedPotentials => _changedPotentials;
     public void ResetTrainingSchedule()
     {
         _currentTraining = null;
@@ -78,28 +84,106 @@ public class Student
     {
         _currentTraining = training;
     }
-    public int GetCurrentStat(potential type) //ÇöÀç ½ºÅÈ ¼öÄ¡ ¹İÈ¯(¹Ù·Î°¡±â) ¸Å¼­µå
+
+    public float GetFosterPassiveValue(potential pot)
+    {
+        switch(pot)
+        {
+            case potential.Stat2pt:
+                return FindPassiveValue(effectType.Growth2pt);
+            case potential.Stat3pt:
+                return FindPassiveValue(effectType.Growth3pt);
+            case potential.StatBlock:
+                return FindPassiveValue(effectType.GrowthBlock);
+            case potential.StatPass:
+                return FindPassiveValue(effectType.GrowthPass);
+            case potential.StatSteal:
+                return FindPassiveValue(effectType.GrowthSteal);
+            case potential.StatRebound:
+                return FindPassiveValue(effectType.GrowthRebound);
+            default:
+                return 0;
+        }
+    }
+
+    public float GetRatePassiveValue(potential pot)
+    {
+        switch (pot)
+        {
+            case potential.Stat2pt:
+                return FindPassiveValue(effectType.Rate2pt);
+            case potential.Stat3pt:
+                return FindPassiveValue(effectType.Rate3pt);
+            case potential.StatBlock:
+                return FindPassiveValue(effectType.RateBlock);
+            case potential.StatPass:
+                return FindPassiveValue(effectType.RatePass);
+            case potential.StatSteal:
+                return FindPassiveValue(effectType.RateSteal);
+            case potential.StatRebound:
+                return FindPassiveValue(effectType.RateRebound);
+            default:
+                return 0;
+        }
+    }
+
+    public float GetPotenPassiveValue(potential pot)
+    {
+        switch (pot)
+        {
+            case potential.Stat2pt:
+                return FindPassiveValue(effectType.Poten2pt);
+            case potential.Stat3pt:
+                return FindPassiveValue(effectType.Poten3pt);
+            case potential.StatBlock:
+                return FindPassiveValue(effectType.PotenBlock);
+            case potential.StatPass:
+                return FindPassiveValue(effectType.PotenPass);
+            case potential.StatSteal:
+                return FindPassiveValue(effectType.PotenSteal);
+            case potential.StatRebound:
+                return FindPassiveValue(effectType.PotenRebound);
+            default:
+                return 0;
+        }
+    }
+
+    private float FindPassiveValue(effectType type)
+    {
+        float result = 0f;
+        foreach (var passive in _passiveDataList)
+        {
+            if (passive.effectType == type)
+            {
+                result += passive.effectValue;
+            }
+        }
+        return result;
+    }
+
+
+    public int GetCurrentStat(potential type) //í˜„ì¬ ìŠ¤íƒ¯ ìˆ˜ì¹˜ ë°˜í™˜(ë°”ë¡œê°€ê¸°) ë§¤ì„œë“œ
     {
         if (type == potential.None || !_statDict.ContainsKey(type))
         {
             return 0;
         }
 
-        // [µğ¹ö±×] µñ¼Å³Ê¸® ÀÚÃ¼°¡ ºñ¾îÀÖ´ÂÁö Ã¼Å©
+        // [ë””ë²„ê·¸] ë”•ì…”ë„ˆë¦¬ ìì²´ê°€ ë¹„ì–´ìˆëŠ”ì§€ ì²´í¬
         if (_statDict == null || _statDict.Count == 0)
         {
-            Debug.LogError($"<color=red>[½ºÅÈ Áõ¹ß ¿¡·¯]</color> {Name} ¼±¼öÀÇ _statDict°¡ ÅÖ ºñ¾îÀÖ½À´Ï´Ù! (RebuildStatDict È£Ãâ ´©¶ô ÀÇ½É)");
+            Debug.LogError($"<color=red>[ìŠ¤íƒ¯ ì¦ë°œ ì—ëŸ¬]</color> {Name} ì„ ìˆ˜ì˜ _statDictê°€ í…… ë¹„ì–´ìˆìŠµë‹ˆë‹¤! (RebuildStatDict í˜¸ì¶œ ëˆ„ë½ ì˜ì‹¬)");
             return 0;
         }
 
         return _statDict[type].Current;
     }
 
-    public Stat GetStat(potential type) //¿øÇÏ´Â Å¸ÀÔÀÇ ½ºÅÈ ¹İÈ¯
+    public Stat GetStat(potential type) //ì›í•˜ëŠ” íƒ€ì…ì˜ ìŠ¤íƒ¯ ë°˜í™˜
     {
         if (type == potential.None || !_statDict.ContainsKey(type))
         {
-            Debug.LogWarning("potentialÀÌ NoneÀ¸·Î ¼³Á¤µÈ µ¥ÀÌÅÍ°¡ ÀÖ½À´Ï´Ù. µ¥ÀÌÅÍ¸¦ È®ÀÎÇØÁÖ¼¼¿ä.");
+            Debug.LogWarning("potentialì´ Noneìœ¼ë¡œ ì„¤ì •ëœ ë°ì´í„°ê°€ ìˆìŠµë‹ˆë‹¤. ë°ì´í„°ë¥¼ í™•ì¸í•´ì£¼ì„¸ìš”.");
             return null;
         }
         return _statDict[type];
@@ -109,9 +193,9 @@ public class Student
     {        
         Player_PositionData data = _positionDataList.Find(d => d.recommendId == position);        
         
-        if (data.recommendId == Position.None && data.stat1 == potential.None)// µ¥ÀÌÅÍ¸¦ Ã£Áö ¸øÇßÀ» °æ¿ì ¿¹¿Ü Ã³¸® (±âº»°ª 0 ¹İÈ¯ ¹× °æ°í)
+        if (data.recommendId == Position.None && data.stat1 == potential.None)// ë°ì´í„°ë¥¼ ì°¾ì§€ ëª»í–ˆì„ ê²½ìš° ì˜ˆì™¸ ì²˜ë¦¬ (ê¸°ë³¸ê°’ 0 ë°˜í™˜ ë° ê²½ê³ )
         {
-            Debug.LogWarning($"{position}¿¡ ´ëÇÑ Æ÷Áö¼Ç ÃßÃµµµ °¡ÁßÄ¡ µ¥ÀÌÅÍ°¡ ¾ø°Å³ª, enumÀÇ °ªÀÌ NoneÀ¸·Î ÇÒ´çµÇ¾î ÀÖ½À´Ï´Ù.");
+            Debug.LogWarning($"{position}ì— ëŒ€í•œ í¬ì§€ì…˜ ì¶”ì²œë„ ê°€ì¤‘ì¹˜ ë°ì´í„°ê°€ ì—†ê±°ë‚˜, enumì˜ ê°’ì´ Noneìœ¼ë¡œ í• ë‹¹ë˜ì–´ ìˆìŠµë‹ˆë‹¤.");
             return 0;
         }
         
@@ -125,16 +209,19 @@ public class Student
 
 
 
-    #region µ¥ÀÌÅÍ ÇÒ´ç¿ë ÇÔ¼ö
+    #region ë°ì´í„° í• ë‹¹ìš© í•¨ìˆ˜
 
     public void SetStudentId(int id)
     {
         _studentId = id;
     }
 
-    public void SetName(string name)
+    public void SetName(string first, string middle, string last)
     {
-        _name = name;
+        _name = new string[3];
+        _name[0] = first;
+        _name[1] = middle;
+        _name[2] = last;
     }
     public void SetSpecieId(string specieId)
     {
@@ -152,6 +239,10 @@ public class Student
     public void SetVisual(Player_VisualData data)
     {
         _visualData = data;
+        if (string.IsNullOrEmpty(_visualId))
+        {
+            _visualId = data.visualId;
+        }
     }
 
     public void SetPersonalityId(string personalityId)
@@ -185,6 +276,7 @@ public class Student
         {
             _passiveIdList.Add(data.skillId);
         }
+        OnPassiveUpdated();
     }
     public bool HasPassive(string skillId)
     {
@@ -258,28 +350,36 @@ public class Student
         _matchPosition = position;
     }
 
+    public void AddChangedPotential(potential pot)
+    {
+        if (pot != potential.None && !_changedPotentials.Contains(pot))
+        {
+            _changedPotentials.Add(pot);
+        }
+    }
     #endregion
 
 
 
-    public void Init(Player_SpeciesDataReader specieDb, Player_PersonalityDataReader personalityDb, Player_PassiveDataReader passiveDb, Player_TraitDataReader traitDb, Player_PositionDataReader positionDb) //Id ±â¹İÀ¸·Î µ¥ÀÌÅÍ ¿¬°áÇÏ±â
+    public void Init(Player_SpeciesDataReader specieDb, Player_PersonalityDataReader personalityDb, Player_PassiveDataReader passiveDb, Player_TraitDataReader traitDb, Player_PositionDataReader positionDb, Player_VisualDataReader visualDb) //Id ê¸°ë°˜ìœ¼ë¡œ ë°ì´í„° ì—°ê²°í•˜ê¸°
     {
         InitStat();
+        InitPassive(passiveDb);         
         InitSpecies(specieDb);
-        InitPersonality(personalityDb);
-        InitPassive(passiveDb);
+        InitPersonality(personalityDb);        
         InitTrait(traitDb);
         InitPositionData(positionDb);
+        InitVisual(visualDb);
     }
 
     private void InitStat()
     {
         _statDict.Clear();
-        foreach (var stat in _stats) //½ºÅÈ ¸®½ºÆ®¸¦ µñ¼Å³Ê¸®¿¡ ÇÒ´ç(Á¶È¸ ÆíÀÇ¼º)
+        foreach (var stat in _stats) //ìŠ¤íƒ¯ ë¦¬ìŠ¤íŠ¸ë¥¼ ë”•ì…”ë„ˆë¦¬ì— í• ë‹¹(ì¡°íšŒ í¸ì˜ì„±)
         {
-            _statDict[stat.Type] = stat;
+            _statDict[stat.Type] = stat;            
         }
-        OnStatChanged(); //°ø°İ·Â & ¹æ¾î·Â °è»ê
+        OnStatChanged(); //ê³µê²©ë ¥ & ë°©ì–´ë ¥ ê³„ì‚°
     }
 
     public void InitPositionData(Player_PositionDataReader db)
@@ -290,11 +390,13 @@ public class Student
 
     public void PrepareStatChange()
     {
-        _attackChange = _attack;  // ÇöÀç °ø°İ·ÂÀ» ÀÓ½Ã ÀúÀå
-        _defenseChange = _defense; // ÇöÀç ¼öºñ·ÂÀ» ÀÓ½Ã ÀúÀå
+        _attackChange = _attack;  // í˜„ì¬ ê³µê²©ë ¥ì„ ì„ì‹œ ì €ì¥
+        _defenseChange = _defense; // í˜„ì¬ ìˆ˜ë¹„ë ¥ì„ ì„ì‹œ ì €ì¥
+        _conditionChange = _condition; //í˜„ì¬ ì»¨ë””ì…˜ì„ ì„ì‹œ ì €ì¥
+        _changedPotentials.Clear();
     }
 
-    public void OnStatChanged() //½ºÅÈ ±â¹İ °ø°İ·Â & ¹æ¾î·Â °è»ê
+    public void OnStatChanged() //ìŠ¤íƒ¯ ê¸°ë°˜ ê³µê²©ë ¥ & ë°©ì–´ë ¥ ê³„ì‚°
     {
         int newAttack = 0;
         int newDefense = 0;
@@ -307,17 +409,18 @@ public class Student
                 case potential.Stat2pt:
                 case potential.Stat3pt:
                 case potential.StatPass:
-                    newAttack += stat.Current;
+                    newAttack += stat.Current;                    
                     break;
                 case potential.StatBlock:
                 case potential.StatSteal:
                 case potential.StatRebound:
-                    newDefense += stat.Current;
+                    newDefense += stat.Current;                    
                     break;
             }
         }
         _attackChange = newAttack - _attackChange;
-        _defenseChange = newDefense - _defenseChange;      
+        _defenseChange = newDefense - _defenseChange;
+        _conditionChange = _condition - _conditionChange;
         
         _attack = newAttack;
         _defense = newDefense;
@@ -332,6 +435,12 @@ public class Student
         _personalityData = db.DataList.Find(data => data.personalityId == PersonalityId);
     }
 
+    private void InitVisual(Player_VisualDataReader db)
+    {
+        _visualData = db.DataList.Find(data => data.visualId == VisualId);
+    }
+
+
     private void InitPassive(Player_PassiveDataReader db)
     {
         _passiveDataList.Clear();
@@ -339,7 +448,8 @@ public class Student
         {
             Player_PassiveData data = db.DataList.Find(data => data.skillId == _passiveIdList[i]);
             _passiveDataList.Add(data);
-        }        
+        }
+        OnPassiveUpdated();
     }
 
     private void InitTrait(Player_TraitDataReader db)
@@ -354,6 +464,34 @@ public class Student
         {
             _statDict[stat.Type] = stat;
         }
-        OnStatChanged(); // °ø°İ·Â/¼öºñ·Â °è»êµµ °°ÀÌ °»½Å
+        OnStatChanged(); // ê³µê²©ë ¥/ìˆ˜ë¹„ë ¥ ê³„ì‚°ë„ ê°™ì´ ê°±ì‹ 
     }
+
+    public void OnPassiveUpdated()
+    {        
+        foreach (var stat in _stats)
+        {
+            if (stat.Type == potential.None)
+            {
+                continue;
+            }
+            stat.SetPassiveBonus(GetRatePassiveValue(stat.Type), GetPotenPassiveValue(stat.Type));
+            stat.RefreshFinalStat();
+        }
+        OnStatChanged();
+    }
+
+    public void OnInfraUpdated()
+    {
+        foreach (var stat in _stats)
+        {
+            if (stat.Type == potential.None)
+            {
+                continue;
+            }
+            stat.RefreshFinalStat();
+        }
+        OnStatChanged();
+    }
+
 }

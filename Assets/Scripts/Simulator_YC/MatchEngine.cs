@@ -7,7 +7,7 @@ public class MatchEngine : MonoBehaviour
 {
     public List<MatchLogData> MatchLogs = new List<MatchLogData>();
 
-    // 1ÄõÅÍºÎÅÍ ³¡³¯¶§±îÁö Àı´ë Áö¿öÁöÁö ¾Ê°í ´©ÀûµÇ´Â ÀüÃ¼ ·Î±× º¸°ü¿ë
+    // 1ì¿¼í„°ë¶€í„° ëë‚ ë•Œê¹Œì§€ ì ˆëŒ€ ì§€ì›Œì§€ì§€ ì•Šê³  ëˆ„ì ë˜ëŠ” ì „ì²´ ë¡œê·¸ ë³´ê´€ìš©
     public List<MatchLogData> FullMatchLogs = new List<MatchLogData>();
 
     public Action OnMatchEnded;
@@ -18,14 +18,28 @@ public class MatchEngine : MonoBehaviour
     private MatchTeam _awayTeam;
     private TeamSide _currentPossession;
     private MatchPlayer _ballHolder;
-    private const float MAX_MOVE_PER_TICK = 1f / 3f; // ±âÈ¹¼­ 5.3: Æ½´ç ÃÖ´ë ÀÌµ¿°Å¸®
+    private const float MAX_MOVE_PER_TICK = 1f / 3f; // ê¸°íšì„œ 5.3: í‹±ë‹¹ ìµœëŒ€ ì´ë™ê±°ë¦¬
+
+
 
     [Header("Data Readers")]
     [SerializeField] private Event_ConfigDataReader _eventConfigReader;
     [SerializeField] private Position_PresetDataReader _positionPresetReader;
+    [SerializeField] private Player_SynergyDataReader _synergyReader;
+
+    [Header("Balance Settings")]
+    [SerializeField]
+    [Tooltip("ë“œë¦¬ë¸” ì‹œ ìˆ˜ë¹„ìˆ˜ì—ê²Œ ë°©í•´ë°›ëŠ” íŒì • ê±°ë¦¬")]
+    private float dribbleBlockDist = 0.1f;
+    [SerializeField]
+    [Tooltip("íŒ¨ìŠ¤ ì‹œ ìˆ˜ë¹„ìˆ˜ì—ê²Œ ì°¨ë‹¨ë‹¹í•˜ëŠ” íŒì • ê±°ë¦¬")]
+    private float passInterceptDist = 0.03f;
+    [SerializeField]
+    [Tooltip("ìŠ› ì‹œë„ ì‹œ ìˆ˜ë¹„ìˆ˜ì—ê²Œ ë¸”ë¡ë‹¹í•˜ëŠ” íŒì • ê±°ë¦¬")]
+    private float blockDist = 0.25f;
     public void StartSimulation()
     {
-        // ¿£Áø ³»ºÎ¿¡¼­ ÄÚ·çÆ¾À» µ¹·Á Àü¹İÀü/ÇÏÇÁÅ¸ÀÓ/ÈÄ¹İÀü Èå¸§À» Á¦¾îÇÕ´Ï´Ù.
+        // ì—”ì§„ ë‚´ë¶€ì—ì„œ ì½”ë£¨í‹´ì„ ëŒë ¤ ì „ë°˜ì „/í•˜í”„íƒ€ì„/í›„ë°˜ì „ íë¦„ì„ ì œì–´í•©ë‹ˆë‹¤.
         StartCoroutine(MatchFlowRoutine());
     }
 
@@ -37,28 +51,28 @@ public class MatchEngine : MonoBehaviour
 
         if (state == null || state.HomeTeam == null || state.AwayTeam == null)
         {
-            Debug.LogError("[MatchEngine] MatchState ¶Ç´Â ÆÀ Á¤º¸°¡ ¾ø½À´Ï´Ù.");
+            Debug.LogError("[MatchEngine] MatchState ë˜ëŠ” íŒ€ ì •ë³´ê°€ ì—†ìŠµë‹ˆë‹¤.");
             OnMatchEnded?.Invoke();
             yield break;
         }
 
-        // ÃÊ±â ¼¼ÆÃ
+        // ì´ˆê¸° ì„¸íŒ…
         InitMatchData(state.HomeTeam, state.AwayTeam);
 
-        // ¾î¿şÀÌ ÆÀ ÁÂÇ¥ ¹İÀü (1.0 ±âÁØ ´ëÄª)
+        // ì–´ì›¨ì´ íŒ€ ì¢Œí‘œ ë°˜ì „ (1.0 ê¸°ì¤€ ëŒ€ì¹­)
         foreach (var player in state.AwayTeam.Roster)
         {
             if (player.LogicPosition.y >= 0.5f)
                 player.LogicPosition = new Vector2(player.LogicPosition.x, 1.0f - player.LogicPosition.y);
         }
 
-        // Àü¹İÀü(1~2ÄõÅÍ) ¿¬»ê
+        // ì „ë°˜ì „(1~2ì¿¼í„°) ì—°ì‚°
         CalculateUntilQuarter(2);
 
-        // Àü¹İÀüÀÌ ³¡³µÀ¸¹Ç·Î ½ºÅÈÀ» Æò°¡ÇÏ¿© ÇÏÇÁÅ¸ÀÓ ÀÌº¥Æ®¸¦ Á¤ÇÕ´Ï´Ù.
+        // ì „ë°˜ì „ì´ ëë‚¬ìœ¼ë¯€ë¡œ ìŠ¤íƒ¯ì„ í‰ê°€í•˜ì—¬ í•˜í”„íƒ€ì„ ì´ë²¤íŠ¸ë¥¼ ì •í•©ë‹ˆë‹¤.
         state.DetermineHalftimeEvent();
 
-        // Àü¹İÀü Àç»ı ½ÃÀÛ
+        // ì „ë°˜ì „ ì¬ìƒ ì‹œì‘
         bool isReplayDone = false;
         if (replayer != null)
         {
@@ -66,7 +80,7 @@ public class MatchEngine : MonoBehaviour
             replayer.OnReplayEnded = () => { isReplayDone = true; };
             replayer.PlayMatch();
 
-            // È­¸é Àç»ıÀÌ ³¡³¯ ¶§±îÁö ¿£Áø ´ë±â
+            // í™”ë©´ ì¬ìƒì´ ëë‚  ë•Œê¹Œì§€ ì—”ì§„ ëŒ€ê¸°
             yield return new WaitUntil(() => isReplayDone);
         }
 
@@ -76,37 +90,37 @@ public class MatchEngine : MonoBehaviour
             yield return new WaitUntil(() => uiManager.IsQuarterEndConfirmed);
         }
 
-        // ÇÏÇÁÅ¸ÀÓ ÀÌº¥Æ® ÆĞ³Î ´ë±â
+        // í•˜í”„íƒ€ì„ ì´ë²¤íŠ¸ íŒ¨ë„ ëŒ€ê¸°
         if (uiManager != null)
         {
-            // ½ºÅ©¸³Æ® ID¸¦ ³Ñ°ÜÁÖ¸ç ºñÁÖ¾ó ³ëº§ ½ÃÀÛ
+            // ìŠ¤í¬ë¦½íŠ¸ IDë¥¼ ë„˜ê²¨ì£¼ë©° ë¹„ì£¼ì–¼ ë…¸ë²¨ ì‹œì‘
             uiManager.StartHalftimeEvent(state.CurrentHalftimeScriptId);
 
-            // À¯Àú°¡ ´ë»ç¸¦ ¸ğµÎ ÀĞ°í ÃÖÁ¾ End¸¦ ´©¸¦ ¶§±îÁö(IsEventFinished == true) ¹«ÇÑ ´ë±â
+            // ìœ ì €ê°€ ëŒ€ì‚¬ë¥¼ ëª¨ë‘ ì½ê³  ìµœì¢… Endë¥¼ ëˆ„ë¥¼ ë•Œê¹Œì§€(IsEventFinished == true) ë¬´í•œ ëŒ€ê¸°
             yield return new WaitUntil(() => uiManager.IsEventFinished);
         }
-        // ÈÄ¹İÀü Àç»ı ½ÃÀÛ Àü¿¡ CourtPanel ÀÚ½Ä ÀüºÎ Áï½Ã »èÁ¦
+        // í›„ë°˜ì „ ì¬ìƒ ì‹œì‘ ì „ì— CourtPanel ìì‹ ì „ë¶€ ì¦‰ì‹œ ì‚­ì œ
         foreach (Transform child in replayer.CourtPanel)
         {
             Destroy(child.gameObject);
         }
 
-        // ÈÄ¹İÀü(3~4ÄõÅÍ ¹× ¿¬ÀåÀü) ¿¬»ê
+        // í›„ë°˜ì „(3~4ì¿¼í„° ë° ì—°ì¥ì „) ì—°ì‚°
         CalculateUntilQuarter(4);
 
-        // ÈÄ¹İÀü Àç»ı ½ÃÀÛ
+        // í›„ë°˜ì „ ì¬ìƒ ì‹œì‘
         isReplayDone = false;
         if (replayer != null)
         {
-            replayer.Init(MatchLogs); // ÈÄ¹İÀü ·Î±× »õ·Î ¼¼ÆÃ
-            // OnReplayEnded´Â Àü¹İÀü¿¡¼­ ¿¬°áÇÑ ¹«¸íÇÔ¼ö°¡ ±×´ë·Î ÀÛµ¿ÇÔ
+            replayer.Init(MatchLogs); // í›„ë°˜ì „ ë¡œê·¸ ìƒˆë¡œ ì„¸íŒ…
+            // OnReplayEndedëŠ” ì „ë°˜ì „ì—ì„œ ì—°ê²°í•œ ë¬´ëª…í•¨ìˆ˜ê°€ ê·¸ëŒ€ë¡œ ì‘ë™í•¨
             replayer.PlayMatch();
 
-            // ÈÄ¹İÀü Àç»ı ³¡³¯ ¶§±îÁö ´ë±â
+            // í›„ë°˜ì „ ì¬ìƒ ëë‚  ë•Œê¹Œì§€ ëŒ€ê¸°
             yield return new WaitUntil(() => isReplayDone);
         }
 
-        // °æ±â ¿ÏÀü Á¾·á -> MatchSimState·Î ½ÅÈ£ Àü´Ş!
+        // ê²½ê¸° ì™„ì „ ì¢…ë£Œ -> MatchSimStateë¡œ ì‹ í˜¸ ì „ë‹¬!
         OnMatchEnded?.Invoke();
     }
 
@@ -115,12 +129,18 @@ public class MatchEngine : MonoBehaviour
         _homeTeam = home;
         _awayTeam = away;
         _simQuarter = 1;
-        _simTime = 600f; // 10ºĞ
+        _simTime = 600f; // 10ë¶„
         _currentPossession = TeamSide.Home;
-        FullMatchLogs.Clear(); // »õ °æ±â ½ÃÀÛ ½Ã ÀüÃ¼ ·Î±× ÃÊ±âÈ­
+        FullMatchLogs.Clear(); // ìƒˆ ê²½ê¸° ì‹œì‘ ì‹œ ì „ì²´ ë¡œê·¸ ì´ˆê¸°í™”
 
         _homeTeam.SimulatedScore = 0;
         _awayTeam.SimulatedScore = 0;
+
+        if (_synergyReader != null)
+        {
+            _homeTeam.EvaluateSynergies(_synergyReader.DataList);
+            _awayTeam.EvaluateSynergies(_synergyReader.DataList);
+        }
     }
 
     public void CalculateUntilQuarter(int targetQuarter)
@@ -129,7 +149,7 @@ public class MatchEngine : MonoBehaviour
 
         Debug.Log($">>> [MatchEngine] Simulation Phase: {_simQuarter}Q ~ {targetQuarter}Q");
 
-        // ÀÏ¹İ ÄõÅÍ Ã³¸® (1~4ÄõÅÍ)
+        // ì¼ë°˜ ì¿¼í„° ì²˜ë¦¬ (1~4ì¿¼í„°)
         while (_simQuarter <= targetQuarter)
         {
             RecordLog("GameStart");
@@ -146,19 +166,12 @@ public class MatchEngine : MonoBehaviour
             _currentPossession = (_currentPossession == TeamSide.Home) ? TeamSide.Away : TeamSide.Home;
         }
 
-        // ¿¬ÀåÀü Ã³¸® (4ÄõÅÍ°¡ ³¡³µ´Âµ¥ µ¿Á¡ÀÏ ¶§¸¸)
+        // ì—°ì¥ì „ ì²˜ë¦¬ (3ì¿¼í„°ê°€ ëë‚¬ëŠ”ë° ë™ì ì¼ ë•Œë§Œ)
         if (targetQuarter >= 4)
         {
-            int maxOvertime = 20; // ÃÖ´ë ¿¬ÀåÀü È½¼ö (20¹ø)
-            int currentOvertime = 0;
 
             while (_homeTeam.SimulatedScore == _awayTeam.SimulatedScore)
             {
-                if (currentOvertime >= maxOvertime)
-                {
-                    Debug.LogWarning("¿¬ÀåÀü 20È¸ µ¹ÆÄ! ¹«½ÂºÎ·Î °­Á¦ Á¾·áÇÏ¿© ÇÁ¸®Â¡À» ¹æÁöÇÕ´Ï´Ù.");
-                    break; // ¹«ÇÑ ·çÇÁ Å»Ãâ!
-                }
                 RecordLog("GameStart");
 
                 _simTime = 300f;
@@ -172,7 +185,7 @@ public class MatchEngine : MonoBehaviour
 
                 _simQuarter++;
                 _currentPossession = (_currentPossession == TeamSide.Home) ? TeamSide.Away : TeamSide.Home;
-                currentOvertime++;
+                if (_simQuarter > 7) break;
             }
 
             RecordLog("GameEnd");
@@ -181,6 +194,9 @@ public class MatchEngine : MonoBehaviour
 
     private void ProcessTurn()
     {
+        // [ì‹œë„ˆì§€ìš©] ë§¤ í„´(í‹±)ì´ ì‹œì‘ë  ë•Œë§ˆë‹¤ ëª¨ë“  ì„ ìˆ˜ì˜ íŒ¨ìŠ¤ ë²„í”„ ì§€ì†ì‹œê°„ì„ 1ì”© ê¹ìŒ
+        foreach (var p in _homeTeam.Roster) { if (p.PassReceivedBuffTick > 0) p.PassReceivedBuffTick--; }
+        foreach (var p in _awayTeam.Roster) { if (p.PassReceivedBuffTick > 0) p.PassReceivedBuffTick--; }
 
         MatchTeam attackTeam = (_currentPossession == TeamSide.Home) ? _homeTeam : _awayTeam;
         MatchTeam defendTeam = (_currentPossession == TeamSide.Home) ? _awayTeam : _homeTeam;
@@ -194,52 +210,79 @@ public class MatchEngine : MonoBehaviour
         TeamTactics attackTactics = MatchDataProxy.Instance.GetTactics(attackTeam.TeamColorId);
         TeamTactics defendTactics = MatchDataProxy.Instance.GetTactics(defendTeam.TeamColorId);
 
-        int action = MatchCalculator.DecideAction(_ballHolder, distToHoop, attackTactics, attackTeam.Roster, defendTeam.Roster);
-
-        float timeCost = UnityEngine.Random.Range(5f, 10f);
+        int action = MatchCalculator.DecideAction(_ballHolder, distToHoop, attackTactics, attackTeam, defendTeam, passInterceptDist, _simTime);
+        float timeCost = UnityEngine.Random.Range(1f, 3f);
         _simTime -= timeCost;
 
         if (_simTime <= 0)
         {
-            _simTime = 0; // ½Ã°£ ¸¶ÀÌ³Ê½º ¹æÁö
+            _simTime = 0; // ì‹œê°„ ë§ˆì´ë„ˆìŠ¤ ë°©ì§€
 
-            if (action == 0)
+            bool isOT3EndTied = (_simQuarter == 7 && _homeTeam.SimulatedScore == _awayTeam.SimulatedScore);
+
+            if (isOT3EndTied)
             {
-                // ½¸À» ½ÃµµÇß´Âµ¥ ¸¶Ä§ 0ÃÊ°¡ µÊ -> ¹öÀúºñÅÍ Âù½º! (¸¶Áö¸· ¸Å°³º¯¼ö true Àü´Ş)
+                Debug.LogWarning($"[ì‹œìŠ¤í…œ] ì—°ì¥ 3ì¿¼í„° ë¬´ìŠ¹ë¶€ ë„ë‹¬! {_ballHolder.PlayerName}ì˜ ê°•ì œ ë²„ì €ë¹„í„° ë°œë™!");
+                // ê°•ì œ ë²„ì €ë¹„í„° ìŠ› ì‹¤í–‰
+                DoShoot(_ballHolder, attackTeam, defendTeam, distToHoop, hoopPos, true, attackTactics, defendTactics, true);
+            }
+
+            else if (action == 0)
+            {
+                // ìŠ›ì„ ì‹œë„í–ˆëŠ”ë° ë§ˆì¹¨ 0ì´ˆê°€ ë¨ -> ë²„ì €ë¹„í„° ì°¬ìŠ¤! (ë§ˆì§€ë§‰ ë§¤ê°œë³€ìˆ˜ true ì „ë‹¬)
                 DoShoot(_ballHolder, attackTeam, defendTeam, distToHoop, hoopPos, true, attackTactics, defendTactics);
             }
             else
             {
-                // ÆĞ½º³ª µå¸®ºí Áß¿¡ ½Ã°£ÀÌ ³¡³² -> °ø°İ ¹«»ê ¹× ÄõÅÍ Á¾·á
-                RecordLog("°ø°İÀÌ ¹«»êµÇ¸ç ÄõÅÍ°¡ Á¾·áµË´Ï´Ù.", "TIME_OVER");
+                // íŒ¨ìŠ¤ë‚˜ ë“œë¦¬ë¸” ì¤‘ì— ì‹œê°„ì´ ëë‚¨ -> ê³µê²© ë¬´ì‚° ë° ì¿¼í„° ì¢…ë£Œ
+                RecordLog("ê³µê²©ì´ ë¬´ì‚°ë˜ë©° ì¿¼í„°ê°€ ì¢…ë£Œë©ë‹ˆë‹¤.", "TIME_OVER");
             }
         }
         else
         {
-            // ½Ã°£ÀÌ ³Ë³ËÈ÷ ³²Àº ÀÏ¹İÀûÀÎ »óÈ²
+            // ì‹œê°„ì´ ë„‰ë„‰íˆ ë‚¨ì€ ì¼ë°˜ì ì¸ ìƒí™©
             switch (action)
             {
                 case 0: DoShoot(_ballHolder, attackTeam, defendTeam, distToHoop, hoopPos, false, attackTactics, defendTactics); break;
                 case 1: DoPass(_ballHolder, attackTeam, defendTeam, attackTactics, defendTactics); break;
-                case 2: DoDribble(_ballHolder, defendTeam.Roster, hoopPos, attackTactics, defendTactics); break;
+                case 2: DoDribble(_ballHolder, attackTeam, defendTeam, hoopPos, attackTactics, defendTactics); break;
             }
         }
     }
 
-    private void DoShoot(MatchPlayer shooter, MatchTeam attackTeam, MatchTeam defendTeam, float distance, Vector2 hoopPos, bool isBuzzerBeater, TeamTactics attackTactics, TeamTactics defendTactics)
+    private void DoShoot(MatchPlayer shooter, MatchTeam attackTeam, MatchTeam defendTeam, float distance, Vector2 hoopPos, bool isBuzzerBeater, TeamTactics attackTactics, TeamTactics defendTactics, bool forceSuccess = false)
     {
         bool isThree = distance > 0.35f;
         bool isDunk = distance <= 0.05f;
 
+        if (shooter.PassReceivedBuffTick > 0)
+        {
+            float highlightProb = MatchCalculator.GetSynergyBonus(attackTeam, effectType.HighlightFilm);
+            if (highlightProb > 0)
+            {
+                float hDice = UnityEngine.Random.Range(0f, 100f);
+                if (hDice <= highlightProb) // ê¸°íšì„œëŒ€ë¡œ í™•ë¥  êµ´ë¦¼ (ì˜ˆ: 0.1%)
+                {
+                    isDunk = true;       // ê¸°íšì„œ: "ë©í¬ ìŠ› ì»· ì¸ ì´ë¯¸ì§€ ì¶œë ¥" ê°•ì œ
+                    isThree = false;     // ë©í¬ì´ë¯€ë¡œ 2ì  ì²˜ë¦¬
+                    forceSuccess = true; // ê¸°íšì„œ: "ê³¨ í™•ì •"
+
+                    Debug.Log($"<color=#FF00FF>[í•˜ì´ë¼ì´íŠ¸ í•„ë¦„ ë°œë™!]</color> í™•ì • ë©í¬! (ì£¼ì‚¬ìœ„: {hDice:F2} <= í™•ë¥ : {highlightProb:F2}%)");
+                }
+            }
+        }
+
         int score = isThree ? 3 : 2;
 
-        bool success = MatchCalculator.CalculateShootSuccess(shooter, distance, attackTeam, defendTeam, attackTactics, defendTactics);
+        bool success = forceSuccess || MatchCalculator.CalculateShootSuccess(shooter, distance, attackTeam, defendTeam, attackTactics, defendTactics, blockDist);
 
-        // ÆÀ ½ºÅÈ ±â·Ï
+        if (isThree) { attackTeam.Try3pt++; if (success) attackTeam.Succ3pt++; }
+
+        // íŒ€ ìŠ¤íƒ¯ ê¸°ë¡
         if (isThree) { attackTeam.Try3pt++; if (success) attackTeam.Succ3pt++; }
         else { attackTeam.Try2pt++; if (success) attackTeam.Succ2pt++; }
 
-        // ÇöÀç ½Ã°£ Æ÷¸ËÆÃ (MM:SS)
+        // í˜„ì¬ ì‹œê°„ í¬ë§·íŒ… (MM:SS)
         string timeStr = GetLogTimeStr();
 
         MatchLogData log = new MatchLogData();
@@ -247,19 +290,19 @@ public class MatchEngine : MonoBehaviour
         log.Quarter = _simQuarter;
         log.TeamId = (_currentPossession == TeamSide.Home) ? 0 : 1;
         log.PlayerId = shooter.PlayerId;
-        log.PlayerName = shooter.PlayerName;
+        log.PlayerName = MakeName(shooter.PlayerName);
         log.EventType = success ? "GOAL" : "MISS";
         log.IsSuccess = success;
         log.ScoreAdded = success ? score : 0;
 
-        // ½¸ °á°ú ÅØ½ºÆ® (½Ã°£ + ³»¿ë)
+        // ìŠ› ê²°ê³¼ í…ìŠ¤íŠ¸ (ì‹œê°„ + ë‚´ìš©)
         log.BallPos = shooter.LogicPosition;
-        // ¾Æ±º(Home)ÀÏ ¶§¸¸ ·Î±× ÅØ½ºÆ®, ÄÆÀÎ, »ç¿îµå¸¦ Àû¿ë
+        // ì•„êµ°(Home)ì¼ ë•Œë§Œ ë¡œê·¸ í…ìŠ¤íŠ¸, ì»·ì¸, ì‚¬ìš´ë“œë¥¼ ì ìš©
         if (_currentPossession == TeamSide.Home)
         {
-            log.LogText = success ? $"{timeStr} {shooter.PlayerName}ÀÌ(°¡) µæÁ¡¿¡ ¼º°øÇÕ´Ï´Ù!" : $"{timeStr} {shooter.PlayerName}ÀÇ ½¸ÀÌ ºø³ª°©´Ï´Ù.";
+            log.LogText = success ? $"{timeStr} {shooter.PlayerName}ì´(ê°€) ë“ì ì— ì„±ê³µí•©ë‹ˆë‹¤!" : $"{timeStr} {shooter.PlayerName}ì˜ ìŠ›ì´ ë¹—ë‚˜ê°‘ë‹ˆë‹¤.";
 
-            // ¹öÀúºñÅÍ¸¦ ¸ÕÀú Ã¼Å©ÇÏ°í, ¾Æ´Ò ¶§¸¸ µ¢Å©/3Á¡ Ã¼Å©
+            // ë²„ì €ë¹„í„°ë¥¼ ë¨¼ì € ì²´í¬í•˜ê³ , ì•„ë‹ ë•Œë§Œ ë©í¬/3ì  ì²´í¬
             if (isBuzzerBeater && success)
             {
                 log.IsCutIn = true;
@@ -288,7 +331,7 @@ public class MatchEngine : MonoBehaviour
         }
         else
         {
-            // Àû±º(Away)ÀÏ °æ¿ì ÅØ½ºÆ®, ÄÆÀÎ, »ç¿îµå¸¦ ¸ğµÎ ºñ¿ö¹ö¸² (±â·Ï ¾È ¶ç¿ò)
+            // ì êµ°(Away)ì¼ ê²½ìš° í…ìŠ¤íŠ¸, ì»·ì¸, ì‚¬ìš´ë“œë¥¼ ëª¨ë‘ ë¹„ì›Œë²„ë¦¼ (ê¸°ë¡ ì•ˆ ë„ì›€)
             log.LogText = "";
             log.IsCutIn = false;
             log.CutInType = "";
@@ -309,22 +352,35 @@ public class MatchEngine : MonoBehaviour
         }
         else
         {
-            float yMin = (_currentPossession == TeamSide.Home) ? hoopPos.y - 0.2f : hoopPos.y;
-            float yMax = (_currentPossession == TeamSide.Home) ? hoopPos.y : hoopPos.y + 0.2f;
-            float yDropOffset = (_currentPossession == TeamSide.Home) ?
-                    UnityEngine.Random.Range(-0.2f, 0.0f) :  // È¨ÆÀ °ø°İ ½Ã: °ñ´ë(0.95)º¸´Ù ¾Æ·¡·Î ¶³¾îÁü
-                    UnityEngine.Random.Range(0.0f, 0.2f);    // ¾î¿şÀÌ °ø°İ ½Ã: °ñ´ë(0.05)º¸´Ù À§·Î ¶³¾îÁü
+            Vector2 randomOffset = UnityEngine.Random.insideUnitCircle * 0.35f;
+            randomOffset.y /= 1.87f; // ì¢…íš¡ë¹„ ë³´ì •
 
-            Vector2 dropPos = hoopPos + new Vector2(UnityEngine.Random.Range(-0.2f, 0.2f), yDropOffset);
+            if (hoopPos.y > 0.5f)
+            {
+                randomOffset.y = -Mathf.Abs(randomOffset.y);
+            }
+            else
+            {
+                randomOffset.y = Mathf.Abs(randomOffset.y);
+            }
+
+            Vector2 dropPos = new Vector2(
+                Mathf.Clamp01(hoopPos.x + randomOffset.x),
+                Mathf.Clamp01(hoopPos.y + randomOffset.y)
+            );
+
             List<MatchPlayer> allPlayers = new List<MatchPlayer>();
             allPlayers.AddRange(attackTeam.Roster);
             allPlayers.AddRange(defendTeam.Roster);
 
-            MatchPlayer rebounder = MatchCalculator.CalculateReboundWinner(dropPos, allPlayers);
+            TeamTactics homeTactics = MatchDataProxy.Instance.GetTactics(_homeTeam.TeamColorId);
+            TeamTactics awayTactics = MatchDataProxy.Instance.GetTactics(_awayTeam.TeamColorId);
+
+            MatchPlayer rebounder = MatchCalculator.CalculateReboundWinner(dropPos, allPlayers, _homeTeam, _awayTeam, homeTactics, awayTactics);
             RecordLog("Rebound", rebounder);
             _ballHolder = rebounder;
 
-            // ¸®¹Ù¿îµå ±â·Ï
+            // ë¦¬ë°”ìš´ë“œ ê¸°ë¡
             if (_homeTeam.Roster.Contains(rebounder)) _homeTeam.ReboundCount++;
             else _awayTeam.ReboundCount++;
 
@@ -337,11 +393,10 @@ public class MatchEngine : MonoBehaviour
         MatchPlayer bestReceiver = null;
         float maxPassScore = -999f;
 
-        float interceptDist = MatchDataProxy.Instance.GetBalance("Pen_Intercept_Dist");
         float penDistHoop = MatchDataProxy.Instance.GetBalance("Pen_Dist_Hoop");
         float wPassBase = MatchDataProxy.Instance.GetBalance("W_Pass_Base");
 
-        // ¸ğµç ¾Æ±º¿¡ ´ëÇØ °è»êÇÏ¿© ÃÖÀûÀÇ ÆĞ½º ´ë»ó ÆÇ´Ü
+        // ëª¨ë“  ì•„êµ°ì— ëŒ€í•´ ê³„ì‚°í•˜ì—¬ ìµœì ì˜ íŒ¨ìŠ¤ ëŒ€ìƒ íŒë‹¨
         foreach (var mate in attackTeam.Roster)
         {
             if (mate == passer) continue;
@@ -357,15 +412,15 @@ public class MatchEngine : MonoBehaviour
             float pathEnemySteal = 0f;
             foreach (var e in defendTeam.Roster)
             {
-                if (MatchCalculator.DistancePointToLineSegment(e.LogicPosition, passer.LogicPosition, mate.LogicPosition) < interceptDist)
+                if (MatchCalculator.DistancePointToLineSegment(e.LogicPosition, passer.LogicPosition, mate.LogicPosition) < passInterceptDist)
                 {
                     hasEnemyOnPath = 1;
-                    pathEnemySteal = e.GetStat(MatchStatType.Steal);
+                    pathEnemySteal = MatchCalculator.GetPlayerStat(e, MatchStatType.Steal, defendTeam);
                     break;
                 }
             }
 
-            float currentPassScore = (mate.GetStat(MatchStatType.Pass) * attackTactics.bonusPass * wPassBase)
+            float currentPassScore = (MatchCalculator.GetPlayerStat(mate, MatchStatType.Pass, attackTeam) * attackTactics.bonusPass * wPassBase)
                                    + (mateNearestEnemyDist * penDistHoop)
                                    - (hasEnemyOnPath * pathEnemySteal * attackTactics.bonusPass);
 
@@ -379,12 +434,14 @@ public class MatchEngine : MonoBehaviour
         if (bestReceiver == null) return;
 
         MatchPlayer interceptor;
-        bool success = MatchCalculator.CalculatePassSuccess(passer, bestReceiver, attackTeam, defendTeam, attackTactics, defendTactics, out interceptor);
+        bool success = MatchCalculator.CalculatePassSuccess(passer, bestReceiver, attackTeam, defendTeam, attackTactics, defendTactics, passInterceptDist, out interceptor);
 
-        // ·Î±× ±â·Ï Àü °ø ¼ÒÀ¯ÀÚ °»½Å
+        // ë¡œê·¸ ê¸°ë¡ ì „ ê³µ ì†Œìœ ì ê°±ì‹ 
         if (success)
         {
             _ballHolder = bestReceiver;
+            // [ì‹œë„ˆì§€ìš©] íŒ¨ìŠ¤ë¥¼ ì„±ê³µì ìœ¼ë¡œ ë°›ì€ ì„ ìˆ˜ì—ê²Œ 3í‹±ì§œë¦¬ ë²„í”„ íƒ€ì´ë¨¸ ë¶€ì—¬!(íŒ¨ìŠ¤ ë°›ì€ ì§í›„ 4í‹± -> 3í‹± / 0ì¼ë•Œ ë²„í”„ ë°œë™ X)
+            bestReceiver.PassReceivedBuffTick = 4;
             RecordLog("PassSucc", passer, bestReceiver);
         }
         else
@@ -395,12 +452,12 @@ public class MatchEngine : MonoBehaviour
         }
     }
 
-    private void DoDribble(MatchPlayer dribbler, List<MatchPlayer> enemies, Vector2 hoopPos, TeamTactics attackTactics, TeamTactics defendTactics)
+    private void DoDribble(MatchPlayer dribbler, MatchTeam attackTeam, MatchTeam defendTeam, Vector2 hoopPos, TeamTactics attackTactics, TeamTactics defendTactics)
     {
-        bool success = MatchCalculator.CalculateDribbleSuccess(dribbler, enemies, attackTactics, defendTactics);
+        bool success = MatchCalculator.CalculateDribbleSuccess(dribbler, attackTeam, defendTeam, attackTactics, defendTactics, dribbleBlockDist);
         if (success)
         {
-            Vector2 dir = (hoopPos - dribbler.LogicPosition).normalized;
+            Vector2 dir = (hoopPos - dribbler.LogicPosition).normalized; List<MatchPlayer> allPlayers = new List<MatchPlayer>();
             float moveDist = Mathf.Min(UnityEngine.Random.Range(0.1f, 0.2f), MAX_MOVE_PER_TICK);
             dribbler.LogicPosition += dir * moveDist;
             RecordLog("Dribble", dribbler);
@@ -439,45 +496,45 @@ public class MatchEngine : MonoBehaviour
         }
     }
 
-    // ÆÄ¶ó¹ÌÅÍ¿¡ targetÀ» Ãß°¡ÇÏ¿© ´©±¸¿¡°Ô ÆĞ½ºÇÏ´ÂÁö Ã³¸®ÇÒ ¼ö ÀÖ°Ô ÇÔ
+    // íŒŒë¼ë¯¸í„°ì— targetì„ ì¶”ê°€í•˜ì—¬ ëˆ„êµ¬ì—ê²Œ íŒ¨ìŠ¤í•˜ëŠ”ì§€ ì²˜ë¦¬í•  ìˆ˜ ìˆê²Œ í•¨
     private void RecordLog(string eventCode, MatchPlayer actor = null, MatchPlayer target = null)
     {
         var config = _eventConfigReader.DataList.Find(x => x.logEventCode == eventCode);
 
         if (config == null || string.IsNullOrEmpty(config.logEventCode))
         {
-            Debug.LogWarning($"[MatchEngine] Event_Config Å×ÀÌºí¿¡¼­ '{eventCode}'¸¦ Ã£À» ¼ö ¾ø½À´Ï´Ù.");
+            Debug.LogWarning($"[MatchEngine] Event_Config í…Œì´ë¸”ì—ì„œ '{eventCode}'ë¥¼ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤.");
             return;
         }
 
-        // ÇöÀç ½Ã°£ Æ÷¸ËÆÃ (MM:SS)
+        // í˜„ì¬ ì‹œê°„ í¬ë§·íŒ… (MM:SS)
         string timeStr = GetLogTimeStr();
 
-        // ÅØ½ºÆ® Ä¡È¯
+        // í…ìŠ¤íŠ¸ ì¹˜í™˜
         string finalText = StringManager.Instance != null ? StringManager.Instance.GetString(config.textTemplate) : config.textTemplate;
-        if (actor != null) finalText = finalText.Replace("{PlayerName}", actor.PlayerName);
-        if (target != null) finalText = finalText.Replace("{TargetName}", target.PlayerName); // ÆĞ½º ´ë»ó ÀÌ¸§ Ä¡È¯
-        // 5ÄõÅÍ ÀÌ»óÀÌ¸é '¿¬Àå 1', ¾Æ´Ï¸é ¿ø·¡ ¼ıÀÚ À¯Áö
-        string quarterString = _simQuarter > 4 ? $"¿¬Àå {_simQuarter - 4}" : _simQuarter.ToString();
+        if (actor != null) finalText = finalText.Replace("{PlayerName}", MakeName(actor.PlayerName));
+        if (target != null) finalText = finalText.Replace("{TargetName}", MakeName(target.PlayerName)); // íŒ¨ìŠ¤ ëŒ€ìƒ ì´ë¦„ ì¹˜í™˜
+        // 5ì¿¼í„° ì´ìƒì´ë©´ 'ì—°ì¥ 1', ì•„ë‹ˆë©´ ì›ë˜ ìˆ«ì ìœ ì§€
+        string quarterString = _simQuarter > 4 ? $"ì—°ì¥ {_simQuarter - 4}" : _simQuarter.ToString();
         finalText = finalText.Replace("{Quarter}", quarterString);
 
         MatchLogData log = new MatchLogData();
         log.GameTime = Mathf.Max(0, _simTime);
         log.Quarter = _simQuarter;
 
-        // ÃÖÁ¾ ÅØ½ºÆ®: ½Ã°£ + ¿Ï¼ºµÈ ¹®Àå
+        // ìµœì¢… í…ìŠ¤íŠ¸: ì‹œê°„ + ì™„ì„±ëœ ë¬¸ì¥
         log.LogText = $"{timeStr} {finalText}";
         log.EventType = eventCode;
         log.ScoreAdded = config.scAdd;
 
-        // »ç¿îµå ¹× ÄÆÀÎ ¿¬Ãâ ÇÒ´ç
+        // ì‚¬ìš´ë“œ ë° ì»·ì¸ ì—°ì¶œ í• ë‹¹
         log.SfxType = config.soundResourceId == "-" ? "" : config.soundResourceId;
         log.IsCutIn = config.cutInResourceId != "-";
         log.CutInType = config.cutInResourceId == "-" ? "" : config.cutInResourceId;
 
         if (_ballHolder != null) log.BallPos = _ballHolder.LogicPosition;
 
-        // Çàµ¿ ÁÖÃ¼°¡ Àû±º(Away) ¼Ò¼ÓÀÏ °æ¿ì ¸ğµç ¿¬Ãâ°ú ·Î±× ÅØ½ºÆ® »èÁ¦
+        // í–‰ë™ ì£¼ì²´ê°€ ì êµ°(Away) ì†Œì†ì¼ ê²½ìš° ëª¨ë“  ì—°ì¶œê³¼ ë¡œê·¸ í…ìŠ¤íŠ¸ ì‚­ì œ
         if (actor != null && _awayTeam.Roster.Contains(actor))
         {
             log.LogText = "";
@@ -491,7 +548,7 @@ public class MatchEngine : MonoBehaviour
         FullMatchLogs.Add(log);
     }
 
-    // Á÷Á¢ ÅØ½ºÆ®¸¦ ÀÔ·ÂÇÏ´Â ¹öÀüÀÇ ·Î±× (½Ã°£ ÃÊ°ú µî)
+    // ì§ì ‘ í…ìŠ¤íŠ¸ë¥¼ ì…ë ¥í•˜ëŠ” ë²„ì „ì˜ ë¡œê·¸ (ì‹œê°„ ì´ˆê³¼ ë“±)
     private void RecordLog(string text, string type, string sfxType = "")
     {
         string timeStr = GetLogTimeStr();
@@ -499,7 +556,7 @@ public class MatchEngine : MonoBehaviour
         MatchLogData log = new MatchLogData();
         log.GameTime = Mathf.Max(0, _simTime);
         log.Quarter = _simQuarter;
-        log.LogText = $"{timeStr} {text}"; // ¿©±âµµ ½Ã°£À» ¸Ç ¾Õ¿¡ ºÙÀÓ
+        log.LogText = $"{timeStr} {text}"; // ì—¬ê¸°ë„ ì‹œê°„ì„ ë§¨ ì•ì— ë¶™ì„
         log.EventType = type;
         log.SfxType = sfxType;
         if (_ballHolder != null) log.BallPos = _ballHolder.LogicPosition;
@@ -509,7 +566,7 @@ public class MatchEngine : MonoBehaviour
         FullMatchLogs.Add(log);
     }
 
-    // 10¸íÀÇ ¼±¼ö¸¦ »ìÂ¦ ÀÌµ¿½ÃÅ°°í ÁÂÇ¥¸¦ ¹è¿­¿¡ ´ã´Â ÇÔ¼ö
+    // 10ëª…ì˜ ì„ ìˆ˜ë¥¼ ì‚´ì§ ì´ë™ì‹œí‚¤ê³  ì¢Œí‘œë¥¼ ë°°ì—´ì— ë‹´ëŠ” í•¨ìˆ˜
     private void SavePositionsToLog(MatchLogData log)
     {
         MoveOffBallPlayers(_homeTeam);
@@ -561,15 +618,15 @@ public class MatchEngine : MonoBehaviour
         float y = 0.5f;
         bool isDataFound = false;
 
-        // µ¥ÀÌÅÍ ¸®´õ°¡ ÀÖ´ÂÁö È®ÀÎ
+        // ë°ì´í„° ë¦¬ë”ê°€ ìˆëŠ”ì§€ í™•ì¸
         if (_positionPresetReader != null && _positionPresetReader.DataList != null && _positionPresetReader.DataList.Count > 0)
         {
-            // Æ÷Áö¼Ç(TempPositionChange)ÀÌ ÀÖ´ÂÁö ¸ÕÀú °Ë»ö
+            // í¬ì§€ì…˜(TempPositionChange)ì´ ìˆëŠ”ì§€ ë¨¼ì € ê²€ìƒ‰
             int targetIndex = _positionPresetReader.DataList.FindIndex(data =>
                 data.positionType == player.MainPosition &&
                 data.changeType == player.TempPositionChange);
 
-            // ºó µ¥ÀÌÅÍÀÎÁö Ã¼Å©
+            // ë¹ˆ ë°ì´í„°ì¸ì§€ ì²´í¬
             if (targetIndex < 0)
             {
                 targetIndex = _positionPresetReader.DataList.FindIndex(data =>
@@ -577,7 +634,7 @@ public class MatchEngine : MonoBehaviour
                     data.changeType == changeType.Default);
             }
 
-            // µ¥ÀÌÅÍ¸¦ ÃÖÁ¾ÀûÀ¸·Î Ã£¾Ò´Ù¸é ¿¢¼¿ ¹üÀ§ ³»¿¡¼­ ·£´ı ÁöÁ¤
+            // ë°ì´í„°ë¥¼ ìµœì¢…ì ìœ¼ë¡œ ì°¾ì•˜ë‹¤ë©´ ì—‘ì…€ ë²”ìœ„ ë‚´ì—ì„œ ëœë¤ ì§€ì •
             if (targetIndex >= 0)
             {
                 var preset = _positionPresetReader.DataList[targetIndex];
@@ -587,22 +644,22 @@ public class MatchEngine : MonoBehaviour
             }
         }
 
-        // ¹æ¾î ·ÎÁ÷
+        // ë°©ì–´ ë¡œì§
         if (!isDataFound)
         {
-            Debug.LogWarning($"[À§Ä¡ µ¥ÀÌÅÍ ´©¶ô] {player.PlayerName}({player.MainPosition})ÀÇ À§Ä¡ µ¥ÀÌÅÍ¸¦ ¿¢¼¿¿¡¼­ ¸ø Ã£¾Ò½À´Ï´Ù! ±âº» Æ÷¸ŞÀÌ¼ÇÀ¸·Î ÀÓ½Ã ¹èÄ¡ÇÕ´Ï´Ù.");
+            Debug.LogWarning($"[ìœ„ì¹˜ ë°ì´í„° ëˆ„ë½] {player.PlayerName}({player.MainPosition})ì˜ ìœ„ì¹˜ ë°ì´í„°ë¥¼ ì—‘ì…€ì—ì„œ ëª» ì°¾ì•˜ìŠµë‹ˆë‹¤! ê¸°ë³¸ í¬ë©”ì´ì…˜ìœ¼ë¡œ ì„ì‹œ ë°°ì¹˜í•©ë‹ˆë‹¤.");
             switch (player.MainPosition)
             {
-                case Position.PG: x = 0.5f; y = 0.65f; break; // Å¾
-                case Position.SG: x = 0.8f; y = 0.75f; break; // ¿ìÃø 45µµ
-                case Position.SF: x = 0.2f; y = 0.75f; break; // ÁÂÃø 45µµ
-                case Position.PF: x = 0.65f; y = 0.85f; break; // ÇÏÀÌ Æ÷½ºÆ®
-                case Position.C: x = 0.5f; y = 0.9f; break;  // °ñ¹Ø
+                case Position.PG: x = 0.5f; y = 0.65f; break; // íƒ‘
+                case Position.SG: x = 0.8f; y = 0.75f; break; // ìš°ì¸¡ 45ë„
+                case Position.SF: x = 0.2f; y = 0.75f; break; // ì¢Œì¸¡ 45ë„
+                case Position.PF: x = 0.65f; y = 0.85f; break; // í•˜ì´ í¬ìŠ¤íŠ¸
+                case Position.C: x = 0.5f; y = 0.9f; break;  // ê³¨ë°‘
                 default: x = 0.5f; y = 0.5f; break;
             }
         }
 
-        // Áø¿µ(Home/Away) ¹× °ø¼ö(°ø°İ/¼öºñ) ÀüÈ¯¿¡ µû¸¥ YÁÂÇ¥ ´ëÄª ¹İÀü
+        // ì§„ì˜(Home/Away) ë° ê³µìˆ˜(ê³µê²©/ìˆ˜ë¹„) ì „í™˜ì— ë”°ë¥¸ Yì¢Œí‘œ ëŒ€ì¹­ ë°˜ì „
         if (side == TeamSide.Away)
             y = 1.0f - y;
 
@@ -616,13 +673,20 @@ public class MatchEngine : MonoBehaviour
     }
     private string GetLogTimeStr()
     {
-        // 1~4ÄõÅÍ´Â 600ÃÊ(10ºĞ), ¿¬ÀåÀü(5ÄõÅÍ ÀÌ»ó)Àº 300ÃÊ(5ºĞ)°¡ ±âÁØ
+        // 1~4ì¿¼í„°ëŠ” 600ì´ˆ(10ë¶„), ì—°ì¥ì „(5ì¿¼í„° ì´ìƒ)ì€ 300ì´ˆ(5ë¶„)ê°€ ê¸°ì¤€
         float maxTime = (_simQuarter > 4) ? 300f : 600f;
-        float elapsedTime = maxTime - Mathf.Max(0, _simTime); // °æ°ú ½Ã°£ = ÃÑ ½Ã°£ - ³²Àº ½Ã°£
+        float elapsedTime = maxTime - Mathf.Max(0, _simTime); // ê²½ê³¼ ì‹œê°„ = ì´ ì‹œê°„ - ë‚¨ì€ ì‹œê°„
 
         int minutes = (int)elapsedTime / 60;
         int seconds = (int)elapsedTime % 60;
 
         return $"{minutes:D2}:{seconds:D2}";
+    }
+
+    private string MakeName(string[] nameKey)
+    {
+        StringManager manager = StringManager.Instance;
+        string name = manager.GetString(nameKey[0]) + manager.GetString(nameKey[1]) + manager.GetString(nameKey[2]);
+        return name;
     }
 }

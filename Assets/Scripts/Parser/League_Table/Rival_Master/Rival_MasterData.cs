@@ -2,18 +2,19 @@ using System;
 
 public enum teamSector
 {
-    None,
-    NA,
-    DOM,
-    OS
+    None = 0,
+    NA = 1 << 0,    // 1
+    DOM = 1 << 1,   // 2
+    OS = 1 << 2     // 4
 }
+
 public enum teamTier
 {
     None,
     D,C,B,A,S,SS,SSS
 }
-[Serializable]
 
+[Serializable]
 public struct Rival_MasterData
 {
     public string teamId;

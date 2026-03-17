@@ -32,6 +32,8 @@ public class GraduationListPanel : MonoBehaviour
 
     private void CreatCell()
     {
+        StringManager manager = StringManager.Instance;
+
         for (int i = 0; i < _graduationStudentList.Count; i++)
         {
             GameObject nameBox = Instantiate(_nameBoxPrefab, _listObject.transform);
@@ -43,7 +45,7 @@ public class GraduationListPanel : MonoBehaviour
             //버튼을 생성할 때 학생 데이터 저장
             script.clickData = _graduationStudentList[i];
             script.graduationUI = _characterProfileDetail;
-            name.text = _graduationStudentList[i].Name;
+            name.text = manager.GetString(_graduationStudentList[i].Name[0]) + manager.GetString(_graduationStudentList[i].Name[1]) + manager.GetString(_graduationStudentList[i].Name[2]);
             //honor.text = _graduationStudentList[i].Honor.ToString();
         }
     }

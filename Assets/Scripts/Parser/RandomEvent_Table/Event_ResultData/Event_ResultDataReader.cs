@@ -1,4 +1,4 @@
-﻿using GoogleSheetsToUnity;
+using GoogleSheetsToUnity;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -22,7 +22,7 @@ public class Event_ResultDataReader : DataReaderBase
         int conditionChange = 0;
         string statusChange = null; 
         string reactionPortraitId = null; 
-        string resultscriptKey = null; 
+        string resultScriptKey = null; 
 
         string seId = null; 
         string floatingText = null; 
@@ -76,8 +76,8 @@ public class Event_ResultDataReader : DataReaderBase
                 case "reactionPortraitId":
                     reactionPortraitId = val;
                     break;
-                case "resultscriptKey":
-                    resultscriptKey = val;
+                case "resultScriptKey":
+                    resultScriptKey = val;
                     break;
 
                 case "seId":
@@ -93,7 +93,7 @@ public class Event_ResultDataReader : DataReaderBase
         DataList.Add(new Event_ResultData(
         
             resultId, choiceId, scriptId, nextId, matchPersonalityId, potentialChangeType,
-            potentialChangeValue, conditionChange, statusChange, reactionPortraitId, resultscriptKey,
+            potentialChangeValue, conditionChange, statusChange, reactionPortraitId, resultScriptKey,
             seId, floatingText
         ));
     }

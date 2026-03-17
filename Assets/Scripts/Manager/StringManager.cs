@@ -1,31 +1,54 @@
+using System;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+
+public enum Language
+{
+    Ko,
+    En,
+    Ja
+}
+
 
 public class StringManager : Singleton<StringManager>
 {
-    nation _nation;
+    public static event Action OnLanguageChanged;
+
+    private Dictionary<TMP_Text, TMP_FontAsset> _originalFonts = new Dictionary<TMP_Text, TMP_FontAsset>();
+
+    Language _language;
+    public Language CurrentLanguage => _language;
 
     [SerializeField] String_TableDataReader _stringDB;
-    
+    [SerializeField] RandomEventStringDataReader _randomEventStringDB;
+
+    [Header("Global Fonts (ë¹„ì›Œë‘ë©´ ê¸°ë³¸ í°íŠ¸ ìœ ì§€)")]
+    [SerializeField] private TMP_FontAsset _koFont;
+    [SerializeField] private TMP_FontAsset _enFont;
+    [SerializeField] private TMP_FontAsset _jaFont;
+
+
     private Dictionary<string, String_TableData> _stringDict = new Dictionary<string, String_TableData>();
+    private Dictionary<string, RandomEventStringData> _randomEventStringDict = new Dictionary<string, RandomEventStringData>();
 
     protected override void Awake()
     {
         base.Awake();
-        SetLanguage(nation.Kr);
+        SetLanguage(Language.Ko);
         InitDict();
     }
 
     private void Start()
     {
-        
+
     }
 
     private void InitDict()
     {
         if (_stringDB == null)
         {
-            Debug.Log("stringDB°¡ ºñ¾îÀÖ½À´Ï´Ù. ÀÎ½ºÆåÅÍ¿¡¼­ stringTableDataReader¸¦ ÇÒ´çÇØÁÖ¼¼¿ä.");
+            Debug.Log("stringDBê°€ ì—†ìŠµë‹ˆë‹¤. ì¸ìŠ¤í™í„°ì—ì„œ stringTableDataReaderë¥¼ í• ë‹¹í•´ì£¼ì„¸ìš”.");
             return;
         }
 
@@ -37,31 +60,97 @@ public class StringManager : Singleton<StringManager>
                 _stringDict.Add(data.stringKey, data);
             }
         }
+        if (_randomEventStringDB != null)
+        {
+            _randomEventStringDict.Clear();
+            foreach (var data in _randomEventStringDB.DataList)
+            {
+                if (!_randomEventStringDict.ContainsKey(data.stringKey))
+                {
+                    _randomEventStringDict.Add(data.stringKey, data);
+                }
+            }
+        }
     }
 
-    public void SetLanguage(nation nation)
+    public void SetLanguage(Language language)
     {
-        _nation = nation;
+        _language = language;
+        Debug.Log($"[StringManager] ì–¸ì–´ ë³€ê²½: {language}");
+        OnLanguageChanged?.Invoke();
     }
-    
-    
-    public string GetString(string key) // Å°°ªÀ» ¹Ş¾Æ ÇöÀç ¼³Á¤µÈ ¾ğ¾î¿¡ ¸Â´Â ¹®ÀÚ¿­ ¹İÈ¯
+
+    public TMP_FontAsset GetFont()
+    {
+        return _language switch
+        {
+            Language.En => _enFont,
+            Language.Ja => _jaFont,
+            _ => _koFont,
+        };
+    }
+
+    public string GetString(string key)
     {
         if (_stringDict.TryGetValue(key, out var data))
         {
-            switch (_nation)
+            switch (_language)
             {
-                case nation.Kr:
+                case Language.En:
+                    return data.en;
+                case Language.Ja:
+                    return data.ja;
+                case Language.Ko:
+                default:
                     return data.ko;
-                default: //±âº» ¼³Á¤Àº ÇÑ±¹¾î·Î
-                    return data.ko;
+            }
+        }
+        else if (_randomEventStringDict.TryGetValue(key, out var eventData))
+        {
+            switch (_language)
+            {
+                case Language.En: return eventData.en;
+                case Language.Ja: return eventData.ja;
+                case Language.Ko:
+                default: return eventData.ko;
             }
         }
 
         else
         {
-            Debug.LogWarning($"stringKey [{key}]°¡ stringTable¿¡ ¾ø½À´Ï´Ù. ");
-            return key; //Å×ÀÌºí¿¡ ¾øÀ¸¸é ´ë½Å Å°¶óµµ ¹İÈ¯
+            Debug.LogWarning($"stringKey [{key}]ê°€ stringTableì— ì—†ìŠµë‹ˆë‹¤.");
+            return key;
         }
     }
+
+    public string GetString(string key, TMP_Text target)
+    {
+        // ì²˜ìŒ í˜¸ì¶œ ì‹œ ì›ë³¸ í°íŠ¸ ì €ì¥
+        if (!_originalFonts.ContainsKey(target))
+            _originalFonts[target] = target.font;
+
+        string text = GetString(key);
+        target.text = text;
+
+        if (!_fontLockedTexts.Contains(target))
+        {
+            var font = GetFont();
+            target.font = font != null ? font : _originalFonts[target];
+        }
+        return text;
+    }
+    public void ApplyFont(TMP_Text target)
+    {
+        if (_fontLockedTexts.Contains(target)) return;
+        if (!_originalFonts.ContainsKey(target))
+            _originalFonts[target] = target.font;
+        var font = GetFont();
+        target.font = font != null ? font : _originalFonts[target];
+    }
+
+    private static HashSet<TMP_Text> _fontLockedTexts = new HashSet<TMP_Text>();
+
+    public static void RegisterFontLock(TMP_Text text) => _fontLockedTexts.Add(text);
+    public static void UnregisterFontLock(TMP_Text text) => _fontLockedTexts.Remove(text);
+
 }

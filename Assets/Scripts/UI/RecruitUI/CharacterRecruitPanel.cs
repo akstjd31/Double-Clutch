@@ -5,8 +5,8 @@ using UnityEngine.UI;
 public class CharacterRecruitPanel : MonoBehaviour
 {
     [SerializeField] CharacterRecruitBox[] characterRecruitBoxList = new CharacterRecruitBox[5];
-    [SerializeField] Button _recruitConfirmButton; //¿µÀÔÇÏ±â ¹öÆ°
-    List<Student> _selectedStudents = new List<Student>(); // ¿µÀÔ ¼±ÅÃµÈ ¼±¼ö ¸ñ·Ï
+    [SerializeField] Button _recruitConfirmButton; //ì˜ì…í•˜ê¸° ë²„íŠ¼
+    List<Student> _selectedStudents = new List<Student>(); // ì˜ì… ì„ íƒëœ ì„ ìˆ˜ ëª©ë¡
     int _selectCount = 0;
 
     private void OnEnable()
@@ -24,11 +24,11 @@ public class CharacterRecruitPanel : MonoBehaviour
         _recruitConfirmButton.onClick.AddListener(ConfirmRecruit);
     }
 
-    private void ConfirmRecruit() //¿µÀÔÇÏ±â ¹öÆ° ¿ÂÅ¬¸¯¿¡¼­ È£Ãâ
+    private void ConfirmRecruit() //ì˜ì…í•˜ê¸° ë²„íŠ¼ ì˜¨í´ë¦­ì—ì„œ í˜¸ì¶œ
     {
         _selectCount = 0;
         _selectedStudents.Clear();
-        foreach (var box in characterRecruitBoxList)//¼±ÅÃµÈ ¿µÀÔÈÄº¸ ¼ö °è»ê
+        foreach (var box in characterRecruitBoxList)//ì„ íƒëœ ì˜ì…í›„ë³´ ìˆ˜ ê³„ì‚°
         {
             if (box.IsSelected)
             {
@@ -39,31 +39,30 @@ public class CharacterRecruitPanel : MonoBehaviour
 
         int totalCount = StudentManager.Instance.MyStudents.Count + _selectCount;
 
-        if (totalCount < StudentManager.Instance.RecruitLimit) //¿µÀÔ ÈÄ ¼±¼ö ¼ö(ÇöÀç ¼±¼ö + ¼±ÅÃÇÑ ¿µÀÔ ÈÄº¸)°¡ ÃÖ´ë ¼±¼ö º¸À¯Ä¡¿¡ ¸ø¹ÌÄ¥ °ÍÀ¸·Î ¿¹»óµÇ¸é Ãß°¡¿µÀÔ °æ°í ÆË¾÷ È£Ãâ
+        if (totalCount < StudentManager.Instance.RecruitLimit) //ì˜ì… í›„ ì„ ìˆ˜ ìˆ˜(í˜„ì¬ ì„ ìˆ˜ + ì„ íƒí•œ ì˜ì… í›„ë³´)ê°€ ìµœëŒ€ ì„ ìˆ˜ ë³´ìœ ì¹˜ì— ëª»ë¯¸ì¹  ê²ƒìœ¼ë¡œ ì˜ˆìƒë˜ë©´ ì¶”ê°€ì˜ì… ê²½ê³  íŒì—… í˜¸ì¶œ
         {
             StudentUIManager.Instance.OpenRecruitWarningPopUp(StudentManager.Instance.RecruitLimit - totalCount);
         }
-        else //¿µÀÔ ÈÄ ¼±¼ö(ÇöÀç ¼±¼ö + ¼±ÅÃÇÑ ¿µÀÔ ÈÄº¸)°¡ ÃÖ´ë º¸À¯Ä¡ ÀÌ»óÀÌ¸é ¿µÀÔ È®ÀÎ ÆË¾÷ È£Ãâ
+        else //ì˜ì… í›„ ì„ ìˆ˜(í˜„ì¬ ì„ ìˆ˜ + ì„ íƒí•œ ì˜ì… í›„ë³´)ê°€ ìµœëŒ€ ë³´ìœ ì¹˜ ì´ìƒì´ë©´ ì˜ì… í™•ì¸ íŒì—… í˜¸ì¶œ
         {
             StudentUIManager.Instance.OpenRecruitConfirmPopUp(_selectCount);
         }
     }
 
-    public void OnConfirmButtonClick() //*Áß¿ä* ¿µÀÔ È®ÀÎ ÆË¾÷ÀÇ È®ÀÎ ¹öÆ°¿¡¼­´Â UI¸Å´ÏÀú ¸»°í ¿©±â¸¦ È£Ãâ
+    public void OnConfirmButtonClick() //*ì¤‘ìš”* ì˜ì… í™•ì¸ íŒì—…ì˜ í™•ì¸ ë²„íŠ¼ì—ì„œëŠ” UIë§¤ë‹ˆì € ë§ê³  ì—¬ê¸°ë¥¼ í˜¸ì¶œ
     {        
         foreach (var student in _selectedStudents)
         {
-            StudentManager.Instance.RecruitNewStudent(student);//ÀÏ´Ü ¸ğµÎ ¿µÀÔ
+            StudentManager.Instance.RecruitNewStudent(student);//ì¼ë‹¨ ëª¨ë‘ ì˜ì…
         }
+        StudentManager.Instance.SaveGame();
         if (!StudentManager.Instance.IsStable)
         {
-            //¹æÃâ Ã¢ ÆË¾÷ È£Ãâ
+            //ë°©ì¶œ ì°½ íŒì—… í˜¸ì¶œ
             StudentUIManager.Instance.OpenCharacterOutPanel();
         }
         else
         {
-            // ¿µÀÔÀÌ 3¿ù 1ÀÏ ±âÁØÀ¸·Î ÁøÇàµÇ±â ‹š¹®¿¡ ¿¬Â÷++ ÀÛ¾÷À» ÀÌ‹š ÇØÁÜ
-            GameManager.Instance.SetYear(GameManager.Instance.SaveData.year + 1);
             CalendarManager.Instance.NextTurn();
         }
 

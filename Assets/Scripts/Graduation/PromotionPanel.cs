@@ -32,6 +32,9 @@ public class PromotionPanel : MonoBehaviour
 
     public void UpdateProfile()
     {
+        StringManager manager = StringManager.Instance;
+        
+
         if (_graduationManager.Turn >= _promotionStudentList.Count)
         {
             return;
@@ -46,18 +49,19 @@ public class PromotionPanel : MonoBehaviour
                 _currentStudent = _graduationManager.MyStudents[i];
             }
         }
-        Debug.Log($"순서: {_currentStudent.Name} 학생");
+        string name = manager.GetString(_currentStudent.Name[0]) + manager.GetString(_currentStudent.Name[1]) + manager.GetString(_currentStudent.Name[2]);
+        Debug.Log($"순서: {name} 학생");
 
         if (_isSkillChoise == false)
         {
-            _guideBoxName.text = $"{_currentStudent.Name} 학생이 진급 하였습니다.\r\n패시브 스킬을 선택해주세요!";
+            _guideBoxName.text = $"{name} 학생이 진급 하였습니다.\r\n패시브 스킬을 선택해주세요!";
         }
         else if (_isSkillChoise == true)
         {
             _afterChoice.SetActive(true);
         }
 
-        _name.text = _currentStudent.Name;
+        _name.text = name;
         _gradeUp.text = $"{_currentStudent.Grade-1}학년 → {_currentStudent.Grade}학년";
 
         for (int i = 0; i < 3; i++)
