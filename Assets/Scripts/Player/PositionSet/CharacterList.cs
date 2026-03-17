@@ -119,7 +119,7 @@ public class CharacterList : MonoBehaviour
 
             if (hasMyStdData && stdData.studentList.Count > 0)
             {
-                StudentManager.Instance.SetCurrentTeam(stdData.studentList);
+
                 if (idx == 1)
                 {
                     // 뒤로 가기 버튼 비활성화까지 넣어놓기
@@ -413,11 +413,12 @@ public class CharacterList : MonoBehaviour
             
         }
 
-        if (StudentManager.Instance != null) StudentManager.Instance.SetCurrentTeam(sList);
         var batchData = new StudentSaveData(MAX_BATCH_COUNT, sList, StudentManager.Instance.CurrentTeam);
 
-        if (StudentManager.Instance == null) return;
+        if (SaveLoadManager.Instance == null) return;
         SaveLoadManager.Instance.Save(FilePath.MY_STUDENT_MATCHING_PATH, batchData);
+        if (StudentManager.Instance == null) return;
+        StudentManager.Instance.SetCurrentTeam(sList);
     }
 
     private void EnsureArrays()

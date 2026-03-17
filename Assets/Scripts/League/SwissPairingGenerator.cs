@@ -351,13 +351,6 @@ public class SwissPairingGenerator : ILeaguePairingGenerator
 
     private LeagueMatchRecord CreateNormalMatch(int roundIndex, string homeTeamId, string awayTeamId)
     {
-        // 플레이어 팀이 Away 자리에 배정되었다면 Home 팀과 자리를 바꿉니다.
-        if (awayTeamId == PLAYER_TEAM_ID)
-        {
-            string temp = homeTeamId;
-            homeTeamId = awayTeamId;
-            awayTeamId = temp;
-        }
         return new LeagueMatchRecord
         {
             roundIndex = roundIndex,

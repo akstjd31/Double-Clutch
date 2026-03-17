@@ -43,7 +43,7 @@ public class Student
     int _attackChange;
     int _defenseChange;
     int _conditionChange;
-    [SerializeField] private Position _matchPosition;
+    Position _matchPosition;
     ITraining _currentTraining;
     
 

@@ -307,15 +307,14 @@ public class MatchUIManager : MonoBehaviour
         string rawText = StringManager.Instance.GetString(lineData.textKey);
         rawText = ReplaceVariables(rawText, matchState);
 
-        string speakerName = ReplaceVariables(lineData.playerName, matchState);
 
-        if (lineData.speakDirection == "Left" || lineData.speakDirection == "Middle")
+        if (lineData.speakDirection == "Left")
         {
-            // 좌측(또는 중앙) 화자일 때
+            // 좌측 화자일 때
             _leftBubbleGroup.SetActive(true);
             _rightBubbleGroup.SetActive(false);
 
-            if (_txtLeftSpeakerName != null) _txtLeftSpeakerName.text = speakerName;
+            if (_txtLeftSpeakerName != null) _txtLeftSpeakerName.text = lineData.playerName;
             if (_txtLeftDialogue != null) _txtLeftDialogue.text = rawText;
         }
         else if (lineData.speakDirection == "Right")
@@ -324,7 +323,7 @@ public class MatchUIManager : MonoBehaviour
             _leftBubbleGroup.SetActive(false);
             _rightBubbleGroup.SetActive(true);
 
-            if (_txtRightSpeakerName != null) _txtRightSpeakerName.text = speakerName;
+            if (_txtRightSpeakerName != null) _txtRightSpeakerName.text = lineData.playerName;
             if (_txtRightDialogue != null) _txtRightDialogue.text = rawText;
         }
         else
@@ -349,7 +348,7 @@ public class MatchUIManager : MonoBehaviour
             _btnNext.onClick.RemoveAllListeners();
             _btnNext.onClick.AddListener(() =>
             {
-                if (lineData.nextId == 0) ShowScriptLine(lineData.currentId + 1);
+                if (lineData.nextId == 0) EndHalftimeEvent();
                 else ShowScriptLine(lineData.nextId);
             });
         }
@@ -595,7 +594,6 @@ public class MatchUIManager : MonoBehaviour
 
     private string MakeName(string[] nameKey)
     {
-        if (nameKey == null || nameKey.Length < 3) return null;
         StringManager manager = StringManager.Instance;
         string name = manager.GetString(nameKey[0]) + manager.GetString(nameKey[1]) + manager.GetString(nameKey[2]);
         return name;
