@@ -70,12 +70,15 @@ public class InfraManager : Singleton<InfraManager>
                 (
                     name: "",
                     desc: "",
+                    nameKey: "",  
+                    descKey: "",
                     maxLevel: 0,
                     groupId: 0
                 );
 
                 infras[i] = infra;
             }   
+            i++;
         }
 
         Debug.Log("인프라 초기 설정 완료!");

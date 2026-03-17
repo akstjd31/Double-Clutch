@@ -7,9 +7,9 @@ public class InfraUI : MonoBehaviour
     [Header("UpgradePanel")]
     [SerializeField] private InfraUpgradeUI _infraUpgradeUI;
 
-    public void SetInfraUpgradePanelUI(InfraController iController, Infra infra)
+    public void SetInfraUpgradePanelUI(InfraController Controller, Infra infra)
     {
         _infraUpgradeUI.gameObject.SetActive(true);
-        _infraUpgradeUI.Init(iController, infra);
+        _infraUpgradeUI.Init(Controller, infra);
     }
 }
