@@ -170,6 +170,14 @@ public class ResultState : IState
         float totalMultiplier = 1f + infraBonusPercent + passiveBonusPercent;
         int finalRewardAmount = Mathf.RoundToInt(baseGold * totalMultiplier);
 
+        // 결승 진출 시 선수들의 명성 누적값 적용
+        if (currentLeague != null && currentLeague.teams.Count < 3 && StudentManager.Instance != null)
+        {
+            foreach (var std in StudentManager.Instance.CurrentTeam.Members)
+            {
+                std.AddFame(finalParticipationFame);
+            }
+        }
 
         if (currentLeague != null && currentLeague.isFinished && rewardData != null)
         {
