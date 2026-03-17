@@ -230,8 +230,6 @@ public class LeagueManager : Singleton<LeagueManager>
 
         gameMgr.SetMoney(gameMgr.SaveData.money + calMoney);
 
-        CalendarManager.Instance.CalcWeek(GameManager.Instance.SaveData.weekId, GameManager.Instance);
-
     }
 
     public bool IsPlayerSeasonOut()
