@@ -81,17 +81,20 @@ public class CalendarManager : Singleton<CalendarManager>
         //주차가 끝나면 이벤트 쿨다운-HJ
         EventManager.Instance.WeekendCooldown();
 
+        // CalcWeek 안에서 변경된 최신 weekId를 다시 가져옵니다.
+        int nextWeekId = gm.SaveData.weekId;
+
         // 2. 시작 컷신 체크
-        if (HasExistStartCutscene(weekId))
+        if (HasExistStartCutscene(nextWeekId))
         {
 
         }
 
         // 3. 페이즈 체크
-        if (!CheckPhaseType(weekId)) return;
+        if (!CheckPhaseType(nextWeekId)) return;
 
         // 4. 종료 컷신 체크
-        if (HasExistEndCutscene(weekId))
+        if (HasExistEndCutscene(nextWeekId))
         {
 
         }
@@ -176,31 +179,41 @@ public class CalendarManager : Singleton<CalendarManager>
             {
                 var masterData = leagueDataMgr.GetMasterDataById(leagueId);
 
-                if (masterData.HasValue)
+                // 마스터 데이터를 찾지 못했을 때의 에러 로그 
+                if (!masterData.HasValue)
                 {
-                    // isSelectionRequired가 TRUE일 때만 리그가 정상 생성
-                    if (masterData.Value.isSelectionRequired)
+                    Debug.LogError($"<color=red>리그 마스터 테이블에서 '{leagueId}'를 찾을 수 없습니다! 엑셀 파일에 오타나 띄어쓰기가 있는지 확인하세요.</color>");
+                }
+                else
+                {
+                    if (masterData.HasValue)
                     {
-                        string ruleId = masterData.Value.teamSelectionRuleId;
-                        var selectionData = leagueDataMgr.GetTeamSelectionRuleById(ruleId);
-
-                        if (selectionData != null)
+                        // isSelectionRequired가 TRUE일 때만 리그가 정상 생성
+                        if (masterData.Value.isSelectionRequired)
                         {
-                            var newLeague = LeagueDataManager.Instance.CreateAndSaveLeague(leagueId, selectionData);
-                            if (newLeague != null)
-                                Debug.Log($"<color=green>[{leagueId}] 새로운 리그 생성 완벽하게 성공!</color> (적용된 룰: {ruleId})");
+                            string ruleId = masterData.Value.teamSelectionRuleId;
+                            var selectionData = leagueDataMgr.GetTeamSelectionRuleById(ruleId);
+
+                            if (selectionData != null)
+                            {
+                                var newLeague = LeagueDataManager.Instance.CreateAndSaveLeague(leagueId, selectionData);
+                                if (newLeague != null)
+                                    Debug.Log($"<color=green>[{leagueId}] 새로운 리그 생성 완벽하게 성공!</color> (적용된 룰: {ruleId})");
+                                else
+                                    Debug.LogError($"<color=red>[{leagueId}] 리그 생성에 실패했습니다! LeagueTeamSelector에서 팀을 다 채우지 못했을 수 있습니다.</color>");
+                            }
                             else
-                                Debug.LogError($"<color=red>[{leagueId}] 리그 생성에 실패했습니다! LeagueTeamSelector에서 팀을 다 채우지 못했을 수 있습니다.</color>");
+                            {
+                                LeagueDataManager.Instance.CreateAndSaveLeagueWithPrevTeams(leagueId);
+                                Debug.Log($"<color=cyan>[{leagueId}] 이전 리그 팀 명단을 그대로 유지하여 새 리그 생성 완료!</color>");
+                            }
                         }
                         else
                         {
-                            Debug.LogError($"<color=red>[{leagueId}] 리그 생성 실패: '{ruleId}' 룰을 League_Team_Selection_Table에서 찾을 수 없습니다!</color>");
+                            LeagueDataManager.Instance.CreateAndSaveLeagueWithPrevTeams(leagueId);
+                            Debug.Log($"<color=cyan>[{leagueId}] 이전 리그 팀 명단을 그대로 유지하여 새 리그 생성 완료!</color>");
                         }
-                    }
-                    else
-                    {
-                        // 원인 판별용 에러 출력 ! 만약 이 에러가 뜬다면 CSV를 수정해야 합니다.
-                        Debug.LogError($"<color=red>[{leagueId}] 리그 생성 실패: isSelectionRequired가 FALSE(0)입니다. 현재 시스템은 룰 없이 리그를 시작할 수 없습니다!</color>");
+
                     }
                 }
             }

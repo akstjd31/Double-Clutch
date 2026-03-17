@@ -45,7 +45,7 @@ public class SwissBoardPanel : MonoBehaviour
 
         // 자동으로 현재 진행해야 할 라운드 탭으로 진입
         // 만약 리그가 완전히 끝났다면 마지막 라운드 탭으로 진입
-        _currentViewRoundIndex = currentLeague.isFinished ? currentLeague.currentRoundIndex - 1 : currentLeague.currentRoundIndex;
+        _currentViewRoundIndex = currentLeague.currentRoundIndex;
 
         // 탭 생성 및 초기화
         RefreshTabs();
