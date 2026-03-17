@@ -45,7 +45,7 @@ public class Student
     int _conditionChange;
     [SerializeField] private Position _matchPosition;
     ITraining _currentTraining;
-    int _totalFame = 0;     // 누적 명성치
+    [SerializeField] int _totalFame = 0;     // 누적 명성치
     
 
 
