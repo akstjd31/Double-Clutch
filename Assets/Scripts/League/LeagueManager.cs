@@ -229,6 +229,29 @@ public class LeagueManager : Singleton<LeagueManager>
         if (gameMgr == null) return;
 
         gameMgr.SetMoney(gameMgr.SaveData.money + calMoney);
+
+        CalendarManager.Instance.CalcWeek(GameManager.Instance.SaveData.weekId, GameManager.Instance);
+
+    }
+
+    public bool IsPlayerSeasonOut()
+    {
+        if (_currentLeague == null) return false;
+
+        var masterData = _leagueDataMgr.GetMasterDataById(_currentLeague.leagueId);
+        if (masterData.Value.outConditionValue <= 0) return false;
+
+        foreach (var standing in _currentLeague.standings)
+        {
+            // 플레이어의 순위와 비교
+            if (standing.teamId.Equals(PLAYER_TEAM_ID))
+            {
+                // 순위에 들었는지 확인
+                return masterData.Value.outConditionValue >= standing.rank;
+            }
+        }
+
+        return false;
     }
 
     private LeagueStandingData GetPlayerStandingData()

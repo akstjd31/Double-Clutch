@@ -131,8 +131,7 @@ public class CalendarManager : Singleton<CalendarManager>
                 // 2. 시즌 아웃 조건 유무 확인
                 if (data.hasSeasonOut)
                 {
-                    weekId = data.targetidSpecial;
-                    // 경기 결과 정보 받기
+                    weekId = LeagueManager.Instance.IsPlayerSeasonOut() ? data.targetidDefault : data.targetidSpecial;
                 }
                 else
                 {
