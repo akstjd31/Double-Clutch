@@ -35,7 +35,18 @@ public class LeagueManager : Singleton<LeagueManager>
         if (saveData == null) return;
 
         _currentLeague = saveData;
-        GenerateCurrentRoundMatchesIfNeeded();
+
+        try
+        {
+            // 1라운드(0 인덱스) 대진표 생성
+            GenerateCurrentRoundMatchesIfNeeded();
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"[StartLeague] 대진표 생성 중 에러 발생: {e.Message}");
+        }
+
+        // 대진표까지 생성된 온전한 데이터를 최종 저장
         SaveCurrentLeague();
     }
     
