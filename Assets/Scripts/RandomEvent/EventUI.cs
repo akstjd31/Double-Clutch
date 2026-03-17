@@ -27,11 +27,12 @@ public class EventUI : MonoBehaviour
 
     //bool _isFirstText = true;
     int _textTurn;
-    Color dim;
+    string beforeDirection = null;
+
+    //Color initColor;
 
     private void Start()
     {
-        dim = new Color(0.6f, 0.6f, 0.6f);
     }
 
     private void OnEnable()
@@ -42,7 +43,7 @@ public class EventUI : MonoBehaviour
         ImageInit();
     }
 
-    public void UpdateText(string name, string scriptText, string speakDirection, bool isNameTagOn)
+    public void UpdateText(string name, string scriptText, string speakDirection, bool isNameTagOn, string characterImage)
     {
         TextBubbleScript textBubbleScript;
         GameObject textBubble;
@@ -76,49 +77,87 @@ public class EventUI : MonoBehaviour
             var beforenameTag = beforeBubble.transform.GetChild(0).gameObject.GetComponent<Image>(); ;
             var continueIcon = beforeBubble.transform.GetChild(2).gameObject.GetComponent<Image>(); ;
 
-            beforenameTag.color = dim;
-            beforeBubble.color = dim;
-            continueIcon.color = dim;
+            Color _dim = new Color(0.6f, 0.6f, 0.6f, 1f);
+            beforenameTag.color = _dim;
+            beforeBubble.color = _dim;
+            continueIcon.color = _dim;
         }
 
-        UpdateImage(speakDirection);
+        UpdateImage(speakDirection, characterImage);
         _textTurn++;
     }
 
-    public void UpdateImage(string speakDirection)
+    public void UpdateImage(string speakDirection, string characterImageId)
     {
-        Color on = Color.white;
-
         Debug.Log($"스피커 : {speakDirection}");
 
+        if (string.IsNullOrEmpty(characterImageId))
+        {
+            Debug.Log($"{characterImageId} : 이미지 파일 없는 파트");
+            return;
+        }
+
         ImageInit();
+
+        Debug.Log($"선수 이미지 id : {characterImageId}");
+
+        Color on = Color.white;
+        on.a = 1f;
+        Color _dim = new Color(0.6f, 0.6f, 0.6f, 1f);
 
         switch (speakDirection)
         {
             case "Left":
                 _characterImage[0].color = on;
+                _characterImage[0].sprite = SpriteManager.Instance.GetSprite(characterImageId);
                 _characterImage[0].transform.SetSiblingIndex(2);
+                beforeDirection = speakDirection;
                 break;
             case "Middle":
                 _characterImage[1].color = on;
+                _characterImage[1].sprite = SpriteManager.Instance.GetSprite(characterImageId);
                 _characterImage[1].transform.SetSiblingIndex(2);
+                beforeDirection = speakDirection;
                 break;
             case "Right":
                 _characterImage[2].color = on;
+                _characterImage[2].sprite = SpriteManager.Instance.GetSprite(characterImageId);
                 _characterImage[2].transform.SetSiblingIndex(2);
+                beforeDirection = speakDirection;
                 break;
             default:
-                ImageInit();
+                Debug.Log($"이미지 갱신 없음 : {_dim.a}");
+
+                if (beforeDirection == null)
+                {
+                    break;
+                }
+                else if(beforeDirection == "Left")
+                {
+                    _characterImage[1].color = _dim;
+                    _characterImage[2].color = _dim;
+                }
+                else if(beforeDirection == "Middle")
+                {
+                    _characterImage[0].color = _dim;
+                    _characterImage[2].color = _dim;
+                }
+                else if(beforeDirection == "Right")
+                {
+                    _characterImage[0].color = _dim;
+                    _characterImage[1].color = _dim;
+                }
                 break;
         }
     }
 
     public void ImageInit()
     {
+        Color _dim = new Color(0.6f, 0.6f, 0.6f, 0f);
         //색 초기화
         for (int i = 0; i < _characterImage.Length; i++)
         {
-            _characterImage[i].color = dim;
+            _characterImage[i].color = _dim;
         }
         //위치 초기화
         _characterImage[0].transform.SetSiblingIndex(0);
@@ -209,6 +248,7 @@ public class EventUI : MonoBehaviour
         }
 
         //_resultImage.sprite = 이미지;
+        
 
         //결과 텍스트 출력
         _resultText.text = resultScriptKey;
@@ -222,4 +262,6 @@ public class EventUI : MonoBehaviour
         //다음 학생으로 넘어가기
         //마지막 학생이라면 로비로 가기=큐가 비었다면 로비로
     }
+
+
 }

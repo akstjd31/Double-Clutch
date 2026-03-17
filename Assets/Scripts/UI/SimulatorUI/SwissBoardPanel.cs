@@ -2,9 +2,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System;
 
 public class SwissBoardPanel : MonoBehaviour
 {
+    [Header("Title UI")]
+    [SerializeField] private TextMeshProUGUI _txtLeagueName; // {LeagueName} 들어갈 곳
+    [SerializeField] private TextMeshProUGUI _txtRoundTitle; // N라운드 들어갈 곳
+
     [Header("Tabs UI")]
     [SerializeField] private Transform _tabContainer;
     [SerializeField] private SwissRoundTab _tabPrefab;
@@ -19,15 +24,26 @@ public class SwissBoardPanel : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _txtBtnAction;
 
     private int _currentViewRoundIndex = 0;
+    private Action _customAction;
+    private string _customActionText;
 
-    public void OpenPanel()
+    public void OpenPanel(Action onActionClick = null, string actionText = null)
     {
         gameObject.SetActive(true);
+        _customAction = onActionClick;
+        _customActionText = actionText;
 
         var currentLeague = LeagueManager.Instance.CurrentLeague;
         if (currentLeague == null) return;
 
-        // 자동으로 현재 진행해야 할 라운드 탭으로 진입 (기획 요구사항)
+        // 리그 이름 세팅
+        var masterData = LeagueDataManager.Instance.GetMasterDataById(currentLeague.leagueId);
+        if (_txtLeagueName != null && masterData.HasValue)
+        {
+            _txtLeagueName.text = StringManager.Instance.GetString(masterData.Value.leagueNameKey);
+        }
+
+        // 자동으로 현재 진행해야 할 라운드 탭으로 진입
         // 만약 리그가 완전히 끝났다면 마지막 라운드 탭으로 진입
         _currentViewRoundIndex = currentLeague.isFinished ? currentLeague.currentRoundIndex - 1 : currentLeague.currentRoundIndex;
 
@@ -60,6 +76,12 @@ public class SwissBoardPanel : MonoBehaviour
     private void SelectTab(int roundIndex)
     {
         _currentViewRoundIndex = roundIndex;
+
+        // 라운드 타이틀 텍스트 갱신 (탭 누를 때마다 변경)
+        if (_txtRoundTitle != null)
+        {
+            _txtRoundTitle.text = $"스위스 {roundIndex + 1}라운드 대진표";
+        }
 
         // 탭 시각적 선택 상태 갱신
         for (int i = 0; i < _tabs.Count; i++)
@@ -122,9 +144,70 @@ public class SwissBoardPanel : MonoBehaviour
         // UI 생성
         foreach (var match in targetMatches)
         {
-            SwissMatchRow row = Instantiate(_matchRowPrefab, _matchContainer);
-            row.Init(match, roundIndex);
+            string team1 = match.homeTeamId;
+            string team2 = match.awayTeamId;
+
+            // 플레이어 팀이 무조건 윗줄(1행)에 오도록 정렬, 나머지는 순위 높은 팀이 윗줄
+            if (team2 == myTeamId)
+            {
+                team1 = match.awayTeamId;
+                team2 = match.homeTeamId;
+            }
+            else if (team1 != myTeamId)
+            {
+                int rank1 = rankMap.ContainsKey(team1) ? rankMap[team1] : 99;
+                int rank2 = rankMap.ContainsKey(team2) ? rankMap[team2] : 99;
+                if (rank2 < rank1)
+                {
+                    team1 = match.awayTeamId;
+                    team2 = match.homeTeamId;
+                }
+            }
+
+            // 첫 번째 줄 생성 (예: 6위 플레이어팀)
+            if (!string.IsNullOrEmpty(team1)) CreateRow(team1, match, roundIndex, rankMap);
+
+            // 두 번째 줄 생성 (예: 5위 상대팀)
+            if (!string.IsNullOrEmpty(team2)) CreateRow(team2, match, roundIndex, rankMap);
         }
+    }
+
+    // 한 줄(Row)을 생성하는 함수
+    private void CreateRow(string teamId, LeagueMatchRecord match, int viewRoundIndex, Dictionary<string, int> rankMap)
+    {
+        SwissMatchRow row = Instantiate(_matchRowPrefab, _matchContainer);
+        bool isMyTeam = (teamId == StudentManager.TEAM_ID);
+        int rank = rankMap.ContainsKey(teamId) ? rankMap[teamId] : 0;
+        var record = GetCumulativeRecord(teamId, viewRoundIndex);
+
+        string scoreStr = "-";
+        if (match.isPlayed)
+        {
+            scoreStr = (teamId == match.homeTeamId) ? match.homeScore.ToString() : match.awayScore.ToString();
+        }
+
+        row.Init(teamId, rank, record.win, record.lose, scoreStr, isMyTeam);
+    }
+
+    // 누적 승패 역산
+    private (int win, int lose) GetCumulativeRecord(string teamId, int upToRoundIndex)
+    {
+        int w = 0, l = 0;
+        var league = LeagueManager.Instance.CurrentLeague;
+
+        for (int i = 0; i < upToRoundIndex; i++)
+        {
+            var match = league.matchRecords.Find(m => m.roundIndex == i && (m.homeTeamId == teamId || m.awayTeamId == teamId));
+            if (match != null && match.isPlayed)
+            {
+                int myScore = match.homeTeamId == teamId ? match.homeScore : match.awayScore;
+                int opScore = match.homeTeamId == teamId ? match.awayScore : match.homeScore;
+
+                if (myScore > opScore) w++;
+                else if (myScore < opScore) l++;
+            }
+        }
+        return (w, l);
     }
 
     private void RefreshActionButton(int roundIndex)
@@ -143,7 +226,7 @@ public class SwissBoardPanel : MonoBehaviour
         }
 
         // 리그 진행 중
-        _txtBtnAction.text = "경기 준비";
+        _txtBtnAction.text = string.IsNullOrEmpty(_customActionText) ? "경기 준비" : _customActionText;
 
         // 내가 봐야 하는 현재 라운드 탭을 보고 있을 때만 터치 활성화
         if (roundIndex == currentLeague.currentRoundIndex)
@@ -151,8 +234,15 @@ public class SwissBoardPanel : MonoBehaviour
             _btnAction.interactable = true;
             _btnAction.onClick.AddListener(() =>
             {
-                // MatchPrepState(경기 진입 전 선수 배치 화면)로 상태 전환
-                GameManager.Instance.ChangeState<MatchPrepState>();
+                // 외부에서 넘겨준 커스텀 행동(로비 이동 등)이 있으면 실행, 없으면 매치 배치로 이동
+                if (_customAction != null)
+                {
+                    _customAction.Invoke();
+                }
+                else
+                {
+                    GameManager.Instance.ChangeState<MatchPrepState>();
+                }
             });
         }
         else

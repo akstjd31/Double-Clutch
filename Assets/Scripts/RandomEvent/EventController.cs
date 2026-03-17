@@ -39,6 +39,9 @@ public class EventController : MonoBehaviour
     private Dictionary<int, Event_ChoiceData> _screenPlayDic;
     string[] choice = new string[3];
 
+    string _visualId = "이미지 리소스 못불러옴";
+    string _speakerImageColomn = "";
+
 
     //주간 리포트 확인 버튼 클릭 시에 검사 실행됨
     public void EventCheck()
@@ -136,7 +139,7 @@ public class EventController : MonoBehaviour
         }
     }
 
-
+    string direction;
     public void OnClickContinue()
     {
         string script = "대사 불러오기 실패";
@@ -149,6 +152,46 @@ public class EventController : MonoBehaviour
 
         Debug.Log($"다음 대사 ID : {_nextId}");
 
+        //아이디에서 감정이미지 아이디 가져오기 Image_Resource_H1
+        //학생의 스프라이트 이미지
+
+        direction = _screenPlayDic[_nextId].speakDirection;
+        Debug.Log($"스피커 위치 : {direction}");
+        
+
+        //스텐딩 이미지 소스 playerImageResource
+        switch (direction)
+        {
+            case "Left":
+                _speakerImageColomn = _screenPlayDic[_nextId].standingLeft;
+                Debug.Log($"컬럼명 : {_screenPlayDic[_nextId].standingLeft}");
+                break;
+            case "Middle":
+                _speakerImageColomn = _screenPlayDic[_nextId].standingMiddle;
+                Debug.Log($"컬럼명 : {_screenPlayDic[_nextId].standingMiddle}");
+                break;
+            case "Right":
+                _speakerImageColomn = _screenPlayDic[_nextId].standingRight;
+                Debug.Log($"컬럼명 : {_screenPlayDic[_nextId].standingRight}");
+                break;
+            default:
+                break;
+        }
+
+        Player_VisualData visualData = _myStudents[_currentStudentNum].VisualData;
+
+        var field = visualData.GetType().GetField(_speakerImageColomn);
+
+        if (field != null)
+        {
+            _visualId = field.GetValue(visualData).ToString();
+            Debug.Log($"컬럼 입력됨 {_visualId}");
+        }
+        else
+        {
+            Debug.Log($"컬럼 없음, 입력안됨");
+        }
+
         //대본 순서대로 화면에 출력
         if (_screenPlayDic.ContainsKey(_nextId))
         {
@@ -157,8 +200,9 @@ public class EventController : MonoBehaviour
                 case textType.Choice:
                     {
                         //언어에 따라서 다른 딕셔너리 선택해야 함
+
                         script = _stringTable[_screenPlayDic[_nextId].textKey];
-                        _eventUI.UpdateText(_currentSpeakerName, script, _screenPlayDic[_nextId].speakDirection, false);
+                        _eventUI.UpdateText(_currentSpeakerName, script, direction, false, _visualId);
 
                         choice[0] = _stringTable[_screenPlayDic[_nextId].choice01];
                         choice[1] = _stringTable[_screenPlayDic[_nextId].choice02];
@@ -169,7 +213,7 @@ public class EventController : MonoBehaviour
                 case textType.Desc:
                     {
                         script = _stringTable[_screenPlayDic[_nextId].textKey];
-                        _eventUI.UpdateText(_currentSpeakerName, script, _screenPlayDic[_nextId].speakDirection, false);
+                        _eventUI.UpdateText(_currentSpeakerName, script, direction, false, _visualId);
                         _nextId++;
                     }
                     break;
@@ -177,7 +221,7 @@ public class EventController : MonoBehaviour
                     {
                         //텍스트는 출력, 버튼 누르면 결과 팝업 떠야 함.
                         script = _eventString.KoScreenPlay[_screenPlayDic[_nextId].textKey];
-                        _eventUI.UpdateText(_currentSpeakerName, script, _screenPlayDic[_nextId].speakDirection, true);
+                        _eventUI.UpdateText(_currentSpeakerName, script, direction, true, _visualId);
 
                         //캐릭터 능력치 변동 적용
                         ResultCalculator();
@@ -253,7 +297,7 @@ public class EventController : MonoBehaviour
 
             Debug.Log($"다음 대사 ID : {_nextId}");
             //선택한 대사 미리 넣어두기
-            _eventUI.UpdateText(_currentSpeakerName, choice[choiceNum], "", false);
+            _eventUI.UpdateText(_currentSpeakerName, choice[choiceNum], direction, false, _visualId);
             //다음 대사로 넘어 가기
             OnClickContinue();
         }

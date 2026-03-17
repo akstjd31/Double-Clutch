@@ -6,60 +6,44 @@ public class SwissMatchRow : MonoBehaviour
 {
     [SerializeField] private Image _bgImage; // 플레이어 팀 강조용 배경
 
-    [Header("Home Team UI (Left)")]
-    [SerializeField] private TextMeshProUGUI _txtHomeName;
-    [SerializeField] private TextMeshProUGUI _txtHomeRecord; // 누적 승패
-    [SerializeField] private TextMeshProUGUI _txtHomeScore;  // 해당 라운드 점수
+    [Header("Home Team UI")]
+    [SerializeField] private TextMeshProUGUI _txtRank;
+    [SerializeField] private TextMeshProUGUI _txtTeamName; // 팀명
+    [SerializeField] private TextMeshProUGUI _txtRecord;   // 누적 승패 
+    [SerializeField] private TextMeshProUGUI _txtScore;  // 해당 라운드 점수
 
-    [Header("Away Team UI (Right)")]
-    [SerializeField] private TextMeshProUGUI _txtAwayName;
-    [SerializeField] private TextMeshProUGUI _txtAwayRecord;
-    [SerializeField] private TextMeshProUGUI _txtAwayScore;
 
-    public void Init(LeagueMatchRecord match, int viewRoundIndex)
+    public void Init(string teamId, int rank, int win, int lose, string scoreStr, bool isPlayerTeam)
     {
-        string myTeamId = StudentManager.TEAM_ID;
-        bool hasPlayer = (match.homeTeamId == myTeamId || match.awayTeamId == myTeamId);
-
-        // 플레이어 팀이 포함된 매치라면 배경색 하이라이트
+        // 플레이어 팀일 경우 배경색 강조
         if (_bgImage != null)
         {
-            _bgImage.color = hasPlayer ? new Color(0.2f, 0.6f, 1f, 0.2f) : new Color(1f, 1f, 1f, 0f);
+            _bgImage.color = isPlayerTeam ? new Color(0.2f, 0.6f, 1f, 0.2f) : new Color(1f, 1f, 1f, 0f);
         }
 
-        // 팀명 세팅
-        _txtHomeName.text = GetTeamName(match.homeTeamId);
-        _txtAwayName.text = GetTeamName(match.awayTeamId);
+        // 순위 표기
+        if (_txtRank != null)
+            _txtRank.text = rank > 0 ? $"{rank}위" : "-위";
 
-        if (hasPlayer)
+        // 팀명 및 볼드 처리
+        if (_txtTeamName != null)
+            _txtTeamName.text = GetTeamName(teamId);
+
+        // 플레이어 팀 폰트 강조
+        if (isPlayerTeam)
         {
-            if (match.homeTeamId == myTeamId) _txtHomeName.fontStyle = FontStyles.Bold;
-            if (match.awayTeamId == myTeamId) _txtAwayName.fontStyle = FontStyles.Bold;
+            _txtRank.fontStyle = FontStyles.Bold;
+            _txtTeamName.fontStyle = FontStyles.Bold;
         }
         else
         {
-            _txtHomeName.fontStyle = FontStyles.Normal;
-            _txtAwayName.fontStyle = FontStyles.Normal;
+            _txtRank.fontStyle = FontStyles.Normal;
+            _txtTeamName.fontStyle = FontStyles.Normal;
         }
 
-        // 직전 라운드(viewRoundIndex - 1)까지의 누적 승패 역산
-        var homeRecord = GetCumulativeRecord(match.homeTeamId, viewRoundIndex);
-        var awayRecord = GetCumulativeRecord(match.awayTeamId, viewRoundIndex);
-
-        _txtHomeRecord.text = $"{homeRecord.win}승 {homeRecord.lose}패";
-        _txtAwayRecord.text = $"{awayRecord.win}승 {awayRecord.lose}패";
-
-        // 해당 탭(라운드)의 경기 득점 표시. 미진행시 "-"
-        if (match.isPlayed)
-        {
-            _txtHomeScore.text = match.homeScore.ToString();
-            _txtAwayScore.text = match.awayScore.ToString();
-        }
-        else
-        {
-            _txtHomeScore.text = "-";
-            _txtAwayScore.text = "-";
-        }
+        // 누적 승패 및 점수 표기
+        if (_txtRecord != null) _txtRecord.text = $"{win}승 {lose}패";
+        if (_txtScore != null) _txtScore.text = scoreStr;
     }
 
     private string GetTeamName(string teamId)
@@ -73,25 +57,5 @@ public class SwissMatchRow : MonoBehaviour
 
         return teamId;
     }
-
-    // 지정된 라운드 이전까지의 승패를 역산하여 반환
-    private (int win, int lose) GetCumulativeRecord(string teamId, int upToRoundIndex)
-    {
-        int w = 0, l = 0;
-        var league = LeagueManager.Instance.CurrentLeague;
-
-        for (int i = 0; i < upToRoundIndex; i++)
-        {
-            var match = league.matchRecords.Find(m => m.roundIndex == i && (m.homeTeamId == teamId || m.awayTeamId == teamId));
-            if (match != null && match.isPlayed)
-            {
-                int myScore = match.homeTeamId == teamId ? match.homeScore : match.awayScore;
-                int opScore = match.homeTeamId == teamId ? match.awayScore : match.homeScore;
-
-                if (myScore > opScore) w++;
-                else if (myScore < opScore) l++;
-            }
-        }
-        return (w, l);
-    }
 }
+

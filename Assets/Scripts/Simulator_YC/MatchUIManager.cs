@@ -71,6 +71,9 @@ public class MatchUIManager : MonoBehaviour
     [Header("Settings UI")]
     [SerializeField] private GameObject _settingPanel;
 
+    [Header("Swiss Board UI")]
+    [SerializeField] private SwissBoardPanel _swissBoardPanel;
+
     // 유니티 에디터에서 연결할 스프라이트들
     [SerializeField] private Sprite _spriteDunk;
     [SerializeField] private Sprite _spriteThreePoint;
@@ -576,12 +579,19 @@ public class MatchUIManager : MonoBehaviour
     // 버튼 클릭 함수
     public void OnClickResultConfirmButton()
     {
+        // 메인 결과 패널 닫기
         if (_resultPanel != null)
         {
             _resultPanel.SetActive(false);
         }
 
-        // ResultState에서 넘겨줬던 ReturnToLobby 함수를 여기서 실행
+        // 상세 득점 패널 닫기
+        if (_normalResultPanel != null)
+        {
+            _normalResultPanel.gameObject.SetActive(false);
+        }
+
+        // ResultState에서 넘겨줬던 ReturnToLobby(또는 대진표 열기) 함수를 여기서 실행
         _onResultConfirmAction?.Invoke();
     }
     public void ShowLeagueCalculatePanel(int round, Action onConfirm)
@@ -592,7 +602,23 @@ public class MatchUIManager : MonoBehaviour
             _leagueCalculatePanel.Init(round, onConfirm);
         }
     }
-
+    // ResultState에서 대진표를 부를 때 사용
+    public void ShowSwissBoardPanel(Action onActionClick = null, string actionText = null)
+    {
+        if (_swissBoardPanel != null)
+        {
+            // 대진표 패널 열기
+            _swissBoardPanel.OpenPanel(onActionClick, actionText);
+        }
+        else
+        {
+            // 패널 연결이 누락되었을 경우의 안전장치
+            if (onActionClick != null)
+                onActionClick.Invoke();
+            else
+                GameManager.Instance.ChangeState<MatchPrepState>(); // null이면 다음 경기 준비로 직행
+        }
+    }
     private string MakeName(string[] nameKey)
     {
         if (nameKey == null || nameKey.Length < 3) return null;

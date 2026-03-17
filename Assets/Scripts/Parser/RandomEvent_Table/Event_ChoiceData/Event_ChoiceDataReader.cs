@@ -1,4 +1,4 @@
-﻿using GoogleSheetsToUnity;
+using GoogleSheetsToUnity;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -79,7 +79,7 @@ public class Event_ChoiceDataReader : DataReaderBase
                 case "standingLeft":
                     standingLeft = val;
                     break;
-                case "standMiddle":
+                case "standingMiddle":
                     standingMiddle = val;
                     break;
 
