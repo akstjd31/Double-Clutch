@@ -12,6 +12,7 @@ public class LobbyUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _honorText;
     [SerializeField] private Button _trainingButton;
     [SerializeField] private Button _matchButton;
+    [SerializeField] private SwissBoardPanel _swissBoardPanel; // 대진표 연결용
 
     [Header("Setting")]
     [SerializeField] private GameObject _settingPanel;
@@ -37,8 +38,28 @@ public class LobbyUI : MonoBehaviour
     private void Start()
     {
         Init();
-    }
+        // 매치 버튼에 이벤트 연결
+        if (_matchButton != null)
+        {
+            _matchButton.onClick.RemoveAllListeners();
+            _matchButton.onClick.AddListener(OnClickMatchButton);
+        }
 
+    }
+    // 매치 버튼을 눌렀을 때 실행될 함수
+    public void OnClickMatchButton()
+    {
+        if (_swissBoardPanel != null)
+        {
+            // 대진표를 먼저 켬 (내부적으로 null을 넘기면 '경기 준비' 버튼 클릭 시 알아서 MatchPrepState로 넘어감)
+            _swissBoardPanel.OpenPanel(null, "경기 준비");
+        }
+        else
+        {
+            // 패널 연결을 깜빡했을 때의 안전장치
+            GameManager.Instance.ChangeState<MatchPrepState>();
+        }
+    }
     private void Init()
     {
         if (GameManager.Instance == null) return;
