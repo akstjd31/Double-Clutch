@@ -210,16 +210,8 @@ public class ResultState : IState
             matchPlayers,
             () =>
             {
-                // ▼ 리그가 완전히 끝났을 때만 대진표/순위표 결산 창을 띄움
-                if (currentLeague != null && currentLeague.isFinished)
-                {
-                    uiManager.ShowLeagueCalculatePanel(currentMatchId, () => GoToLobby());
-                }
-                else
-                {
-                    // 아직 리그 진행 중이면 결산창을 안 띄우고 바로 로비로 복귀
-                    GoToLobby();
-                }
+                // MVP를 위해 ReturnToLobby() 대신 리그 결산 패널을 띄웁니다.
+                uiManager.ShowLeagueCalculatePanel(currentMatchId, () => GoToLobby());
             }
          );
     }
@@ -240,18 +232,7 @@ public class ResultState : IState
                 LeagueRecordManager.Instance.ClearLeagueRecords();
             }
         }
-        MatchState matchState = UnityEngine.Object.FindFirstObjectByType<MatchState>();
-        if (matchState != null && matchState.HomeTeam != null)
-        {
-            foreach (var matchPlayer in matchState.HomeTeam.Roster)
-            {
-                if (matchPlayer.PlayerId < 10000) // 실제 유저의 학생인 경우만
-                {
-                    Student realStudent = StudentManager.Instance.FindStudentById(matchPlayer.PlayerId);
-                    if (realStudent != null) realStudent.SetMatchPosition(Position.None); // 임시 포지션 초기화
-                }
-            }
-        }
+
         // 껍데기 데이터 저장
         var data = new StudentSaveData();
         SaveLoadManager.Instance.Save<StudentSaveData>(FilePath.MY_STUDENT_MATCHING_PATH, data);
@@ -266,7 +247,6 @@ public class ResultState : IState
     }
     private string MakeName(string[] nameKey)
     {
-        if (nameKey == null || nameKey.Length < 3) return null;
         StringManager manager = StringManager.Instance;
         string name = manager.GetString(nameKey[0]) + manager.GetString(nameKey[1]) + manager.GetString(nameKey[2]);
         return name;

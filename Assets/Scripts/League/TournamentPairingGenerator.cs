@@ -23,21 +23,11 @@ public class TournamentPairingGenerator : ILeaguePairingGenerator
             if (i + 1 >= aliveTeams.Count)
                 break;
 
-            string homeId = aliveTeams[i];
-            string awayId = aliveTeams[i + 1];
-
-            if (awayId == LeagueManager.PLAYER_TEAM_ID)
-            {
-                string temp = homeId;
-                homeId = awayId;
-                awayId = temp;
-            }
-
             result.Add(new LeagueMatchRecord
             {
                 roundIndex = roundIndex,
-                homeTeamId = homeId,
-                awayTeamId = awayId,
+                homeTeamId = aliveTeams[i],
+                awayTeamId = aliveTeams[i + 1],
                 isPlayed = false,
                 homeScore = 0,
                 awayScore = 0,
