@@ -88,7 +88,7 @@ public class CalendarManager : Singleton<CalendarManager>
         }
 
         // 3. 페이즈 체크
-        // if (!CheckPhaseType(weekId)) return;
+        if (!CheckPhaseType(weekId)) return;
 
         // 4. 종료 컷신 체크
         if (HasExistEndCutscene(weekId))
@@ -131,8 +131,7 @@ public class CalendarManager : Singleton<CalendarManager>
                 // 2. 시즌 아웃 조건 유무 확인
                 if (data.hasSeasonOut)
                 {
-                    weekId = data.targetidSpecial;
-                    // 경기 결과 정보 받기
+                    weekId = LeagueManager.Instance.IsPlayerSeasonOut() ? data.targetidDefault : data.targetidSpecial;
                 }
                 else
                 {
@@ -169,20 +168,31 @@ public class CalendarManager : Singleton<CalendarManager>
         }
 
         var leagueDataMgr = LeagueDataManager.Instance;
-        if (leagueDataMgr != null)
+        if (leagueDataMgr != null && !CheckEventDay(weekId))
         {
-            var selectionData = leagueDataMgr.GetTeamSelectionRuleByWeekId(weekId);
-            if (selectionData != null)
+            string leagueId = GetLeagueIdByWeekId(weekId);
+            // 이번 주차 캘린더에 리그 일정이 있다면!
+            if (!string.IsNullOrEmpty(leagueId) && leagueId != "-")
             {
-                var teams = LeagueDataManager.Instance.CreateLeagueTeams(selectionData);
-                if (teams == null) return;
+                var masterData = leagueDataMgr.GetMasterDataById(leagueId);
 
-                for (int i = 0; i < teams.Count; i++)
+                // 마스터 데이터에 팀 생성 규칙이 명시되어 있다면
+                if (masterData.HasValue && masterData.Value.isSelectionRequired)
                 {
-                    Debug.Log($"{i}번째 팀: {teams[i]}");
-                }
+                    string ruleId = masterData.Value.teamSelectionRuleId;
 
-                LeagueDataManager.Instance.CreateAndSaveLeague(GetLeagueIdByWeekId(weekId), selectionData);
+                    var selectionData = leagueDataMgr.GetTeamSelectionRuleById(ruleId);
+
+                    if (selectionData != null)
+                    {
+                        LeagueDataManager.Instance.CreateAndSaveLeague(leagueId, selectionData);
+                        Debug.Log($"[{leagueId}] 리그 및 팀 생성 완료! (적용된 룰: {ruleId})");
+                    }
+                    else
+                    {
+                        Debug.LogError($"팀 생성 룰을 찾을 수 없습니다! Rule ID: {ruleId}");
+                    }
+                }
             }
         }
 
@@ -198,35 +208,21 @@ public class CalendarManager : Singleton<CalendarManager>
     public bool HasExistStartCutscene(int weekId) => _calReader.DataList[weekId - 1].startCutscene.Equals("");
 
     public bool HasExistEndCutscene(int weekId) => _calReader.DataList[weekId - 1].endCutscene.Equals("");
-    // public bool CheckPhaseType(int weekId)
-    // {
-    //     if (_calReader == null) return false;
+     public bool CheckPhaseType(int weekId)
+     {
+         if (_calReader == null) return false;
 
-    //     switch (_calReader.DataList[weekId].phase)
-    //     {
-    //         case phaseType.League:
-    //             var leagueDataMgr = LeagueDataManager.Instance;
-    //             if (leagueDataMgr == null) return false;
+         switch (_calReader.DataList[weekId - 1].phase)
+         {
+             case phaseType.League:
+                 
+                 return true;
 
-    //             var selectionData = leagueDataMgr.GetTeamSelectionRuleByWeekId(weekId);
-    //             if (selectionData == null) return false;
+             // 경우에 따라 작성 (이벤트일떄) phaseType.Event ..
+         }
 
-    //             var teams = LeagueDataManager.Instance.CreateLeagueTeams(selectionData);
-    //             if (teams == null) return false;
-
-    //             for (int i = 0; i < teams.Count; i++)
-    //             {
-    //                 Debug.Log($"{i}번째 팀: {teams[i]}");
-    //             }
-
-    //             LeagueDataManager.Instance.CreateAndSaveLeague(GetLeagueIdByWeekId(weekId), selectionData);
-    //             return true;
-
-    //         // 경우에 따라 작성 (이벤트일떄) phaseType.Event ..
-    //     }
-
-    //     return IsEndPhase;
-    // }
+         return IsEndPhase;
+     }
 
     public Calendar GetCalendar() => this.calendar;
     public phaseType CurrentGetPhaseType()
@@ -277,6 +273,6 @@ public class CalendarManager : Singleton<CalendarManager>
     public string GetLeagueIdByWeekId(int weekId)
     {
         if (_calReader == null) return null;
-        return _calReader.DataList[weekId].leagueId;
+        return _calReader.DataList[weekId - 1].leagueId;
     }
 }

@@ -236,7 +236,7 @@ public class LeagueDataManager : Singleton<LeagueDataManager>
             isFinished = false,
             isPlayerEliminated = false,
             teams = CreateTeamEntries(selectedTeams),
-            matchRecords = CreateMatchRecords(selectedTeams),
+            matchRecords = new List<LeagueMatchRecord>(),
             standings = CreateInitialStandings(selectedTeams)
         };
 
@@ -467,6 +467,25 @@ public LeagueSaveData LoadLeague()
 
         return null;
     }
+    /// <summary>
+    /// Rule ID(teamSelectionRuleId)로 팀 선정 룰 반환
+    /// </summary>
+    public League_TeamData? GetTeamSelectionRuleById(string ruleId)
+    {
+        if (_leagueFactory == null) return null;
+        if (string.IsNullOrEmpty(ruleId)) return null;
 
+        var dataList = _leagueFactory.GetTeamSelectionDataList();
+        if (dataList == null) return null;
+
+        foreach (var data in dataList)
+        {
+            if (data.teamSelectionRuleId == ruleId)
+                return data;
+        }
+
+        return null;
+    }
     public LeagueFactory GetFactory() => _leagueFactory;
+
 }

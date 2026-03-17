@@ -44,6 +44,23 @@ public class LeagueManager : Singleton<LeagueManager>
     {
         if (_leagueDataMgr == null) return;
         _currentLeague = _leagueDataMgr.LoadLeague();
+        // 현재 리그가 진행 중일 때
+        if (_currentLeague != null && !_currentLeague.isFinished)
+        {
+            // 대진표가 이미 잘 저장되어 있는지 확인
+            bool alreadyExists = _currentLeague.matchRecords.Exists(
+                m => m.roundIndex == _currentLeague.currentRoundIndex);
+
+            // 대진표가 텅 비어있을 때만 복구 로직 실행
+            if (!alreadyExists)
+            {
+                // 나중에 추적할 수 있도록 확실하게 경고 로그
+                Debug.LogWarning($"<color=red>[LeagueManager]</color> 세이브 파일에 {_currentLeague.currentRoundIndex + 1}라운드 대진표가 없습니다! 자가 복구(재생성)를 시도합니다. (만약 새 게임인데도 이 로그가 뜬다면 저장 타이밍을 확인해야 합니다.)");
+
+                GenerateCurrentRoundMatchesIfNeeded();
+                SaveCurrentLeague(); // 복구한 김에 세이브 파일도 덮어씌움
+            }
+        }
     }
 
     public string GetOpponentTeamId(List<LeagueMatchRecord> records)
@@ -212,6 +229,29 @@ public class LeagueManager : Singleton<LeagueManager>
         if (gameMgr == null) return;
 
         gameMgr.SetMoney(gameMgr.SaveData.money + calMoney);
+
+        CalendarManager.Instance.CalcWeek(GameManager.Instance.SaveData.weekId, GameManager.Instance);
+
+    }
+
+    public bool IsPlayerSeasonOut()
+    {
+        if (_currentLeague == null) return false;
+
+        var masterData = _leagueDataMgr.GetMasterDataById(_currentLeague.leagueId);
+        if (masterData.Value.outConditionValue <= 0) return false;
+
+        foreach (var standing in _currentLeague.standings)
+        {
+            // 플레이어의 순위와 비교
+            if (standing.teamId.Equals(PLAYER_TEAM_ID))
+            {
+                // 순위에 들었는지 확인
+                return masterData.Value.outConditionValue >= standing.rank;
+            }
+        }
+
+        return false;
     }
 
     private LeagueStandingData GetPlayerStandingData()

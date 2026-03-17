@@ -21,6 +21,7 @@ public class StringManager : Singleton<StringManager>
     public Language CurrentLanguage => _language;
 
     [SerializeField] String_TableDataReader _stringDB;
+    [SerializeField] RandomEventStringDataReader _randomEventStringDB;
 
     [Header("Global Fonts (비워두면 기본 폰트 유지)")]
     [SerializeField] private TMP_FontAsset _koFont;
@@ -29,6 +30,7 @@ public class StringManager : Singleton<StringManager>
 
 
     private Dictionary<string, String_TableData> _stringDict = new Dictionary<string, String_TableData>();
+    private Dictionary<string, RandomEventStringData> _randomEventStringDict = new Dictionary<string, RandomEventStringData>();
 
     protected override void Awake()
     {
@@ -56,6 +58,17 @@ public class StringManager : Singleton<StringManager>
             if (!_stringDict.ContainsKey(data.stringKey))
             {
                 _stringDict.Add(data.stringKey, data);
+            }
+        }
+        if (_randomEventStringDB != null)
+        {
+            _randomEventStringDict.Clear();
+            foreach (var data in _randomEventStringDB.DataList)
+            {
+                if (!_randomEventStringDict.ContainsKey(data.stringKey))
+                {
+                    _randomEventStringDict.Add(data.stringKey, data);
+                }
             }
         }
     }
@@ -92,6 +105,17 @@ public class StringManager : Singleton<StringManager>
                     return data.ko;
             }
         }
+        else if (_randomEventStringDict.TryGetValue(key, out var eventData))
+        {
+            switch (_language)
+            {
+                case Language.En: return eventData.en;
+                case Language.Ja: return eventData.ja;
+                case Language.Ko:
+                default: return eventData.ko;
+            }
+        }
+
         else
         {
             Debug.LogWarning($"stringKey [{key}]가 stringTable에 없습니다.");
