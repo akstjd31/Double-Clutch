@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 
 public enum textType
@@ -20,7 +20,7 @@ public struct Event_ChoiceData
     public string playerName;
 
     public string standingLeft;
-    public string standMiddle;
+    public string standingMiddle;
     public string standingRight;
     public string background;
     public string cg;
@@ -43,7 +43,7 @@ public struct Event_ChoiceData
         (
         string index, string scriptId, int currentId,
         textType textType, string textKey, string speakDirection, string playerName,
-        string standingLeft, string standMiddle, string standingRight, string background, string cg,
+        string standingLeft, string standingMiddle, string standingRight, string background, string cg,
         string choice01, string choice02, string choice03,
         string bgm, string sfx, string buttonEffectId, string hoverSeId,
         float textSpeed, string cameraEffectId, string startEffectId
@@ -60,7 +60,7 @@ public struct Event_ChoiceData
         this.playerName = playerName;
 
         this.standingLeft = standingLeft;
-        this.standMiddle = standMiddle;
+        this.standingMiddle = standingMiddle;
         this.standingRight = standingRight;
         this.background = background;
         this.cg = cg;
