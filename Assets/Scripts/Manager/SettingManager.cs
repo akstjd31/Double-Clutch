@@ -6,6 +6,10 @@ public class SettingManager : Singleton<SettingManager>
     [SerializeField] SettingSaveData _settingData;
     const string SAVE_FILE = "SettingSave.json";
 
+    [Header("ì™¸ë¶€ ë§í¬")]
+    [SerializeField] private string _privacyPolicy = "https://sites.google.com/view/doubleclutch-policy/ê°œì¸ì •ë³´-ì²˜ë¦¬ë°©ì¹¨";
+    [SerializeField] private string _userPolicy = "https://sites.google.com/view/doubleclutch-policy/ì´ìš©ì•½ê´€-ë°-í™˜ë¶ˆì •ì±…";
+
     public SettingSaveData SettingData => _settingData;
     private void Start()
     {
@@ -13,7 +17,7 @@ public class SettingManager : Singleton<SettingManager>
         ApplyFPS();        
     }
 
-    // Áøµ¿ ±â´ÉÀº ¿©±â¼­ È£Ãâ
+    // ì§„ë™ ê¸°ëŠ¥ì€ ì—¬ê¸°ì„œ í˜¸ì¶œ
     public void PlayVibration() 
     {
         if (_settingData.isVibOn)
@@ -24,55 +28,71 @@ public class SettingManager : Singleton<SettingManager>
         }
     }
 
-    #region ¼¼ÆÃ ÆĞ³Î UI¿¡¼­ È£Ãâ
+    #region ì„¸íŒ… íŒ¨ë„ UIì—ì„œ í˜¸ì¶œ
 
-    public void SetMasterVolume(float value) //¸¶½ºÅÍ º¼·ı ½½¶óÀÌ´õ
+    public void SetMasterVolume(float value) //ë§ˆìŠ¤í„° ë³¼ë¥¨ ìŠ¬ë¼ì´ë”
     {
         _settingData.masterVol = value;
         ApplyVolum();
     }
 
-    public void SetBGMVolume(float value) //BGM º¼·ı ½½¶óÀÌ´õ
+    public void SetBGMVolume(float value) //BGM ë³¼ë¥¨ ìŠ¬ë¼ì´ë”
     {
         _settingData.bgmVol = value;
         ApplyVolum();
     }
-    public void SetSFXVolum(float value) //È¿°úÀ½ º¼·ı ½½¶óÀÌ´õ
+    public void SetSFXVolume(float value) //íš¨ê³¼ìŒ ë³¼ë¥¨ ìŠ¬ë¼ì´ë”
     {
         _settingData.sfxVol = value;
         ApplyVolum();
     }
 
-    public void SetFPS(int fps) //FPS ¼³Á¤ Åä±Û
+    public void SetFPS(int fps) //FPS ì„¤ì • í† ê¸€
     {        
         _settingData.fps = fps;
         ApplyFPS();
     }    
 
-    public void ToggleMasterVolum(bool isOn) //ÀüÃ¼ À½¼Ò°Å Åä±Û
+    public void ToggleMasterVolum(bool isOn) //ì „ì²´ ìŒì†Œê±° í† ê¸€
     {
-        _settingData.isMasterVolOn = isOn;
+        _settingData.isMasterVolOn = !isOn;
         ApplyVolum();
     }
 
-    public void ToggleBGMVolum(bool isOn) //¹è°æÀ½¾Ç À½¼Ò°Å Åä±Û
+    public void ToggleBGMVolum(bool isOn) //ë°°ê²½ìŒì•… ìŒì†Œê±° í† ê¸€
     {
-        _settingData.isBGMVolOn = isOn;
+        _settingData.isBGMVolOn = !isOn;
         ApplyVolum();
     }
 
-    public void ToggleSFXVolum(bool isOn) //È¿°úÀ½ À½¼Ò°Å Åä±Û
+    public void ToggleSFXVolum(bool isOn) //íš¨ê³¼ìŒ ìŒì†Œê±° í† ê¸€
     {
-        _settingData.isSFXVolOn = isOn;
+        _settingData.isSFXVolOn = !isOn;
         ApplyVolum();
     }
 
-    public void ToggleVibration(bool isOn) //Áøµ¿ ±â´É Åä±Û
+    public void ToggleVibration(bool isOn) //ì§„ë™ ê¸°ëŠ¥ í† ê¸€
     {
         _settingData.isVibOn = isOn;
     }
 
-    public void OnQuitSetting() //¼³Á¤ Ã¢ ´İÀ» ¶§ È£Ãâ
+    public void OpenPrivacyPolicy()
+    {
+        if (!string.IsNullOrEmpty(_privacyPolicy))
+        {
+            Application.OpenURL(_privacyPolicy);
+        }
+    }
+
+    public void OpenUserPolicy()
+    {
+        if (!string.IsNullOrEmpty(_userPolicy))
+        {
+            Application.OpenURL(_userPolicy);
+        }
+    }
+
+    public void OnQuitSetting() //ì„¤ì • ì°½ ë‹«ì„ ë•Œ í˜¸ì¶œ
     {
         SaveSetting();
     }
@@ -80,7 +100,7 @@ public class SettingManager : Singleton<SettingManager>
     #endregion
 
 
-    #region ¼¼ÆÃ ÈÄ °ªÀ» ½ÇÁ¦ Àû¿ëÇÏ±â À§ÇÑ ³»ºÎÇÔ¼ö
+    #region ì„¸íŒ… í›„ ê°’ì„ ì‹¤ì œ ì ìš©í•˜ê¸° ìœ„í•œ ë‚´ë¶€í•¨ìˆ˜
     private void ApplyFPS()
     {
         QualitySettings.vSyncCount = 0;
@@ -95,24 +115,24 @@ public class SettingManager : Singleton<SettingManager>
     #endregion
 
 
-    #region ¼¼ÀÌºê & ·Îµå ±â´É
+    #region ì„¸ì´ë¸Œ & ë¡œë“œ ê¸°ëŠ¥
     public void SaveSetting()
     {
         if (SaveLoadManager.Instance != null)
         {
             SaveLoadManager.Instance.Save(SAVE_FILE, _settingData);
-            Debug.Log("¼³Á¤ µ¥ÀÌÅÍ ÀúÀå ¿Ï·á");
+            Debug.Log("ì„¤ì • ë°ì´í„° ì €ì¥ ì™„ë£Œ");
         }
     }
 
     public void LoadSetting()
     {
-        if (SaveLoadManager.Instance.TryLoad(SAVE_FILE, out SettingSaveData data)) //ÀúÀåµÈ µ¥ÀÌÅÍ ·Îµå
+        if (SaveLoadManager.Instance.TryLoad(SAVE_FILE, out SettingSaveData data)) //ì €ì¥ëœ ë°ì´í„° ë¡œë“œ
         {
             _settingData = data;
-            Debug.Log("¼³Á¤ µ¥ÀÌÅÍ ·Îµå ¿Ï·á");
+            Debug.Log("ì„¤ì • ë°ì´í„° ë¡œë“œ ì™„ë£Œ");
         }
-        else //Ã¹ ½ÇÇà ¶Ç´Â µ¥ÀÌÅÍ ¼Õ½Ç
+        else //ì²« ì‹¤í–‰ ë˜ëŠ” ë°ì´í„° ì†ì‹¤
         {
             _settingData = new SettingSaveData();
             SetFPS(60);

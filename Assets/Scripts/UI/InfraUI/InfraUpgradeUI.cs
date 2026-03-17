@@ -15,6 +15,15 @@ public class InfraUpgradeUI : MonoBehaviour
     [SerializeField] private Button _upgradeButton;
     [SerializeField] private ReconfirmUI _reconfirmUI;
 
+    [Header("업그레이드 배경리소스")]
+    [SerializeField] private Image _backGroundImage;
+    [SerializeField] private Sprite _clinic;
+    [SerializeField] private Sprite _dormitory;
+    [SerializeField] private Sprite _frontOffice;
+    [SerializeField] private Sprite _analyticsRoom;
+    [SerializeField] private Sprite _conditioningGym;
+
+
     private void Awake()
     {
         
@@ -41,6 +50,8 @@ public class InfraUpgradeUI : MonoBehaviour
 
         _upgradeButton.interactable = !(_infra.currentLevel >= _infra.maxLevel);
         _controller.Upgraded += UpdateLevelText;
+
+        SetBackGroundImage(infra.infraEffectType);
 
         Refresh();
     }
@@ -82,4 +93,32 @@ public class InfraUpgradeUI : MonoBehaviour
 
     // 중괄호로 되어있는 부분을 처리 및 전체 문자열을 반환 (이 부분은 UI 스크립트에서 작성해야할듯?)
     private string FormatInfraDescText(string desc, string target, int infraEffectValue) => desc.Replace(target, infraEffectValue.ToString());
+
+    private void SetBackGroundImage(infraEffectType type)
+    {
+        Sprite background = null;
+        switch (type)
+        {
+            case infraEffectType.RestCostDiscount:
+                background = _clinic;
+                break;
+            case infraEffectType.AddRoster:
+                background = _dormitory;
+                break;
+            case infraEffectType.RewardGoldBonus:
+                background = _frontOffice;
+                break;
+            case infraEffectType.AddTactic:
+                background = _analyticsRoom;
+                break;
+            case infraEffectType.TrainingBonus:
+                background = _conditioningGym;
+                break;
+            default:
+                background = _frontOffice;
+                break;
+        }
+
+        _backGroundImage.sprite = background;
+    }
 }
