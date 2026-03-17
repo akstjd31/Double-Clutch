@@ -194,9 +194,11 @@ public class EventUI : MonoBehaviour
 
     private void ResultInit()
     {
+        if (_stat == null) return;
         _stat.text = "";
         _stat.color = Color.black;
 
+        if (_state == null) return;
         _state.text = "";
         _state.color = Color.black;
     }

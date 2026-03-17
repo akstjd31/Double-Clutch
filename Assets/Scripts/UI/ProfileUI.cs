@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class ProfileUI : MonoBehaviour
 {
@@ -59,29 +60,29 @@ public class ProfileUI : MonoBehaviour
 
     private void OnEnable()
     {
-        GameManager gameManager = GameManager.Instance;
-        SpriteManager spriteManager = SpriteManager.Instance;
-
         if (_confirmButton != null)
             _confirmButton.onClick.AddListener(OnClickConfirmButton);
 
-        // 페이지 버튼 이벤트 연결 추가
-        if (_prevButton != null) _prevButton.onClick.AddListener(() => ChangePage(-1));
-        if (_nextButton != null) _nextButton.onClick.AddListener(() => ChangePage(1));
-
-        string currentImg = gameManager.SaveData?.currentProfileImage;
-
-        if (_selectedData == null && _profileDataReader.DataList.Count > 0)
-            _selectedData = _profileDataReader.DataList[0];        
-
-        _selectedData = _profileDataReader.DataList.Find(x => x.playerImage == currentImg);
-        if (_selectedData == null) _selectedData = _profileDataReader.DataList[0];
-
-        _currentIcon.sprite = string.IsNullOrEmpty(gameManager.SaveData.currentProfileImage) ?
-            spriteManager.GetSprite(_profileDataReader.DataList[0].playerImage) : spriteManager.GetSprite(gameManager.SaveData.currentProfileImage);
-
         if (!_isFirstTime)
         {
+            GameManager gameManager = GameManager.Instance;
+            SpriteManager spriteManager = SpriteManager.Instance;
+
+            // 페이지 버튼 이벤트 연결 추가
+            if (_prevButton != null) _prevButton.onClick.AddListener(() => ChangePage(-1));
+            if (_nextButton != null) _nextButton.onClick.AddListener(() => ChangePage(1));
+
+            string currentImg = gameManager.SaveData?.currentProfileImage;
+
+            if (_selectedData == null && _profileDataReader.DataList.Count > 0)
+                _selectedData = _profileDataReader.DataList[0];
+
+            _selectedData = _profileDataReader.DataList.Find(x => x.playerImage == currentImg);
+            if (_selectedData == null) _selectedData = _profileDataReader.DataList[0];
+
+            _currentIcon.sprite = string.IsNullOrEmpty(gameManager.SaveData.currentProfileImage) ?
+                spriteManager.GetSprite(_profileDataReader.DataList[0].playerImage) : spriteManager.GetSprite(gameManager.SaveData.currentProfileImage);
+
             if (_warningText == null)
                 _warningText = _warningTextObj.transform.GetComponentInChildren<TextMeshProUGUI>();
             _warningText.text = "";
@@ -101,9 +102,9 @@ public class ProfileUI : MonoBehaviour
             if (_confirmCoachButton != null) _confirmCoachButton.onClick.AddListener(OnClickConfirmCoach);
             if (_cancelSchoolButton != null) _cancelSchoolButton.onClick.AddListener(() => _schoolModifyPanel.SetActive(false));
             if (_cancelCoachButton != null) _cancelCoachButton.onClick.AddListener(() => _coachModifyPanel.SetActive(false));
-        }
 
-        RefreshProfileList();
+            RefreshProfileList();
+        }
     }
 
     private void OnDisable()
