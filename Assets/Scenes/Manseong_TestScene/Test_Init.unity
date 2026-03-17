@@ -268,8 +268,9 @@ GameObject:
   m_Component:
   - component: {fileID: 748093095}
   - component: {fileID: 748093094}
+  - component: {fileID: 748093096}
   m_Layer: 0
-  m_Name: Audio Source
+  m_Name: AudioManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -287,10 +288,10 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: -6996804981200380284, guid: d40ad877423231947b112e9374d99f80, type: 2}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
-  m_PlayOnAwake: 1
-  m_Volume: 1
+  m_PlayOnAwake: 0
+  m_Volume: 0.26
   m_Pitch: 1
-  Loop: 0
+  Loop: 1
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
@@ -387,6 +388,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &748093096
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 748093093}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 94c1228eeeccf3d4c85bfef25439e082, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AudioManager
+  dontDestroyOnLoad: 1
+  _reader: {fileID: 11400000, guid: 7ea8353004daa3f4f9585ab06a2689b9, type: 2}
+  _mixer: {fileID: 24100000, guid: d40ad877423231947b112e9374d99f80, type: 2}
 --- !u!1 &756173926
 GameObject:
   m_ObjectHideFlags: 0
