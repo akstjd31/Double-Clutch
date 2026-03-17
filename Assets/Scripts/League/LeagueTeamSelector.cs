@@ -58,6 +58,13 @@ public class LeagueTeamSelector
                     return;
                 }
 
+                // 이전 리그의 팀 수보다 더 많은 팀을 요구할 때 발생하는 튕김(에러) 방지
+                if (i >= prevData.standings.Count)
+                {
+                    Debug.LogWarning($"가져올 이전 리그 팀이 부족합니다. (요구: {rule.priorityTeamCount}, 실제: {prevData.standings.Count})");
+                    break;
+                }
+
                 // 이전 리그 상위 팀 추가 (정렬되어있는 기준)
                 result.Add(prevData.standings[i].teamId);
             }

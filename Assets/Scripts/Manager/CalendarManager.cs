@@ -176,21 +176,31 @@ public class CalendarManager : Singleton<CalendarManager>
             {
                 var masterData = leagueDataMgr.GetMasterDataById(leagueId);
 
-                // 마스터 데이터에 팀 생성 규칙이 명시되어 있다면
-                if (masterData.HasValue && masterData.Value.isSelectionRequired)
+                if (masterData.HasValue)
                 {
-                    string ruleId = masterData.Value.teamSelectionRuleId;
-
-                    var selectionData = leagueDataMgr.GetTeamSelectionRuleById(ruleId);
-
-                    if (selectionData != null)
+                    // isSelectionRequired가 TRUE일 때만 리그가 정상 생성
+                    if (masterData.Value.isSelectionRequired)
                     {
-                        LeagueDataManager.Instance.CreateAndSaveLeague(leagueId, selectionData);
-                        Debug.Log($"[{leagueId}] 리그 및 팀 생성 완료! (적용된 룰: {ruleId})");
+                        string ruleId = masterData.Value.teamSelectionRuleId;
+                        var selectionData = leagueDataMgr.GetTeamSelectionRuleById(ruleId);
+
+                        if (selectionData != null)
+                        {
+                            var newLeague = LeagueDataManager.Instance.CreateAndSaveLeague(leagueId, selectionData);
+                            if (newLeague != null)
+                                Debug.Log($"<color=green>[{leagueId}] 새로운 리그 생성 완벽하게 성공!</color> (적용된 룰: {ruleId})");
+                            else
+                                Debug.LogError($"<color=red>[{leagueId}] 리그 생성에 실패했습니다! LeagueTeamSelector에서 팀을 다 채우지 못했을 수 있습니다.</color>");
+                        }
+                        else
+                        {
+                            Debug.LogError($"<color=red>[{leagueId}] 리그 생성 실패: '{ruleId}' 룰을 League_Team_Selection_Table에서 찾을 수 없습니다!</color>");
+                        }
                     }
                     else
                     {
-                        Debug.LogError($"팀 생성 룰을 찾을 수 없습니다! Rule ID: {ruleId}");
+                        // 원인 판별용 에러 출력 ! 만약 이 에러가 뜬다면 CSV를 수정해야 합니다.
+                        Debug.LogError($"<color=red>[{leagueId}] 리그 생성 실패: isSelectionRequired가 FALSE(0)입니다. 현재 시스템은 룰 없이 리그를 시작할 수 없습니다!</color>");
                     }
                 }
             }
