@@ -44,26 +44,26 @@ public class InfraUpgradeUI : MonoBehaviour
 
     private void Refresh()
     {
-        if (_infra == null) return;
-        if (StringManager.Instance == null) return;
+        //if (_infra == null) return;
+        //if (StringManager.Instance == null) return;
 
-        StringManager.Instance.GetString(_infra.nameKey, _title);
-        StringManager.Instance.GetString(_infra.nameKey, _nameText);
+        ////StringManager.Instance.GetString(_infra.nameKey, _title);
+        ////StringManager.Instance.GetString(_infra.nameKey, _nameText);
 
-        _levelText.text = _infra.currentLevel.ToString();
+        //_levelText.text = _infra.currentLevel.ToString();
 
-        string originDesc = StringManager.Instance.GetString(_infra.descKey);
-        var keys = TextParser.GetKeys(originDesc);
-        if (keys != null && keys.Count > 0)
-        {
-            int value = _controller.GetCurrentInfraEffectValue();
-            _effectDescText.text = originDesc.Replace("{" + keys[0] + "}", value.ToString());
-        }
-        else
-        {
-            _effectDescText.text = originDesc;
-        }
-        StringManager.Instance.ApplyFont(_effectDescText);
+        ////string originDesc = StringManager.Instance.GetString(_infra.descKey);
+        //var keys = TextParser.GetKeys(originDesc);
+        //if (keys != null && keys.Count > 0)
+        //{
+        //    int value = _controller.GetCurrentInfraEffectValue();
+        //    _effectDescText.text = originDesc.Replace("{" + keys[0] + "}", value.ToString());
+        //}
+        //else
+        //{
+        //    _effectDescText.text = originDesc;
+        //}
+        //StringManager.Instance.ApplyFont(_effectDescText);
     }
 
     public void UpdateLevelText(int level)
