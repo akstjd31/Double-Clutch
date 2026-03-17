@@ -69,7 +69,11 @@ public class ProfileUI : MonoBehaviour
         if (_prevButton != null) _prevButton.onClick.AddListener(() => ChangePage(-1));
         if (_nextButton != null) _nextButton.onClick.AddListener(() => ChangePage(1));
 
-        string currentImg = GameManager.Instance.SaveData.currentProfileImage;
+        string currentImg = gameManager.SaveData?.currentProfileImage;
+
+        if (_selectedData == null && _profileDataReader.DataList.Count > 0)
+            _selectedData = _profileDataReader.DataList[0];        
+
         _selectedData = _profileDataReader.DataList.Find(x => x.playerImage == currentImg);
         if (_selectedData == null) _selectedData = _profileDataReader.DataList[0];
 
