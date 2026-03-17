@@ -129,19 +129,38 @@ public class LeagueTeamManager : Singleton<LeagueTeamManager>
             // 1. 리스트 데이터 먼저 복구
             _currentLeagueTeamList = data.teamList;
 
-            // 2. 리스트 내에서 플레이어 팀을 찾아 StudentManager의 실시간 객체로 교체
-            string pId = StudentManager.Instance.CurrentTeam.TeamId;
-            int idx = _currentLeagueTeamList.FindIndex(x => x.TeamId == pId);
 
-            if (idx != -1)
+            // 2. 리스트 내에서 플레이어 팀을 찾아 StudentManager의 실시간 객체로 교체
+            // CurrentTeam이 Null인지 먼저 체크
+            if (StudentManager.Instance.CurrentTeam != null)
             {
-                _currentLeagueTeamList[idx] = StudentManager.Instance.CurrentTeam;
+                string pId = StudentManager.Instance.CurrentTeam.TeamId;
+                int idx = _currentLeagueTeamList.FindIndex(x => x.TeamId == pId);
+
+                if (idx != -1)
+                {
+                    _currentLeagueTeamList[idx] = StudentManager.Instance.CurrentTeam;
+                }
             }
 
             // 3. 교체 완료된 리스트를 기반으로 딕셔너리 생성 (참조 동기화 완료됨)
             MatchKeyAndTeams();
 
-            Debug.Log("팀 데이터 로드 및 참조 동기화 완료");
+            int rivalInitCount = 0; // 디버그 확인용 카운트
+            // 로드된 적군 선수들의 스탯/종족 데이터를 다시 연결(Init)해줍니다.
+            foreach (var team in _currentLeagueTeamList)
+            {
+                if (team.TeamId != StudentManager.TEAM_ID)
+                {
+                    foreach (var student in team.Members)
+                    {
+                        if (student != null) StudentManager.Instance.GetFactory().InitRivalStudent(student);
+                        rivalInitCount++;
+                    }
+                }
+            }
+            // 정상적으로 로드 로직이 돌았다는 것을 알려주는 로그
+            Debug.Log($"<color=cyan>[LeagueTeamManager]</color> 로드 완료: 총 {rivalInitCount}명의 적군 스탯 및 참조 데이터 복구 완료!");
         }
     }
 
