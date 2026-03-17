@@ -1,9 +1,85 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
 
 public class AudioManager : Singleton<AudioManager>
 {
+    [SerializeField] ResourceDataReader _reader;
     [SerializeField] AudioMixer _mixer;
+    private AudioSource _audioSource;
+    private Dictionary<string, string> _pathIndex = new Dictionary<string, string>();
+    private Dictionary<string, AudioClip> _audioCache = new Dictionary<string, AudioClip>();
+
+    protected override void Awake()
+    {
+        base.Awake();
+
+        _audioSource = this.GetComponent<AudioSource>();
+        InitPathTable();
+    }
+
+    public void InitPathTable()
+    {
+        if (_reader == null) return;
+
+        _pathIndex.Clear();
+        foreach (var data in _reader.DataList)
+        {
+            if (string.IsNullOrEmpty(data.resourceId)) continue;
+
+            string fullPath = $"{data.resourcePath}/{data.resourceId}";
+
+            if (!_pathIndex.ContainsKey(data.resourceId))
+            {
+                _pathIndex.Add(data.resourceId, fullPath);
+            }
+        }
+
+        Debug.Log($"AudioManager {_pathIndex.Count}개의 리소스 경로 Init 완료.");
+    }
+
+    public AudioClip GetAudioClip(string resourceId)
+    {
+        if (_audioCache.TryGetValue(resourceId, out AudioClip cachedAudioClip))
+            return cachedAudioClip;
+
+        if (_pathIndex.TryGetValue(resourceId, out string fullPath))
+        {
+            AudioClip loadedAudioClip = Resources.Load<AudioClip>(fullPath);
+
+            if (loadedAudioClip != null)
+            {
+                _audioCache.Add(resourceId, loadedAudioClip);
+                return loadedAudioClip;
+            }
+        }
+
+        Debug.LogWarning($"[AudioManager] 리소스를 로드할 수 없습니다. ID: {resourceId}");
+        return null;
+    }
+
+    public void PlaySound(AudioClip clip)
+    {
+        if (_audioSource == null) return;
+        
+        _audioSource.clip = clip;
+        _audioSource.Play();
+        Debug.Log("오디오 재생!");
+    }
+
+    public void StopSound()
+    {
+        if (_audioSource == null) return;
+
+        _audioSource.Stop();
+    }
+
+    // 메모리 최적화를 위한 캐시 클리어.    
+    public void ClearCache()
+    {
+        _audioCache.Clear();
+        Resources.UnloadUnusedAssets();
+    }
 
     public void UpdateVolume()
     {
@@ -15,6 +91,7 @@ public class AudioManager : Singleton<AudioManager>
     }
 
 
+    // 볼륨 조절
     private void ApplyVolume(string name, float sliderValue)
     {
         float db;

@@ -25,36 +25,11 @@ public class EnemyTeamFactory : MonoBehaviour
 
     public MatchTeam ConvertToTeam(TeamSide side, Team team)
     {
-        if (team == null || team.Members == null || team.Members[0] == null)
-        {
-            Debug.LogError($"[EnemyTeamFactory] {side} 팀 데이터가 Null입니다! 에러 방지용 임시 팀을 생성합니다.");
-            team = new Team(side == TeamSide.Home ? StudentManager.TEAM_ID : "Dummy_Team", side == TeamSide.Home);
-
-            for (int i = 0; i < 5; i++)
-            {
-                Student dummy = new Student();
-                dummy.SetName($"더미{i + 1}", "", "");
-                dummy.SetPosition((Position)(i + 1));
-                dummy.SetMatchPosition((Position)(i + 1));
-
-                List<Stat> dStats = new List<Stat> {
-                    new Stat(potential.Stat2pt, 10, 99, 1),
-                    new Stat(potential.Stat3pt, 10, 99, 1),
-                    new Stat(potential.StatPass, 10, 99, 1),
-                    new Stat(potential.StatBlock, 10, 99, 1),
-                    new Stat(potential.StatSteal, 10, 99, 1),
-                    new Stat(potential.StatRebound, 10, 99, 1)
-                };
-                dummy.SetStat(dStats);
-                dummy.OnStatChanged();
-                team.SetMember(i, dummy);
-            }
-        }
         string archetypeId = team.Team_ArchetypeData.HasValue ? team.Team_ArchetypeData.Value.teamArchetypeId : string.Empty;
 
         // 팀 이름이 혹시 비어있으면 임시 이름 부여
         string teamName = string.IsNullOrEmpty(team.TeamNameKey) ?
-                          (side == TeamSide.Home ? GameManager.Instance.SaveData.schoolName : "더미 봇 팀") :
+                          GameManager.Instance.SaveData.schoolName :
                           StringManager.Instance.GetString(team.TeamNameKey);
 
         MatchTeam matchTeam = new MatchTeam(side, teamName, archetypeId);

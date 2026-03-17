@@ -3,6 +3,7 @@ using UnityEngine.UI;
 
 public class MainUI : MonoBehaviour
 {
+    private const string MAIN_SOUND_KEY = "BGM_Start";
     [SerializeField] private GameObject tutorialObj;
     [SerializeField] private Button _startButton;
 
@@ -10,6 +11,19 @@ public class MainUI : MonoBehaviour
     {
         if (_startButton != null)
             _startButton.onClick.AddListener(OnClickGameStart);
+    }
+
+    private void Start()
+    {
+        if (AudioManager.Instance == null) return;
+        var mainClip = AudioManager.Instance.GetAudioClip(MAIN_SOUND_KEY);
+        AudioManager.Instance.PlaySound(mainClip);
+    }
+
+    private void OnDestroy()
+    {
+        if (AudioManager.Instance == null) return;
+        AudioManager.Instance.StopSound();
     }
 
 
