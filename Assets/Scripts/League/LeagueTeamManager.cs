@@ -11,65 +11,92 @@ using UnityEngine;
 public class LeagueTeamManager : Singleton<LeagueTeamManager>
 {
     const string SAVE_FILE = "TeamSave.json";
-    [SerializeField] LeagueFactory _leagueFactory;
-    [SerializeField] StudentFactory _studentFactory;
 
-    //플레이어 팀을 포함한 모든 팀 목록
-    List<string> _allTeamIdList = new List<string>();    
-    List<Team> _allTeamList = new List<Team>();
-    SerializedDictionary<string, Team> _allTeamDict = new SerializedDictionary<string, Team>();
-    
+    // 리그 전 캐싱 데이터에 담긴 선수 목록  
+    [SerializeField] List<string> _currentLeagueTeamIdList = new List<string>();
+    [SerializeField] List<Team> _currentLeagueTeamList = new List<Team>();
+    [SerializeField] SerializedDictionary<string, Team> _currentTeamDict = new SerializedDictionary<string, Team>();    
 
     private void Start()
     {
-        InitDatas();
+        LoadGame();
     }
 
-    private void InitDatas() //리스트에 아이디만 채워넣기
+    public Team GetTeamById(string teamId)
     {
-        _allTeamIdList.Clear();
-        for (int i = 0; i < _leagueFactory.GetRivalMasterDataList().Count; i++)
+        // 딕셔너리에 해당 팀이 존재하면 안전하게 꺼내서 반환
+        if (_currentTeamDict.TryGetValue(teamId, out Team team))
         {
-            _allTeamIdList.Add(_leagueFactory.GetRivalMasterDataList()[i].teamId);
+            return team;
         }
-        _allTeamIdList.Add(StudentManager.Instance.CurrentTeam.TeamId);
+
+        // 만약 리그 추첨에서 떨어졌거나 하드코딩으로 인해 팀을 찾을 수 없다면?
+        Debug.LogWarning($"[LeagueTeamManager] '{teamId}' 팀이 현재 참가 명단에 없습니다! 게임 튕김을 방지하기 위해 임의의 NPC 팀을 반환합니다.");
+
+        // 참가 중인 팀 리스트를 뒤져서, 유저 팀이 아닌 첫 번째 NPC 팀을 대신 던져줍니다.
+        foreach (var fallbackTeam in _currentLeagueTeamList)
+        {
+            if (fallbackTeam.TeamId != StudentManager.TEAM_ID)
+            {
+                return fallbackTeam;
+            }
+        }
+
+        return null; // 최악의 경우 (리그에 NPC가 아예 0명일 때)
     }
 
-    public void BuildTeams() //모든 팀 일괄 생성하고 딕셔너리에 채워넣기
+    public List<Team> GetAllTeams()
     {
-        _allTeamDict.Clear();
-        _allTeamList.Clear();
+        return _currentLeagueTeamList;
+    }
 
-        var teamDataList = _leagueFactory.GetRivalMasterDataList();
-        var archDataList = _leagueFactory.GetArchetypeDataList();
+    // 저장된 데이터로 각 팀의 Id 받아오기
+    public void InitDatas(LeagueSaveData saveData) 
+    {
+        _currentLeagueTeamIdList.Clear();
+
+        // 어차피 플레이어도 추가되어 있기 떄문에 따로 추가 작업 안해도 됨.
+        foreach (var teamEntryInfo in saveData.teams)
+        {
+            _currentLeagueTeamIdList.Add(teamEntryInfo.teamId);
+        }
+
+        BuildTeams(saveData);
+    }
+
+    private void BuildTeams(LeagueSaveData saveData) //모든 팀 일괄 생성하고 딕셔너리에 채워넣기
+    {
+        _currentTeamDict.Clear();
+        _currentLeagueTeamList.Clear();    
+
+        var teamDataList = LeagueDataManager.Instance.GetRivalDatasByTeamIds(_currentLeagueTeamIdList);
+        var archDataList = LeagueDataManager.Instance.GetFactory().GetArchetypeDataList();
 
         foreach (var master in teamDataList)
-        {
-            if (_allTeamDict.ContainsKey(master.teamId)) continue;
-            
-
-            Team newTeam = new Team(master.teamId);
+        {           
+            Team newTeam = null; 
+            if (master.teamId.Equals(LeagueManager.PLAYER_TEAM_ID))
+                newTeam = StudentManager.Instance.CurrentTeam;
+            else
+                newTeam = new Team(master.teamId);
 
             // 매니저가 데이터를 찾아서 직접 주입 (Dependency Injection)
             var arch = archDataList.Find(x => x.teamArchetypeId == master.teamArchetypeId);
             newTeam.Init(master, arch);
-            _allTeamList.Add(newTeam);
-            _allTeamDict.Add(newTeam.TeamId, newTeam);
-            FillRivalStudents(newTeam);
+            FillRivalStudents(ref newTeam);
+            _currentLeagueTeamList.Add(newTeam);
+            _currentTeamDict.Add(newTeam.TeamId, newTeam);
+            
         }
-        Team playerTeam = StudentManager.Instance.CurrentTeam;
-        _allTeamList.Add(playerTeam);
-        _allTeamDict.Add(playerTeam.TeamId, playerTeam);
+
         SaveGame();
     }
 
-    
-
     //모든 라이벌 팀의 레벨보정 잠재력 재설정(라이벌 스탯 결정 시기에 호출)
     // + 플레이어 팀의 티어 재설정
-    public void RefreshAllRivalStats(string leagueLevelId) 
+    public void RefreshAllRivalStats(string leagueLevelId, bool isPassiveOn) 
     {
-        foreach (var team in _allTeamDict.Values)
+        foreach (var team in _currentTeamDict.Values)
         {
             if (team.IsPlayable)
             {
@@ -80,8 +107,8 @@ public class LeagueTeamManager : Singleton<LeagueTeamManager>
             for (int i = 0; i < 5; i++)
             {
                 teamStats[i] = GetRivalStatsByLevel(leagueLevelId, team);
-            }
-            team.UpdateTeamStats(teamStats);
+            }            
+            team.UpdateTeamStats(teamStats, isPassiveOn);
         }
         League_LevelData levelData = LeagueDataManager.Instance.GetLeagueLevelDataById(leagueLevelId).Value;
         //StudentManager.Instance.CurrentTeam.SetTier(levelData.playerTeamTier);
@@ -89,7 +116,7 @@ public class LeagueTeamManager : Singleton<LeagueTeamManager>
     }
     public void SaveGame()
     {        
-        TeamSaveData saveData = new TeamSaveData(_allTeamList);
+        TeamSaveData saveData = new TeamSaveData(_currentLeagueTeamList);
         
         if (SaveLoadManager.Instance != null)
             SaveLoadManager.Instance.Save(SAVE_FILE, saveData);
@@ -100,21 +127,40 @@ public class LeagueTeamManager : Singleton<LeagueTeamManager>
         if (SaveLoadManager.Instance.TryLoad<TeamSaveData>(SAVE_FILE, out var data))
         {
             // 1. 리스트 데이터 먼저 복구
-            _allTeamList = data.teamList;
+            _currentLeagueTeamList = data.teamList;
+
 
             // 2. 리스트 내에서 플레이어 팀을 찾아 StudentManager의 실시간 객체로 교체
-            string pId = StudentManager.Instance.CurrentTeam.TeamId;
-            int idx = _allTeamList.FindIndex(x => x.TeamId == pId);
-
-            if (idx != -1)
+            // CurrentTeam이 Null인지 먼저 체크
+            if (StudentManager.Instance.CurrentTeam != null)
             {
-                _allTeamList[idx] = StudentManager.Instance.CurrentTeam;
+                string pId = StudentManager.Instance.CurrentTeam.TeamId;
+                int idx = _currentLeagueTeamList.FindIndex(x => x.TeamId == pId);
+
+                if (idx != -1)
+                {
+                    _currentLeagueTeamList[idx] = StudentManager.Instance.CurrentTeam;
+                }
             }
 
             // 3. 교체 완료된 리스트를 기반으로 딕셔너리 생성 (참조 동기화 완료됨)
             MatchKeyAndTeams();
 
-            Debug.Log("팀 데이터 로드 및 참조 동기화 완료");
+            int rivalInitCount = 0; // 디버그 확인용 카운트
+            // 로드된 적군 선수들의 스탯/종족 데이터를 다시 연결(Init)해줍니다.
+            foreach (var team in _currentLeagueTeamList)
+            {
+                if (team.TeamId != StudentManager.TEAM_ID)
+                {
+                    foreach (var student in team.Members)
+                    {
+                        if (student != null) StudentManager.Instance.GetFactory().InitRivalStudent(student);
+                        rivalInitCount++;
+                    }
+                }
+            }
+            // 정상적으로 로드 로직이 돌았다는 것을 알려주는 로그
+            Debug.Log($"<color=cyan>[LeagueTeamManager]</color> 로드 완료: 총 {rivalInitCount}명의 적군 스탯 및 참조 데이터 복구 완료!");
         }
     }
 
@@ -123,26 +169,28 @@ public class LeagueTeamManager : Singleton<LeagueTeamManager>
 
     private void MatchKeyAndTeams() //로드 직후 수행
     {       
-        _allTeamDict.Clear();
-        for (int i = 0; i < _allTeamList.Count; i++)
+        _currentTeamDict.Clear();
+        for (int i = 0; i < _currentLeagueTeamList.Count; i++)
         {
-            _allTeamDict.Add(_allTeamList[i].TeamId, _allTeamList[i]);
+            _currentTeamDict.Add(_currentLeagueTeamList[i].TeamId, _currentLeagueTeamList[i]);
         }
     }
 
-    private void FillRivalStudents(Team team) //팀에 선수들 채워넣는 매서드
+    private void FillRivalStudents(ref Team team) //팀에 선수들 채워넣는 매서드
     {
         List<speciesType> speciesList = GenerateSpeciesList(team.Rival_MasterData.Value);
+        var studentFactory = StudentManager.Instance.GetFactory();
 
         for (int i = 0; i < team.Members.Length; i++)
         {
-            Student rival = _studentFactory.MakeRivalStudentSkeleton(team.Rival_MasterData.Value.nation);
-            team.SetMember(i, rival);
-            rival.SetSpecie(_studentFactory.GetRandomSpecieByType(speciesList[i]));
-            rival.SetVisual(_studentFactory.GetRandomVisual(rival.SpecieId));
+            Student rival = studentFactory.MakeRivalStudentSkeleton(team.Rival_MasterData.Value.nation);
+            // rival.SetStudentId(i);
+            rival.SetSpecie(studentFactory.GetRandomSpecieByType(speciesList[i]));
+            rival.SetVisual(studentFactory.GetRandomVisual(rival.SpecieId));
             Position targetPos = team.Positions[i];
             rival.SetPosition(targetPos);
             rival.SetMatchPosition(targetPos);            
+            team.SetMember(i, rival);
         }
     }
 

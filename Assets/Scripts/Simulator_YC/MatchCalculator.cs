@@ -276,8 +276,8 @@ public static class MatchCalculator
         }
 
 
-
-        Debug.Log($"[수비 체크] 공격수 위치: {attacker.LogicPosition} | 수비수 위치: {nearestEnemy.LogicPosition} | 최단거리: {minEnemyDist:F4} | 수비발동?: {minEnemyDist <= blockDist}");
+        string defPosStr = nearestEnemy != null ? nearestEnemy.LogicPosition.ToString() : "없음";
+        Debug.Log($"[수비 체크] 공격수 위치: {attacker.LogicPosition} | 수비수 위치: {defPosStr} | 최단거리: {minEnemyDist:F4} | 수비발동?: {minEnemyDist <= blockDist}");
 
         float penDistHoop = MatchDataProxy.Instance.GetBalance("Pen_Dist_Hoop");
         float distancePenalty = 1f + (distance * penDistHoop);

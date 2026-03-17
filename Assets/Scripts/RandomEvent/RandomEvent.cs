@@ -2,10 +2,11 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-[Serializable]
+[System.Serializable]
 public class RandomEvent
 {
     private Event_DataModelReader _Event_DataModelReader;
+
 
     [SerializeField] string _eventId; //이벤트 아이디
     [SerializeField] float _potentialPercent; //발생확률
@@ -30,6 +31,8 @@ public class RandomEvent
         _isReady = true;
     }
 
+    public RandomEvent() { }
+
     //주차 지날때마다 모든 이벤트의 쿨다운값이 감소되어야 함.
     public void Cooldown()
     {
@@ -39,6 +42,7 @@ public class RandomEvent
         if(_currentCooldownTurn == 0)
         {
             _currentCooldownTurn = _cooldownTurn;
+            Debug.Log($"쿨다운 값 감소 : {_currentCooldownTurn}");
             _isReady = true;
         }
     }

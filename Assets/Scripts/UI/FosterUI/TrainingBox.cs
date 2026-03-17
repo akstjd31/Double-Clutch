@@ -7,6 +7,9 @@ public class TrainingBox : MonoBehaviour
     [SerializeField] TextMeshProUGUI _trainingName;
     [SerializeField] TextMeshProUGUI _trainingDesc;
     [SerializeField] TextMeshProUGUI _trainingcost;
+    [SerializeField] Sprite _trainingButton;
+    [SerializeField] Sprite _restButton;
+    [SerializeField] Image _buttonImage;
     [SerializeField] Button _button;
     Student _target;
     ITraining _command;
@@ -32,15 +35,17 @@ public class TrainingBox : MonoBehaviour
         _button.onClick.AddListener(command.IsTeam() ? (() => FosterManager.Instance.ReserveTeamTraining(_command)) : () => FosterManager.Instance.ReserveIndividualTraining(_command));
         _button.onClick.AddListener(() => StudentUIManager.Instance.OnTrainingBoxClick());
 
+        _buttonImage.sprite = command is IndividualTraining || command is TeamTraining ? _trainingButton : _restButton;
+
         Refresh();
     }
 
     private void Refresh()
     {
         if (_command == null) return;
-        _trainingName.text = StringManager.Instance.GetString(_command.GetNameKey());
-        _trainingDesc.text = StringManager.Instance.GetString(_command.GetDescKey());
-        _trainingcost.text = StringManager.Instance.GetString(_command.GetCost().ToString() + "G");
+        StringManager.Instance.GetString(_command.GetNameKey(), _trainingName);
+        StringManager.Instance.GetString(_command.GetDescKey(), _trainingDesc);
+        StringManager.Instance.GetString(_command.GetCost().ToString() + "G", _trainingcost);
     }
 
     public void SetStudent(Student target)

@@ -52,17 +52,51 @@ public class FightingPower : MonoBehaviour
         }
 
         _rivalTotalFightingPower = 0;
-        
-        // Çö week ID Çà¿¡ ÀúÀåµÈ league ID¸¦ ¹Ş¾Æ¿Â´Ù.
+
+        // í˜„ week ID í–‰ì— ì €ì¥ëœ league IDë¥¼ ë°›ì•„ì˜¨ë‹¤.
         // var leagueId = CalendarManager.Instance.GetCurrentLeagueId();
-        MatchTeam generatedAwayTeam = EnemyTeamFactory.Instance.CreateEnemyTeam("Team_DOM_03", "Test");
-        
-        if (generatedAwayTeam == null)
+        var leagueMgr = LeagueManager.Instance;
+        if (leagueMgr == null) return;
+
+        var currentLeague = leagueMgr.CurrentLeague;
+        if (currentLeague == null)
         {
-            Debug.LogError("?? ?? ???? ????!");
+            Debug.Log("í˜„ ë¦¬ê·¸ ë°ì´í„°ê°€ ë„ì„");
+            return;    
+        }
+
+        string opponentTeamId = leagueMgr.GetOpponentTeamId(currentLeague.matchRecords);
+        if (opponentTeamId == null)
+        {
+            Debug.Log("í˜„ ìƒëŒ€ íŒ€ ë°ì´í„°ê°€ ì—†ìŒ! (ë ˆì½”ë“œ ë°ì´í„°ê°€ ì—†ìŒ)");
             return;
         }
-        Debug.Log($"[???? ???] ???? 1?? ???? 2???? ????: {generatedAwayTeam.Roster[0].GetStat(MatchStatType.TwoPoint)}");
+
+        if (currentLeague != null)
+        {
+            string myTeamId = StudentManager.TEAM_ID;
+
+            // í˜„ì¬ ë¼ìš´ë“œì˜ ë‚´ ë§¤ì¹˜ ê¸°ë¡ ì°¾ê¸°
+            var myMatch = currentLeague.matchRecords.Find(m =>
+                m.roundIndex == currentLeague.currentRoundIndex &&
+                (m.homeTeamId == myTeamId || m.awayTeamId == myTeamId));
+
+            if (myMatch != null)
+            {
+                // ë‚´ê°€ í™ˆì´ë©´ ì–´ì›¨ì´ê°€ ì , ë‚´ê°€ ì–´ì›¨ì´ë©´ í™ˆì´ ì 
+                opponentTeamId = myMatch.homeTeamId == myTeamId ? myMatch.awayTeamId : myMatch.homeTeamId;
+            }
+        }
+
+        MatchTeam homeTeam = EnemyTeamFactory.Instance.ConvertToTeam(TeamSide.Home, StudentManager.Instance.CurrentTeam);
+        MatchTeam generatedAwayTeam = EnemyTeamFactory.Instance.ConvertToTeam(TeamSide.Away, LeagueTeamManager.Instance.GetTeamById(opponentTeamId));
+
+        if (generatedAwayTeam == null)
+        {
+            Debug.LogError("ì  íŒ€ ìƒì„± ì‹¤íŒ¨");
+            return;
+        }
+        Debug.Log($"[ìƒì„± í™•ì¸] ìƒëŒ€ 1ë²ˆ ì„ ìˆ˜ 2ì ìŠ› ìŠ¤íƒ¯: {generatedAwayTeam.Roster[0].GetStat(MatchStatType.TwoPoint)}");
 
         if (_rivalMatchingStudentList != null && _rivalMatchingStudentList.Count > 0)
         {
@@ -115,27 +149,27 @@ public class FightingPower : MonoBehaviour
         _myFightingPowerText.text = _myTotalFightingPower.ToString();
     }
 
-    public void SaveRivalMachingStudentData()
-    {
-        if (_rivalMatchingStudentList.Count < 1 || _rivalMatchingStudentList == null) return;
+    //public void SaveRivalMachingStudentData()
+    //{
+    //    if (_rivalMatchingStudentList.Count < 1 || _rivalMatchingStudentList == null) return;
 
-        int rivalCnt = _rivalMatchingStudentList.Count;
+    //    int rivalCnt = _rivalMatchingStudentList.Count;
 
-        var rivalData = new StudentSaveData(rivalCnt, _rivalMatchingStudentList);
+    //    var rivalData = new StudentSaveData(rivalCnt, _rivalMatchingStudentList);
 
-        if (SaveLoadManager.Instance == null) return;
-        SaveLoadManager.Instance.Save(FilePath.RIVAL_STUDENT_MATCHING_PATH, rivalData);
-    }
+    //    if (SaveLoadManager.Instance == null) return;
+    //    SaveLoadManager.Instance.Save(FilePath.RIVAL_STUDENT_MATCHING_PATH, rivalData);
+    //}
 
     public void OnClickStartMatch()
     {
         // CalendarManager.Instance.NextTurn();
 
-        // [µğ¹ö±×] GameManager·Î ³Ñ±â±â Á÷Àü¿¡ ½ºÅÈÀÌ »ì¾ÆÀÖ´ÂÁö È®ÀÎ
+        // [ë””ë²„ê·¸] GameManagerë¡œ ë„˜ê¸°ê¸° ì§ì „ì— ìŠ¤íƒ¯ì´ ì‚´ì•„ìˆëŠ”ì§€ í™•ì¸
         if (MyMatchingStudentList != null && MyMatchingStudentList.Count > 0)
         {
             var testStd = MyMatchingStudentList[0];
-            Debug.Log($"<color=yellow>[¾À ÀüÈ¯ Á÷Àü È®ÀÎ]</color> {testStd.Name} ¼±¼ö¸¦ ½Ã¹Ä·¹ÀÌÅÍ·Î º¸³À´Ï´Ù! ÇöÀç 2Á¡½¸ ½ºÅÈ: {testStd.GetCurrentStat(potential.Stat2pt)}");
+            Debug.Log($"<color=yellow>[ì”¬ ì „í™˜ ì§ì „ í™•ì¸]</color> {testStd.Name} ì„ ìˆ˜ë¥¼ ì‹œë®¬ë ˆì´í„°ë¡œ ë³´ëƒ…ë‹ˆë‹¤! í˜„ì¬ 2ì ìŠ› ìŠ¤íƒ¯: {testStd.GetCurrentStat(potential.Stat2pt)}");
         }
 
         GameManager.Instance.LoadMatchSceneWithData("Test_Simul", MyMatchingStudentList, RivalMatchingStudentList);

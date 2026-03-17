@@ -18,7 +18,7 @@ public class StudentManager : Singleton<StudentManager>
     // public static StudentManager Instance { get; private set; }
     [SerializeField] StudentFactory _studentFactory; //???? ?????? ????
     [SerializeField] private List<Student> _myStudents = new List<Student>(); //???? ???
-    [SerializeField] Team _currentTeam = new Team(TEAM_ID, true);
+    [SerializeField] Team _currentTeam;
     public List<Student> MyStudents => _myStudents;
     public Team CurrentTeam => _currentTeam;
     public int GetRecruitLimit()
@@ -46,11 +46,14 @@ public class StudentManager : Singleton<StudentManager>
     }
     
     public void SetCurrentTeam(List<Student> players)
-    {        
+    {
+        _currentTeam = new Team(TEAM_ID, true);
         for (int i = 0; i < players.Count; i++)
         {
             _currentTeam.SetMember(i, players[i]);
         }        
+
+        Debug.Log("팀 생성 완료!");
     }
 
 
@@ -61,7 +64,7 @@ public class StudentManager : Singleton<StudentManager>
         {
             newTeam.Add(_studentFactory.MakeRandomStudent());
         }
-        return newTeam;        
+        return newTeam;
     }
 
     public Student MakeRandomStudent()
@@ -106,7 +109,7 @@ public class StudentManager : Singleton<StudentManager>
     public void SaveGame()
     {
         // 1. ?????? ??????? ??? ??????.
-        StudentSaveData saveData = new StudentSaveData(_idCount, _myStudents);
+        StudentSaveData saveData = new StudentSaveData(_idCount, _myStudents, _currentTeam);
 
         // 2. ??????? ???? ????????.
         if (SaveLoadManager.Instance != null)
@@ -120,6 +123,7 @@ public class StudentManager : Singleton<StudentManager>
             // 1. ???? ????
             _idCount = data.lastIdCount;
             _myStudents = data.studentList;
+            _currentTeam = data.currentTeam;
 
             // 2. ???? ???? ?��?? ?��????? ScriptableObject(SO) ?????? ????????!
             // ?????? ??? ??? DB?? ????? ??? Init ????? ????.
@@ -146,4 +150,6 @@ public class StudentManager : Singleton<StudentManager>
         base.OnApplicationQuit();
         SaveGame();
     }
+
+    public StudentFactory GetFactory() => _studentFactory;
 }

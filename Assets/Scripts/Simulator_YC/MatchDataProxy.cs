@@ -43,6 +43,11 @@ public class MatchDataProxy : MonoBehaviour
     [SerializeField] private float Pen_Intercept_Dist = 0.03f; // 패스 차단 판정 거리 변수
     [SerializeField] private float Min_Shoot_Score = 25f; // 슛 시도점수 최소 보장
     [SerializeField] private float Def_Block_Dist = 0.15f; // 슛 수비(블록) 판정 거리 변수
+    [SerializeField] private float W_Block_Base = 1f;
+    [SerializeField] private float W_Steal_Base = 1f;
+    [SerializeField] private float W_Dribble_Bonus = 1.5f;
+    [SerializeField] private float W_Dist_Bonus = 1.2f;
+
     [Header("Data Readers")]
     [SerializeField] private Team_ArchetypeDataReader _archetypeReader;
     private void Awake()
@@ -65,6 +70,10 @@ public class MatchDataProxy : MonoBehaviour
             case "Pen_Intercept_Dist": return Pen_Intercept_Dist;
             case "Min_Shoot_Score": return Min_Shoot_Score;
             case "Def_Block_Dist": return Def_Block_Dist;
+            case "W_Block_Base": return W_Block_Base;
+            case "W_Steal_Base": return W_Steal_Base;
+            case "W_Dribble_Bonus": return W_Dribble_Bonus;
+            case "W_Dist_Bonus": return W_Dist_Bonus;
             default:
                 Debug.LogError($"[MatchDataProxy] 알 수 없는 키값: {key}");
                 return 0f;

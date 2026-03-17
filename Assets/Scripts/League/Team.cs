@@ -36,6 +36,7 @@ public class Team
     {
         _masterData = master;
         _archetypeData = archetype;
+
         _teamNameKey = master.teamNameKey;
 
         if (!IsPlayable)
@@ -55,6 +56,10 @@ public class Team
     {
         _teamId = teamId;
         _isPlayable = isPlayable;
+        if (IsPlayable)
+        {
+            _teamNameKey = GameManager.Instance.SaveData.schoolName;
+        }        
     }
     
     public void ClearMembers()
@@ -80,14 +85,17 @@ public class Team
     }
 
     
-    public void UpdateTeamStats(List<Stat>[] newStatsForMembers)
+    public void UpdateTeamStats(List<Stat>[] newStatsForMembers, bool isPassiveOn)
     {
         for (int i = 0; i < _members.Length; i++)
         {
             _members[i].SetStat(newStatsForMembers[i]);
+            if (isPassiveOn)
+            {
+                _members[i].OnPassiveUpdated();
+            }
         }
-    }
-    
+    }    
 
     public void SetupPositionLineup()
     {

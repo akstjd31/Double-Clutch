@@ -3,22 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 /// <summary>
-/// 문서 기준 Swiss pairing 생성기
-/// 규칙:
-/// 1. 동일 승수끼리 그룹 생성
-/// 2. 상위 그룹부터 처리
-/// 3. 그룹 내 정렬
-///    - 승수 내림차순
-///    - 직전 라운드 득실차 내림차순
-///    - teamTier 내림차순
-///    - teamId 오름차순
-/// 4. 인접 pairing (1-2, 3-4, 5-6)
-/// 5. 리매치 pair가 있으면
-///    - 리매치가 아닌 pair는 고정
-///    - 리매치 pair에 속한 팀만 셔플 반복
-///    - 최대 시도 후에도 실패하면 리매치 허용
-/// 6. 홀수 그룹은 최하위 팀을 하위 그룹으로 float
-/// 7. 마지막 그룹까지 홀수면 BYE 처리
+/// 스위스 (5.3 참고)
 /// </summary>
 public class SwissPairingGenerator : ILeaguePairingGenerator
 {
@@ -256,7 +241,7 @@ public class SwissPairingGenerator : ILeaguePairingGenerator
     }
 
     /// <summary>
-    /// unresolved 팀들만 셔플
+    /// 셔플 시도
     /// </summary>
     private void Shuffle(List<string> list)
     {
@@ -366,6 +351,13 @@ public class SwissPairingGenerator : ILeaguePairingGenerator
 
     private LeagueMatchRecord CreateNormalMatch(int roundIndex, string homeTeamId, string awayTeamId)
     {
+        // 플레이어 팀이 Away 자리에 배정되었다면 Home 팀과 자리를 바꿉니다.
+        if (awayTeamId == PLAYER_TEAM_ID)
+        {
+            string temp = homeTeamId;
+            homeTeamId = awayTeamId;
+            awayTeamId = temp;
+        }
         return new LeagueMatchRecord
         {
             roundIndex = roundIndex,

@@ -16,6 +16,28 @@ public class LeagueDataManager : Singleton<LeagueDataManager>
     }
 
     /// <summary>
+    /// 팀 ID가 담긴 리스트들을 해당 테이블에서 찾는 메서드
+    /// </summary>
+    public List<Rival_MasterData> GetRivalDatasByTeamIds(List<string> teamIds)
+    {
+        if (_leagueFactory == null) return null;
+
+        var dataList = _leagueFactory.GetRivalMasterDataList();
+        if (dataList == null) return null;
+
+        var rivalList = new List<Rival_MasterData>();
+        foreach (var data in dataList)
+        {
+            if (teamIds.Contains(data.teamId))
+            {
+                rivalList.Add(data);
+            }
+        }
+
+        return rivalList;
+    }
+
+    /// <summary>
     /// weekId에 해당하는 팀 선정 룰 반환
     /// </summary>
     public League_TeamData? GetTeamSelectionRuleByWeekId(int weekId)
@@ -32,6 +54,46 @@ public class LeagueDataManager : Singleton<LeagueDataManager>
         }
 
         return null;
+    }
+
+    /// <summary>
+    /// 지원금 계산 후 반영
+    /// </summary>
+    public int CalculateLeagueMoney(string leagueId, LeagueStandingData playerStanding)
+    {
+        if (_leagueFactory == null) return 0;
+        if (string.IsNullOrEmpty(leagueId)) return 0;
+
+        var dataList = _leagueFactory.GetRewardDataList();
+        int resultMoney = 0;
+
+        foreach (var data in dataList)
+        {
+            if (data.leagueRewardId.Equals(leagueId))
+            {
+                // (승리횟수 * rewardGoldEach) + (패배횟수 * rewardGoldEach * rewardGoldMultiplier) + (우승여부 * rewardGoldWin)
+                resultMoney = (playerStanding.win * data.rewardGoldEach) +
+                         (int)(playerStanding.lose * data.rewardGoldEach * data.rewardGoldMultiplier) +
+                         ((playerStanding.rank == 1 ? 1 : 0) * data.rewardGoldWin);
+
+                return resultMoney;
+            }
+        }
+
+        return resultMoney;
+    }
+
+    public int CalculateLeagueFame(string leagueId, LeagueStandingData playerStanding)
+    {
+        if (_leagueFactory == null) return 0;
+        if (string.IsNullOrEmpty(leagueId)) return 0;
+
+        var dataList = _leagueFactory.GetRewardDataList();
+        int resultFame = 0;
+
+        // 선수별 명성 누적값은 선수 데이터가 필요
+
+        return resultFame;
     }
 
     /// <summary>
@@ -128,7 +190,7 @@ public class LeagueDataManager : Singleton<LeagueDataManager>
         var ruleData = rule.Value;
 
         var priorityTeamIds = new List<string>();
-        string playerTeamId = "Player_Team";        // 이건 임시 플레이어 팀 ID (아마 변경될 가능성이 높을듯)
+        string playerTeamId = LeagueManager.PLAYER_TEAM_ID;
 
         int seed = ruleData.weekId;
         var selector = new LeagueTeamSelector(seed);
@@ -174,7 +236,7 @@ public class LeagueDataManager : Singleton<LeagueDataManager>
             isFinished = false,
             isPlayerEliminated = false,
             teams = CreateTeamEntries(selectedTeams),
-            matchRecords = CreateMatchRecords(selectedTeams),
+            matchRecords = new List<LeagueMatchRecord>(),
             standings = CreateInitialStandings(selectedTeams)
         };
 
@@ -188,9 +250,35 @@ public class LeagueDataManager : Singleton<LeagueDataManager>
     {
         var saveData = CreateLeagueSaveData(leagueId, rule);
         if (saveData == null) return null;
+        LeagueManager.Instance.StartLeague(saveData);
 
-        SaveLeague(saveData);
+
+        var leagueTeamMgr = LeagueTeamManager.Instance;
+        if (leagueTeamMgr == null) return null;
+        leagueTeamMgr.InitDatas(saveData);
+
+        var masterData = GetMasterDataById(leagueId);
+        leagueTeamMgr.RefreshAllRivalStats(masterData.Value.leagueLevelId, IsPassiveApplied(masterData.Value.leagueLevelId));
+
         return saveData;
+    }
+
+
+    /// <summary>
+    /// 리그레벨ID로 패시브 유무 확인하기
+    /// </summary>
+    private bool IsPassiveApplied(string leagueLvId)
+    {
+        if (_leagueFactory == null) return false;
+
+        var dataList = _leagueFactory.GetLevelDataList();
+        foreach (var data in dataList)
+        {
+            if (data.leagueLevelId.Equals(leagueLvId))
+                return data.isRivalPassiveApplied;
+        }
+
+        return false;
     }
 
     /// <summary>
@@ -202,27 +290,38 @@ public class LeagueDataManager : Singleton<LeagueDataManager>
         if (saveData == null) return;
         if (string.IsNullOrEmpty(saveData.leagueId)) return;
 
-        // 해당 경로에 존재하는 
-        string path = GetLeagueSavePath(saveData.leagueId);
-        SaveLoadManager.Instance.Save<LeagueSaveData>(path, saveData);
+        SaveLoadManager.Instance.Save<LeagueSaveData>(FilePath.LEAGUE_PATH, saveData);
     }
 
     /// <summary>
     /// 리그 데이터 로드
     /// </summary>
-    public LeagueSaveData LoadLeague(string leagueId)
+public LeagueSaveData LoadLeague()
+{
+    if (SaveLoadManager.Instance == null)
     {
-        if (SaveLoadManager.Instance == null) return null;
-        if (string.IsNullOrEmpty(leagueId)) return null;
-
-        string path = GetLeagueSavePath(leagueId);
-        bool loaded = SaveLoadManager.Instance.TryLoad<LeagueSaveData>(path, out var data);
-
-        if (!loaded)
-            return null;
-
-        return data;
+        Debug.Log("SaveLoadManager.Instance == null");
+        return null;
     }
+
+    bool loaded = SaveLoadManager.Instance.TryLoad<LeagueSaveData>(FilePath.LEAGUE_PATH, out var data);
+
+    Debug.Log($"loaded : {loaded}");
+
+    if (!loaded)
+    {
+        Debug.Log("리그 저장 데이터 없음");
+        return null;
+    }
+
+    if (data == null)
+    {
+        Debug.Log("로드는 성공했지만 data == null");
+        return null;
+    }
+
+    return data;
+}
 
     private string GetLeagueSavePath(string leagueId)
     {
@@ -348,4 +447,45 @@ public class LeagueDataManager : Singleton<LeagueDataManager>
             default: return 0f;
         }
     }
+
+    /// <summary>
+    /// 리그 보상 ID로 보상 데이터 조회
+    /// </summary>
+    public League_RewardData? GetLeagueRewardDataById(string rewardId)
+    {
+        if (_leagueFactory == null) return null;
+        if (string.IsNullOrEmpty(rewardId)) return null;
+
+        var dataList = _leagueFactory.GetRewardDataList();
+        if (dataList == null) return null;
+
+        foreach (var data in dataList)
+        {
+            if (data.leagueRewardId == rewardId)
+                return data;
+        }
+
+        return null;
+    }
+    /// <summary>
+    /// Rule ID(teamSelectionRuleId)로 팀 선정 룰 반환
+    /// </summary>
+    public League_TeamData? GetTeamSelectionRuleById(string ruleId)
+    {
+        if (_leagueFactory == null) return null;
+        if (string.IsNullOrEmpty(ruleId)) return null;
+
+        var dataList = _leagueFactory.GetTeamSelectionDataList();
+        if (dataList == null) return null;
+
+        foreach (var data in dataList)
+        {
+            if (data.teamSelectionRuleId == ruleId)
+                return data;
+        }
+
+        return null;
+    }
+    public LeagueFactory GetFactory() => _leagueFactory;
+
 }

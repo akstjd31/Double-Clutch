@@ -36,9 +36,59 @@ public class MatchSimState : IState
             return;
         }
 
+        string myTeamId = StudentManager.TEAM_ID;
+        string opponentTeamId = "Team_DOM_01"; // 리그 데이터가 없을 때를 대비한 기본값
+
+        var currentLeague = LeagueManager.Instance.CurrentLeague;
+        if (currentLeague != null)
+        {
+            // 현재 라운드의 내 매치 기록 찾기
+            var myMatch = currentLeague.matchRecords.Find(m =>
+                m.roundIndex == currentLeague.currentRoundIndex &&
+                (m.homeTeamId == myTeamId || m.awayTeamId == myTeamId));
+
+            if (myMatch != null)
+            {
+                // 내가 홈이면 어웨이가 적, 내가 어웨이면 홈이 적
+                opponentTeamId = myMatch.homeTeamId == myTeamId ? myMatch.awayTeamId : myMatch.homeTeamId;
+            }
+        }
+
+        // 혹시라도 상대팀 ID를 못 찾으면 임시로 아무 팀이나 잡도록 합니다.
+        if (string.IsNullOrEmpty(opponentTeamId))
+        {
+            Debug.LogWarning($"<color=red>[FightingPower]</color> 이번 주차 대진표에서 상대팀 ID를 찾지 못했습니다! 임시로 'Team_DOM_01'을 할당합니다.");
+            opponentTeamId = "Team_DOM_01";
+        }
+
+        // _homeRoster를 이용해 Home 팀 생성
+        Team tempHomeTeam = new Team(myTeamId, true);
+        if (_homeRoster != null && _homeRoster.Count > 0)
+        {
+            for (int i = 0; i < _homeRoster.Count; i++)
+                tempHomeTeam.SetMember(i, _homeRoster[i]);
+        }
+        else
+        {
+            tempHomeTeam = StudentManager.Instance.CurrentTeam; // 로스터가 없으면 예비용
+        }
+
+        //_awayRoster를 이용해 Away 팀 생성
+        Team tempAwayTeam = new Team(opponentTeamId, false);
+        if (_awayRoster != null && _awayRoster.Count > 0)
+        {
+            for (int i = 0; i < _awayRoster.Count; i++)
+                tempAwayTeam.SetMember(i, _awayRoster[i]);
+        }
+        else
+        {
+            // 최후의 수단
+            tempAwayTeam = LeagueTeamManager.Instance.GetTeamById(opponentTeamId);
+        }
+
         // 저장된 '출전 명단' 5명씩을 가져옵니다.
-        MatchTeam homeTeam = ConvertToTeam(TeamSide.Home, GameManager.Instance.SaveData.schoolName, "BAL_Base", _homeRoster);
-        MatchTeam awayTeam = ConvertToTeam(TeamSide.Away, "라이벌 고교", "OFF_Base", _awayRoster);
+        MatchTeam homeTeam = EnemyTeamFactory.Instance.ConvertToTeam(TeamSide.Home, StudentManager.Instance.CurrentTeam); 
+        MatchTeam awayTeam = EnemyTeamFactory.Instance.ConvertToTeam(TeamSide.Away, LeagueTeamManager.Instance.GetTeamById(opponentTeamId));
 
         // 초기화 및 시작
         _state.InitializeMatch(homeTeam, awayTeam);
@@ -70,41 +120,42 @@ public class MatchSimState : IState
 
     public void Update() { }
 
-    private MatchTeam ConvertToTeam(TeamSide side, string teamName, string tactic, List<Student> students)
-    {
-        MatchTeam team = new MatchTeam(side, teamName, tactic);
+    //private MatchTeam ConvertToTeam(TeamSide side, Team team)
+    //{
+    //    MatchTeam matchTeam = new MatchTeam(side, team.TeamNameKey, team.Team_ArchetypeData.Value.teamArchetypeId);
 
-        // 용병이나 적군을 위한 임시 ID 시작 번호
-        int startId = side == TeamSide.Home ? 10000 : 20000;
+    //    // 용병이나 적군을 위한 임시 ID 시작 번호
+    //    int startId = side == TeamSide.Home ? 10000 : 20000;
+    //    Student[] members = team.Members;
 
-        for (int i = 0; i < students.Count; i++)
-        {
-            Position finalPos = students[i].MatchPosition != Position.None ? students[i].MatchPosition : students[i].Position;
+    //    for (int i = 0; i < members.Length; i++)
+    //    {
+    //        Position finalPos = members[i].MatchPosition != Position.None ? members[i].MatchPosition : members[i].Position;
 
-            // 정식 학생(ID 0 이상)이면 고유 ID 사용, 용병(ID -1)이나 적군이면 임시 ID 부여
-            int matchPlayerId = (students[i].StudentId >= 0) ? students[i].StudentId : (startId + i);
+    //        // 정식 학생(ID 0 이상)이면 고유 ID 사용, 용병(ID -1)이나 적군이면 임시 ID 부여
+    //        int matchPlayerId = (members[i].StudentId >= 0) ? members[i].StudentId : (startId + i);
 
-            team.AddPlayer(ConvertStudentToMatchPlayer(students[i], matchPlayerId, finalPos));
-        }
+    //        matchTeam.AddPlayer(ConvertStudentToMatchPlayer(members[i], matchPlayerId, finalPos));
+    //    }
 
-        return team;
-    }
+    //    return matchTeam;
+    //}
 
-    private MatchPlayer ConvertStudentToMatchPlayer(Student s, int id, Position pos)
-    {
-        Dictionary<MatchStatType, int> stats = new Dictionary<MatchStatType, int>();
+    //private MatchPlayer ConvertStudentToMatchPlayer(Student s, int id, Position pos)
+    //{
+    //    Dictionary<MatchStatType, int> stats = new Dictionary<MatchStatType, int>();
 
-        stats.Add(MatchStatType.TwoPoint, s.GetCurrentStat(potential.Stat2pt));
-        stats.Add(MatchStatType.ThreePoint, s.GetCurrentStat(potential.Stat3pt));
-        stats.Add(MatchStatType.Pass, s.GetCurrentStat(potential.StatPass));
-        stats.Add(MatchStatType.Steal, s.GetCurrentStat(potential.StatSteal));
-        stats.Add(MatchStatType.Block, s.GetCurrentStat(potential.StatBlock));
-        stats.Add(MatchStatType.Rebound, s.GetCurrentStat(potential.StatRebound));
+    //    stats.Add(MatchStatType.TwoPoint, s.GetCurrentStat(potential.Stat2pt));
+    //    stats.Add(MatchStatType.ThreePoint, s.GetCurrentStat(potential.Stat3pt));
+    //    stats.Add(MatchStatType.Pass, s.GetCurrentStat(potential.StatPass));
+    //    stats.Add(MatchStatType.Steal, s.GetCurrentStat(potential.StatSteal));
+    //    stats.Add(MatchStatType.Block, s.GetCurrentStat(potential.StatBlock));
+    //    stats.Add(MatchStatType.Rebound, s.GetCurrentStat(potential.StatRebound));
 
-        string actualVisualKey = s.VisualData.playerImageResource;
-        if (string.IsNullOrEmpty(actualVisualKey)) actualVisualKey = "Default_Player_Sprite";
-        MatchPlayer matchPlayer = new MatchPlayer(id, s.Name, pos, stats, actualVisualKey, s.Passive);
-        matchPlayer.TraitId = s.TraitId;
-        return matchPlayer;
-    }
+    //    string actualVisualKey = s.VisualData.playerImageResource;
+    //    if (string.IsNullOrEmpty(actualVisualKey)) actualVisualKey = "Default_Player_Sprite";
+    //    MatchPlayer matchPlayer = new MatchPlayer(id, s.Name, pos, stats, actualVisualKey, s.Passive);
+    //    matchPlayer.TraitId = s.TraitId;
+    //    return matchPlayer;
+    //}
 }

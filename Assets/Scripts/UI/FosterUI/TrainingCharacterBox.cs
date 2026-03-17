@@ -4,6 +4,7 @@ using UnityEngine.UI;
 
 public class TrainingCharacterBox : MonoBehaviour
 {
+    [SerializeField] Image _studentImage;
     [SerializeField] Button _button;
     [SerializeField] Image _stateBackGround;
     [SerializeField] TextMeshProUGUI _nameText;
@@ -27,12 +28,15 @@ public class TrainingCharacterBox : MonoBehaviour
     {
         _student = student;
 
+        _studentImage.sprite = SpriteManager.Instance.GetSprite(_student.VisualData.portraitResource);
+
         StringManager manager = StringManager.Instance;
         string name = manager.GetString(_student.Name[0]) + manager.GetString(_student.Name[1]) + manager.GetString(_student.Name[2]);
 
         _button.onClick.RemoveAllListeners();
         _button.onClick.AddListener(() => StudentUIManager.Instance.OnTrainingCharacterBoxClick(_student));
         _nameText.text = name;
+        manager.ApplyFont(_nameText);
         SetStudentState();
     }
 
@@ -46,13 +50,13 @@ public class TrainingCharacterBox : MonoBehaviour
         {
             cv.alpha = 1f;
             _stateBackGround.color = Color.green;
-            _stateText.text = StringManager.Instance.GetString(_student.CurrentTraining.GetNameKey());
+            StringManager.Instance.GetString(_student.CurrentTraining.GetNameKey(), _stateText);
             return;
         }
         if (_student.State == StudentState.OverWorked)
         {
             cv.alpha = 1f;
-            _stateText.text = "∞˙∑Œ";
+            _stateText.text = "Í≥ºÎ°ú";
             _stateBackGround.color = Color.yellow;
             return;
         }
@@ -60,7 +64,7 @@ public class TrainingCharacterBox : MonoBehaviour
         {
             cv.alpha = 1f;
             _stateBackGround.color = Color.red;
-            _stateText.text = "∫ŒªÛ";
+            _stateText.text = "Î∂ÄÏÉÅ";
             return;
         }
     }

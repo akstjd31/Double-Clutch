@@ -4,6 +4,7 @@ using UnityEngine.UI;
 
 public class ProfileDetailsPanel : MonoBehaviour
 {
+    [SerializeField] Image _studentImage;
     [SerializeField] TextMeshProUGUI _nameText;
     [SerializeField] TextMeshProUGUI _gradeText;
     [SerializeField] TMP_Dropdown _positionDropdown;
@@ -36,6 +37,8 @@ public class ProfileDetailsPanel : MonoBehaviour
         Debug.Log("Profile Details Panel Init!");
         _student = student;
 
+        _studentImage.sprite = SpriteManager.Instance.GetSprite(_student.VisualData.playerImageResource);
+
         StringManager manager = StringManager.Instance;
         string name = manager.GetString(_student.Name[0]) + manager.GetString(_student.Name[1]) + manager.GetString(_student.Name[2]);
 
@@ -45,6 +48,7 @@ public class ProfileDetailsPanel : MonoBehaviour
         _attackText.text = student.Attack.ToString();
         _defenseText.text = student.Defense.ToString();
         _conditionSlider.value = NormalizeConditionValue(student.Condition);
+        manager.ApplyFont(_nameText);
         SetPassiveText(student);
         Refresh();        
     }
@@ -52,8 +56,8 @@ public class ProfileDetailsPanel : MonoBehaviour
     private void Refresh()
     {
         if (_student == null) return;
-        _personalityText.text = StringManager.Instance.GetString(_student.PersonalityData.personalityName);
-        _traitText.text = StringManager.Instance.GetString(_student.TraitData.traitName);
+        StringManager.Instance.GetString(_student.PersonalityData.personalityName, _personalityText);
+        StringManager.Instance.GetString(_student.TraitData.traitName, _traitText);
         MakeTriangle();
     }
 

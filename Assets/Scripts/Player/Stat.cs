@@ -4,22 +4,22 @@ using UnityEngine;
 public enum potential
 {
     None,
-    Stat2pt, // 2Á¡ ½¸ ´É·Â
-    Stat3pt, // 3Á¡ ½¸ ´É·Â
-    StatPass, // ¾î½Ã½ºÆ® ´É·Â    
-    StatSteal, // ½ºÆ¿ ´É·Â
-    StatBlock, // ºí¶ô ´É·Â
-    StatRebound // ¸®¹Ù¿îµå ´É·Â
+    Stat2pt, // 2ì  ìŠ› ëŠ¥ë ¥
+    Stat3pt, // 3ì  ìŠ› ëŠ¥ë ¥
+    StatPass, // ì–´ì‹œìŠ¤íŠ¸ ëŠ¥ë ¥    
+    StatSteal, // ìŠ¤í‹¸ ëŠ¥ë ¥
+    StatBlock, // ë¸”ë½ ëŠ¥ë ¥
+    StatRebound // ë¦¬ë°”ìš´ë“œ ëŠ¥ë ¥
 }
 
-[Serializable] //ÀúÀå °¡´ÉÇÏµµ·Ï Á÷·ÄÈ­
+[Serializable] //ì €ì¥ ê°€ëŠ¥í•˜ë„ë¡ ì§ë ¬í™”
 public class Stat
 {
-    [SerializeField] potential _type;//½ºÅÈÀÇ Á¾·ù
-    [SerializeField] int _current; //ÇöÀç ½ºÅÈ°ª
-    [SerializeField] int _limit; //½ºÅÈ ÃÖ´ë ¼ºÀåÄ¡
-    [SerializeField] int _growthRate; //½ºÅÈ ¼ºÀå·ü
-    [SerializeField] int _finalCurrent; //º¸³Ê½º Àû¿ë ÇöÀç ½ºÅÈ°ª
+    [SerializeField] potential _type;//ìŠ¤íƒ¯ì˜ ì¢…ë¥˜
+    [SerializeField] int _current; //í˜„ì¬ ìŠ¤íƒ¯ê°’
+    [SerializeField] int _limit; //ìŠ¤íƒ¯ ìµœëŒ€ ì„±ì¥ì¹˜
+    [SerializeField] int _growthRate; //ìŠ¤íƒ¯ ì„±ì¥ë¥ 
+    [SerializeField] int _finalCurrent; //ë³´ë„ˆìŠ¤ ì ìš© í˜„ì¬ ìŠ¤íƒ¯ê°’
     
     float _statBonusPercent = 0;
     float _limitBonus = 0;
@@ -32,15 +32,16 @@ public class Stat
     public int RawCurrent => _current;
     public int RawLimit => _limit;
 
-    public Stat(potential type, int current, int limit, int growthRate) //»ı¼ºÀÚ¿¡¼­ Á¾·ù, ÃÊ±â°ª, ÃÖ´ëÄ¡ ÁöÁ¤
+    public Stat(potential type, int current, int limit, int growthRate) //ìƒì„±ìì—ì„œ ì¢…ë¥˜, ì´ˆê¸°ê°’, ìµœëŒ€ì¹˜ ì§€ì •
     {
         _type = type;
         _current = current;
         _limit = limit;
         _growthRate = growthRate;
+        RefreshFinalStat();
     }
 
-    public int GrowAndReturn(int amount) // ½ºÅÈÀ» ¼ºÀå½ÃÅ°°í ¼ºÀåÄ¡¸¦ ¹İÈ¯ÇÏ´Â ¸Ş¼­µå
+    public int GrowAndReturn(int amount) // ìŠ¤íƒ¯ì„ ì„±ì¥ì‹œí‚¤ê³  ì„±ì¥ì¹˜ë¥¼ ë°˜í™˜í•˜ëŠ” ë©”ì„œë“œ
     {
         int before = _current;
 
@@ -55,8 +56,8 @@ public class Stat
 
     public void RefreshFinalStat() 
     {
-        //Debug.Log("½ºÅÈ Àç°è»ê!");
-        //Debug.Log($"{_type} : ±âº» {_current}| ÀÎÇÁ¶ó {InfraBonus}| ÆĞ½Ãºê ½ºÅÈ{_statBonusPercent} | ÆĞ½Ãºê ¸®¹Ô {_limitBonus} | ÃÖÁ¾ {_finalCurrent}");
+        //Debug.Log("ìŠ¤íƒ¯ ì¬ê³„ì‚°!");
+        //Debug.Log($"{_type} : ê¸°ë³¸ {_current}| ì¸í”„ë¼ {InfraBonus}| íŒ¨ì‹œë¸Œ ìŠ¤íƒ¯{_statBonusPercent} | íŒ¨ì‹œë¸Œ ë¦¬ë°‹ {_limitBonus} | ìµœì¢… {_finalCurrent}");
         _finalCurrent = (int)((_current + InfraBonus ) * (1f + _statBonusPercent));         
     }
 

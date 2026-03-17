@@ -31,14 +31,28 @@ public class EventManager : Singleton<EventManager>
     //학생별 가능한 이벤트 리스트를 딕셔너리에 저장
     //1. 요구 잠재력 조건 만족
 
-    private void Start()
+    private void Awake()
     {
-        //LoadGame();
+        base.Awake();
+        LoadGame();
     }
 
     public void CharacterEvent()
     {
         _myStudents = StudentManager.Instance.MyStudents;
+
+        if(_candidateDictionary.Count > 0)
+        {
+            _debugList_candidateDictionary = new List<int>(_candidateDictionary.Keys);
+
+            foreach (var p in _candidateDictionary)
+            {
+                int studentId = p.Key;
+                _randomEvents.AddRange(p.Value);
+            }
+            return;
+        }
+
         var data = _dataModelReader.DataList;
         _candidateDictionary.Clear();
 
@@ -117,46 +131,66 @@ public class EventManager : Singleton<EventManager>
         for (int i = 0; i < _myStudents.Count; i++)
         {
             var studentID = _myStudents[i].StudentId;
+
             //딕셔너리에 등록되지 않은 학생은 스킵
             if (_candidateDictionary.ContainsKey(studentID) == false)
             {
+                Debug.Log($"{studentID} 학생 스킵");
                 continue;
             }
 
             //딕셔너리>학생>이벤트리스트 개수만큼 체크
             for (int j = 0; j < _candidateDictionary[studentID].Count; j++)
             {
-                //쿨다운 시작된 이벤트만 감소
-                if (_candidateDictionary[studentID][j].IsReady == false)
+                //준비되지 않은 이벤트만 감소
+                if (_candidateDictionary[studentID][j].IsReady == true)
                 {
+                    Debug.Log($"{_candidateDictionary[studentID][j].EventId} 이벤트 스킵");
                     continue;
                 }
                 //쿨다운 값 감소
+                Debug.Log($"{studentID}번 학생 {_candidateDictionary[studentID][j].EventId} 주차 감소");
                 _candidateDictionary[studentID][j].Cooldown();
             }
         }
+
+        _debugList_eventScript = new List<string>(_eventScript.Keys);
+        SaveGame();
     }
 
-    //public void SaveGame()
-    //{
-    //    if (EventManager.Instance == null) return;
+    public void SaveGame()
+    {
+        Debug.Log($"세이브 딕셔너리 수 : {_candidateDictionary.Count}");
+        if (EventManager.Instance == null) return;
 
-    //    // 1. 랜덤이벤트 세이브 데이터 생성
-    //    var saveData = new RandomEventSaveData(_candidateDictionary);
+        // 1. 랜덤이벤트 세이브 데이터 생성
+        var saveData = new RandomEventSaveData();
 
-    //    // 2. ??????? ???? ????????.
-        
-    //    SaveLoadManager.Instance.Save<RandomEventSaveData>(SAVE_FILE, saveData);
-    //}
+        foreach (var kv in _candidateDictionary)
+        {
+            saveData.studentEventList.Add(new StudentEventEntry
+            {
+                studentId = kv.Key,
+                events = new List<RandomEvent>(kv.Value)
+            });
+        }
 
-    //public void LoadGame()
-    //{
-    //    if (SaveLoadManager.Instance.TryLoad<RandomEventSaveData>(SAVE_FILE, out var data))
-    //    {
-    //        // 1. ???? ????
-    //        _saveEventList = data.studentEventList;
-    //        Debug.Log("이벤트 세이브 파일 불러옴");
-    //    }
-    //}
+        SaveLoadManager.Instance.Save(SAVE_FILE, saveData);
+    }
+
+    public void LoadGame()
+    {
+        if (SaveLoadManager.Instance.TryLoad<RandomEventSaveData>(SAVE_FILE, out var data))
+        {
+            _candidateDictionary.Clear();
+
+            foreach (var entry in data.studentEventList)
+            {
+                _candidateDictionary.Add(entry.studentId, entry.events);
+            }
+
+            Debug.Log("이벤트 세이브 파일 불러옴");
+        }
+    }
 
 }

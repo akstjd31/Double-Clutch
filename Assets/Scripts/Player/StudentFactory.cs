@@ -74,9 +74,8 @@ public class StudentFactory : MonoBehaviour
     public Student MakeRivalStudentSkeleton(nation nation) //종족, 비주얼, 포지션 추가 설정 요구.
     {
         Student newStudent = new Student();
-
-        newStudent.SetStat(GetRandomStats(newStudent.Grade));
         newStudent.SetGrade(GetRivalRandomGrade());
+        newStudent.SetStat(GetRandomStats(newStudent.Grade));
         newStudent.SetPersonality(GetRandomPersonality());
         newStudent.SetTrait(GetRandomTrait());
         string[] name = GetRandomName(nation);
@@ -92,14 +91,14 @@ public class StudentFactory : MonoBehaviour
     
     public void InitStudent(Student target) 
     {
-        target.Init(_speciesDataReader, _personalityDataReader, _passiveDataReader, _traitDataReader, _player_PositionDataReader);
+        target.Init(_speciesDataReader, _personalityDataReader, _passiveDataReader, _traitDataReader, _player_PositionDataReader, _visualDataReader);
         Position bestPosition = DecideBestPosition(target);
         target.SetPosition(bestPosition);
     }
 
     public void InitRivalStudent(Student rival)
     {
-        rival.Init(_speciesDataReader, _personalityDataReader, _passiveDataReader, _traitDataReader, _player_PositionDataReader);
+        rival.Init(_speciesDataReader, _personalityDataReader, _passiveDataReader, _traitDataReader, _player_PositionDataReader, _visualDataReader);
     }
 
     public void InitDatas() 
