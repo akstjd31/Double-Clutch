@@ -1,5 +1,6 @@
 using AYellowpaper.SerializedCollections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 
@@ -191,7 +192,7 @@ public class LeagueTeamManager : Singleton<LeagueTeamManager>
             rival.SetPosition(targetPos);
             rival.SetMatchPosition(targetPos);            
             team.SetMember(i, rival);
-        }
+        }        
     }
 
     //리그 레벨과 해당 팀에 알맞는 스탯 생성해서 반환

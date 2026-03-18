@@ -87,13 +87,21 @@ public class StudentFactory : MonoBehaviour
 
         return newStudent;
     }
-
+    
     
     public void InitStudent(Student target) 
     {
         target.Init(_speciesDataReader, _personalityDataReader, _passiveDataReader, _traitDataReader, _player_PositionDataReader, _visualDataReader);
         Position bestPosition = DecideBestPosition(target);
         target.SetPosition(bestPosition);
+    }
+
+    public void InitStudentList(List<Student> studentList)
+    {
+        foreach(Student student in studentList)
+        {
+            student.Init(_speciesDataReader, _personalityDataReader, _passiveDataReader, _traitDataReader, _player_PositionDataReader, _visualDataReader);
+        }
     }
 
     public void InitRivalStudent(Student rival)
