@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PromotionPanel : MonoBehaviour
 {
@@ -15,6 +16,7 @@ public class PromotionPanel : MonoBehaviour
 
     [SerializeField] private TextMeshProUGUI _name;
     [SerializeField] private TextMeshProUGUI _gradeUp;
+    [SerializeField] private Image _image;
 
     [SerializeField] private TextMeshProUGUI[] _passiveNameText = new TextMeshProUGUI[3];
 
@@ -62,13 +64,14 @@ public class PromotionPanel : MonoBehaviour
         }
 
         _name.text = name;
+        _image.sprite = SpriteManager.Instance.GetSprite(_currentStudent.VisualData.playerImageResource);
         _gradeUp.text = $"{_currentStudent.Grade-1}학년 → {_currentStudent.Grade}학년";
 
         for (int i = 0; i < 3; i++)
         {
             if(i < _currentStudent.PassiveId.Count)
             {
-                _passiveNameText[i].text = _currentStudent.PassiveId[i];
+                _passiveNameText[i].text = StringManager.Instance.GetString(_currentStudent.Passive[i].skillName); 
             }
             else
             {
