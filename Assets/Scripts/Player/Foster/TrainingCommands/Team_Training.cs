@@ -91,8 +91,9 @@ public class TeamTraining : ITraining
             int conditionCost = UnityEngine.Random.Range(_data.conditionCostMin, _data.conditionCostMax);
             _target.ChangeCondition(-conditionCost);
             _target.OnStatChanged();
-            _target.ResetTrainingSchedule();
         }
+        
+        _target.ResetTrainingSchedule();
     }
 
     private void GetInjuryOrOverwork(Student target)
