@@ -2,11 +2,11 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
  /// <summary>
- /// Àü·Â ºñ±³Ã¢ UI Ç¥½Ã¿ë(ÇĞ»ı ÇÑ ¸í¿¡ ÇØ´ç)
+ /// ì „ë ¥ ë¹„êµì°½ UI í‘œì‹œìš©(í•™ìƒ í•œ ëª…ì— í•´ë‹¹)
  /// </summary>
 public class CharacterPowerBox : MonoBehaviour
 {
-    //[SerializeField] Image _characterImage;
+    [SerializeField] Image _characterImage;
     [SerializeField] TextMeshProUGUI _characterName;
     [SerializeField] TextMeshProUGUI _characterPosition;
     [SerializeField] TextMeshProUGUI _characterAttack;
@@ -22,8 +22,8 @@ public class CharacterPowerBox : MonoBehaviour
 
     public void Init(Student target)
     {
-        _player = target; // ½ÇÁ¦ ¸ÅÄª ½Ã Á¤º¸ Àü´ŞÀ» À§ÇÑ ÇÃ·¹ÀÌ¾î ¼¼ÆÃ
-        //_characterImage = ³ªÁß¿¡ ¹Ş¾Æ¿À±â
+        _player = target; // ì‹¤ì œ ë§¤ì¹­ ì‹œ ì •ë³´ ì „ë‹¬ì„ ìœ„í•œ í”Œë ˆì´ì–´ ì„¸íŒ…
+        _characterImage.sprite = SpriteManager.Instance.GetSprite(_player.VisualData.portraitResource);
         _attack = _player.Attack;
         _defense = _player.Defense;
 
