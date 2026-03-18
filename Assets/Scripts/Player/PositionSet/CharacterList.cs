@@ -15,7 +15,8 @@ public class CharacterList : MonoBehaviour
     [SerializeField] Transform _positionTrf;
     [SerializeField] GameObject _matchStartPanelObj;
     [SerializeField] FightingPower _fightingPower;
-
+    // 뒤로가기 버튼 연결용 변수
+    [SerializeField] private GameObject _backButtonObj;
 
     GenericObjectPool<PlayerCard> _playerCardPool;
 
@@ -54,6 +55,9 @@ public class CharacterList : MonoBehaviour
 
     private void OnEnable()
     {
+        // UI가 켜질 때 리그 상태를 확인하여 뒤로가기 버튼을 제어합니다.
+        CheckBackButtonVisibility();
+
         var data = CheckSaveData();
 
         ClearAllCards();
@@ -481,5 +485,26 @@ public class CharacterList : MonoBehaviour
 
         for (int i = 0; i < _positionCards.Length; i++)
             _positionCards[i] = null;
+    }
+    // 리그 진행 상태에 따라 뒤로가기 버튼 켜기/끄기
+    private void CheckBackButtonVisibility()
+    {
+        if (_backButtonObj == null) return;
+
+        bool isMidLeague = false;
+        var currentLeague = LeagueManager.Instance.CurrentLeague;
+
+        // 현재 진행 중인 리그가 있고, 아직 종료되지 않았다면
+        if (currentLeague != null && !currentLeague.isFinished)
+        {
+            // 0라운드가 아니다 = 이미 1라운드(첫 경기)를 치르고 2라운드 이상 진행 중이다
+            if (currentLeague.currentRoundIndex > 0)
+            {
+                isMidLeague = true;
+            }
+        }
+
+        // 리그 중간(isMidLeague == true)이면 버튼을 숨기고, 아니면 켭니다.
+        _backButtonObj.SetActive(!isMidLeague);
     }
 }
