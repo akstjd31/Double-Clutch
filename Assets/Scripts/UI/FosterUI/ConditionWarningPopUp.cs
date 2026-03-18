@@ -77,6 +77,15 @@ public class ConditionWarningPopUp : MonoBehaviour
         problem.Init(name, state);
     }
 
+    private void OnDisable()
+    {
+        foreach (var box in _problemList) //기존에 사용하던 경고창들을 풀로 반납
+        {
+            _problemPool.Release(box);
+        }
+        _problemList.Clear();
+    }
+
     private void OnDestroy()
     {
         _confirmButton.onClick.RemoveAllListeners();
