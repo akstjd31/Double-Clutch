@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// °³º° °á°úÃ¢ CharacterRow ÇÁ¸®ÆÕ¿¡ ÇÒ´çÇÒ ½ºÅ©¸³Æ®
+/// ê°œë³„ ê²°ê³¼ì°½ CharacterRow í”„ë¦¬íŒ¹ì— í• ë‹¹í•  ìŠ¤í¬ë¦½íŠ¸
 /// </summary>
 public class CharacterRow : MonoBehaviour
 {
@@ -17,7 +17,6 @@ public class CharacterRow : MonoBehaviour
     [SerializeField] TextMeshProUGUI _guardTag2;
     [SerializeField] TextMeshProUGUI _condition;
     [SerializeField] TextMeshProUGUI _state;
-
     
 
     public void Init(Student target)
@@ -34,15 +33,16 @@ public class CharacterRow : MonoBehaviour
         else
         {
             _condition.text = target.ConditionChange.ToString();
-        }            
-        _state.text = GetStateString(target.State);
+        }
+        _state.text = manager.GetString(GetStateString(target.State));
+        manager.ApplyFont(_condition);
         SetTag(target);
     }
 
     private string GetStateString(StudentState state)
     {
-        if (state == StudentState.Injured) return "ºÎ»ó";
-        else if (state == StudentState.OverWorked) return "°ú·Î";
+        if (state == StudentState.Injured) return "UI_Player_ë¶€ìƒ";
+        else if (state == StudentState.OverWorked) return "UI_Player_ê³¼ë¡œ";
         else return ("-");
     }
 
