@@ -45,8 +45,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0dbcf18e5c4cee04fa9f00f4dd14c33e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StudentManager
+  dontDestroyOnLoad: 1
   _studentFactory: {fileID: 7042401530478922963}
   _myStudents: []
+  _currentTeam:
+    _members: []
+    _teamId: 
+    _winCount: 0
+    _LoseCount: 0
+    _isPlayable: 0
+    _teamNameKey: 
+    _positions: 
+    _teamTier: 0
 --- !u!114 &7042401530478922963
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -67,3 +77,7 @@ MonoBehaviour:
   _visualDataReader: {fileID: 11400000, guid: 2aa9eada2bc6b5345af6c126c5e21446, type: 2}
   _startingStateDataReader: {fileID: 11400000, guid: 7efe3c951acc8604d99a5b2a85d29345, type: 2}
   _maxPotentialDataReader: {fileID: 11400000, guid: 0f3b55f1a7ec312478342fa7591dee7f, type: 2}
+  _growthRateDataReader: {fileID: 11400000, guid: 708221a0b03602549aedd908f595b50e, type: 2}
+  _player_PositionDataReader: {fileID: 11400000, guid: ccfb84439d03e0e48b23450141f23f81, type: 2}
+  _passiveGradeDataReader: {fileID: 11400000, guid: 132b2e66c183b784694107031115f3e6, type: 2}
+  _reputationDataReader: {fileID: 11400000, guid: 9eec3daf085a9dc4bbae874939b77e1c, type: 2}
