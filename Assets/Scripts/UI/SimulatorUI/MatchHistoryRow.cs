@@ -5,28 +5,41 @@ using System;
 
 public class MatchHistoryRow : MonoBehaviour
 {
-    // ¿¹: "1¶ó¿îµå ½Â"
+    // ì˜ˆ: "1ë¼ìš´ë“œ ìŠ¹"
     [SerializeField] private TextMeshProUGUI _textRoundAndResult;
 
-    // ¿¹: "(10 : 8) ÇÃ·¹ÀÌ¾î ÆÀ vs ¶óÀÌ¹ú °í±³"
-    [SerializeField] private TextMeshProUGUI _textScoreAndTeam;
-
-    // ·Î±× È®ÀÎ ¹öÆ°
+    // ë¡œê·¸ í™•ì¸ ë²„íŠ¼
     [SerializeField] private Button _btnLogCheck;
+
+    [Header("Team & Score UI")]
+    [SerializeField] private TextMeshProUGUI _textHomeScore;    // ìš°ë¦¬ íŒ€ ì ìˆ˜ (ì˜ˆ: 1234)
+    [SerializeField] private TextMeshProUGUI _textHomeTeam;     // ìš°ë¦¬ íŒ€ ì´ë¦„ (ì˜ˆ: í”Œë ˆì´ì–´ ê³ ë“±í•™êµ)
+    [SerializeField] private TextMeshProUGUI _textAwayTeam;     // ìƒëŒ€ íŒ€ ì´ë¦„ (ì˜ˆ: ë¼ì´ë²Œ ê³ ë“±í•™êµ)
+    [SerializeField] private TextMeshProUGUI _textAwayScore;    // ìƒëŒ€ íŒ€ ì ìˆ˜ (ì˜ˆ: 4567)
+
 
     public void Init(int round, MatchResultRecord record, Action<int> onClickLog)
     {
-        // ½Â/ÆĞ ÆÇº° (È¨ÆÀ(À¯Àú) Á¡¼ö ±âÁØ)
-        string result = record.HomeScore >= record.AwayScore ? "½Â" : "ÆĞ";
+        // ìŠ¹/íŒ¨ íŒë³„ (í™ˆíŒ€(ìœ ì €) ì ìˆ˜ ê¸°ì¤€)
+        string result = record.HomeScore >= record.AwayScore ? "ìŠ¹" : "íŒ¨";
 
-        // ÅØ½ºÆ® UI Àû¿ë
+        // í…ìŠ¤íŠ¸ UI ì ìš©
         if (_textRoundAndResult != null)
-            _textRoundAndResult.text = $"{round}¶ó¿îµå {result}";
+            _textRoundAndResult.text = $"{round}ë¼ìš´ë“œ {result}";
 
-        if (_textScoreAndTeam != null)
-            _textScoreAndTeam.text = $"({record.HomeScore} : {record.AwayScore}) {record.HomeTeamName} vs {record.AwayTeamName}";
+        if (_textHomeScore != null)
+            _textHomeScore.text = record.HomeScore.ToString();
 
-        // ÀÌ ÁÙÀÇ ·Î±× ¹öÆ°À» ´©¸£¸é ÀÚ½ÅÀÇ ¶ó¿îµå ¹øÈ£¸¦ µé°í ·Î±× ÆĞ³ÎÀ» ¿­µµ·Ï ¿¬°á
+        if (_textHomeTeam != null)
+            _textHomeTeam.text = record.HomeTeamName;
+
+        if (_textAwayTeam != null)
+            _textAwayTeam.text = record.AwayTeamName;
+
+        if (_textAwayScore != null)
+            _textAwayScore.text = record.AwayScore.ToString();
+
+        // ì´ ì¤„ì˜ ë¡œê·¸ ë²„íŠ¼ì„ ëˆ„ë¥´ë©´ ìì‹ ì˜ ë¼ìš´ë“œ ë²ˆí˜¸ë¥¼ ë“¤ê³  ë¡œê·¸ íŒ¨ë„ì„ ì—´ë„ë¡ ì—°ê²°
         _btnLogCheck.onClick.RemoveAllListeners();
         _btnLogCheck.onClick.AddListener(() => onClickLog?.Invoke(round));
     }
