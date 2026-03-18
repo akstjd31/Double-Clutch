@@ -203,11 +203,24 @@ public class GameManager : Singleton<GameManager>
         OnDataChanged?.Invoke();
     }
 
+    public void SetTotalWinHonor(int honor)
+    {
+        _saveData.totalWinHonor = honor;
+        OnDataChanged?.Invoke();
+    }
+
+    public void ClearTotalWinHonorData()
+    {
+        _saveData.totalWinHonor = 0;
+        OnDataChanged?.Invoke();
+    }
+
     public void SetYear(int year)
     {
         _saveData.year = year;
         OnDataChanged?.Invoke();
     }
+    
     
     public void ChangeState<T>() where T : class, IState
     {
