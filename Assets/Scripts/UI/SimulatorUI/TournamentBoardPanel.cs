@@ -95,6 +95,27 @@ public class TournamentBoardPanel : MonoBehaviour
         int totalRounds = masterData.HasValue ? masterData.Value.roundCount : 4;
         int uiOffset = 4 - totalRounds;
 
+        // 초기화
+        foreach (var n in _round1Nodes) n.Init("", 0, false, false, false);
+        foreach (var n in _round2Nodes) n.Init("", 1, false, false, false);
+        foreach (var n in _round3Nodes) n.Init("", 2, false, false, false);
+        foreach (var n in _round4Nodes) n.Init("", 3, false, false, false);
+        if (_winnerNode != null) _winnerNode.Init("", 4, false, false, false);
+
+        // 이번 토너먼트 규모에 해당하는 노드들은 기본값을 "?"로 주어 켜줍니다.
+        for (int depth = uiOffset; depth <= 4; depth++)
+        {
+            List<TournamentNode> nodes = GetUINodesByDepth(depth);
+            if (nodes != null)
+            {
+                foreach (var n in nodes) n.Init("?", depth, false, false, false);
+            }
+            else if (depth == 4 && _winnerNode != null)
+            {
+                _winnerNode.Init("?", 4, false, false, false);
+            }
+        }
+
         HashSet<string> eliminatedTeams = new HashSet<string>();
         if (league.matchRecords != null)
         {
