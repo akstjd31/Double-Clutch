@@ -27,7 +27,7 @@ public class FosterManager : MonoBehaviour
     public Team_TrainingDataReader Team_TrainingDB => _team_TrainingDB;
     public Team_RestDataReader Team_RestDB => _team_RestDB;
     private int _myGold => GameManager.Instance.SaveData.money;
-    private List<Student> _problemStudents;
+    private List<Student> _problemStudents = new List<Student>();
 
     Dictionary<Student, ITraining> _schedules = new Dictionary<Student, ITraining>(); //개인 스케줄 예약 목록
     
