@@ -51,25 +51,20 @@ public class TournamentBoardPanel : MonoBehaviour
         if (_txtCurrentRound != null) _txtCurrentRound.text = $"{displayRound}";
         // 대진표 데이터 채우기 (16강)
         PopulateBracket(league, currentRound);
-
-        // 버튼 세팅
-        if (league.isFinished)
+        _txtBtnAction.text = string.IsNullOrEmpty(actionText) ? (league.isFinished ? "닫기" : "경기 준비") : actionText;
+        _btnAction.onClick.RemoveAllListeners();
+        _btnAction.onClick.AddListener(() =>
         {
-            _txtBtnAction.text = "닫기";
-            _btnAction.onClick.RemoveAllListeners();
-            _btnAction.onClick.AddListener(() => gameObject.SetActive(false));
-        }
-        else
-        {
-            _txtBtnAction.text = string.IsNullOrEmpty(actionText) ? "경기 준비" : actionText;
-            _btnAction.onClick.RemoveAllListeners();
-            _btnAction.onClick.AddListener(() =>
+            gameObject.SetActive(false);
+            if (_customAction != null)
             {
-                gameObject.SetActive(false);
-                if (_customAction != null) _customAction.Invoke();
-                else GameManager.Instance.ChangeState<MatchPrepState>();
-            });
-        }
+                _customAction.Invoke(); // 결산창 띄우기 실행!
+            }
+            else if (!league.isFinished)
+            {
+                GameManager.Instance.ChangeState<MatchPrepState>();
+            }
+        });
 
         // 내 팀 위치로 카메라 포커싱
         StartCoroutine(FocusOnPlayerNode(league.currentRoundIndex));

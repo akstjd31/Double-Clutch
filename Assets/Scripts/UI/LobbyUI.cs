@@ -13,6 +13,7 @@ public class LobbyUI : MonoBehaviour
     [SerializeField] private Button _trainingButton;
     [SerializeField] private Button _matchButton;
     [SerializeField] private SwissBoardPanel _swissBoardPanel; // 대진표 연결용
+    [SerializeField] private TournamentBoardPanel _tournamentBoardPanel;
 
     [Header("Setting")]
     [SerializeField] private GameObject _settingPanel;
@@ -49,14 +50,22 @@ public class LobbyUI : MonoBehaviour
     // 매치 버튼을 눌렀을 때 실행될 함수
     public void OnClickMatchButton()
     {
-        if (_swissBoardPanel != null)
+        var currentLeague = LeagueManager.Instance.CurrentLeague;
+        if (currentLeague != null)
         {
-            // 대진표를 먼저 켬 (내부적으로 null을 넘기면 '경기 준비' 버튼 클릭 시 알아서 MatchPrepState로 넘어감)
-            _swissBoardPanel.OpenPanel(null, "경기 준비");
+            if (currentLeague.leagueType == "Tournament")
+            {
+                if (_tournamentBoardPanel != null) _tournamentBoardPanel.OpenPanel(null, "경기 준비");
+                else GameManager.Instance.ChangeState<MatchPrepState>();
+            }
+            else
+            {
+                if (_swissBoardPanel != null) _swissBoardPanel.OpenPanel(null, "경기 준비");
+                else GameManager.Instance.ChangeState<MatchPrepState>();
+            }
         }
         else
         {
-            // 패널 연결을 깜빡했을 때의 안전장치
             GameManager.Instance.ChangeState<MatchPrepState>();
         }
     }

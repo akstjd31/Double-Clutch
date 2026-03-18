@@ -213,29 +213,30 @@ public class SwissBoardPanel : MonoBehaviour
     private void RefreshActionButton(int roundIndex)
     {
         var currentLeague = LeagueManager.Instance.CurrentLeague;
-
         _btnAction.onClick.RemoveAllListeners();
 
-        // 리그가 완전히 종료된 상태
+        // 버튼 텍스트 세팅 수정
+        _txtBtnAction.text = string.IsNullOrEmpty(_customActionText) ? (currentLeague.isFinished ? "닫기" : "경기 준비") : _customActionText;
+
+        // 리그가 완전히 종료된 상태 (수정: _customAction.Invoke() 추가)
         if (currentLeague.isFinished)
         {
-            _txtBtnAction.text = "닫기";
             _btnAction.interactable = true;
-            _btnAction.onClick.AddListener(() => gameObject.SetActive(false));
+            _btnAction.onClick.AddListener(() =>
+            {
+                gameObject.SetActive(false);
+                if (_customAction != null) _customAction.Invoke();
+            });
             return;
         }
 
-        // 리그 진행 중
-        _txtBtnAction.text = string.IsNullOrEmpty(_customActionText) ? "경기 준비" : _customActionText;
-
-        // 내가 봐야 하는 현재 라운드 탭을 보고 있을 때만 터치 활성화
+        // 내가 봐야 하는 현재 라운드 탭을 보고 있을 때만 터치 활성화 (수정: _customAction 처리 추가)
         if (roundIndex == currentLeague.currentRoundIndex)
         {
             _btnAction.interactable = true;
             _btnAction.onClick.AddListener(() =>
             {
                 gameObject.SetActive(false);
-                // 외부에서 넘겨준 커스텀 행동(로비 이동 등)이 있으면 실행, 없으면 매치 배치로 이동
                 if (_customAction != null)
                 {
                     _customAction.Invoke();
@@ -248,7 +249,6 @@ public class SwissBoardPanel : MonoBehaviour
         }
         else
         {
-            // 과거나 미래 탭을 보고 있으면 경기 준비 비활성화 (흐리게 처리)
             _btnAction.interactable = false;
         }
     }
