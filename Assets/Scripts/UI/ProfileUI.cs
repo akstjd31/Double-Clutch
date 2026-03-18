@@ -216,7 +216,7 @@ public class ProfileUI : MonoBehaviour
         var gm = GameManager.Instance;
         if (_isFirstTime)
         {
-            var data = new PlayerSaveData { schoolName = _schoolNameField.text, coachName = _playerNameField.text, weekId = 9, year = 0 };
+            var data = new PlayerSaveData { schoolName = _schoolNameField.text, coachName = _playerNameField.text, weekId = 9, year = 1 };
             gm.InitData(data);
             CalendarManager.Instance.CalcWeek(data.weekId, gm);
             gm.Dispatch(UIAction.Main_Start);
