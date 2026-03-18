@@ -158,7 +158,7 @@ public class CalendarManager : Singleton<CalendarManager>
         if (IsFundingDay())
         {
             var m = gm.SaveData.money;
-            gm.SetMoney(m + (100 * accSub));
+            gm.SetMoney(m + (1000 * accSub));
         }
 
         gm.SetWeekId(weekId);

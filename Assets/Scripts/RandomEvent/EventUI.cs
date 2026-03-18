@@ -1,9 +1,8 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.LightTransport;
+
 using UnityEngine.UI;
-using static UnityEngine.CullingGroup;
 
 public class EventUI : MonoBehaviour
 {
@@ -204,7 +203,7 @@ public class EventUI : MonoBehaviour
     }
 
 
-    public void UpdateEventResult(potential potentialChangeType, int potentialChangeValue, string resultScriptKey, string reactionPortraitId)
+    public void UpdateEventResult(potential potentialChangeType, int potentialChangeValue, string resultScriptKey, string reactionPortraitId, string currentState, string lastState)
     {
         #region 스텟한글변환
         string transText = "";
@@ -249,8 +248,6 @@ public class EventUI : MonoBehaviour
         pos.y = Random.Range(-45f, 45f);
         rect.anchoredPosition = pos;
 
-        Animation animation = _stat.GetComponent<Animation>();
-
         //이미지 넣기
         if (string.IsNullOrEmpty(reactionPortraitId))
         {
@@ -268,6 +265,8 @@ public class EventUI : MonoBehaviour
 
         //패널 띄우기
         _resultPanel.SetActive(true);
+
+        UpdateState(currentState, lastState);//상태변경
     }
 
     public void UpdateState(string currentState, string lastState)
