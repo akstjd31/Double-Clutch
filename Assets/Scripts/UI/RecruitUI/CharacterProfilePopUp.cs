@@ -48,7 +48,7 @@ public class CharacterProfilePopUp : MonoBehaviour
         }
         if (_student.Passive.Count == 3)
         {
-            _passive2.Init(_student.Passive[2]);
+            _passive3.Init(_student.Passive[2]);
         }
     }
 }
