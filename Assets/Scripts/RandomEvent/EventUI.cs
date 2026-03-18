@@ -1,7 +1,8 @@
-using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
 using System.Collections.Generic;
+using TMPro;
+using UnityEngine;
+using UnityEngine.LightTransport;
+using UnityEngine.UI;
 
 public class EventUI : MonoBehaviour
 {
@@ -31,14 +32,11 @@ public class EventUI : MonoBehaviour
 
     //Color initColor;
 
-    private void Start()
-    {
-    }
-
-    private void OnEnable()
+    public void UIStart()
     {
         //_isFirstText = true;
         _textTurn = 0;
+        ResultInit();
         TextInit();
         ImageInit();
     }
@@ -70,10 +68,10 @@ public class EventUI : MonoBehaviour
         textBubbleScript.NameText.text = name;
         textBubbleScript.PrintText.text = scriptText;
 
-        if(_textTurn > 0)
+        if (_textTurn > 0)
         {
             //이전 말풍선 어둡게 처리
-            var beforeBubble = _bubbleList[_textTurn-1].gameObject.GetComponent<Image>();
+            var beforeBubble = _bubbleList[_textTurn - 1].gameObject.GetComponent<Image>();
             var beforenameTag = beforeBubble.transform.GetChild(0).gameObject.GetComponent<Image>(); ;
             var continueIcon = beforeBubble.transform.GetChild(2).gameObject.GetComponent<Image>(); ;
 
@@ -132,20 +130,19 @@ public class EventUI : MonoBehaviour
                 {
                     break;
                 }
-                else if(beforeDirection == "Left")
-                {
-                    _characterImage[1].color = _dim;
-                    _characterImage[2].color = _dim;
-                }
-                else if(beforeDirection == "Middle")
+                else if (beforeDirection == "Left")
                 {
                     _characterImage[0].color = _dim;
-                    _characterImage[2].color = _dim;
+
                 }
-                else if(beforeDirection == "Right")
+                else if (beforeDirection == "Middle")
                 {
-                    _characterImage[0].color = _dim;
                     _characterImage[1].color = _dim;
+                }
+                else if (beforeDirection == "Right")
+                {
+                    _characterImage[2].color = _dim;
+
                 }
                 break;
         }
@@ -194,11 +191,23 @@ public class EventUI : MonoBehaviour
         _choiceText[2].text = text3;
     }
 
-    public void UpdateEventResult(string stateChange, potential potentialChangeType, int potentialChangeValue, string resultScriptKey, string reactionPortraitId)
+    private void ResultInit()
+    {
+        if (_stat == null) return;
+        _stat.text = "";
+        _stat.color = Color.black;
+
+        if (_state == null) return;
+        _state.text = "";
+        _state.color = Color.black;
+    }
+
+
+    public void UpdateEventResult(potential potentialChangeType, int potentialChangeValue, string resultScriptKey, string reactionPortraitId, string currentState, string lastState)
     {
         #region 스텟한글변환
         string transText = "";
-        switch(potentialChangeType)
+        switch (potentialChangeType)
         {
             case potential.None:
                 break;
@@ -217,51 +226,97 @@ public class EventUI : MonoBehaviour
         }
         #endregion
 
-        //상태 변화 문구
-        if (stateChange == StudentState.None.ToString())
-        {
-            //과로나 부상을 회복했다는 문구가 떠야 함.
-            _state.text = "";
-        }
-        else if (stateChange == StudentState.OverWorked.ToString())
-        {
-            _state.text = "과로 획득";
-        }
-        else 
-        {
-            _state.text = "부상 획득";
-        }
-
         //득점지원저지 증감 텍스트
-        if(potentialChangeValue < 0)
+        if (potentialChangeValue < 0)
         {
             _stat.text = transText + "↓";
+            _stat.color = new Color(0.9f, 0.3f, 0.3f, 1f);
 
         }
-        else if(potentialChangeValue == 0)
+        else if (potentialChangeValue == 0)
         {
             _stat.text = "";
         }
         else
         {
             _stat.text = transText + "↑";
+            _stat.color = new Color(0.2f, 0.8f, 0.4f, 1f);
+        }
+        //득점지원저지 위치
+        var rect = _stat.rectTransform;
+        var pos = rect.anchoredPosition;
+        pos.y = Random.Range(-45f, 45f);
+        rect.anchoredPosition = pos;
+
+        //이미지 넣기
+        if (string.IsNullOrEmpty(reactionPortraitId))
+        {
+            Debug.LogWarning($"아이디 못불러옴 {reactionPortraitId} ");
+
+        }
+        else
+        {
+            _resultImage.sprite = SpriteManager.Instance.GetSprite(reactionPortraitId);
         }
 
-        //_resultImage.sprite = 이미지;
-        
 
         //결과 텍스트 출력
         _resultText.text = resultScriptKey;
 
         //패널 띄우기
         _resultPanel.SetActive(true);
+
+        UpdateState(currentState, lastState);//상태변경
     }
 
-    public void OnClickOk()
+    public void UpdateState(string currentState, string lastState)
     {
-        //다음 학생으로 넘어가기
-        //마지막 학생이라면 로비로 가기=큐가 비었다면 로비로
+        var rect = _state.rectTransform;
+        var pos = rect.anchoredPosition;
+        pos.y = Random.Range(-45f, 45f);
+        rect.anchoredPosition = pos;
+
+        //과거상태 = 변화상태 같으면 넘어감
+        if (currentState == lastState)
+        {
+            _state.text = "";
+        }
+        //다르면 따로 판단.
+        else
+        {
+            //이전 상태가 없었으면
+            if (lastState == StudentState.None.ToString())
+            {
+                if (currentState == StudentState.OverWorked.ToString())
+                {
+                    _state.text = "과로 획득";
+                    _state.color = new Color(0.9f, 0.3f, 0.3f, 1f);
+                }
+                else if (currentState == StudentState.Injured.ToString())
+                {
+                    _state.text = "부상 획득";
+                    _state.color = new Color(0.9f, 0.3f, 0.3f, 1f);
+                }
+            }
+            //이전 상태가 과로
+            else if (lastState == StudentState.OverWorked.ToString())
+            {
+                if (currentState == StudentState.None.ToString())
+                {
+                    _state.text = "과로 회복";
+                    _state.color = new Color(0.2f, 0.8f, 0.4f, 1f);
+                }
+            }
+
+            //이전 상태가 부상
+            else if (lastState == StudentState.Injured.ToString())
+            {
+                if (currentState == StudentState.None.ToString())
+                {
+                    _state.text = "부상 회복";
+                    _state.color = new Color(0.2f, 0.8f, 0.4f, 1f);
+                }
+            }
+        }
     }
-
-
 }

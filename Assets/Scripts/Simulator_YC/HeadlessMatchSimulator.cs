@@ -254,9 +254,17 @@ public class HeadlessMatchSimulator : MonoBehaviour
     {
         bool success = MatchCalculator.CalculateDribbleSuccess(dribbler, attackTeam, defendTeam, atkTac, defTac, dribbleBlockDist);
         Vector2 dir = (hoopPos - dribbler.LogicPosition).normalized;
+        float currentDistToHoop = (hoopPos - dribbler.LogicPosition).magnitude;
 
-        if (success) dribbler.LogicPosition += dir * Mathf.Min(UnityEngine.Random.Range(0.1f, 0.2f), MAX_MOVE_PER_TICK);
-        else dribbler.LogicPosition += new Vector2(UnityEngine.Random.value > 0.5f ? 1 : -1, 0) * Mathf.Min(0.1f, MAX_MOVE_PER_TICK);
+        if (success)
+        {
+            float moveDist = Mathf.Min(UnityEngine.Random.Range(0.1f, 0.2f), MAX_MOVE_PER_TICK, currentDistToHoop);
+            dribbler.LogicPosition += dir * moveDist;
+        }
+        else
+        {
+            dribbler.LogicPosition += new Vector2(UnityEngine.Random.value > 0.5f ? 1 : -1, 0) * Mathf.Min(0.1f, MAX_MOVE_PER_TICK);
+        }
 
         dribbler.LogicPosition = new Vector2(Mathf.Clamp01(dribbler.LogicPosition.x), Mathf.Clamp01(dribbler.LogicPosition.y));
     }

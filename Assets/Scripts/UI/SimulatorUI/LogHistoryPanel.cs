@@ -71,7 +71,19 @@ public class LogHistoryPanel : MonoBehaviour
         if (_btnPrev != null) _btnPrev.interactable = (_currentQuarter > 1);
         if (_btnNext != null) _btnNext.interactable = (_currentQuarter < _maxQuarter);
 
-        if (_textLeagueName != null) _textLeagueName.text = "테스트 리그";
+        if (_textLeagueName != null)
+        {
+            var currentLeague = LeagueManager.Instance.CurrentLeague;
+            if (currentLeague != null)
+            {
+                var masterData = LeagueDataManager.Instance.GetMasterDataById(currentLeague.leagueId);
+                if (masterData.HasValue)
+                {
+                    // StringManager를 통해 번역된 실제 리그 이름 가져오기
+                    _textLeagueName.text = StringManager.Instance.GetString(masterData.Value.leagueNameKey);
+                }
+            }
+        }
         if (_textRoundTitle != null) _textRoundTitle.text = $"{_currentRound}";
         if (_textQuarter != null) _textQuarter.text = $"{_currentQuarter}";
 

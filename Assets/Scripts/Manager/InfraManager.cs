@@ -60,7 +60,6 @@ public class InfraManager : Singleton<InfraManager>
     {
         if (_reader == null) return;
 
-        int i = 0;
         foreach (var data in _reader.DataList)
         {
             // 레벨이 0인 얘들 초기값 주기 (나중에 0이어도 리소스 경로가 존재할 수 있으니 이렇게 구조를 짰음.)
@@ -76,9 +75,8 @@ public class InfraManager : Singleton<InfraManager>
                     groupId: 0
                 );
 
-                infras[i] = infra;
+                infras[data.group - 1] = infra;
             }   
-            i++;
         }
 
         Debug.Log("인프라 초기 설정 완료!");

@@ -55,32 +55,23 @@ public class LeagueDataManager : Singleton<LeagueDataManager>
 
         return null;
     }
-
+    
     /// <summary>
-    /// 지원금 계산 후 반영
+    /// 리그 보상 데이터 반환
     /// </summary>
-    public int CalculateLeagueMoney(string leagueId, LeagueStandingData playerStanding)
+    public League_RewardData? GetRewardDataByLeagueId(string leagueId)
     {
-        if (_leagueFactory == null) return 0;
-        if (string.IsNullOrEmpty(leagueId)) return 0;
+        if (_leagueFactory == null) return null;
+        if (string.IsNullOrEmpty(leagueId)) return null;    
 
         var dataList = _leagueFactory.GetRewardDataList();
-        int resultMoney = 0;
-
         foreach (var data in dataList)
         {
             if (data.leagueRewardId.Equals(leagueId))
-            {
-                // (승리횟수 * rewardGoldEach) + (패배횟수 * rewardGoldEach * rewardGoldMultiplier) + (우승여부 * rewardGoldWin)
-                resultMoney = (playerStanding.win * data.rewardGoldEach) +
-                         (int)(playerStanding.lose * data.rewardGoldEach * data.rewardGoldMultiplier) +
-                         ((playerStanding.rank == 1 ? 1 : 0) * data.rewardGoldWin);
-
-                return resultMoney;
-            }
+                return data;
         }
 
-        return resultMoney;
+        return null;
     }
 
     public int CalculateLeagueFame(string leagueId, LeagueStandingData playerStanding)
@@ -485,6 +476,55 @@ public LeagueSaveData LoadLeague()
         }
 
         return null;
+    }
+    /// <summary>
+    /// isSelectionRequired가 FALSE일 때, 이전 리그의 팀 명단을 그대로 가져와 새 리그를 생성합니다.
+    /// </summary>
+    public LeagueSaveData CreateAndSaveLeagueWithPrevTeams(string newLeagueId)
+    {
+        // 직전 리그 데이터 불러오기
+        var prevLeague = LoadLeague();
+        if (prevLeague == null || prevLeague.teams == null || prevLeague.teams.Count == 0)
+        {
+            Debug.LogError($"[{newLeagueId}] 이전 리그 데이터가 없어 팀 명단을 가져올 수 없습니다!");
+            return null;
+        }
+
+        // 이전 리그의 팀 ID만 추출
+        List<string> prevTeamIds = new List<string>();
+        foreach (var team in prevLeague.teams)
+        {
+            prevTeamIds.Add(team.teamId);
+        }
+
+        var masterData = GetMasterDataById(newLeagueId);
+        if (!masterData.HasValue) return null;
+
+        // 추출한 팀으로 새로운 리그 세이브 데이터 생성 (전적은 0승 0패로 초기화됨)
+        var newSaveData = new LeagueSaveData
+        {
+            leagueId = newLeagueId,
+            leagueType = masterData.Value.leagueType.ToString(),
+            currentRoundIndex = 0,
+            isFinished = false,
+            isPlayerEliminated = false,
+            teams = CreateTeamEntries(prevTeamIds),
+            matchRecords = new List<LeagueMatchRecord>(),
+            standings = CreateInitialStandings(prevTeamIds)
+        };
+
+        // 리그 시작 및 저장
+        LeagueManager.Instance.StartLeague(newSaveData);
+
+        // 팀 매니저 동기화 및 라이벌 스탯 갱신 (새 리그 레벨에 맞춰 스탯 재조정)
+        var leagueTeamMgr = LeagueTeamManager.Instance;
+        if (leagueTeamMgr != null)
+        {
+            leagueTeamMgr.InitDatas(newSaveData);
+            leagueTeamMgr.RefreshAllRivalStats(masterData.Value.leagueLevelId, IsPassiveApplied(masterData.Value.leagueLevelId));
+        }
+
+        return newSaveData;
     }
     public LeagueFactory GetFactory() => _leagueFactory;
 
