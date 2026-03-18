@@ -3,28 +3,38 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// °³º° Problem(°æ°íÃ¢ ÇÁ¸®ÆÕ)¿¡ ÇÒ´çÇÒ ½ºÅ©¸³Æ®
-/// °æ°í Ç¥½Ã±â´É¸¸ Å¾Àç
+/// ê°œë³„ Problem(ê²½ê³ ì°½ í”„ë¦¬íŒ¹)ì— í• ë‹¹í•  ìŠ¤í¬ë¦½íŠ¸
+/// ê²½ê³  í‘œì‹œê¸°ëŠ¥ë§Œ íƒ‘ì¬
 /// </summary>
 public class Problem : MonoBehaviour
-{
-    [SerializeField] TextMeshProUGUI _warningText;
+{    
+    [SerializeField] TextMeshProUGUI _warning1;
+    [SerializeField] TextMeshProUGUI _warning2;
 
-    public void Init(string name)
+    public void Init(string name) //ê°œì¸í›ˆë ¨ìš©
     {
-        _warningText.text = $"{name} (ÄÁµğ¼Ç : 0)\n¼±¼öÀÇ ÄÁµğ¼ÇÀÌ ³·½À´Ï´Ù!";
+        StringManager manager = StringManager.Instance;
+        _warning1.text = name + manager.GetString("UI_Development_ì»¨ë””ì…˜")+": 0";
+        _warning2.text = manager.GetString("UI_Development_ì»¨ë””ì…˜ë¶€ì¡±");
+        manager.ApplyFont(_warning1);
+        manager.ApplyFont(_warning2);
     }
 
-    public void Init(string name, StudentState state)
+    public void Init(string name, StudentState state) //íŒ€í›ˆë ¨ìš©
     {
-        string word = GetStateString(state);
-        _warningText.text = $"{name} (»óÅÂ : {word})\n{word} »óÅÂ·Î ÀÎÇØ ÈÆ·Ã¿¡¼­ Á¦¿ÜµË´Ï´Ù.";
+        StringManager manager = StringManager.Instance;
+        string stateWord = manager.GetString(GetStateString(state));
+
+        _warning1.text = name + $"({stateWord})";        
+        _warning2.text = manager.GetString("UI_Development_íŒ€í›ˆë ¨ë¶€ì¡±íŒì—…").Replace("{}", stateWord);
+        manager.ApplyFont(_warning1);
+        manager.ApplyFont(_warning2);
     }
 
     private string GetStateString(StudentState state)
     {
-        if (state == StudentState.Injured) return "ºÎ»ó";
-        else if (state == StudentState.OverWorked) return "°ú·Î";
-        else return ("¼±¼ö »óÅÂ°¡ Á¤»óÀÔ´Ï´Ù. ÆË¾÷ Ã¢ Ç¥½Ã ·ÎÁ÷À» Á¡°ËÇØÁÖ¼¼¿ä");
+        if (state == StudentState.Injured) return "UI_Player_ë¶€ìƒ";
+        else if (state == StudentState.OverWorked) return "UI_Player_ê³¼ë¡œ";
+        else return ("ì„ ìˆ˜ ìƒíƒœê°€ ì •ìƒì…ë‹ˆë‹¤. íŒì—… ì°½ í‘œì‹œ ë¡œì§ì„ ì ê²€í•´ì£¼ì„¸ìš”");
     }
 }
