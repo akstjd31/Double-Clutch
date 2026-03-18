@@ -35,8 +35,7 @@ public class ProfileUI : MonoBehaviour
     [SerializeField] private Button _cancelCoachButton;
     [SerializeField] private TextMeshProUGUI _coachWarningText;
 
-    [Header("아이콘 설정 및 해금")]
-    [Header("Pagination & Pool")]
+    [Header("아이콘 설정 및 해금")]    
     [SerializeField] private Image _currentLobbyProfileImage;
     [SerializeField] private Image _currentIcon;
     [SerializeField] private ProfileIcon _profilePrefab;
@@ -45,6 +44,8 @@ public class ProfileUI : MonoBehaviour
     [SerializeField] private ProfileDataReader _profileDataReader;
     [SerializeField] private Button _prevButton;
     [SerializeField] private Button _nextButton;
+    [SerializeField] private Image _profileBoxImage;
+
     private GenericObjectPool<ProfileIcon> _pool;
     private List<ProfileIcon> _activeIcons = new List<ProfileIcon>();
     private List<GameObject> _pages = new List<GameObject>(); // 페이지 추적용 리스트
@@ -66,10 +67,13 @@ public class ProfileUI : MonoBehaviour
         {
             if (_currentLobbyProfileImage != null)
             _currentLobbyProfileImage.sprite = SpriteManager.Instance.GetSprite(_profileDataReader.DataList[0].playerImage);
+            if (_profileBoxImage != null)
+                _profileBoxImage.sprite = SpriteManager.Instance.GetSprite(_profileDataReader.DataList[0].playerImage); 
         }
         else
         {
             _currentLobbyProfileImage.sprite = SpriteManager.Instance.GetSprite(GameManager.Instance.SaveData.currentProfileImage);
+            _profileBoxImage.sprite = SpriteManager.Instance.GetSprite(_profileDataReader.DataList[0].playerImage);
         }
             
     }
@@ -120,8 +124,8 @@ public class ProfileUI : MonoBehaviour
             if (_cancelSchoolButton != null) _cancelSchoolButton.onClick.AddListener(() => _schoolModifyPanel.SetActive(false));
             if (_cancelCoachButton != null) _cancelCoachButton.onClick.AddListener(() => _coachModifyPanel.SetActive(false));
 
-            RefreshProfileList();
-        }
+            RefreshProfileList();            
+        }        
     }
 
     private void OnDisable()
@@ -307,8 +311,16 @@ public class ProfileUI : MonoBehaviour
         {
             return;
         }
+        if (GameManager.Instance.SaveData == null || string.IsNullOrEmpty(GameManager.Instance.SaveData.currentProfileImage))
+        {
+            _profileBoxImage.sprite = SpriteManager.Instance.GetSprite(_profileDataReader.DataList[0].playerImage);
+        }
+        else
+        {
+            _profileBoxImage.sprite = SpriteManager.Instance.GetSprite(_profileDataReader.DataList[0].playerImage);
+        }
 
-        foreach (Transform child in _pageWindow) Destroy(child.gameObject);
+            foreach (Transform child in _pageWindow) Destroy(child.gameObject);
         _pages.Clear(); // 페이지 리스트 초기화
         _currentPageIndex = 0; // 초기화 시 인덱스 리셋 추가
 
@@ -365,7 +377,7 @@ public class ProfileUI : MonoBehaviour
     {
         _selectedIcon?.OnOffOutLine(false);
         _selectedIcon = icon;
-        _selectedData = icon.Data;
+        _selectedData = icon.Data;        
         _selectedIcon.OnOffOutLine(true);
     }
 }
