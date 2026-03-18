@@ -69,22 +69,15 @@ public class ConditionWarningPopUp : MonoBehaviour
     private void CreateWarning(string name)
     {
         Problem problem = _problemPool.Get();
+        _problemList.Add(problem);
         problem.Init(name);
     }
     private void CreateWarning(string name, StudentState state)
     {
         Problem problem = _problemPool.Get();
+        _problemList.Add(problem);
         problem.Init(name, state);
-    }
-
-    private void OnDisable()
-    {
-        foreach (var box in _problemList) //기존에 사용하던 경고창들을 풀로 반납
-        {
-            _problemPool.Release(box);
-        }
-        _problemList.Clear();
-    }
+    }    
 
     private void OnDestroy()
     {
