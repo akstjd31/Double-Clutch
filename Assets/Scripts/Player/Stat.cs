@@ -66,4 +66,8 @@ public class Stat
         _statBonusPercent = rate;
         _limitBonus = poten;        
     }
+
+    // 치트용
+    public void SetCurrent(int num) => _current = num;
+    public void SetLimit(int num) => _limit = num;
 }

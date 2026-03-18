@@ -22,14 +22,20 @@ public class StudentCheatUI : MonoBehaviour
                             StringManager.Instance.GetString(stdMgr.MyStudents[i].Name[1]) +
                             StringManager.Instance.GetString(stdMgr.MyStudents[i].Name[2]);
 
+            int index = i;
             newObj.GetComponentInChildren<TextMeshProUGUI>().text = stdName;
-            newObj.GetComponent<Button>().onClick.AddListener(OnStudentButtonClick);
+            newObj.GetComponent<Button>().onClick.AddListener(() => OnStudentButtonClick(stdMgr.MyStudents[index]));
         }
     }
 
-    public void OnStudentButtonClick()
+    public void OnStudentButtonClick(Student std)
     {
         _scrollViewObj.SetActive(false);
         _statPanelObj.SetActive(true);
+
+        if (_statPanelObj.TryGetComponent<DetailCheatUI>(out var statCheat))
+        {
+            statCheat.SetStudent(std);
+        }
     }
 }
