@@ -405,6 +405,11 @@ public class Student
         _prevAttack = _attack;  // 현재 공격력을 임시 저장
         _prevDefense = _defense; // 현재 수비력을 임시 저장
         _conditionChange = _condition; //현재 컨디션을 임시 저장
+
+        _attackChange = 0;
+        _defenseChange = 0;
+        _conditionChange = 0;
+
         _changedPotentials.Clear();
     }
 
