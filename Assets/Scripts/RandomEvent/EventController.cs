@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Data;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.LightTransport;
 
 public class EventController : MonoBehaviour
@@ -323,16 +324,15 @@ public class EventController : MonoBehaviour
 
         //다음 학생, 다음 이벤트 없으면 패널 닫기
         //학생 있으면 다음 학생 진행
-        if (_eventSelector.ScreenplayIdList.Count < 1)
-        {
-            Debug.Log($"패널 닫기");
-            _eventPanel.SetActive(false);
-        }
-        else
-        {
+        Debug.Log($"패널 닫기");
+        _eventPanel.SetActive(false);
+
+        if (_eventSelector.ScreenplayIdList.Count > 0)
+        { 
             _currentStudentNum = _studentTurnQueue.Dequeue();
             //다음 학생으로
             Debug.Log($"다음 이벤트 시작");
+            _eventPanel.SetActive(true);
             StartEvent();
         }
         _eventManager.SaveGame();
@@ -344,14 +344,15 @@ public class EventController : MonoBehaviour
     private void ResultCalculator()
     {
         Debug.Log($"resultScriptKey : {_selectedResultData.resultScriptKey}");
+
         //resultData 딕셔너리 필요
         _eventUI.UpdateEventResult(
             _selectedResultData.potentialChangeType, //잠재력
             _selectedResultData.potentialChangeValue, //잠재력 값
             _stringTable[_selectedResultData.resultScriptKey], //결과텍스트
-            _selectedResultData.reactionPortraitId); //이미지
-        _eventUI.UpdateState(_selectedResultData.statusChange, _myStudents[_currentStudentNum].State.ToString());//상태변경
-        Debug.Log($"아이디 못불러옴 {_selectedResultData.reactionPortraitId} ");
+            _selectedResultData.reactionPortraitId,//이미지
+            _selectedResultData.statusChange, 
+            _myStudents[_currentStudentNum].State.ToString()); 
 
         //선수 컨디션 변경
         var beforeConditon = _myStudents[_currentStudentNum].Condition.ToString();
