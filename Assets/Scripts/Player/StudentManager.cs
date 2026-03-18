@@ -45,6 +45,10 @@ public class StudentManager : Singleton<StudentManager>
         LoadGame();
     }
     
+    public void InitStudenList(List<Student> studentList)
+    {
+        _studentFactory.InitStudentList(studentList);
+    }
     public void SetCurrentTeam(List<Student> players)
     {
         _currentTeam = new Team(TEAM_ID, true);
