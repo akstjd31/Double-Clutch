@@ -17,6 +17,9 @@ public class FightingPower : MonoBehaviour
     [SerializeField] CharacterPowerBox[] _fightingList = new CharacterPowerBox[5];
     [SerializeField] CharacterPowerBox[] _rivalList = new CharacterPowerBox[5];
 
+    // 뒤로가기 버튼
+    [SerializeField] private GameObject _backButtonObj;
+
     int _myTotalFightingPower = 0;
     int _rivalTotalFightingPower = 0;
 
@@ -27,6 +30,9 @@ public class FightingPower : MonoBehaviour
 
     public void Init()
     {
+        // Init이 호출될 때 가장 먼저 뒤로가기 버튼 상태를 결정합니다.
+        CheckBackButtonVisibility();
+
         if (SaveLoadManager.Instance != null)
         {
             var myData = new StudentSaveData();
@@ -173,5 +179,26 @@ public class FightingPower : MonoBehaviour
         }
 
         GameManager.Instance.LoadMatchSceneWithData("Test_Simul", MyMatchingStudentList, RivalMatchingStudentList);
+    }
+    // 리그 진행 상태에 따라 뒤로가기 버튼 켜기/끄기
+    private void CheckBackButtonVisibility()
+    {
+        if (_backButtonObj == null) return;
+
+        bool isMidLeague = false;
+        var currentLeague = LeagueManager.Instance.CurrentLeague;
+
+        // 현재 진행 중인 리그가 있고, 아직 종료되지 않았다면
+        if (currentLeague != null && !currentLeague.isFinished)
+        {
+            // 0라운드가 아니다 = 이미 1라운드(첫 경기)를 치르고 2라운드 이상 진행 중이다
+            if (currentLeague.currentRoundIndex > 0)
+            {
+                isMidLeague = true;
+            }
+        }
+
+        // 리그 중간(isMidLeague == true)이면 버튼을 숨기고(false), 첫 경기거나 리그 중이 아니면 버튼을 보입니다(true).
+        _backButtonObj.SetActive(!isMidLeague);
     }
 }
