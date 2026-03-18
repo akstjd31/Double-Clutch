@@ -307,21 +307,25 @@ public class MatchEngine : MonoBehaviour
             {
                 log.IsCutIn = true;
                 log.CutInType = "BUZZER";
+                log.CutInResourceKey = shooter.CutIn3;
             }
             else if (success && isDunk)
             {
                 log.IsCutIn = true;
                 log.CutInType = "DUNK";
+                log.CutInResourceKey = shooter.CutIn2;
             }
             else if (success && isThree)
             {
                 log.IsCutIn = true;
                 log.CutInType = "3PT";
+                log.CutInResourceKey = shooter.CutIn1;
             }
             else
             {
                 log.IsCutIn = false;
                 log.CutInType = "";
+                log.CutInResourceKey = "";
             }
 
             if (success && !isThree && !isDunk && _simTime > 0)

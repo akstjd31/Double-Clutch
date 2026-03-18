@@ -24,6 +24,9 @@ public class MatchPlayer
     public string ResourceKey { get; private set; }
     public string TraitId { get; set; } = string.Empty;
 
+    public string CutIn1 { get; set; }
+    public string CutIn2 { get; set; }
+    public string CutIn3 { get; set; }
     public int PlayerId => _playerId;
     public string[] PlayerName => _playerName;
     public Position MainPosition => _position;

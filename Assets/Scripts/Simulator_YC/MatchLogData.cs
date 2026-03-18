@@ -19,7 +19,7 @@ public class MatchLogData
     // 연출용 데이터
     public bool IsCutIn;        // 컷인 연출 여부
     public string CutInType;    // "DUNK", "3PT", "BUZZER"
-
+    public string CutInResourceKey;
     // 사운드 연출용 타입
     public string SfxType;
 

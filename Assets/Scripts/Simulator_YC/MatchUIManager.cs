@@ -176,35 +176,51 @@ public class MatchUIManager : MonoBehaviour
     }
 
     // 컷인 연출 실행 함수
-    public void ShowCutInEffect(string type, float speed = 1.0f)
+    public void ShowCutInEffect(string type, string resourceKey = "", float speed = 1.0f)
     {
-        Debug.Log($">>> 컷인 함수 호출됨! 타입: {type} / 패널연결여부: {(_cutInPanel != null)}");
         if (_cutInPanel == null) return;
 
         Sprite targetSprite = null;
         string targetText = "";
 
+        if (!string.IsNullOrEmpty(resourceKey) && resourceKey != "-")
+        {
+            targetSprite = SpriteManager.Instance.GetSprite(resourceKey);
+        }
+        else
+        {
+            Debug.LogWarning("<color=orange>[컷인 디버그 3단계 경고]</color> resourceKey가 비어있습니다. (개인 컷인이 없거나 엔진에서 넘겨주지 않음)");
+        }
         switch (type)
         {
             case "DUNK":
-                targetSprite = _spriteDunk;
+            case "playerCutInResourceId02":
+                if (targetSprite == null) targetSprite = _spriteDunk; // 개인 컷인 없으면 디폴트 이미지
                 targetText = "SLAM DUNK!";
                 break;
+
             case "3PT":
-                targetSprite = _spriteThreePoint;
+            case "playerCutInResourceId01":
+                if (targetSprite == null) targetSprite = _spriteThreePoint; // 개인 컷인 없으면 디폴트 이미지
                 targetText = "3 POINT!";
                 break;
+
             case "BUZZER":
-                targetSprite = _spriteBuzzerBeater;
+            case "playerCutInResourceId03":
+                if (targetSprite == null) targetSprite = _spriteBuzzerBeater; // 개인 컷인 없으면 디폴트 이미지
                 targetText = "BUZZER BEATER!";
                 break;
+
             default:
                 return; // 해당 없으면 무시
         }
 
         // 이미지/텍스트 세팅
         if (_cutInImage != null && targetSprite != null)
+        {
             _cutInImage.sprite = targetSprite;
+            _cutInImage.rectTransform.sizeDelta = new Vector2(700f, 700f);
+        }
 
         if (_cutInText != null)
             _cutInText.text = targetText;
