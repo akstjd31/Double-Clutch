@@ -5,6 +5,8 @@ using UnityEngine.UI;
 public class TrainingCharacterBox : MonoBehaviour
 {
     [SerializeField] Image _studentImage;
+    [SerializeField] Image _positionImage;
+    [SerializeField] Image _traitImage;
     [SerializeField] Button _button;
     [SerializeField] Image _stateBackGround;
     [SerializeField] TextMeshProUGUI _attackPointText;
@@ -15,6 +17,11 @@ public class TrainingCharacterBox : MonoBehaviour
 
     [SerializeField] Slider _conditionSlider;
 
+    [SerializeField] Sprite _c;
+    [SerializeField] Sprite _sf;
+    [SerializeField] Sprite _sg;
+    [SerializeField] Sprite _pf;
+    [SerializeField] Sprite _pg;
     Student _student;
 
     public Button GetSelectButton() => _button;
@@ -34,6 +41,9 @@ public class TrainingCharacterBox : MonoBehaviour
         _student = student;
 
         _studentImage.sprite = SpriteManager.Instance.GetSprite(_student.VisualData.portraitResource);
+        _positionImage.sprite = GetPositionImage(_student.Position);
+        _positionImage.sprite = SpriteManager.Instance.GetSprite(_student.TraitData.traitResource);
+
 
         StringManager manager = StringManager.Instance;
         string name = manager.GetString(_student.Name[0]) + manager.GetString(_student.Name[1]) + manager.GetString(_student.Name[2]);
@@ -87,6 +97,20 @@ public class TrainingCharacterBox : MonoBehaviour
             return;
         }
         manager.ApplyFont(_stateText);
+    }
+
+    public Sprite GetPositionImage(Position position)
+    {
+        Sprite sprite = null;
+        switch(position)
+        {
+            case Position.C: sprite = _c; break;
+            case Position.SF: sprite = _sf; break;
+            case Position.SG: sprite = _sg; break;
+            case Position.PF: sprite = _pf; break;
+            case Position.PG: sprite = _pg; break;
+        }
+        return sprite;
     }
     public float NormalizeConditionValue(int condition)
     {

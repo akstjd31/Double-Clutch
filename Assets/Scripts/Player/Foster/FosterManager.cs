@@ -159,6 +159,12 @@ public class FosterManager : MonoBehaviour
         Student target = command.GetTarget();
         if (_teamSchedule != null) //개인 스케줄 예약시 팀 스케줄 예약은 삭제
         {
+            foreach(var student in StudentManager.Instance.MyStudents)
+            {
+                student.ResetTrainingSchedule();                
+            }
+            StudentUIManager.Instance.OnTrainingReserved(); //모든 학생의 훈련 정보를 없애고 ui 상태 갱신
+
             _schedules.Clear();
             _scheduleCost = 0;
             _teamSchedule = null;
