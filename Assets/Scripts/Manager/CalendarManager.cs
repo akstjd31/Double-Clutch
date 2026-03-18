@@ -272,7 +272,11 @@ public class CalendarManager : Singleton<CalendarManager>
         }
 
         for (int i = start; i < end; i++)
-            descList.Add(_calReader.DataList[i].desc);
+        {
+            string desc = StringManager.Instance.GetString(_calReader.DataList[i].weekDescKey);
+            descList.Add(desc);
+        }
+            
 
         return descList;
     }
@@ -287,7 +291,10 @@ public class CalendarManager : Singleton<CalendarManager>
         int end = start + MonthWeekTable.weekCounts[calendar.month];
 
         for (int i = start; i < end; i++)
-            descList.Add(_calReader.DataList[i].desc);
+        {
+            string desc = StringManager.Instance.GetString(_calReader.DataList[i].weekDescKey);
+            descList.Add(desc);
+        }
 
         return descList;
     }
