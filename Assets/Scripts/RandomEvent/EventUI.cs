@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.LightTransport;
+
 using UnityEngine.UI;
 
 public class EventUI : MonoBehaviour
