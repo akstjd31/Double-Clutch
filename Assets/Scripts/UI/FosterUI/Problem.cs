@@ -14,7 +14,7 @@ public class Problem : MonoBehaviour
     public void Init(string name) //개인훈련용
     {
         StringManager manager = StringManager.Instance;
-        _warning1.text = name + manager.GetString("UI_Development_컨디션")+": 0";
+        _warning1.text = name +  " ("+ manager.GetString("UI_Development_컨디션")+" : 0"+")";
         _warning2.text = manager.GetString("UI_Development_컨디션부족");
         manager.ApplyFont(_warning1);
         manager.ApplyFont(_warning2);

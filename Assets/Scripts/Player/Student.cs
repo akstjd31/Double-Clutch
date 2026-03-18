@@ -407,8 +407,7 @@ public class Student
         _conditionChange = _condition; //현재 컨디션을 임시 저장
 
         _attackChange = 0;
-        _defenseChange = 0;
-        _conditionChange = 0;
+        _defenseChange = 0;        
 
         _changedPotentials.Clear();
     }

@@ -30,16 +30,17 @@ public class PlayerCard : MonoBehaviour, IPointerClickHandler
         _playerPosition.text = student.Position.ToString();   
         if (student.State == StudentState.OverWorked)
         {
-            _playerState.text = "OverWorked";
+            _playerState.text = manager.GetString("UI_Player_과로");
             _isAvailable = false;
         }
         else if (student.State == StudentState.Injured)
         {
-            _playerState.text = "Injured";
+            _playerState.text = manager.GetString("UI_Player_부상");
             _isAvailable = false;
         }
         else
         {
+            _playerState.text = string.Empty;
             _isAvailable = true;
         }
 
