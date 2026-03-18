@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using UnityEditor.Experimental.GraphView;
+
 using UnityEngine;
 
 public class TeamTraining : ITraining
@@ -58,7 +58,7 @@ public class TeamTraining : ITraining
 
             switch (_data.trainingMode)
             {
-                case 1: //ÀÏ¹İ ÈÆ·Ã : ¸ğµç ½ºÅÈÀ» allGain¸¸Å­ Áõ°¡
+                case 1: //ì¼ë°˜ í›ˆë ¨ : ëª¨ë“  ìŠ¤íƒ¯ì„ allGainë§Œí¼ ì¦ê°€
                     foreach (potential pot in Enum.GetValues(typeof(potential)))
                     {
                         if (pot == potential.None)
@@ -72,7 +72,7 @@ public class TeamTraining : ITraining
                         _target.AddChangedPotential(pot);
                     }
                     break;
-                case 2: //Àü¼ú ÈÆ·Ã : Æ÷Áö¼Ç º° ÁÖ/ºÎ ½ºÅÈÀ» °¢°¢ ¼öÄ¡¸¸Å­ Áõ°¡
+                case 2: //ì „ìˆ  í›ˆë ¨ : í¬ì§€ì…˜ ë³„ ì£¼/ë¶€ ìŠ¤íƒ¯ì„ ê°ê° ìˆ˜ì¹˜ë§Œí¼ ì¦ê°€
                     potential mainPot = FosterManager.Instance.GetPositionMapping(this._target).mainPotential;
                     int mainBonus = _target.GetStat(mainPot).GrowthRate + InfraManager.Instance.GetInfraEffectValueByEffectType(infraEffectType.TrainingBonus) + (int)_target.GetFosterPassiveValue(mainPot);
                     int mainGrowth = _data.mainGain + (_data.mainGain * mainBonus / 100);
@@ -99,15 +99,15 @@ public class TeamTraining : ITraining
     {
         int rate = UnityEngine.Random.Range(0, 100);
 
-        if (rate < 60) // 60% È®·ü (0~59)
+        if (rate < 60) // 60% í™•ë¥  (0~59)
         {
             target.ChangeState(StudentState.OverWorked);
-            Debug.Log($"{target.Name} ÇĞ»ıÀÌ °ú·Î »óÅÂ°¡ µÇ¾ú½À´Ï´Ù.");
+            Debug.Log($"{target.Name} í•™ìƒì´ ê³¼ë¡œ ìƒíƒœê°€ ë˜ì—ˆìŠµë‹ˆë‹¤.");
         }
-        else // 40% È®·ü (60~99)
+        else // 40% í™•ë¥  (60~99)
         {
             target.ChangeState(StudentState.Injured);
-            Debug.Log($"{target.Name} ÇĞ»ıÀÌ ºÎ»ó »óÅÂ°¡ µÇ¾ú½À´Ï´Ù.");
+            Debug.Log($"{target.Name} í•™ìƒì´ ë¶€ìƒ ìƒíƒœê°€ ë˜ì—ˆìŠµë‹ˆë‹¤.");
         }
     }
 

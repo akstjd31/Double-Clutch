@@ -4,43 +4,43 @@ using UnityEngine.UI;
 public class StatTriangle : MaskableGraphic
 {
     [Header("Stat Ratios (0 to 1)")]
-    [Range(0, 200)] public float Scoring = 100f;    // »ó´Ü (2pt + 3pt)
-    [Range(0, 200)] public float Support = 100f;    // ÁÂÇÏ´Ü (Pass + Rebound)
-    [Range(0, 200)] public float Disruption = 100f; // ¿ìÇÏ´Ü (Block + Steal)
+    [Range(0, 200)] public float Scoring = 100f;    // ìƒë‹¨ (2pt + 3pt)
+    [Range(0, 200)] public float Support = 100f;    // ì¢Œí•˜ë‹¨ (Pass + Rebound)
+    [Range(0, 200)] public float Disruption = 100f; // ìš°í•˜ë‹¨ (Block + Steal)
 
     protected override void OnPopulateMesh(VertexHelper vh)
     {
         vh.Clear();
 
-        // ³Êºñ¿Í ³ôÀÌ Áß ÀÛÀº °ªÀ» ±âÁØÀ¸·Î ¹İÁö¸§(size) °áÁ¤
+        // ë„ˆë¹„ì™€ ë†’ì´ ì¤‘ ì‘ì€ ê°’ì„ ê¸°ì¤€ìœ¼ë¡œ ë°˜ì§€ë¦„(size) ê²°ì •
         float size = Mathf.Min(rectTransform.rect.width, rectTransform.rect.height) * 0.5f;
         Color32 color32 = color;
 
-        // ÃÖ´ë ½ºÅÈ°ªÀÌ 200ÀÌ¶ó¸é 200À¸·Î ³ª´©¾î 0~1 »çÀÌ ºñÀ²·Î ¸¸µì´Ï´Ù.
+        // ìµœëŒ€ ìŠ¤íƒ¯ê°’ì´ 200ì´ë¼ë©´ 200ìœ¼ë¡œ ë‚˜ëˆ„ì–´ 0~1 ì‚¬ì´ ë¹„ìœ¨ë¡œ ë§Œë“­ë‹ˆë‹¤.
         float maxStat = 65;
 
-        // °¢ ²ÀÁşÁ¡ ÁÂÇ¥ °è»ê
+        // ê° ê¼­ì§“ì  ì¢Œí‘œ ê³„ì‚°
         Vector2 posA = new Vector2(0, size * Scoring / maxStat);
         Vector2 posB = Quaternion.Euler(0, 0, 120) * new Vector2(0, size * Support / maxStat);
         Vector2 posC = Quaternion.Euler(0, 0, 240) * new Vector2(0, size * Disruption / maxStat);
 
-        // ¹öÅØ½º Ãß°¡
+        // ë²„í…ìŠ¤ ì¶”ê°€
         vh.AddVert(posA, color32, Vector2.zero);
         vh.AddVert(posB, color32, Vector2.zero);
         vh.AddVert(posC, color32, Vector2.zero);
 
-        // »ï°¢Çü ¸é »ı¼º
+        // ì‚¼ê°í˜• ë©´ ìƒì„±
         vh.AddTriangle(0, 1, 2);
     }
 
-    // ÀÎ½ºÆåÅÍ¿¡¼­ °ªÀÌ ¹Ù²ğ ¶§ Áï½Ã ¹İ¿µ
-    protected override void OnValidate()
-    {
-        base.OnValidate();
-        SetVerticesDirty();
-    }
+    // ì¸ìŠ¤í™í„°ì—ì„œ ê°’ì´ ë°”ë€” ë•Œ ì¦‰ì‹œ ë°˜ì˜
+    //protected override void OnValidate()
+    //{
+    //    base.OnValidate();
+    //    SetVerticesDirty();
+    //}
 
-    // UI Å©±â°¡ ¹Ù²ğ ¶§ ´Ù½Ã ±×¸®±â
+    // UI í¬ê¸°ê°€ ë°”ë€” ë•Œ ë‹¤ì‹œ ê·¸ë¦¬ê¸°
     protected override void OnRectTransformDimensionsChange()
     {
         base.OnRectTransformDimensionsChange();
