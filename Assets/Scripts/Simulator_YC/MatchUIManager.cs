@@ -74,6 +74,9 @@ public class MatchUIManager : MonoBehaviour
     [Header("Swiss Board UI")]
     [SerializeField] private SwissBoardPanel _swissBoardPanel;
 
+    [Header("Tournament Board UI")]
+    [SerializeField] private TournamentBoardPanel _tournamentBoardPanel;
+
     // 유니티 에디터에서 연결할 스프라이트들
     [SerializeField] private Sprite _spriteDunk;
     [SerializeField] private Sprite _spriteThreePoint;
@@ -634,6 +637,18 @@ public class MatchUIManager : MonoBehaviour
                 onActionClick.Invoke();
             else
                 GameManager.Instance.ChangeState<MatchPrepState>(); // null이면 다음 경기 준비로 직행
+        }
+    }
+    public void ShowTournamentBoardPanel(Action onActionClick = null, string actionText = null)
+    {
+        if (_tournamentBoardPanel != null)
+        {
+            _tournamentBoardPanel.OpenPanel(onActionClick, actionText);
+        }
+        else
+        {
+            if (onActionClick != null) onActionClick.Invoke();
+            else GameManager.Instance.ChangeState<MatchPrepState>();
         }
     }
     private string MakeName(string[] nameKey)

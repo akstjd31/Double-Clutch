@@ -5154,75 +5154,17 @@ MonoBehaviour:
   _outline: {fileID: 980689270}
   _canvasGroup: {fileID: 0}
   _outPipeImage: {fileID: 0}
---- !u!1 &332897567 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3963701319099554817, guid: 315dce38a6df82444806c2962394d3fd, type: 3}
-  m_PrefabInstance: {fileID: 1238872668}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &332897569 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2056603331149973381, guid: 315dce38a6df82444806c2962394d3fd, type: 3}
   m_PrefabInstance: {fileID: 1238872668}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 332897567}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1aa08ab6e0800fa44ae55d278d1423e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.ScrollRect
---- !u!114 &332897572
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 332897567}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 59e4d76f484879b4d812cc9fc3c2f474, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::TournamentBoardPanel
-  _txtLeagueName: {fileID: 1893095113}
-  _txtCurrentRound: {fileID: 256873524}
-  _round1Nodes:
-  - {fileID: 548291247}
-  - {fileID: 1198703604}
-  - {fileID: 1830246012}
-  - {fileID: 423079697}
-  - {fileID: 1102454561}
-  - {fileID: 1139896747}
-  - {fileID: 156380803}
-  - {fileID: 2113197037}
-  - {fileID: 311866832}
-  - {fileID: 255400908}
-  - {fileID: 784249978}
-  - {fileID: 1529653352}
-  - {fileID: 1600269901}
-  - {fileID: 1595469565}
-  - {fileID: 2006556271}
-  - {fileID: 1355681468}
-  _round2Nodes:
-  - {fileID: 1932646449}
-  - {fileID: 1808526127}
-  - {fileID: 50359197}
-  - {fileID: 1378872782}
-  - {fileID: 383380255}
-  - {fileID: 144330181}
-  - {fileID: 1356259134}
-  - {fileID: 1402897794}
-  _round3Nodes:
-  - {fileID: 1656686783}
-  - {fileID: 1371925302}
-  - {fileID: 606306174}
-  - {fileID: 77467117}
-  _round4Nodes:
-  - {fileID: 512312749}
-  - {fileID: 1018751136}
-  _winnerNode: {fileID: 1450527854}
-  _scrollRect: {fileID: 332897569}
-  _contentRect: {fileID: 1192920806}
-  _btnAction: {fileID: 1203367443}
-  _txtBtnAction: {fileID: 95494183}
 --- !u!1 &335072293
 GameObject:
   m_ObjectHideFlags: 0
@@ -7895,6 +7837,10 @@ PrefabInstance:
       propertyPath: _leagueCalculatePanel
       value: 
       objectReference: {fileID: 271071145}
+    - target: {fileID: 2974266514483483379, guid: c1ac5abaac7597d4f819e46754353cf2, type: 3}
+      propertyPath: _tournamentBoardPanel
+      value: 
+      objectReference: {fileID: 1238872670}
     - target: {fileID: 4961259914562008073, guid: c1ac5abaac7597d4f819e46754353cf2, type: 3}
       propertyPath: m_Name
       value: MatchManager
@@ -19274,9 +19220,9 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 1018751135}
     m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 3963701319099554817, guid: 315dce38a6df82444806c2962394d3fd, type: 3}
+    - targetCorrespondingSourceObject: {fileID: 3878180829409293993, guid: 315dce38a6df82444806c2962394d3fd, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 332897572}
+      addedObject: {fileID: 1238872670}
     - targetCorrespondingSourceObject: {fileID: 8565723530691258641, guid: 315dce38a6df82444806c2962394d3fd, type: 3}
       insertIndex: -1
       addedObject: {fileID: 548291247}
@@ -19308,6 +19254,64 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 1580525791}
   m_SourcePrefab: {fileID: 100100000, guid: 315dce38a6df82444806c2962394d3fd, type: 3}
+--- !u!1 &1238872669 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3878180829409293993, guid: 315dce38a6df82444806c2962394d3fd, type: 3}
+  m_PrefabInstance: {fileID: 1238872668}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1238872670
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1238872669}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59e4d76f484879b4d812cc9fc3c2f474, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TournamentBoardPanel
+  _txtLeagueName: {fileID: 1893095113}
+  _txtCurrentRound: {fileID: 256873524}
+  _round1Nodes:
+  - {fileID: 548291247}
+  - {fileID: 1198703604}
+  - {fileID: 1830246012}
+  - {fileID: 423079697}
+  - {fileID: 1102454561}
+  - {fileID: 1139896747}
+  - {fileID: 156380803}
+  - {fileID: 2113197037}
+  - {fileID: 311866832}
+  - {fileID: 255400908}
+  - {fileID: 784249978}
+  - {fileID: 1529653352}
+  - {fileID: 1600269901}
+  - {fileID: 1595469565}
+  - {fileID: 2006556271}
+  - {fileID: 1355681468}
+  _round2Nodes:
+  - {fileID: 1932646449}
+  - {fileID: 1808526127}
+  - {fileID: 50359197}
+  - {fileID: 1378872782}
+  - {fileID: 383380255}
+  - {fileID: 144330181}
+  - {fileID: 1356259134}
+  - {fileID: 1402897794}
+  _round3Nodes:
+  - {fileID: 1656686783}
+  - {fileID: 1371925302}
+  - {fileID: 606306174}
+  - {fileID: 77467117}
+  _round4Nodes:
+  - {fileID: 512312749}
+  - {fileID: 1018751136}
+  _winnerNode: {fileID: 1450527854}
+  _scrollRect: {fileID: 332897569}
+  _contentRect: {fileID: 1192920806}
+  _btnAction: {fileID: 1203367443}
+  _txtBtnAction: {fileID: 95494183}
 --- !u!1001 &1245853838
 PrefabInstance:
   m_ObjectHideFlags: 0

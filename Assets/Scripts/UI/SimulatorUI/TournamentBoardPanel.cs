@@ -74,7 +74,18 @@ public class TournamentBoardPanel : MonoBehaviour
         // 내 팀 위치로 카메라 포커싱
         StartCoroutine(FocusOnPlayerNode(league.currentRoundIndex));
     }
-
+    // 뎁스(Depth)에 따라 노드 리스트를 반환하는 헬퍼 함수
+    private List<TournamentNode> GetUINodesByDepth(int depth)
+    {
+        switch (depth)
+        {
+            case 0: return _round1Nodes;
+            case 1: return _round2Nodes;
+            case 2: return _round3Nodes;
+            case 3: return _round4Nodes;
+            default: return null;
+        }
+    }
     private void PopulateBracket(LeagueSaveData league, int currentRound)
     {
         // 초기화 (모든 노드 비우기)
@@ -83,6 +94,11 @@ public class TournamentBoardPanel : MonoBehaviour
         foreach (var n in _round3Nodes) n.Init("", 2, false, false, false);
         foreach (var n in _round4Nodes) n.Init("", 3, false, false, false);
         if (_winnerNode != null) _winnerNode.Init("", 4, false, false, false);
+
+        // 총 라운드 수를 계산하여 UI가 시작될 오프셋을 구합니다 (16강이면 0, 8강이면 1, 결승이면 3)
+        var masterData = LeagueDataManager.Instance.GetMasterDataById(league.leagueId);
+        int totalRounds = masterData.HasValue ? masterData.Value.roundCount : 4;
+        int uiOffset = 4 - totalRounds;
 
         HashSet<string> eliminatedTeams = new HashSet<string>();
         if (league.matchRecords != null)
@@ -97,13 +113,19 @@ public class TournamentBoardPanel : MonoBehaviour
 
         // 1라운드(16강) 세팅 (초기 참가팀 16팀)
         bool isR1Current = (currentRound == 0); // 1라운드가 현재 라운드인지?
-        for (int i = 0; i < league.teams.Count; i++)
+
+        // 동적으로 계산된 출발 노드 라인
+        List<TournamentNode> startNodes = GetUINodesByDepth(uiOffset);
+
+        if (startNodes != null)
         {
-            if (i < _round1Nodes.Count)
+            for (int i = 0; i < league.teams.Count; i++)
             {
-                string tId = league.teams[i].teamId;
-                // 아직 1라운드 경기를 치르지 않았으면 승자 여부(isWinner)는 false
-                _round1Nodes[i].Init(tId, 0, isR1Current, eliminatedTeams.Contains(tId), false);
+                if (i < startNodes.Count)
+                {
+                    string tId = league.teams[i].teamId;
+                    startNodes[i].Init(tId, 0, isR1Current, eliminatedTeams.Contains(tId), false);
+                }
             }
         }
 
@@ -123,61 +145,54 @@ public class TournamentBoardPanel : MonoBehaviour
             // 승자가 진출하는 '다음 라운드'의 인덱스
             int nextRoundIndex = match.roundIndex + 1;
             bool isNextRoundCurrent = (currentRound == nextRoundIndex); // 그 다음 라운드가 현재 라운드인지?
-
-            // 이전 라운드 노드를 찾아서 승리시 파이프 색 변경
-            UpdateWinnerPipe(match.roundIndex, matchIndexInRound, winnerId, eliminatedTeams);
-
-            // 승자를 다음 라운드 노드에 배치
             bool isEliminated = eliminatedTeams.Contains(winnerId);
 
-            if (match.roundIndex == 0 && matchIndexInRound < _round2Nodes.Count)
-                _round2Nodes[matchIndexInRound].Init(winnerId, nextRoundIndex, isNextRoundCurrent, isEliminated, false);
-            else if (match.roundIndex == 1 && matchIndexInRound < _round3Nodes.Count)
-                _round3Nodes[matchIndexInRound].Init(winnerId, nextRoundIndex, isNextRoundCurrent, isEliminated, false);
-            else if (match.roundIndex == 2 && matchIndexInRound < _round4Nodes.Count)
-                _round4Nodes[matchIndexInRound].Init(winnerId, nextRoundIndex, isNextRoundCurrent, isEliminated, false);
-            else if (match.roundIndex == 3 && _winnerNode != null)
+            int uiDepth = match.roundIndex + uiOffset;
+            int nextUiDepth = uiDepth + 1;
+
+            // 이전 라운드 노드를 찾아서 승리시 파이프 색 변경
+            UpdateWinnerPipe(uiDepth, match.roundIndex, matchIndexInRound, winnerId, eliminatedTeams);
+
+            List<TournamentNode> nextNodes = GetUINodesByDepth(nextUiDepth);
+            if (nextNodes != null && matchIndexInRound < nextNodes.Count)
+            {
+                nextNodes[matchIndexInRound].Init(winnerId, nextRoundIndex, isNextRoundCurrent, isEliminated, false);
+            }
+            else if (nextUiDepth == 4 && _winnerNode != null)
+            {
                 _winnerNode.Init(winnerId, nextRoundIndex, isNextRoundCurrent, isEliminated, true);
+            }
         }
     }
     // 승리한 노드의 파이프만 불을 켜주기 위한 보조 함수
-    private void UpdateWinnerPipe(int roundIndex, int matchIndex, string winnerId, HashSet<string> eliminatedTeams)
+    private void UpdateWinnerPipe(int uiDepth, int originalRoundIndex, int matchIndex, string winnerId, HashSet<string> eliminatedTeams)
     {
-        List<TournamentNode> targetNodes = roundIndex switch
-        {
-            0 => _round1Nodes,
-            1 => _round2Nodes,
-            2 => _round3Nodes,
-            3 => _round4Nodes,
-            _ => null
-        };
-
+        List<TournamentNode> targetNodes = GetUINodesByDepth(uiDepth);
         if (targetNodes == null) return;
 
-        // 해당 매치에 참여했던 두 팀(홈, 어웨이)의 노드가 보통 연속된 2개의 인덱스에 위치함
         int nodeIndex1 = matchIndex * 2;
         int nodeIndex2 = matchIndex * 2 + 1;
 
         if (nodeIndex1 < targetNodes.Count && targetNodes[nodeIndex1].TeamId == winnerId)
-            targetNodes[nodeIndex1].Init(winnerId, roundIndex, false, eliminatedTeams.Contains(winnerId), true);
+            targetNodes[nodeIndex1].Init(winnerId, originalRoundIndex, false, eliminatedTeams.Contains(winnerId), true);
 
         if (nodeIndex2 < targetNodes.Count && targetNodes[nodeIndex2].TeamId == winnerId)
-            targetNodes[nodeIndex2].Init(winnerId, roundIndex, false, eliminatedTeams.Contains(winnerId), true);
+            targetNodes[nodeIndex2].Init(winnerId, originalRoundIndex, false, eliminatedTeams.Contains(winnerId), true);
     }
     private IEnumerator FocusOnPlayerNode(int currentRound)
     {
         yield return null;
 
-        List<TournamentNode> targetList = currentRound switch
-        {
-            0 => _round1Nodes,
-            1 => _round2Nodes,
-            2 => _round3Nodes,
-            3 => _round4Nodes,
-            _ => _round1Nodes
-        };
+        var league = LeagueManager.Instance.CurrentLeague;
+        var masterData = LeagueDataManager.Instance.GetMasterDataById(league.leagueId);
+        int totalRounds = masterData.HasValue ? masterData.Value.roundCount : 4;
 
+        int uiOffset = 4 - totalRounds;
+        int uiDepth = currentRound + uiOffset;
+
+        List<TournamentNode> targetList = GetUINodesByDepth(uiDepth) ?? _round1Nodes;
         TournamentNode playerNode = targetList.Find(n => n.TeamId == StudentManager.TEAM_ID);
+
         if (playerNode == null || _scrollRect == null) yield break;
 
         Vector2 nodePos = (Vector2)_scrollRect.transform.InverseTransformPoint(playerNode.transform.position);
@@ -188,5 +203,4 @@ public class TournamentBoardPanel : MonoBehaviour
 
         _contentRect.DOAnchorPos(targetPos, 0.5f).SetEase(Ease.OutCubic);
     }
-
 }
