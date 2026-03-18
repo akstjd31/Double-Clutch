@@ -23729,6 +23729,7 @@ MonoBehaviour:
   _effectDescText: {fileID: 93621630}
   _upgradeButton: {fileID: 1258429150}
   _reconfirmUI: {fileID: 1176377794}
+  _warningUI: {fileID: 1109786512}
   _backGroundImage: {fileID: 1095720666}
   _clinic: {fileID: -1414973124474200654, guid: 26d2a66ef0618e94ea9c5595344c0367, type: 3}
   _dormitory: {fileID: 5970116427329797651, guid: cea4ff36d5f7a294883ab45ea46ad99f, type: 3}
@@ -24063,6 +24064,7 @@ GameObject:
   - component: {fileID: 1109786509}
   - component: {fileID: 1109786508}
   - component: {fileID: 1109786511}
+  - component: {fileID: 1109786512}
   m_Layer: 5
   m_Name: NoCostWarningPopup
   m_TagString: Untagged
@@ -24178,6 +24180,19 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &1109786512
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1109786506}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1da963c270b26ac4ba190cc8e7b32b36, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InfraWarningUI
+  _needCostText: {fileID: 1157579579}
 --- !u!1 &1112886432
 GameObject:
   m_ObjectHideFlags: 0
@@ -29580,7 +29595,7 @@ MonoBehaviour:
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
-  m_TextWrappingMode: 0
+  m_TextWrappingMode: 1
   m_wordWrappingRatios: 0.4
   m_overflowMode: 0
   m_linkedTextComponent: {fileID: 0}

@@ -13,7 +13,8 @@ public class InfraUpgradeUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _levelText;
     [SerializeField] private TextMeshProUGUI _effectDescText;
     [SerializeField] private Button _upgradeButton;
-    [SerializeField] private ReconfirmUI _reconfirmUI;
+    [SerializeField] private InfraReconfirmUI _reconfirmUI;
+    [SerializeField] private InfraWarningUI _warningUI;
 
     [Header("업그레이드 배경리소스")]
     [SerializeField] private Image _backGroundImage;
@@ -87,8 +88,18 @@ public class InfraUpgradeUI : MonoBehaviour
     public void OnClickUpgradeButton()
     {
         if (_controller == null) return;
-        _reconfirmUI.gameObject.SetActive(true);
-        _reconfirmUI.Init(_controller);
+
+        if (_controller.HasEnoughUpgradeCost())
+        {
+            _reconfirmUI.gameObject.SetActive(true);
+            _reconfirmUI.Init(_controller);
+        }
+        else
+
+        {
+            _warningUI.gameObject.SetActive(true);
+            _warningUI.Init(_controller);
+        }
     }
 
     // 중괄호로 되어있는 부분을 처리 및 전체 문자열을 반환 (이 부분은 UI 스크립트에서 작성해야할듯?)
