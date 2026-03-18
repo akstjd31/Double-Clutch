@@ -5,6 +5,12 @@ public class SpriteManager : Singleton<SpriteManager>
 {
     [SerializeField] ResourceDataReader _db;
 
+    [SerializeField] Sprite _c;
+    [SerializeField] Sprite _sf;
+    [SerializeField] Sprite _sg;
+    [SerializeField] Sprite _pf;
+    [SerializeField] Sprite _pg;
+
     // [ID : 전체경로]를 미리 저장해서 검색 속도를 최적화
     private Dictionary<string, string> _pathIndex = new Dictionary<string, string>();
 
@@ -79,6 +85,19 @@ public class SpriteManager : Singleton<SpriteManager>
         return null;
     }
 
+    public Sprite GetPositionSprite(Position position) //포지션 아이콘 바로가기
+    {
+        Sprite sprite = null;
+        switch (position)
+        {
+            case Position.C: sprite = _c; break;
+            case Position.SF: sprite = _sf; break;
+            case Position.SG: sprite = _sg; break;
+            case Position.PF: sprite = _pf; break;
+            case Position.PG: sprite = _pg; break;
+        }
+        return sprite;
+    }
     
     // 메모리 최적화를 위한 캐시 클리어.    
     public void ClearCache()

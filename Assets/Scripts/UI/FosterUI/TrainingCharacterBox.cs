@@ -17,11 +17,7 @@ public class TrainingCharacterBox : MonoBehaviour
 
     [SerializeField] Slider _conditionSlider;
 
-    [SerializeField] Sprite _c;
-    [SerializeField] Sprite _sf;
-    [SerializeField] Sprite _sg;
-    [SerializeField] Sprite _pf;
-    [SerializeField] Sprite _pg;
+    
     Student _student;
 
     public Button GetSelectButton() => _button;
@@ -40,8 +36,9 @@ public class TrainingCharacterBox : MonoBehaviour
     {
         _student = student;
 
-        _studentImage.sprite = SpriteManager.Instance.GetSprite(_student.VisualData.portraitResource);
-        _positionImage.sprite = GetPositionImage(_student.Position);
+        SpriteManager spriteManager = SpriteManager.Instance;
+        _studentImage.sprite = spriteManager.GetSprite(_student.VisualData.portraitResource);
+        _positionImage.sprite = spriteManager.GetPositionSprite(_student.Position);
         _positionImage.sprite = SpriteManager.Instance.GetSprite(_student.TraitData.traitResource);
 
 
@@ -98,20 +95,7 @@ public class TrainingCharacterBox : MonoBehaviour
         }
         manager.ApplyFont(_stateText);
     }
-
-    public Sprite GetPositionImage(Position position)
-    {
-        Sprite sprite = null;
-        switch(position)
-        {
-            case Position.C: sprite = _c; break;
-            case Position.SF: sprite = _sf; break;
-            case Position.SG: sprite = _sg; break;
-            case Position.PF: sprite = _pf; break;
-            case Position.PG: sprite = _pg; break;
-        }
-        return sprite;
-    }
+    
     public float NormalizeConditionValue(int condition)
     {
         return (float)condition / 100;

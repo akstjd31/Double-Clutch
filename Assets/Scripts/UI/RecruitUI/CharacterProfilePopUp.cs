@@ -4,6 +4,8 @@ using UnityEngine;
 public class CharacterProfilePopUp : MonoBehaviour
 {
     [SerializeField] CharacterBox _characterBox;
+    [SerializeField] TextMeshProUGUI _name;
+    [SerializeField] TextMeshProUGUI _grade;
     [SerializeField] TextMeshProUGUI _attack;
     [SerializeField] TextMeshProUGUI _defense;
     [SerializeField] TextMeshProUGUI _personality;
@@ -35,6 +37,8 @@ public class CharacterProfilePopUp : MonoBehaviour
     {
         if (_student == null) return;
         _characterBox.Init(_student);
+
+        SetName(_student);
         _attack.text = _student.Attack.ToString();
         _defense.text = _student.Defense.ToString();
         StringManager.Instance.GetString(_student.PersonalityData.personalityName, _personality);
@@ -49,6 +53,25 @@ public class CharacterProfilePopUp : MonoBehaviour
         if (_student.Passive.Count == 3)
         {
             _passive3.Init(_student.Passive[2]);
+        }
+        SetGrade(_student.Grade);
+    }
+
+    public void SetName(Student student)
+    {
+        StringManager manager = StringManager.Instance;
+        string name = manager.GetString(student.Name[0]) + manager.GetString(student.Name[1]) + manager.GetString(student.Name[2]);
+
+        _name.text = name;        
+    }
+
+    public void SetGrade(int grade)
+    {
+        switch (grade)
+        {
+            case 1: _grade.text = StringManager.Instance.GetString("UI_Player_1학년"); break;
+            case 2: _grade.text = StringManager.Instance.GetString("UI_Player_2학년"); break;
+            case 3: _grade.text = StringManager.Instance.GetString("UI_Player_3학년"); break;
         }
     }
 }
