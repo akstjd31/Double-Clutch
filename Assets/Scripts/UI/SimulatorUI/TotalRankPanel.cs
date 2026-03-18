@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class TotalRankPanel : MonoBehaviour
 {
@@ -8,6 +9,9 @@ public class TotalRankPanel : MonoBehaviour
     [Header("Rank List UI")]
     [SerializeField] private Transform _rowContainer;     // 순위표가 들어갈 부모 (ScrollView Content)
     [SerializeField] private TotalRankRow _rowPrefab;     // TotalRankRow 프리팹
+
+    [Header("Title UI")]
+    [SerializeField] private TextMeshProUGUI _txtLeagueName; // 리그 이름
 
     private void Awake()
     {
@@ -35,6 +39,16 @@ public class TotalRankPanel : MonoBehaviour
         // 리그 순위 데이터 가져오기
         var league = LeagueManager.Instance.CurrentLeague;
         if (league == null || league.standings == null) return;
+
+        if (_txtLeagueName != null)
+        {
+            var masterData = LeagueDataManager.Instance.GetMasterDataById(league.leagueId);
+            if (masterData.HasValue)
+            {
+                // 번역된 실제 리그 이름으로 텍스트 변경
+                _txtLeagueName.text = StringManager.Instance.GetString(masterData.Value.leagueNameKey);
+            }
+        }
 
         string myTeamId = StudentManager.TEAM_ID;
 
