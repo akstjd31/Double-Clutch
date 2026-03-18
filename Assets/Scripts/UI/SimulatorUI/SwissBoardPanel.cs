@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System;
+using System.Linq;
 
 public class SwissBoardPanel : MonoBehaviour
 {
@@ -71,6 +72,19 @@ public class SwissBoardPanel : MonoBehaviour
             newTab.Init(i, currentLeague.currentRoundIndex, currentLeague.isFinished, SelectTab);
             _tabs.Add(newTab);
         }
+        // 남은 공간을 채워줄 '투명 더미 탭' 생성 로직 
+        // 무조건 6개의 탭이 있는 것처럼 Layout Group을 속여서 크기를 강제 고정합니다.
+        int maxTabCount = 6;
+        for (int i = totalRounds; i < maxTabCount; i++)
+        {
+            GameObject dummy = new GameObject("DummyTab");
+            dummy.transform.SetParent(_tabContainer, false);
+
+            // 더미가 기존 탭들과 완벽하게 동일한 비율(넓이)을 차지하도록 LayoutElement 추가
+            var layoutElement = dummy.AddComponent<UnityEngine.UI.LayoutElement>();
+            layoutElement.flexibleWidth = 1;
+        }
+
     }
 
     private void SelectTab(int roundIndex)
@@ -100,46 +114,24 @@ public class SwissBoardPanel : MonoBehaviour
     {
         var currentLeague = LeagueManager.Instance.CurrentLeague;
 
-        // 기존 대진표 삭제
         foreach (Transform child in _matchContainer) Destroy(child.gameObject);
 
         // 해당 라운드의 매치들만 필터링
         List<LeagueMatchRecord> targetMatches = currentLeague.matchRecords.FindAll(m => m.roundIndex == roundIndex);
 
-        // 랭킹 정보를 빠르게 찾기 위한 딕셔너리 생성
-        Dictionary<string, int> rankMap = new Dictionary<string, int>();
-        if (currentLeague.standings != null)
-        {
-            foreach (var standing in currentLeague.standings)
-            {
-                rankMap[standing.teamId] = standing.rank; // 1위, 2위...
-            }
-        }
+        // 현재 순위가 아닌 '해당 라운드 진입 당시'의 과거 순위를 역산합니다
+        Dictionary<string, int> historyRankMap = GetHistoricalRanks(currentLeague, roundIndex);
 
-        // 플레이어 팀을 항상 최상단에 노출, 나머지는 랭킹순 정렬
         string myTeamId = StudentManager.TEAM_ID;
-        targetMatches.Sort((a, b) =>
+
+        // 내 팀이 포함된 매치만 찾아서 맨 위로 쏙 올려줍니다.
+        int playerMatchIdx = targetMatches.FindIndex(m => m.homeTeamId == myTeamId || m.awayTeamId == myTeamId);
+        if (playerMatchIdx > 0)
         {
-            bool aHasPlayer = (a.homeTeamId == myTeamId || a.awayTeamId == myTeamId);
-            bool bHasPlayer = (b.homeTeamId == myTeamId || b.awayTeamId == myTeamId);
-
-            // 플레이어 팀이 포함된 매치를 무조건 최상단으로
-            if (aHasPlayer && !bHasPlayer) return -1;
-            if (!aHasPlayer && bHasPlayer) return 1;
-
-            // 순위(랭킹)가 높은 팀이 포함된 매치부터 차례로 출력
-            // ( awayTeamId가 비어있을 경우 순위를 낮게(99) 깔아버립니다.)
-            int aRank = Mathf.Min(
-                rankMap.ContainsKey(a.homeTeamId) ? rankMap[a.homeTeamId] : 99,
-                string.IsNullOrEmpty(a.awayTeamId) ? 99 : (rankMap.ContainsKey(a.awayTeamId) ? rankMap[a.awayTeamId] : 99)
-            );
-            int bRank = Mathf.Min(
-                rankMap.ContainsKey(b.homeTeamId) ? rankMap[b.homeTeamId] : 99,
-                string.IsNullOrEmpty(b.awayTeamId) ? 99 : (rankMap.ContainsKey(b.awayTeamId) ? rankMap[b.awayTeamId] : 99)
-            );
-
-            return aRank.CompareTo(bRank);
-        });
+            var pMatch = targetMatches[playerMatchIdx];
+            targetMatches.RemoveAt(playerMatchIdx);
+            targetMatches.Insert(0, pMatch);
+        }
 
         // UI 생성
         foreach (var match in targetMatches)
@@ -147,7 +139,7 @@ public class SwissBoardPanel : MonoBehaviour
             string team1 = match.homeTeamId;
             string team2 = match.awayTeamId;
 
-            // 플레이어 팀이 무조건 윗줄(1행)에 오도록 정렬, 나머지는 순위 높은 팀이 윗줄
+            // 플레이어 팀이 무조건 윗줄(1행)에 오도록 정렬
             if (team2 == myTeamId)
             {
                 team1 = match.awayTeamId;
@@ -155,8 +147,9 @@ public class SwissBoardPanel : MonoBehaviour
             }
             else if (team1 != myTeamId)
             {
-                int rank1 = rankMap.ContainsKey(team1) ? rankMap[team1] : 99;
-                int rank2 = rankMap.ContainsKey(team2) ? rankMap[team2] : 99;
+                // 플레이어 팀이 없는 일반 매치는 순위가 높은 팀이 윗줄
+                int rank1 = historyRankMap.ContainsKey(team1) ? historyRankMap[team1] : 99;
+                int rank2 = historyRankMap.ContainsKey(team2) ? historyRankMap[team2] : 99;
                 if (rank2 < rank1)
                 {
                     team1 = match.awayTeamId;
@@ -164,12 +157,60 @@ public class SwissBoardPanel : MonoBehaviour
                 }
             }
 
-            // 첫 번째 줄 생성 (예: 6위 플레이어팀)
-            if (!string.IsNullOrEmpty(team1)) CreateRow(team1, match, roundIndex, rankMap);
+            // 첫 번째 줄 생성
+            if (!string.IsNullOrEmpty(team1)) CreateRow(team1, match, roundIndex, historyRankMap);
 
-            // 두 번째 줄 생성 (예: 5위 상대팀)
-            if (!string.IsNullOrEmpty(team2)) CreateRow(team2, match, roundIndex, rankMap);
+            // 두 번째 줄 생성
+            if (!string.IsNullOrEmpty(team2)) CreateRow(team2, match, roundIndex, historyRankMap);
         }
+    }
+
+    // 과거 라운드 당시의 랭킹을 똑같이 계산해 주는 역산 함수
+    private Dictionary<string, int> GetHistoricalRanks(LeagueSaveData league, int upToRoundIndex)
+    {
+        Dictionary<string, LeagueStandingData> dict = new Dictionary<string, LeagueStandingData>();
+        foreach (var t in league.teams)
+        {
+            dict[t.teamId] = new LeagueStandingData { teamId = t.teamId };
+        }
+
+        // 선택한 라운드 '이전'까지의 경기 결과만 누적해서 당시의 승패/득실차를 구함
+        for (int i = 0; i < upToRoundIndex; i++)
+        {
+            var matches = league.matchRecords.FindAll(m => m.roundIndex == i && m.isPlayed);
+            foreach (var m in matches)
+            {
+                if (!dict.ContainsKey(m.homeTeamId) || !dict.ContainsKey(m.awayTeamId)) continue;
+
+                var home = dict[m.homeTeamId];
+                var away = dict[m.awayTeamId];
+
+                home.played++; away.played++;
+                home.scored += m.homeScore; home.conceded += m.awayScore;
+                away.scored += m.awayScore; away.conceded += m.homeScore;
+
+                if (m.homeScore > m.awayScore) { home.win++; away.lose++; home.points += 3; }
+                else if (m.homeScore < m.awayScore) { away.win++; home.lose++; away.points += 3; }
+            }
+        }
+
+        foreach (var s in dict.Values) s.goalDiff = s.scored - s.conceded;
+
+        var list = dict.Values.ToList();
+
+        // 당시 기록을 바탕으로 타이브레이커 정렬
+        list.Sort((a, b) =>
+        {
+            if (b.win != a.win) return b.win.CompareTo(a.win);
+            if (b.goalDiff != a.goalDiff) return b.goalDiff.CompareTo(a.goalDiff);
+            return string.Compare(a.teamId, b.teamId, StringComparison.Ordinal);
+        });
+
+        // 랭킹 부여
+        Dictionary<string, int> ranks = new Dictionary<string, int>();
+        for (int i = 0; i < list.Count; i++) ranks[list[i].teamId] = i + 1;
+
+        return ranks;
     }
 
     // 한 줄(Row)을 생성하는 함수
