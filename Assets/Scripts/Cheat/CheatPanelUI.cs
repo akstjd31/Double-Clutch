@@ -11,8 +11,11 @@ public enum CheatButton
 
 public class CheatPanelUI : MonoBehaviour
 {
+    [Header("Area")]
     [SerializeField] private GameObject _tabAreaObj;
     [SerializeField] private GameObject _inputAreaObj;
+    [SerializeField] private GameObject _studentAreaObj;
+
     [SerializeField] private Button[] _buttons;
     [SerializeField] private TextMeshProUGUI _titleText;
     [SerializeField] private TMP_InputField _inputField;
@@ -58,8 +61,8 @@ public class CheatPanelUI : MonoBehaviour
 
     public void OnClickButton(CheatButton cheatBtn)
     {
-        if (!_inputAreaObj.activeSelf)
-            _inputAreaObj.SetActive(true);
+        if (cheatBtn.Equals(CheatButton.Money | CheatButton.Fame)) _inputAreaObj.SetActive(true);
+        else _studentAreaObj.SetActive(true);
 
         _currentCheatButton = cheatBtn;
 
