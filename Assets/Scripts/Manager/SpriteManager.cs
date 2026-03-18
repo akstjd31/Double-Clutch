@@ -48,6 +48,11 @@ public class SpriteManager : Singleton<SpriteManager>
     // ID를 통해 스프라이트를 가져오기    
     public Sprite GetSprite(string resourceId)
     {
+        if (string.IsNullOrEmpty(resourceId))
+        {
+            Debug.LogWarning("[SpriteManager] 요청된 resourceId가 null 혹은 빈 문자열입니다.");
+            return null; // 혹은 미리 준비한 기본 아이콘(defaultSprite)을 반환하세요.
+        }
         // 1. 이미 불러온 적이 있는지 확인
         //if (!_spriteCache.ContainsKey(resourceId))
         //{
