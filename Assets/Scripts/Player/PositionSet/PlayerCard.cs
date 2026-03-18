@@ -21,6 +21,8 @@ public class PlayerCard : MonoBehaviour, IPointerClickHandler
     {
         _player = student;
 
+        _playerImage.sprite = SpriteManager.Instance.GetSprite(_player.VisualData.portraitResource);
+
         StringManager manager = StringManager.Instance;
         string name = manager.GetString(_player.Name[0]) + manager.GetString(_player.Name[1]) + manager.GetString(_player.Name[2]);
 
