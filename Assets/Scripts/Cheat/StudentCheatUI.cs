@@ -8,6 +8,7 @@ public class StudentCheatUI : MonoBehaviour
     [SerializeField] private GameObject _scrollViewObj;
     [SerializeField] private GameObject _studentButtonObjPrefab;
     [SerializeField] private GameObject _statPanelObj;
+    
 
     private void OnEnable()
     {
