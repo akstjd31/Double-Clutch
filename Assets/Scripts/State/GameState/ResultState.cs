@@ -190,8 +190,8 @@ public class ResultState : IState
                 // 우승 상금을 최종 획득 골드에 합산
                 finalRewardAmount += rewardData.Value.rewardGoldWin;
 
-                // 리그 우승 명성치 획득
-                _gm.SetHonor(_gm.SaveData.honor + rewardFameWin);
+                // 리그 우승 명성치 누적
+                _gm.SetTotalWinHonor(_gm.SaveData.totalWinHonor + rewardFameWin);
 
                 Debug.Log($"[리그 우승!] 상금 {rewardData.Value.rewardGoldWin}G 및 명성 {rewardData.Value.rewardFameWin} 획득!");
             }

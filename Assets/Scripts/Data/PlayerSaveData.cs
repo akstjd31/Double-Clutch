@@ -11,6 +11,7 @@ public class PlayerSaveData : SaveBase
     public int money;
     public int weekId;          // 테이블 주 ID
     public int year;            // 연차
+    public int totalWinHonor;   // 리그 우승으로 누적된 명성치 (졸업 시즌에 받음)
 
     public string currentProfileImage;
 

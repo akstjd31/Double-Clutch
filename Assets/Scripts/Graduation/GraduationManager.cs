@@ -73,18 +73,24 @@ public class GraduationManager : MonoBehaviour
         }
 
         ReleaseStudent();
+
+        GameManager.Instance.SetHonor(GameManager.Instance.SaveData.honor + GameManager.Instance.SaveData.totalWinHonor);
+        GameManager.Instance.ClearTotalWinHonorData();
     }
 
     private void ReleaseStudent()
     {
+        int totalHonor = 0;
         for (int i = 0; i < _graduationStudentList.Count; i++)
         {
             StudentManager.Instance.ReleaseStudent(_graduationStudentList[i]);
 
-            // 졸업한 선수의 누적 명성치를 실제로 데이터에 갱신시키기
-            GameManager.Instance.SetHonor(GameManager.Instance.SaveData.honor + _graduationStudentList[i].TotalFame);
+            totalHonor += _graduationStudentList[i].TotalFame;
             GameManager.Instance.AddGraduationCount(_graduationStudentList[i].VisualId);
         }        
+
+        // 졸업한 선수의 누적 명성치를 다 더해서 실제로 데이터에 갱신시키기
+        GameManager.Instance.SetHonor(GameManager.Instance.SaveData.honor + totalHonor);
         StudentManager.Instance.SaveGame();
     }
 
