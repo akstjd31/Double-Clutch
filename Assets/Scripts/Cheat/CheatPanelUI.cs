@@ -61,8 +61,16 @@ public class CheatPanelUI : MonoBehaviour
 
     public void OnClickButton(CheatButton cheatBtn)
     {
-        if (cheatBtn.Equals(CheatButton.Money | CheatButton.Fame)) _inputAreaObj.SetActive(true);
-        else _studentAreaObj.SetActive(true);
+        if (cheatBtn.Equals(CheatButton.Money) || cheatBtn.Equals(CheatButton.Fame))
+        {
+            _inputAreaObj.SetActive(true);
+            _studentAreaObj.SetActive(false);
+        }
+        else
+        {
+            _studentAreaObj.SetActive(true);
+            _inputAreaObj.SetActive(false);
+        }
 
         _currentCheatButton = cheatBtn;
 
