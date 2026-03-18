@@ -37,7 +37,11 @@ public class FightingPower : MonoBehaviour
         {
             var myData = new StudentSaveData();
             if (SaveLoadManager.Instance.TryLoad<StudentSaveData>(FilePath.MY_STUDENT_MATCHING_PATH, out myData))
+            {
                 _myMatchingStudentList = myData.studentList;
+                StudentManager.Instance.InitStudenList(_myMatchingStudentList);
+            }
+                
 
             var rivalData = new StudentSaveData();
             if (SaveLoadManager.Instance.TryLoad<StudentSaveData>(FilePath.RIVAL_STUDENT_MATCHING_PATH, out rivalData))
