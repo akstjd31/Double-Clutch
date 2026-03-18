@@ -113,13 +113,23 @@ public class ResultState : IState
         // 경기 결과 및 기본 보상 산정
         bool isWin = matchState.HomeTeam.Score > matchState.AwayTeam.Score;
 
-        // 실제 보상 데이터가 없으면 기본값 세팅 (에러 방지)
-        int rewardGoldEach = rewardData.Value.rewardGoldEach;                // 승리 시 경기당 지원금
-        float rewardGoldMultiplier = rewardData.Value.rewardGoldMultiplier;  // 패배 시 지원금 배율
-        
-        // 아직 리그 미구현으로 주석처리
-        int rewardFameWin = rewardData.Value.rewardFameWin;                     // 리그 최종 우승 시 명성
-        int finalParticipationFame = rewardData.Value.finalParticipationFame;   // 결승 출전 시 선수별 명성 누적 값
+        // 실제 보상 데이터가 없으면 기본값 세팅 (에러 방지 - HasValue 체크 추가!)
+        int rewardGoldEach = 0;
+        float rewardGoldMultiplier = 0f;
+        int rewardFameWin = 0;
+        int finalParticipationFame = 0;
+
+        if (rewardData.HasValue)
+        {
+            rewardGoldEach = rewardData.Value.rewardGoldEach;                // 승리 시 경기당 지원금
+            rewardGoldMultiplier = rewardData.Value.rewardGoldMultiplier;  // 패배 시 지원금 배율
+            rewardFameWin = rewardData.Value.rewardFameWin;                      // 리그 최종 우승 시 명성
+            finalParticipationFame = rewardData.Value.finalParticipationFame;   // 결승 출전 시 선수별 명성 누적 값
+        }
+        else
+        {
+            Debug.LogWarning("[ResultState] 보상 데이터가 없습니다! 리그 데이터를 정상적으로 불러오지 못했거나 이미 종료되었습니다.");
+        }
 
         // 승패에 따른 기본 지급금 계산
         int baseGold = isWin ? rewardGoldEach : Mathf.RoundToInt(rewardGoldEach * rewardGoldMultiplier);
