@@ -89,6 +89,18 @@ public class SettingPanel : MonoBehaviour
         if (manager.SettingData == null || manager.SettingData.fps == 60) _fps60.isOn = true;
         else _fps30.isOn = true;
 
+        if (manager.SettingData == null)
+        {
+            _masterVolSlider.value = 0.8f;
+            _bgmVolSlider.value = 0.8f;
+            _sfxVolSlider.value = 0.8f;
+
+            _masterMuteToggle.isOn = false;
+            _bgmMuteToggle.isOn = false;
+            _sfxMuteToggle.isOn = false;
+            _viberationToggle.isOn = true;
+            return;
+        }
         _masterVolSlider.value = manager.SettingData.masterVol;
         _bgmVolSlider.value = manager.SettingData.bgmVol;
         _sfxVolSlider.value = manager.SettingData.sfxVol;
