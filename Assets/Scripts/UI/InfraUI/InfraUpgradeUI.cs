@@ -66,7 +66,7 @@ public class InfraUpgradeUI : MonoBehaviour
         StringManager.Instance.GetString(_infra.nameKey, _title);
         StringManager.Instance.GetString(_infra.nameKey, _nameText);
 
-        _levelText.text = _infra.currentLevel.ToString();
+        _levelText.text = "LV"+_infra.currentLevel.ToString();
         _costText.text = _controller.GetCostByNextLevel().ToString();
 
         string originDesc = StringManager.Instance.GetString(_infra.descKey);
