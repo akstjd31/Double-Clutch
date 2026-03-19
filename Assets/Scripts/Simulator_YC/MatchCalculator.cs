@@ -56,8 +56,8 @@ public static class MatchCalculator
 
     public static float CalculateDistance(Vector2 p1, Vector2 p2)
     {
-        float dx = (p2.x - p1.x) * 1.0f;
-        float dy = (p2.y - p1.y) * ASPECT_RATIO;
+        float dx = p2.x - p1.x;
+        float dy = p2.y - p1.y;
         return Mathf.Sqrt(dx * dx + dy * dy);
     }
 
