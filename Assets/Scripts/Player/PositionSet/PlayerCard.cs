@@ -10,12 +10,12 @@ public class PlayerCard : MonoBehaviour, IPointerClickHandler
     [SerializeField] TextMeshProUGUI _playerName;
     [SerializeField] TextMeshProUGUI _playerPosition;
     [SerializeField] TextMeshProUGUI _playerState;
-    
 
     private Student _player;
     private bool _isAvailable;
     public Student Player => _player;
     public bool IsAvailable => _isAvailable;
+
 
     public void Init(Student student)
     {
@@ -44,14 +44,13 @@ public class PlayerCard : MonoBehaviour, IPointerClickHandler
             _isAvailable = true;
         }
 
-        // 참여하지 못하는 선수는 레이캐스트 꺼버림
-        if (!_isAvailable)
-        {
-            this.GetComponent<Image>().raycastTarget = false;
-        }
+        this.enabled = _isAvailable;
+        this.GetComponent<Draggable>().enabled = _isAvailable;
 
         if (_outline != null)
             _outline.enabled = false;
+
+        Debug.Log($"{student.Name} 플레이어 카드 세팅 완료!");
     }
 
     public void SetSelected(bool on)
