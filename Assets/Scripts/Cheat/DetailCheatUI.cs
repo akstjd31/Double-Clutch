@@ -10,7 +10,7 @@ public class DetailCheatUI : MonoBehaviour
 {
     [SerializeField] private Student _student;
     [SerializeField] private Button[] _buttons;
-    [SerializeField] private GameObject[] _statDetailsPanelObjs;
+    [SerializeField] private GameObject[] _detailsPanelObjs;
 
     private void OnEnable()
     {
@@ -37,17 +37,20 @@ public class DetailCheatUI : MonoBehaviour
 
     public void OnClickDetailButton(CheatDetails detail)
     {
+        for (int i = 0; i < _detailsPanelObjs.Length; i++)
+            _detailsPanelObjs[i].SetActive((int)detail == i);
+
         switch (detail)
         {
             case CheatDetails.Stat:
-                _statDetailsPanelObjs[(int)detail].SetActive(true);
-                
-                if (_statDetailsPanelObjs[(int)detail].TryGetComponent<StatCheatUI>(out var statCheat))
-                {
+                if (_detailsPanelObjs[(int)detail].TryGetComponent<StatCheatUI>(out var statCheat))
                     statCheat.SetStudent(_student);
-                }
+
                 break;
             case CheatDetails.Passive:
+                if (_detailsPanelObjs[(int)detail].TryGetComponent<PassiveCheatUI>(out var passiveCheat))
+                    passiveCheat.SetStudent(_student);
+                
                 break;
             case CheatDetails.Trait:
                 break;
