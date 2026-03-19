@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
 using UnityEngine;
 
 
@@ -97,6 +96,8 @@ public class CharacterList : MonoBehaviour
             }
         }
 
+        UpdateMatchStartUI();
+
         // 3) 저장 데이터가 있으면 studentList 순서대로 배치
         if (data == null || data.studentList == null) return;
 
@@ -176,6 +177,7 @@ public class CharacterList : MonoBehaviour
     public void OnClickCard(PlayerCard card)
     {
         if (card == null) return;
+        if (!card.IsAvailable) return;
 
         if (_selectedCard == card)
         {

@@ -48,6 +48,7 @@ public class TeamTraining : ITraining
 
             if (_target.State != StudentState.None)
             {
+                _target.ResetTrainingSchedule();
                 continue;
             }
 
@@ -93,6 +94,8 @@ public class TeamTraining : ITraining
             _target.OnStatChanged();
             _target.ResetTrainingSchedule();
         }
+        
+        
     }
 
     private void GetInjuryOrOverwork(Student target)

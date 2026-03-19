@@ -232,7 +232,7 @@ public class MatchReplayer : MonoBehaviour
                     _uiManager.UpdateScoreBoard(_matchState);
                     if (log.IsCutIn)
                     {
-                        _uiManager.ShowCutInEffect(log.CutInType, speed);
+                        _uiManager.ShowCutInEffect(log.CutInType, log.CutInResourceKey, speed);
                         yield return new WaitForSeconds(1.5f / speed);
                     }
                 }

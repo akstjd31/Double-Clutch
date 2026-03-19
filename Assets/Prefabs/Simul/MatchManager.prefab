@@ -47,8 +47,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MatchEngine
   MatchLogs: []
+  FullMatchLogs: []
   _eventConfigReader: {fileID: 11400000, guid: 3f2ceb8850ca0eb45912bee07def54b0, type: 2}
   _positionPresetReader: {fileID: 11400000, guid: 861ec4d86760af54b984d896ed8494d5, type: 2}
+  _synergyReader: {fileID: 11400000, guid: faeaf6662d8b3d14aa466059021b8625, type: 2}
+  dribbleBlockDist: 0.1
+  passInterceptDist: 0.03
+  blockDist: 0.25
 --- !u!114 &6225409172891308612
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -82,16 +87,50 @@ MonoBehaviour:
   _textAwayScore: {fileID: 0}
   _textHomeName: {fileID: 0}
   _textAwayName: {fileID: 0}
+  _normalResultPanel: {fileID: 0}
   _resultPanel: {fileID: 0}
-  _finalScoreText: {fileID: 0}
+  _textResultHomeScore: {fileID: 0}
+  _textResultHomeName: {fileID: 0}
+  _textResultAwayScore: {fileID: 0}
+  _textResultAwayName: {fileID: 0}
+  _textResultTitle: {fileID: 0}
+  _textResultReward: {fileID: 0}
   _textLogMessage: {fileID: 0}
-  _eventPanel: {fileID: 0}
+  _quarterEndPanel: {fileID: 0}
+  _leagueCalculatePanel: {fileID: 0}
+  _halftimeVNPanel: {fileID: 0}
+  _btnNext: {fileID: 0}
+  _choiceGroup: {fileID: 0}
+  _btnChoice1: {fileID: 0}
+  _txtChoice1: {fileID: 0}
+  _btnChoice2: {fileID: 0}
+  _txtChoice2: {fileID: 0}
+  _btnChoice3: {fileID: 0}
+  _txtChoice3: {fileID: 0}
+  _imgBackground: {fileID: 0}
+  _imgStandingLeft: {fileID: 0}
+  _imgStandingMiddle: {fileID: 0}
+  _imgStandingRight: {fileID: 0}
+  _imgCG: {fileID: 0}
+  _leftBubbleGroup: {fileID: 0}
+  _txtLeftSpeakerName: {fileID: 0}
+  _txtLeftDialogue: {fileID: 0}
+  _rightBubbleGroup: {fileID: 0}
+  _txtRightSpeakerName: {fileID: 0}
+  _txtRightDialogue: {fileID: 0}
   _cutInPanel: {fileID: 0}
   _cutInImage: {fileID: 0}
   _cutInText: {fileID: 0}
+  _settingPanel: {fileID: 0}
+  _swissBoardPanel: {fileID: 0}
+  _tournamentBoardPanel: {fileID: 0}
   _spriteDunk: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
   _spriteThreePoint: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
   _spriteBuzzerBeater: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
   _maxLogLines: 5
   _replayer: {fileID: 0}
-  _textSpeedButton: {fileID: 0}
+  _speedButton: {fileID: 0}
+  _x1: {fileID: -2492900906055488397, guid: 8cf8fc3b333b35b468551b14e83ac8c2, type: 3}
+  _x2: {fileID: -4440500489735950315, guid: 8cf8fc3b333b35b468551b14e83ac8c2, type: 3}
+  _x4: {fileID: 1545526621095042377, guid: 8cf8fc3b333b35b468551b14e83ac8c2, type: 3}
+  _x8: {fileID: 3171618487605267314, guid: 8cf8fc3b333b35b468551b14e83ac8c2, type: 3}

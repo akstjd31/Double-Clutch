@@ -158,15 +158,15 @@ public class InfraManager : Singleton<InfraManager>
     {
         if (SaveLoadManager.Instance == null) return;
 
-        var saveData = new InfraSaveData();
+        _myInfraData = new InfraSaveData();
 
         for (int i = 0; i < MAX_INFRA_COUNT; i++)
         {
             if (infras[i] == null) continue;
-            saveData.infraList.Add(infras[i]);
+            _myInfraData.infraList.Add(infras[i]);
         }
 
-        SaveLoadManager.Instance.Save<InfraSaveData>(FilePath.INFRA_PATH, saveData);
+        SaveLoadManager.Instance.Save<InfraSaveData>(FilePath.INFRA_PATH, _myInfraData);
     }
 
     public void SetInfra(Infra infra)

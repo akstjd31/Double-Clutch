@@ -11,9 +11,12 @@ public class InfraUpgradeUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _title;
     [SerializeField] private TextMeshProUGUI _nameText;
     [SerializeField] private TextMeshProUGUI _levelText;
+    [SerializeField] private TextMeshProUGUI _costText;
+
     [SerializeField] private TextMeshProUGUI _effectDescText;
     [SerializeField] private Button _upgradeButton;
-    [SerializeField] private ReconfirmUI _reconfirmUI;
+    [SerializeField] private InfraReconfirmUI _reconfirmUI;
+    [SerializeField] private InfraWarningUI _warningUI;
 
     [Header("업그레이드 배경리소스")]
     [SerializeField] private Image _backGroundImage;
@@ -63,7 +66,8 @@ public class InfraUpgradeUI : MonoBehaviour
         StringManager.Instance.GetString(_infra.nameKey, _title);
         StringManager.Instance.GetString(_infra.nameKey, _nameText);
 
-        _levelText.text = _infra.currentLevel.ToString();
+        _levelText.text = "LV"+_infra.currentLevel.ToString();
+        _costText.text = _controller.GetCostByNextLevel().ToString();
 
         string originDesc = StringManager.Instance.GetString(_infra.descKey);
         var keys = TextParser.GetKeys(originDesc);
@@ -81,14 +85,25 @@ public class InfraUpgradeUI : MonoBehaviour
 
     public void UpdateLevelText(int level)
     {
-        _levelText.text = level.ToString();
+        _upgradeButton.interactable = !(_infra.currentLevel >= _infra.maxLevel);
+        Refresh();
     }
 
     public void OnClickUpgradeButton()
     {
         if (_controller == null) return;
-        _reconfirmUI.gameObject.SetActive(true);
-        _reconfirmUI.Init(_controller);
+
+        if (_controller.HasEnoughUpgradeCost())
+        {
+            _reconfirmUI.gameObject.SetActive(true);
+            _reconfirmUI.Init(_controller);
+        }
+        else
+
+        {
+            _warningUI.gameObject.SetActive(true);
+            _warningUI.Init(_controller);
+        }
     }
 
     // 중괄호로 되어있는 부분을 처리 및 전체 문자열을 반환 (이 부분은 UI 스크립트에서 작성해야할듯?)

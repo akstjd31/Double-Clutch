@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System;
+using System.Linq;
 
 public class SwissBoardPanel : MonoBehaviour
 {
@@ -71,6 +72,19 @@ public class SwissBoardPanel : MonoBehaviour
             newTab.Init(i, currentLeague.currentRoundIndex, currentLeague.isFinished, SelectTab);
             _tabs.Add(newTab);
         }
+        // 남은 공간을 채워줄 '투명 더미 탭' 생성 로직 
+        // 무조건 6개의 탭이 있는 것처럼 Layout Group을 속여서 크기를 강제 고정합니다.
+        int maxTabCount = 6;
+        for (int i = totalRounds; i < maxTabCount; i++)
+        {
+            GameObject dummy = new GameObject("DummyTab");
+            dummy.transform.SetParent(_tabContainer, false);
+
+            // 더미가 기존 탭들과 완벽하게 동일한 비율(넓이)을 차지하도록 LayoutElement 추가
+            var layoutElement = dummy.AddComponent<UnityEngine.UI.LayoutElement>();
+            layoutElement.flexibleWidth = 1;
+        }
+
     }
 
     private void SelectTab(int roundIndex)
@@ -99,94 +113,138 @@ public class SwissBoardPanel : MonoBehaviour
     private void RefreshMatchList(int roundIndex)
     {
         var currentLeague = LeagueManager.Instance.CurrentLeague;
+        if (currentLeague == null) return;
 
-        // 기존 대진표 삭제
-        foreach (Transform child in _matchContainer) Destroy(child.gameObject);
+        foreach (Transform child in _matchContainer)
+            Destroy(child.gameObject);
 
-        // 해당 라운드의 매치들만 필터링
-        List<LeagueMatchRecord> targetMatches = currentLeague.matchRecords.FindAll(m => m.roundIndex == roundIndex);
+        // 해당 라운드 진입 당시의 순위
+        Dictionary<string, int> historyRankMap = GetHistoricalRanks(currentLeague, roundIndex);
 
-        // 랭킹 정보를 빠르게 찾기 위한 딕셔너리 생성
-        Dictionary<string, int> rankMap = new Dictionary<string, int>();
-        if (currentLeague.standings != null)
+        string myTeamId = StudentManager.TEAM_ID;
+
+        // 이번 라운드의 전체 팀 목록
+        List<string> orderedTeamIds = historyRankMap
+            .OrderBy(x => x.Value)
+            .Select(x => x.Key)
+            .ToList();
+
+        // 플레이어 팀 / 상대 팀 찾기
+        string opponentTeamId = GetOpponentTeamId(currentLeague, roundIndex, myTeamId);
+
+        // 플레이어 팀을 맨 위로
+        if (orderedTeamIds.Remove(myTeamId))
+            orderedTeamIds.Insert(0, myTeamId);
+
+        // 플레이어 상대팀을 두 번째로
+        if (!string.IsNullOrEmpty(opponentTeamId))
         {
-            foreach (var standing in currentLeague.standings)
-            {
-                rankMap[standing.teamId] = standing.rank; // 1위, 2위...
-            }
+            orderedTeamIds.Remove(opponentTeamId);
+
+            int insertIndex = orderedTeamIds.Count > 0 ? 1 : 0;
+            orderedTeamIds.Insert(insertIndex, opponentTeamId);
         }
 
-        // 플레이어 팀을 항상 최상단에 노출, 나머지는 랭킹순 정렬
-        string myTeamId = StudentManager.TEAM_ID;
-        targetMatches.Sort((a, b) =>
+        // 팀별 1줄씩 생성
+        foreach (string teamId in orderedTeamIds)
         {
-            bool aHasPlayer = (a.homeTeamId == myTeamId || a.awayTeamId == myTeamId);
-            bool bHasPlayer = (b.homeTeamId == myTeamId || b.awayTeamId == myTeamId);
-
-            // 플레이어 팀이 포함된 매치를 무조건 최상단으로
-            if (aHasPlayer && !bHasPlayer) return -1;
-            if (!aHasPlayer && bHasPlayer) return 1;
-
-            // 순위(랭킹)가 높은 팀이 포함된 매치부터 차례로 출력
-            // ( awayTeamId가 비어있을 경우 순위를 낮게(99) 깔아버립니다.)
-            int aRank = Mathf.Min(
-                rankMap.ContainsKey(a.homeTeamId) ? rankMap[a.homeTeamId] : 99,
-                string.IsNullOrEmpty(a.awayTeamId) ? 99 : (rankMap.ContainsKey(a.awayTeamId) ? rankMap[a.awayTeamId] : 99)
-            );
-            int bRank = Mathf.Min(
-                rankMap.ContainsKey(b.homeTeamId) ? rankMap[b.homeTeamId] : 99,
-                string.IsNullOrEmpty(b.awayTeamId) ? 99 : (rankMap.ContainsKey(b.awayTeamId) ? rankMap[b.awayTeamId] : 99)
-            );
-
-            return aRank.CompareTo(bRank);
-        });
-
-        // UI 생성
-        foreach (var match in targetMatches)
-        {
-            string team1 = match.homeTeamId;
-            string team2 = match.awayTeamId;
-
-            // 플레이어 팀이 무조건 윗줄(1행)에 오도록 정렬, 나머지는 순위 높은 팀이 윗줄
-            if (team2 == myTeamId)
-            {
-                team1 = match.awayTeamId;
-                team2 = match.homeTeamId;
-            }
-            else if (team1 != myTeamId)
-            {
-                int rank1 = rankMap.ContainsKey(team1) ? rankMap[team1] : 99;
-                int rank2 = rankMap.ContainsKey(team2) ? rankMap[team2] : 99;
-                if (rank2 < rank1)
-                {
-                    team1 = match.awayTeamId;
-                    team2 = match.homeTeamId;
-                }
-            }
-
-            // 첫 번째 줄 생성 (예: 6위 플레이어팀)
-            if (!string.IsNullOrEmpty(team1)) CreateRow(team1, match, roundIndex, rankMap);
-
-            // 두 번째 줄 생성 (예: 5위 상대팀)
-            if (!string.IsNullOrEmpty(team2)) CreateRow(team2, match, roundIndex, rankMap);
+            CreateRankingRow(teamId, roundIndex, historyRankMap);
         }
     }
 
-    // 한 줄(Row)을 생성하는 함수
-    private void CreateRow(string teamId, LeagueMatchRecord match, int viewRoundIndex, Dictionary<string, int> rankMap)
+    private string GetOpponentTeamId(LeagueSaveData league, int roundIndex, string myTeamId)
     {
+        if (league == null || string.IsNullOrEmpty(myTeamId))
+            return null;
+
+        LeagueMatchRecord myMatch = league.matchRecords.Find(m =>
+            m.roundIndex == roundIndex &&
+            (m.homeTeamId == myTeamId || m.awayTeamId == myTeamId));
+
+        if (myMatch == null) return null;
+
+        return myMatch.homeTeamId == myTeamId ? myMatch.awayTeamId : myMatch.homeTeamId;
+    }
+
+    private void CreateRankingRow(string teamId, int viewRoundIndex, Dictionary<string, int> rankMap)
+    {
+        if (string.IsNullOrEmpty(teamId)) return;
+
         SwissMatchRow row = Instantiate(_matchRowPrefab, _matchContainer);
+
         bool isMyTeam = (teamId == StudentManager.TEAM_ID);
         int rank = rankMap.ContainsKey(teamId) ? rankMap[teamId] : 0;
+
         var record = GetCumulativeRecord(teamId, viewRoundIndex);
 
-        string scoreStr = "-";
-        if (match.isPlayed)
-        {
-            scoreStr = (teamId == match.homeTeamId) ? match.homeScore.ToString() : match.awayScore.ToString();
-        }
+        string scoreStr = GetRoundScoreString(teamId, viewRoundIndex);
 
         row.Init(teamId, rank, record.win, record.lose, scoreStr, isMyTeam);
+    }
+
+    private string GetRoundScoreString(string teamId, int roundIndex)
+    {
+        var league = LeagueManager.Instance.CurrentLeague;
+        if (league == null) return "-";
+
+        LeagueMatchRecord match = league.matchRecords.Find(m =>
+            m.roundIndex == roundIndex &&
+            (m.homeTeamId == teamId || m.awayTeamId == teamId));
+
+        if (match == null) return "-";
+        if (!match.isPlayed) return "-";
+
+        return (match.homeTeamId == teamId)
+            ? match.homeScore.ToString()
+            : match.awayScore.ToString();
+    }
+
+    // 과거 라운드 당시의 랭킹을 똑같이 계산해 주는 역산 함수
+    private Dictionary<string, int> GetHistoricalRanks(LeagueSaveData league, int upToRoundIndex)
+    {
+        Dictionary<string, LeagueStandingData> dict = new Dictionary<string, LeagueStandingData>();
+        foreach (var t in league.teams)
+        {
+            dict[t.teamId] = new LeagueStandingData { teamId = t.teamId };
+        }
+
+        // 선택한 라운드 '이전'까지의 경기 결과만 누적해서 당시의 승패/득실차를 구함
+        for (int i = 0; i < upToRoundIndex; i++)
+        {
+            var matches = league.matchRecords.FindAll(m => m.roundIndex == i && m.isPlayed);
+            foreach (var m in matches)
+            {
+                if (!dict.ContainsKey(m.homeTeamId) || !dict.ContainsKey(m.awayTeamId)) continue;
+
+                var home = dict[m.homeTeamId];
+                var away = dict[m.awayTeamId];
+
+                home.played++; away.played++;
+                home.scored += m.homeScore; home.conceded += m.awayScore;
+                away.scored += m.awayScore; away.conceded += m.homeScore;
+
+                if (m.homeScore > m.awayScore) { home.win++; away.lose++; home.points += 3; }
+                else if (m.homeScore < m.awayScore) { away.win++; home.lose++; away.points += 3; }
+            }
+        }
+
+        foreach (var s in dict.Values) s.goalDiff = s.scored - s.conceded;
+
+        var list = dict.Values.ToList();
+
+        // 당시 기록을 바탕으로 타이브레이커 정렬
+        list.Sort((a, b) =>
+        {
+            if (b.win != a.win) return b.win.CompareTo(a.win);
+            if (b.goalDiff != a.goalDiff) return b.goalDiff.CompareTo(a.goalDiff);
+            return string.Compare(a.teamId, b.teamId, StringComparison.Ordinal);
+        });
+
+        // 랭킹 부여
+        Dictionary<string, int> ranks = new Dictionary<string, int>();
+        for (int i = 0; i < list.Count; i++) ranks[list[i].teamId] = i + 1;
+
+        return ranks;
     }
 
     // 누적 승패 역산
@@ -213,29 +271,30 @@ public class SwissBoardPanel : MonoBehaviour
     private void RefreshActionButton(int roundIndex)
     {
         var currentLeague = LeagueManager.Instance.CurrentLeague;
-
         _btnAction.onClick.RemoveAllListeners();
 
-        // 리그가 완전히 종료된 상태
+        // 버튼 텍스트 세팅 수정
+        _txtBtnAction.text = string.IsNullOrEmpty(_customActionText) ? (currentLeague.isFinished ? "닫기" : "경기 준비") : _customActionText;
+
+        // 리그가 완전히 종료된 상태 (수정: _customAction.Invoke() 추가)
         if (currentLeague.isFinished)
         {
-            _txtBtnAction.text = "닫기";
             _btnAction.interactable = true;
-            _btnAction.onClick.AddListener(() => gameObject.SetActive(false));
+            _btnAction.onClick.AddListener(() =>
+            {
+                gameObject.SetActive(false);
+                if (_customAction != null) _customAction.Invoke();
+            });
             return;
         }
 
-        // 리그 진행 중
-        _txtBtnAction.text = string.IsNullOrEmpty(_customActionText) ? "경기 준비" : _customActionText;
-
-        // 내가 봐야 하는 현재 라운드 탭을 보고 있을 때만 터치 활성화
+        // 내가 봐야 하는 현재 라운드 탭을 보고 있을 때만 터치 활성화 (수정: _customAction 처리 추가)
         if (roundIndex == currentLeague.currentRoundIndex)
         {
             _btnAction.interactable = true;
             _btnAction.onClick.AddListener(() =>
             {
                 gameObject.SetActive(false);
-                // 외부에서 넘겨준 커스텀 행동(로비 이동 등)이 있으면 실행, 없으면 매치 배치로 이동
                 if (_customAction != null)
                 {
                     _customAction.Invoke();
@@ -248,7 +307,6 @@ public class SwissBoardPanel : MonoBehaviour
         }
         else
         {
-            // 과거나 미래 탭을 보고 있으면 경기 준비 비활성화 (흐리게 처리)
             _btnAction.interactable = false;
         }
     }

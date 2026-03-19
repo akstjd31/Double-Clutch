@@ -41,20 +41,20 @@ public class ConditionWarningPopUp : MonoBehaviour
     {
         StringManager manager = StringManager.Instance;        
 
-        foreach (var box in _problemList) //±âÁ¸¿¡ »ç¿ëÇÏ´ø °æ°íÃ¢µéÀ» Ç®·Î ¹İ³³
+        foreach (var box in _problemList) //ê¸°ì¡´ì— ì‚¬ìš©í•˜ë˜ ê²½ê³ ì°½ë“¤ì„ í’€ë¡œ ë°˜ë‚©
         {
             _problemPool.Release(box);
         }
         _problemList.Clear();
 
-        foreach (Student target in students) //³Ñ°Ü¹ŞÀº ÇĞ»ı Áß ¹®Á¦ ÄÁµğ¼Ç 0 ´Ù½Ã Ã¼Å© ÈÄ °æ°í¹®±¸ »ı¼º
+        foreach (Student target in students) //ë„˜ê²¨ë°›ì€ í•™ìƒ ì¤‘ ë¬¸ì œ ì»¨ë””ì…˜ 0 ë‹¤ì‹œ ì²´í¬ í›„ ê²½ê³ ë¬¸êµ¬ ìƒì„±
         {
             string name = manager.GetString(target.Name[0]) + manager.GetString(target.Name[1]) + manager.GetString(target.Name[2]);
-            if (target.State != StudentState.None) //ºÎ»ó, °ú·Î ÇĞ»ı¿ë(ÆÀ ÈÆ·Ã ½Ã)
+            if (target.State != StudentState.None) //ë¶€ìƒ, ê³¼ë¡œ í•™ìƒìš©(íŒ€ í›ˆë ¨ ì‹œ)
             {                
                 CreateWarning(name, target.State);
             }
-            else if (target.Condition <= 0) //ÄÁµğ¼Ç 0 ÇĞ»ı(¹ü¿ë)
+            else if (target.Condition <= 0 || target.CurrentTraining is IndividualTraining) //ì»¨ë””ì…˜ 0 í•™ìƒ(ê°œì¸í›ˆë ¨ìš©)
             {
                 CreateWarning(name);
             }
@@ -63,19 +63,21 @@ public class ConditionWarningPopUp : MonoBehaviour
 
     private void SetCostText(int cost)
     {
-        _cost.text = $"ºñ¿ë : {cost}G";
+        _cost.text = $"ë¹„ìš© : {cost}G";
     }
 
     private void CreateWarning(string name)
     {
         Problem problem = _problemPool.Get();
+        _problemList.Add(problem);
         problem.Init(name);
     }
     private void CreateWarning(string name, StudentState state)
     {
         Problem problem = _problemPool.Get();
+        _problemList.Add(problem);
         problem.Init(name, state);
-    }
+    }    
 
     private void OnDestroy()
     {

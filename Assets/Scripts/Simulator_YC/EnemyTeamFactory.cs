@@ -93,6 +93,9 @@ public class EnemyTeamFactory : MonoBehaviour
         if (string.IsNullOrEmpty(actualVisualKey)) actualVisualKey = "Default_Player_Sprite";
         MatchPlayer matchPlayer = new MatchPlayer(id, s.Name, pos, stats, actualVisualKey, s.Passive);
         matchPlayer.TraitId = s.TraitId;
+        matchPlayer.CutIn1 = s.VisualData.playerCutInResourceId01;
+        matchPlayer.CutIn2 = s.VisualData.playerCutInResourceId02;
+        matchPlayer.CutIn3 = s.VisualData.playerCutInResourceId03;
         return matchPlayer;
     }
 

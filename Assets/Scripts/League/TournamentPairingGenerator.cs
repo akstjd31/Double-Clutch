@@ -1,9 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 
-/// <summary>
-/// 토너먼트 (5.2 참고)
-/// </summary>
 public class TournamentPairingGenerator : ILeaguePairingGenerator
 {
     public List<LeagueMatchRecord> GenerateRoundMatches(LeagueSaveData saveData, int roundIndex)
@@ -12,16 +9,19 @@ public class TournamentPairingGenerator : ILeaguePairingGenerator
         if (saveData == null || saveData.teams == null)
             return result;
 
-        var aliveTeams = GetAliveTeams(saveData);
+        // 탈락하지 않은(isEliminated == false) 생존 팀만 차례대로 추출
+        var aliveTeams = saveData.teams
+            .Where(t => !t.isEliminated)
+            .Select(t => t.teamId)
+            .ToList();
 
         if (aliveTeams.Count < 2)
             return result;
 
-        // 첫 라운드는 초기 시드 순서 / 이후 라운드는 생존 팀 순서 (무조건 2의 n승)
+        // 생존한 팀들을 브라켓 순서대로 2팀씩 매칭
         for (int i = 0; i < aliveTeams.Count; i += 2)
         {
-            if (i + 1 >= aliveTeams.Count)
-                break;
+            if (i + 1 >= aliveTeams.Count) break;
 
             string homeId = aliveTeams[i];
             string awayId = aliveTeams[i + 1];
@@ -47,13 +47,5 @@ public class TournamentPairingGenerator : ILeaguePairingGenerator
         }
 
         return result;
-    }
-
-    private List<string> GetAliveTeams(LeagueSaveData saveData)
-    {
-        return saveData.teams
-            .Where(t => !t.isEliminated)
-            .Select(t => t.teamId)
-            .ToList();
     }
 }

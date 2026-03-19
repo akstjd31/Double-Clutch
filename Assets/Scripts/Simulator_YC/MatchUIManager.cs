@@ -1,7 +1,8 @@
+using DG.Tweening;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using DG.Tweening;
+using System.Linq;
 using TMPro; 
 using UnityEngine;
 using UnityEngine.UI;
@@ -73,6 +74,9 @@ public class MatchUIManager : MonoBehaviour
 
     [Header("Swiss Board UI")]
     [SerializeField] private SwissBoardPanel _swissBoardPanel;
+
+    [Header("Tournament Board UI")]
+    [SerializeField] private TournamentBoardPanel _tournamentBoardPanel;
 
     // 유니티 에디터에서 연결할 스프라이트들
     [SerializeField] private Sprite _spriteDunk;
@@ -173,35 +177,51 @@ public class MatchUIManager : MonoBehaviour
     }
 
     // 컷인 연출 실행 함수
-    public void ShowCutInEffect(string type, float speed = 1.0f)
+    public void ShowCutInEffect(string type, string resourceKey = "", float speed = 1.0f)
     {
-        Debug.Log($">>> 컷인 함수 호출됨! 타입: {type} / 패널연결여부: {(_cutInPanel != null)}");
         if (_cutInPanel == null) return;
 
         Sprite targetSprite = null;
         string targetText = "";
 
+        if (!string.IsNullOrEmpty(resourceKey) && resourceKey != "-")
+        {
+            targetSprite = SpriteManager.Instance.GetSprite(resourceKey);
+        }
+        else
+        {
+            Debug.LogWarning("<color=orange>[컷인 디버그 3단계 경고]</color> resourceKey가 비어있습니다. (개인 컷인이 없거나 엔진에서 넘겨주지 않음)");
+        }
         switch (type)
         {
             case "DUNK":
-                targetSprite = _spriteDunk;
+            case "playerCutInResourceId02":
+                if (targetSprite == null) targetSprite = _spriteDunk; // 개인 컷인 없으면 디폴트 이미지
                 targetText = "SLAM DUNK!";
                 break;
+
             case "3PT":
-                targetSprite = _spriteThreePoint;
+            case "playerCutInResourceId01":
+                if (targetSprite == null) targetSprite = _spriteThreePoint; // 개인 컷인 없으면 디폴트 이미지
                 targetText = "3 POINT!";
                 break;
+
             case "BUZZER":
-                targetSprite = _spriteBuzzerBeater;
+            case "playerCutInResourceId03":
+                if (targetSprite == null) targetSprite = _spriteBuzzerBeater; // 개인 컷인 없으면 디폴트 이미지
                 targetText = "BUZZER BEATER!";
                 break;
+
             default:
                 return; // 해당 없으면 무시
         }
 
         // 이미지/텍스트 세팅
         if (_cutInImage != null && targetSprite != null)
+        {
             _cutInImage.sprite = targetSprite;
+            _cutInImage.rectTransform.sizeDelta = new Vector2(700f, 700f);
+        }
 
         if (_cutInText != null)
             _cutInText.text = targetText;
@@ -400,6 +420,29 @@ public class MatchUIManager : MonoBehaviour
 
         return text;
     }
+
+    private string ReplaceImageVariables(string key)
+    {
+        if (string.IsNullOrEmpty(key)) return key;
+
+        var currentMembers = StudentManager.Instance.CurrentTeam.Members;
+        string[] tags = { "PG", "SG", "SF", "PF", "C" };
+        Position[] positions = { Position.PG, Position.SG, Position.SF, Position.PF, Position.C };
+
+        for (int i = 0; i < tags.Length; i++)
+        {
+            if (key.Contains(tags[i]))
+            {
+                // Find 대신 FirstOrDefault를 사용 (배열, 리스트 모두 대응 가능)
+                var student = currentMembers.FirstOrDefault(s => s.MatchPosition == positions[i]);
+
+                string visualId = (student != null) ? student.VisualData.playerImageResource : "";
+                key = key.Replace(tags[i], visualId);
+            }
+        }
+        return key;
+    }
+
     // 테이블의 문자열 키를 기반으로 UI 이미지를 켜고 끄는 헬퍼 함수
     private void UpdateVisuals(Halftime_ScriptData lineData)
     {
@@ -416,7 +459,7 @@ public class MatchUIManager : MonoBehaviour
             if (_imgStandingLeft != null)
             {
                 _imgStandingLeft.gameObject.SetActive(true);
-                // 예시: _imgStandingLeft.sprite = Resources.Load<Sprite>(lineData.standingLeft);
+                _imgStandingLeft.sprite = SpriteManager.Instance.GetSprite(ReplaceImageVariables(lineData.standingLeft));
                 _imgStandingLeft.color = (lineData.speakDirection == "Left") ? Color.white : Color.gray;
             }
         }
@@ -431,7 +474,7 @@ public class MatchUIManager : MonoBehaviour
             if (_imgStandingMiddle != null)
             {
                 _imgStandingMiddle.gameObject.SetActive(true);
-                // 예시: _imgStandingMiddle.sprite = Resources.Load<Sprite>(lineData.standingMiddle);
+                 _imgStandingMiddle.sprite = SpriteManager.Instance.GetSprite(ReplaceImageVariables(lineData.standingMiddle));
                 // 중앙(Center/Middle) 화자일 때 밝게, 아니면 어둡게
                 _imgStandingMiddle.color = (lineData.speakDirection == "Center" || lineData.speakDirection == "Middle") ? Color.white : Color.gray;
             }
@@ -447,7 +490,7 @@ public class MatchUIManager : MonoBehaviour
             if (_imgStandingRight != null)
             {
                 _imgStandingRight.gameObject.SetActive(true);
-                // 예시: _imgStandingRight.sprite = Resources.Load<Sprite>(lineData.standingRight);
+                 _imgStandingRight.sprite = SpriteManager.Instance.GetSprite(ReplaceImageVariables(lineData.standingRight));
                 _imgStandingRight.color = (lineData.speakDirection == "Right") ? Color.white : Color.gray;
             }
         }
@@ -634,6 +677,18 @@ public class MatchUIManager : MonoBehaviour
                 onActionClick.Invoke();
             else
                 GameManager.Instance.ChangeState<MatchPrepState>(); // null이면 다음 경기 준비로 직행
+        }
+    }
+    public void ShowTournamentBoardPanel(Action onActionClick = null, string actionText = null)
+    {
+        if (_tournamentBoardPanel != null)
+        {
+            _tournamentBoardPanel.OpenPanel(onActionClick, actionText);
+        }
+        else
+        {
+            if (onActionClick != null) onActionClick.Invoke();
+            else GameManager.Instance.ChangeState<MatchPrepState>();
         }
     }
     private string MakeName(string[] nameKey)
