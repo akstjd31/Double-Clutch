@@ -21,6 +21,6 @@ public class SynergyBox : MonoBehaviour
         _trait2.sprite = spriteManager.GetSprite(trait2.traitResource);
 
         _synergyName.text = stringManager.GetString(synergyData.synergyName);
-        _synergyDesc.text = stringManager.GetString(synergyData.synergyDesc);
+        _synergyDesc.text = stringManager.GetString(synergyData.synergyDesc).Replace("{effectValue}", synergyData.effectValue.ToString());
     }
 }
