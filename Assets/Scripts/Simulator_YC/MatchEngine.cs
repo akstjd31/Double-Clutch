@@ -211,7 +211,7 @@ public class MatchEngine : MonoBehaviour
         TeamTactics defendTactics = MatchDataProxy.Instance.GetTactics(defendTeam.TeamColorId);
 
         int action = MatchCalculator.DecideAction(_ballHolder, distToHoop, attackTactics, attackTeam, defendTeam, passInterceptDist, _simTime);
-        float timeCost = UnityEngine.Random.Range(1f, 3f);
+        float timeCost = UnityEngine.Random.Range(1f, 5f);
         _simTime -= timeCost;
 
         if (_simTime <= 0)
