@@ -13,7 +13,7 @@ public enum infraEffectType
 [Serializable]
 public struct Infra_Data
 {
-    public int index;
+    public string index;
     public int group;
     public string desc;
     public int infraLevel;
@@ -24,7 +24,7 @@ public struct Infra_Data
     public string infraDescKey;
     public string icon;
 
-    public Infra_Data(int idx, int gp, string desc, int infraLv, infraEffectType infraET, int infraEV, int infraCost, string infraNK, string infraDK, string icon)
+    public Infra_Data(string idx, int gp, string desc, int infraLv, infraEffectType infraET, int infraEV, int infraCost, string infraNK, string infraDK, string icon)
     {
         index = idx;
         group = gp;
