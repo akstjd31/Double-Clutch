@@ -113,56 +113,90 @@ public class SwissBoardPanel : MonoBehaviour
     private void RefreshMatchList(int roundIndex)
     {
         var currentLeague = LeagueManager.Instance.CurrentLeague;
+        if (currentLeague == null) return;
 
-        foreach (Transform child in _matchContainer) Destroy(child.gameObject);
+        foreach (Transform child in _matchContainer)
+            Destroy(child.gameObject);
 
-        // 해당 라운드의 매치들만 필터링
-        List<LeagueMatchRecord> targetMatches = currentLeague.matchRecords.FindAll(m => m.roundIndex == roundIndex);
-
-        // 현재 순위가 아닌 '해당 라운드 진입 당시'의 과거 순위를 역산합니다
+        // 해당 라운드 진입 당시의 순위
         Dictionary<string, int> historyRankMap = GetHistoricalRanks(currentLeague, roundIndex);
 
         string myTeamId = StudentManager.TEAM_ID;
 
-        // 내 팀이 포함된 매치만 찾아서 맨 위로 쏙 올려줍니다.
-        int playerMatchIdx = targetMatches.FindIndex(m => m.homeTeamId == myTeamId || m.awayTeamId == myTeamId);
-        if (playerMatchIdx > 0)
+        // 이번 라운드의 전체 팀 목록
+        List<string> orderedTeamIds = historyRankMap
+            .OrderBy(x => x.Value)
+            .Select(x => x.Key)
+            .ToList();
+
+        // 플레이어 팀 / 상대 팀 찾기
+        string opponentTeamId = GetOpponentTeamId(currentLeague, roundIndex, myTeamId);
+
+        // 플레이어 팀을 맨 위로
+        if (orderedTeamIds.Remove(myTeamId))
+            orderedTeamIds.Insert(0, myTeamId);
+
+        // 플레이어 상대팀을 두 번째로
+        if (!string.IsNullOrEmpty(opponentTeamId))
         {
-            var pMatch = targetMatches[playerMatchIdx];
-            targetMatches.RemoveAt(playerMatchIdx);
-            targetMatches.Insert(0, pMatch);
+            orderedTeamIds.Remove(opponentTeamId);
+
+            int insertIndex = orderedTeamIds.Count > 0 ? 1 : 0;
+            orderedTeamIds.Insert(insertIndex, opponentTeamId);
         }
 
-        // UI 생성
-        foreach (var match in targetMatches)
+        // 팀별 1줄씩 생성
+        foreach (string teamId in orderedTeamIds)
         {
-            string team1 = match.homeTeamId;
-            string team2 = match.awayTeamId;
-
-            // 플레이어 팀이 무조건 윗줄(1행)에 오도록 정렬
-            if (team2 == myTeamId)
-            {
-                team1 = match.awayTeamId;
-                team2 = match.homeTeamId;
-            }
-            else if (team1 != myTeamId)
-            {
-                // 플레이어 팀이 없는 일반 매치는 순위가 높은 팀이 윗줄
-                int rank1 = historyRankMap.ContainsKey(team1) ? historyRankMap[team1] : 99;
-                int rank2 = historyRankMap.ContainsKey(team2) ? historyRankMap[team2] : 99;
-                if (rank2 < rank1)
-                {
-                    team1 = match.awayTeamId;
-                    team2 = match.homeTeamId;
-                }
-            }
-
-            // 첫 번째 줄 생성
-            if (!string.IsNullOrEmpty(team1)) CreateRow(team1, match, roundIndex, historyRankMap);
-
-            // 두 번째 줄 생성
-            if (!string.IsNullOrEmpty(team2)) CreateRow(team2, match, roundIndex, historyRankMap);
+            CreateRankingRow(teamId, roundIndex, historyRankMap);
         }
+    }
+
+    private string GetOpponentTeamId(LeagueSaveData league, int roundIndex, string myTeamId)
+    {
+        if (league == null || string.IsNullOrEmpty(myTeamId))
+            return null;
+
+        LeagueMatchRecord myMatch = league.matchRecords.Find(m =>
+            m.roundIndex == roundIndex &&
+            (m.homeTeamId == myTeamId || m.awayTeamId == myTeamId));
+
+        if (myMatch == null) return null;
+
+        return myMatch.homeTeamId == myTeamId ? myMatch.awayTeamId : myMatch.homeTeamId;
+    }
+
+    private void CreateRankingRow(string teamId, int viewRoundIndex, Dictionary<string, int> rankMap)
+    {
+        if (string.IsNullOrEmpty(teamId)) return;
+
+        SwissMatchRow row = Instantiate(_matchRowPrefab, _matchContainer);
+
+        bool isMyTeam = (teamId == StudentManager.TEAM_ID);
+        int rank = rankMap.ContainsKey(teamId) ? rankMap[teamId] : 0;
+
+        var record = GetCumulativeRecord(teamId, viewRoundIndex);
+
+        string scoreStr = GetRoundScoreString(teamId, viewRoundIndex);
+
+        row.Init(teamId, rank, record.win, record.lose, scoreStr, isMyTeam);
+    }
+
+    private string GetRoundScoreString(string teamId, int roundIndex)
+    {
+        var league = LeagueManager.Instance.CurrentLeague;
+        if (league == null) return "-";
+
+        LeagueMatchRecord match = league.matchRecords.Find(m =>
+            m.roundIndex == roundIndex &&
+            (m.homeTeamId == teamId || m.awayTeamId == teamId));
+
+        if (match == null) return "-";
+        if (!match.isPlayed) return "-";
+
+        return (match.homeTeamId == teamId)
+            ? match.homeScore.ToString()
+            : match.awayScore.ToString();
     }
 
     // 과거 라운드 당시의 랭킹을 똑같이 계산해 주는 역산 함수
@@ -211,23 +245,6 @@ public class SwissBoardPanel : MonoBehaviour
         for (int i = 0; i < list.Count; i++) ranks[list[i].teamId] = i + 1;
 
         return ranks;
-    }
-
-    // 한 줄(Row)을 생성하는 함수
-    private void CreateRow(string teamId, LeagueMatchRecord match, int viewRoundIndex, Dictionary<string, int> rankMap)
-    {
-        SwissMatchRow row = Instantiate(_matchRowPrefab, _matchContainer);
-        bool isMyTeam = (teamId == StudentManager.TEAM_ID);
-        int rank = rankMap.ContainsKey(teamId) ? rankMap[teamId] : 0;
-        var record = GetCumulativeRecord(teamId, viewRoundIndex);
-
-        string scoreStr = "-";
-        if (match.isPlayed)
-        {
-            scoreStr = (teamId == match.homeTeamId) ? match.homeScore.ToString() : match.awayScore.ToString();
-        }
-
-        row.Init(teamId, rank, record.win, record.lose, scoreStr, isMyTeam);
     }
 
     // 누적 승패 역산
