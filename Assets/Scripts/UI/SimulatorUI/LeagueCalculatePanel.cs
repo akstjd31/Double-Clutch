@@ -184,7 +184,7 @@ public class LeagueCalculatePanel : MonoBehaviour
 
             // 프리팹 복사 후 부모 아래에 붙이기
             MatchHistoryRow newRow = Instantiate(_historyRowPrefab, _historyContainer);
-
+            
             // 해당 줄에 데이터 주입 & 로그 버튼 클릭 시 행동 정의
             newRow.Init(i, record, (clickedRound) =>
             {
