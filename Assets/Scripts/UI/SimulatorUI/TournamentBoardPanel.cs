@@ -83,24 +83,21 @@ public class TournamentBoardPanel : MonoBehaviour
     }
     private void PopulateBracket(LeagueSaveData league, int currentRound)
     {
-        // 초기화 (모든 노드 비우기)
-        foreach (var n in _round1Nodes) n.Init("", 0, false, false, false);
-        foreach (var n in _round2Nodes) n.Init("", 1, false, false, false);
-        foreach (var n in _round3Nodes) n.Init("", 2, false, false, false);
-        foreach (var n in _round4Nodes) n.Init("", 3, false, false, false);
-        if (_winnerNode != null) _winnerNode.Init("", 4, false, false, false);
-
-        // 총 라운드 수를 계산하여 UI가 시작될 오프셋을 구합니다 (16강이면 0, 8강이면 1, 결승이면 3)
+        // 가장 먼저 모든 노드를 통째로 끕니다. 
+        DisableAllNodes();
+        // 대진표 크기 확인 및 미정(?) 슬롯 켜기
         var masterData = LeagueDataManager.Instance.GetMasterDataById(league.leagueId);
+
         int totalRounds = masterData.HasValue ? masterData.Value.roundCount : 4;
+
+        // 단 2팀만 플레이하는 토너먼트라면, 1라운드(결승)만 존재하므로 totalRounds를 1로 고정
+        if (league.teams != null && league.teams.Count == 2)
+        {
+            totalRounds = 1;
+        }
+
         int uiOffset = 4 - totalRounds;
 
-        // 초기화
-        foreach (var n in _round1Nodes) n.Init("", 0, false, false, false);
-        foreach (var n in _round2Nodes) n.Init("", 1, false, false, false);
-        foreach (var n in _round3Nodes) n.Init("", 2, false, false, false);
-        foreach (var n in _round4Nodes) n.Init("", 3, false, false, false);
-        if (_winnerNode != null) _winnerNode.Init("", 4, false, false, false);
 
         // 이번 토너먼트 규모에 해당하는 노드들은 기본값을 "?"로 주어 켜줍니다.
         for (int depth = uiOffset; depth <= 4; depth++)
@@ -153,32 +150,73 @@ public class TournamentBoardPanel : MonoBehaviour
             if (!match.isPlayed) continue;
 
             string winnerId = match.homeScore > match.awayScore ? match.homeTeamId : match.awayTeamId;
+            string loserId = match.homeScore < match.awayScore ? match.homeTeamId : match.awayTeamId;
+
+            string scoreString = $"{match.homeScore}-{match.awayScore}";
 
             // 같은 라운드 내에서 몇 번째 매치인지 계산
             List<LeagueMatchRecord> roundMatches = league.matchRecords.FindAll(m => m.roundIndex == match.roundIndex);
             int matchIndexInRound = roundMatches.IndexOf(match);
 
-            // 승자가 진출하는 '다음 라운드'의 인덱스
-            int nextRoundIndex = match.roundIndex + 1;
-            bool isNextRoundCurrent = (currentRound == nextRoundIndex); // 그 다음 라운드가 현재 라운드인지?
-            bool isEliminated = eliminatedTeams.Contains(winnerId);
-
             int uiDepth = match.roundIndex + uiOffset;
             int nextUiDepth = uiDepth + 1;
 
-            // 이전 라운드 노드를 찾아서 승리시 파이프 색 변경
-            UpdateWinnerPipe(uiDepth, match.roundIndex, matchIndexInRound, winnerId, eliminatedTeams);
+            // 노드들에 점수와 비주얼 규칙 적용
+            List<TournamentNode> targetNodes = GetUINodesByDepth(uiDepth);
+            if (targetNodes != null)
+            {
+                int nodeIndex1 = matchIndexInRound * 2;
+                int nodeIndex2 = matchIndexInRound * 2 + 1;
 
+                if (nodeIndex1 < targetNodes.Count)
+                {
+                    var n = targetNodes[nodeIndex1];
+                    if (n.TeamId == match.homeTeamId || n.TeamId == match.awayTeamId)
+                    {
+                        bool isWinner = n.TeamId == winnerId;
+                        bool isEliminated = n.TeamId == loserId;
+                        // Init 호출: isEliminated로 박스 밝기 조절, isWinner로 선 색상 조절
+                        n.Init(n.TeamId, match.roundIndex, false, isEliminated, isWinner, scoreString);
+                    }
+                }
+
+                if (nodeIndex2 < targetNodes.Count)
+                {
+                    var n = targetNodes[nodeIndex2];
+                    if (n.TeamId == match.homeTeamId || n.TeamId == match.awayTeamId)
+                    {
+                        bool isWinner = n.TeamId == winnerId;
+                        bool isEliminated = n.TeamId == loserId;
+                        n.Init(n.TeamId, match.roundIndex, false, isEliminated, isWinner, scoreString);
+                    }
+                }
+            }
+            // 승리한 팀을 다음 라운드 노드로 올림
+            // 박스는 밝게 유지(isEliminated=false)하고, 선 색상은 white로 초기화합니다.
             List<TournamentNode> nextNodes = GetUINodesByDepth(nextUiDepth);
             if (nextNodes != null && matchIndexInRound < nextNodes.Count)
             {
-                nextNodes[matchIndexInRound].Init(winnerId, nextRoundIndex, isNextRoundCurrent, isEliminated, false);
+                nextNodes[matchIndexInRound].Init(winnerId, match.roundIndex + 1, (currentRound == (match.roundIndex + 1)), false, false, "");
             }
             else if (nextUiDepth == 4 && _winnerNode != null)
             {
-                _winnerNode.Init(winnerId, nextRoundIndex, isNextRoundCurrent, isEliminated, true);
+                _winnerNode.Init(winnerId, match.roundIndex + 1, (currentRound == (match.roundIndex + 1)), false, true, ""); // 최종 우승 노드는 선이 나가지 않지만 밝게 유지
             }
         }
+    }
+    // 모든 노드를 강력하게 비활성화하는 헬퍼 함수
+    private void DisableAllNodes()
+    {
+        void DisableNodesInList(List<TournamentNode> nodes)
+        {
+            if (nodes == null) return;
+            foreach (var n in nodes) n.gameObject.SetActive(false);
+        }
+        DisableNodesInList(_round1Nodes);
+        DisableNodesInList(_round2Nodes);
+        DisableNodesInList(_round3Nodes);
+        DisableNodesInList(_round4Nodes);
+        if (_winnerNode != null) _winnerNode.gameObject.SetActive(false);
     }
     // 승리한 노드의 파이프만 불을 켜주기 위한 보조 함수
     private void UpdateWinnerPipe(int uiDepth, int originalRoundIndex, int matchIndex, string winnerId, HashSet<string> eliminatedTeams)
