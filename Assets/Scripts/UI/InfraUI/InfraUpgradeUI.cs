@@ -11,6 +11,8 @@ public class InfraUpgradeUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _title;
     [SerializeField] private TextMeshProUGUI _nameText;
     [SerializeField] private TextMeshProUGUI _levelText;
+    [SerializeField] private TextMeshProUGUI _costText;
+
     [SerializeField] private TextMeshProUGUI _effectDescText;
     [SerializeField] private Button _upgradeButton;
     [SerializeField] private InfraReconfirmUI _reconfirmUI;
@@ -65,6 +67,7 @@ public class InfraUpgradeUI : MonoBehaviour
         StringManager.Instance.GetString(_infra.nameKey, _nameText);
 
         _levelText.text = _infra.currentLevel.ToString();
+        _costText.text = _controller.GetCostByNextLevel().ToString();
 
         string originDesc = StringManager.Instance.GetString(_infra.descKey);
         var keys = TextParser.GetKeys(originDesc);
