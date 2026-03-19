@@ -248,11 +248,11 @@ public class EventUI : MonoBehaviour
         pos.y = Random.Range(-45f, 45f);
         rect.anchoredPosition = pos;
 
+            Debug.LogWarning($"아이디 : {reactionPortraitId} ");
         //이미지 넣기
         if (string.IsNullOrEmpty(reactionPortraitId))
         {
-            Debug.LogWarning($"아이디 못불러옴 {reactionPortraitId} ");
-
+            Debug.LogWarning($"불러오기 실패 : {reactionPortraitId} ");
         }
         else
         {
