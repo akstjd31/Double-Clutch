@@ -1,7 +1,8 @@
+using DG.Tweening;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using DG.Tweening;
+using System.Linq;
 using TMPro; 
 using UnityEngine;
 using UnityEngine.UI;
@@ -419,6 +420,29 @@ public class MatchUIManager : MonoBehaviour
 
         return text;
     }
+
+    private string ReplaceImageVariables(string key)
+    {
+        if (string.IsNullOrEmpty(key)) return key;
+
+        var currentMembers = StudentManager.Instance.CurrentTeam.Members;
+        string[] tags = { "PG", "SG", "SF", "PF", "C" };
+        Position[] positions = { Position.PG, Position.SG, Position.SF, Position.PF, Position.C };
+
+        for (int i = 0; i < tags.Length; i++)
+        {
+            if (key.Contains(tags[i]))
+            {
+                // Find 대신 FirstOrDefault를 사용 (배열, 리스트 모두 대응 가능)
+                var student = currentMembers.FirstOrDefault(s => s.MatchPosition == positions[i]);
+
+                string visualId = (student != null) ? student.VisualData.playerImageResource : "";
+                key = key.Replace(tags[i], visualId);
+            }
+        }
+        return key;
+    }
+
     // 테이블의 문자열 키를 기반으로 UI 이미지를 켜고 끄는 헬퍼 함수
     private void UpdateVisuals(Halftime_ScriptData lineData)
     {
@@ -435,7 +459,7 @@ public class MatchUIManager : MonoBehaviour
             if (_imgStandingLeft != null)
             {
                 _imgStandingLeft.gameObject.SetActive(true);
-                // 예시: _imgStandingLeft.sprite = Resources.Load<Sprite>(lineData.standingLeft);
+                _imgStandingLeft.sprite = SpriteManager.Instance.GetSprite(ReplaceImageVariables(lineData.standingLeft));
                 _imgStandingLeft.color = (lineData.speakDirection == "Left") ? Color.white : Color.gray;
             }
         }
@@ -450,7 +474,7 @@ public class MatchUIManager : MonoBehaviour
             if (_imgStandingMiddle != null)
             {
                 _imgStandingMiddle.gameObject.SetActive(true);
-                // 예시: _imgStandingMiddle.sprite = Resources.Load<Sprite>(lineData.standingMiddle);
+                 _imgStandingMiddle.sprite = SpriteManager.Instance.GetSprite(ReplaceImageVariables(lineData.standingMiddle));
                 // 중앙(Center/Middle) 화자일 때 밝게, 아니면 어둡게
                 _imgStandingMiddle.color = (lineData.speakDirection == "Center" || lineData.speakDirection == "Middle") ? Color.white : Color.gray;
             }
@@ -466,7 +490,7 @@ public class MatchUIManager : MonoBehaviour
             if (_imgStandingRight != null)
             {
                 _imgStandingRight.gameObject.SetActive(true);
-                // 예시: _imgStandingRight.sprite = Resources.Load<Sprite>(lineData.standingRight);
+                 _imgStandingRight.sprite = SpriteManager.Instance.GetSprite(ReplaceImageVariables(lineData.standingRight));
                 _imgStandingRight.color = (lineData.speakDirection == "Right") ? Color.white : Color.gray;
             }
         }
