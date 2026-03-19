@@ -85,7 +85,8 @@ public class InfraUpgradeUI : MonoBehaviour
 
     public void UpdateLevelText(int level)
     {
-        _levelText.text = level.ToString();
+        _upgradeButton.interactable = !(_infra.currentLevel >= _infra.maxLevel);
+        Refresh();
     }
 
     public void OnClickUpgradeButton()
