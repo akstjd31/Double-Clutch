@@ -10,7 +10,8 @@ public class Infra_DataReader : DataReaderBase
 
     internal void UpdateStats(List<GSTU_Cell> list, int rowIndex)
     {
-        int idx = 0, group = 0, infraLv = 0, infraCost = 0, infraEV = 0;
+        string idx = null;
+        int  group = 0, infraLv = 0, infraCost = 0, infraEV = 0;
         string desc = null, infraNK = null, infraDK = null, icon = null;
         infraEffectType infraET = default;
 
@@ -25,7 +26,7 @@ public class Infra_DataReader : DataReaderBase
             switch (col)
             {
                 case "index":
-                    int.TryParse(val, out idx);
+                    idx = val;
                     break;
 
                 case "group":
