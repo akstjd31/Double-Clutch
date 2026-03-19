@@ -177,7 +177,7 @@ public class CharacterList : MonoBehaviour
     public void OnClickCard(PlayerCard card)
     {
         if (card == null) return;
-        if (card.IsAvailable) return;
+        if (!card.IsAvailable) return;
 
         if (_selectedCard == card)
         {
