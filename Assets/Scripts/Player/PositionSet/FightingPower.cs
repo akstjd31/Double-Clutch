@@ -205,6 +205,7 @@ public class FightingPower : MonoBehaviour
 
         GameManager.Instance.LoadMatchSceneWithData("Test_Simul", MyMatchingStudentList, RivalMatchingStudentList);
     }
+    
     // 리그 진행 상태에 따라 뒤로가기 버튼 켜기/끄기
     private void CheckBackButtonVisibility()
     {

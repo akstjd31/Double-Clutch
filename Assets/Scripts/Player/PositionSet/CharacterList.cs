@@ -118,11 +118,11 @@ public class CharacterList : MonoBehaviour
     {
         if (SaveLoadManager.Instance != null)
         {
-            bool hasMyStdData = SaveLoadManager.Instance.TryLoad<StudentSaveData>(FilePath.MY_STUDENT_MATCHING_PATH, out var stdData);
+            SaveLoadManager.Instance.TryLoad<StudentSaveData>(FilePath.MY_STUDENT_MATCHING_PATH, out var stdData);
 
             int idx = PlayerPrefs.GetInt(PrefKeys.MATCH_PREP_UI_INDEX);
 
-            if (hasMyStdData && stdData.studentList.Count > 0)
+            if (stdData != null && stdData.studentList.Count > 0)
             {
                 StudentManager.Instance.SetCurrentTeam(stdData.studentList);
                 if (idx == 1)
@@ -242,10 +242,68 @@ public class CharacterList : MonoBehaviour
 
     public void ReFresh()
     {
-        for (int i = 0; i < CardList.Count; i++)
+        for (int i = 0; i < _positionCards.Length && i < _dropPositions.Length; i++)
         {
-            CardList[i].transform.SetSiblingIndex(i);
+            var card = _positionCards[i];
+            if (card == null) continue;
+
+            if (card.transform.parent != _dropPositions[i].transform)
+            {
+                card.transform.SetParent(_dropPositions[i].transform, false);
+            }
+
+            card.transform.SetAsLastSibling();
+
+            RectTransform rect = card.transform as RectTransform;
+            if (rect != null)
+                ResetCardRect(rect);
+
+            card.gameObject.SetActive(true);
         }
+
+        // 하단 카드들의 부모/순서 다시 맞추기
+        for (int i = 0; i < _cardList.Count; i++)
+        {
+            var card = _cardList[i];
+            if (card == null) continue;
+
+            // 혹시 배치 슬롯에 들어가 있는 카드면 제외
+            if (IndexOfCard(card) >= 0)
+                continue;
+
+            if (card.transform.parent != _cardContainer)
+            {
+                card.transform.SetParent(_cardContainer, false);
+            }
+
+            card.transform.SetSiblingIndex(i);
+
+            RectTransform rect = card.transform as RectTransform;
+            if (rect != null)
+                ResetCardRect(rect);
+
+            card.gameObject.SetActive(true);
+        }
+
+        // 혹시 드롭 포지션 자식 중 _positionCards에 없는 카드가 있으면 하단으로 이동
+        if (_dropPositions != null)
+        {
+            for (int i = 0; i < _dropPositions.Length; i++)
+            {
+                var pos = _dropPositions[i];
+                if (pos == null) continue;
+
+                var childCard = pos.GetComponentInChildren<PlayerCard>();
+                if (childCard == null) continue;
+
+                if (i >= _positionCards.Length || _positionCards[i] != childCard)
+                {
+                    MoveToCardList(childCard);
+                }
+            }
+        }
+
+        UpdateMatchStartUI();
     }
 
     public bool CheckMaxPositionBatch()
@@ -392,9 +450,43 @@ public class CharacterList : MonoBehaviour
 
         if (canStart)
         {
+            _backButtonObj.SetActive(canStart);
             SaveBatchStudentData();
             PlayerPrefs.SetInt(PrefKeys.MATCH_PREP_UI_INDEX, 1);
         }
+    }
+
+    // 뒤로가기 버튼을 눌렀을 떄 배치 초기화(기존 배치 인원들 보유 선수로 이동) 겸 데이터 초기화
+    public void ClearData()
+    {
+        // 준비 시작 버튼이 떠있지 않다면 (배치 인원이 5명이 충족이 안됨)
+        if (!_matchStartPanelObj.activeSelf)
+        {
+            ClearAllCards();
+            this.gameObject.SetActive(false);
+            ReFresh();
+            return;
+        }
+
+        // 기존 배치된 카드들을 보유 선수 리스트로 옮긴 후 해당 자리 비우기
+        for (int i = 0; i < MAX_BATCH_COUNT; i++)
+        {
+            if (_cardList.Contains(_positionCards[i]))
+            {
+                Debug.LogError("이미 배치에 옮긴 선수인데, 이건 발생되면 뭔가 문제가 있는거임! (보유 선수에 이미 배치 선수의 정보가 있다??)");
+                return;
+            }
+            _cardList.Add(_positionCards[i]);
+            _positionCards[i] = null;
+        }
+
+        // 껍데기 저장
+        var data = new StudentSaveData();
+        SaveLoadManager.Instance.Save(FilePath.MY_STUDENT_MATCHING_PATH, data);
+
+        PlayerPrefs.SetInt(PrefKeys.MATCH_PREP_UI_INDEX, 0);
+
+        ReFresh();
     }
 
     // 배치한 학생 정보 저장
@@ -420,7 +512,7 @@ public class CharacterList : MonoBehaviour
             }
 
             sList.Add(_positionCards[i].Player);
-            
+
         }
 
         if (StudentManager.Instance != null) StudentManager.Instance.SetCurrentTeam(sList);
@@ -488,6 +580,7 @@ public class CharacterList : MonoBehaviour
         for (int i = 0; i < _positionCards.Length; i++)
             _positionCards[i] = null;
     }
+
     // 리그 진행 상태에 따라 뒤로가기 버튼 켜기/끄기
     private void CheckBackButtonVisibility()
     {
