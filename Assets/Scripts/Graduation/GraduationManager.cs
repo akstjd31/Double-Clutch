@@ -44,7 +44,7 @@ public class GraduationManager : MonoBehaviour
         _turn = 0;
         //처음 학생 프로필 띄우기
         _promotionPanel.GetList();
-        _promotionPanel.UpdateProfile();
+        //_promotionPanel.UpdateProfile();
     }
 
     private void ListCreat()
