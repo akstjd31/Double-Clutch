@@ -270,4 +270,10 @@ public class GameManager : Singleton<GameManager>
         SaveData.currentProfileImage = imageKey;
         OnDataChanged?.Invoke();
     }
+
+    public void SetGraduationPending(bool value)
+    {
+        _saveData.isGraduationPending = value;
+        OnDataChanged?.Invoke();
+    }
 }

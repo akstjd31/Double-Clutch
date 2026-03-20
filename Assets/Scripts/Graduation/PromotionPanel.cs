@@ -32,6 +32,7 @@ public class PromotionPanel : MonoBehaviour
     private void Start()
     {
         UpdateProfile();
+        _passiveBox.GetSkillList(_currentStudent);
     }
 
     private void LateUpdate()

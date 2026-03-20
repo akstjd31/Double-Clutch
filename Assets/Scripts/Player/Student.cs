@@ -30,6 +30,7 @@ public class Student
     [SerializeField] int _awardCount = 0;
     [SerializeField] private int _prevAttack;
     [SerializeField] private int _prevDefense;
+    [SerializeField] private int _prevCondition;
 
     //게임 실행 후 불러오는 데이터
     Player_SpeciesData _specieData; //종족
@@ -80,6 +81,8 @@ public class Student
     public int AwardCount { get { return _awardCount; } set { _awardCount = value; } }
     public List<potential> ChangedPotentials => _changedPotentials;
     public int TotalFame => _totalFame;
+
+    [SerializeField] public bool pendingPassiveSelection = false;
     public void ResetTrainingSchedule()
     {
         _currentTraining = null;
@@ -280,6 +283,7 @@ public class Student
         {
             _passiveIdList.Add(data.skillId);
         }
+        pendingPassiveSelection = false;
         OnPassiveUpdated();
     }
     public bool HasPassive(string skillId)
@@ -404,10 +408,11 @@ public class Student
     {
         _prevAttack = _attack;  // 현재 공격력을 임시 저장
         _prevDefense = _defense; // 현재 수비력을 임시 저장
-        _conditionChange = _condition; //현재 컨디션을 임시 저장
+        _prevCondition = _condition; //현재 컨디션을 임시 저장
 
         _attackChange = 0;
-        _defenseChange = 0;        
+        _defenseChange = 0;
+        _conditionChange = 0;
 
         _changedPotentials.Clear();
     }
@@ -436,7 +441,7 @@ public class Student
         }
         _attackChange = newAttack - _prevAttack;
         _defenseChange = newDefense - _prevDefense;
-        _conditionChange = _condition - _conditionChange;
+        _conditionChange = _condition - _prevCondition;
         
         _attack = newAttack;
         _defense = newDefense;

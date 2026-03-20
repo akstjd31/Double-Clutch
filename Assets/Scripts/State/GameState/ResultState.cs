@@ -165,7 +165,7 @@ public class ResultState : IState
                         foreach (var passive in realStudent.Passive)
                         {
                             // 현재 effectType Enum에 MatchGoldUp이 아직 없다면 문자열로 임시 체크
-                            if (passive.effectType.ToString() == "MatchGoldUp")
+                            if (passive.effectType == effectType.MatchGoldUp)
                             {
                                 passiveBonusPercent += passive.effectValue; // 예: 0.01 (1%), 0.04 (4%)
                             }
@@ -176,10 +176,10 @@ public class ResultState : IState
             // 변경된 컨디션 상태를 저장
             StudentManager.Instance.SaveGame();
         }
-        // 최종 지원금 & 명성 지급
-        // 계산식: 기본 지급금 * (1 + 인프라 프런트 % + 선수 패시브 %)
-        float totalMultiplier = 1f + infraBonusPercent + passiveBonusPercent;
-        int finalRewardAmount = Mathf.RoundToInt(baseGold * totalMultiplier);
+        // 최종 지원금 & 명성 지급        
+        float infraBonus = baseGold * (infraBonusPercent / 100f);
+        float totalMultiplier = 1f + passiveBonusPercent;
+        int finalRewardAmount = Mathf.FloorToInt((baseGold + infraBonus) * totalMultiplier);
 
         // 결승 진출 시 선수들의 명성 누적값 적용
         if (currentLeague != null && currentLeague.teams.Count < 3 && StudentManager.Instance != null)
