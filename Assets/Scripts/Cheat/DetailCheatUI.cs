@@ -49,7 +49,7 @@ public class DetailCheatUI : MonoBehaviour
                 break;
             case CheatDetails.Passive:
                 if (_detailsPanelObjs[(int)detail].TryGetComponent<PassiveCheatUI>(out var passiveCheat))
-                    passiveCheat.SetStudent(_student);
+                    passiveCheat.Init(_student);
                 
                 break;
             case CheatDetails.Trait:

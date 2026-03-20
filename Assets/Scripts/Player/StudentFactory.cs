@@ -415,5 +415,11 @@ public class StudentFactory : MonoBehaviour
         return result;
     }
 
+    // 모든 패시브 정보 가져오기
+    public List<Player_PassiveData> GetPassiveDataList()
+    {
+        if (_passiveDataReader == null) return null;
 
+        return _passiveDataReader.DataList;
+    }
 }

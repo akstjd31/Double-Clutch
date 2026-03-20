@@ -28,6 +28,11 @@ public class FightingPower : MonoBehaviour
     public List<Student> MyMatchingStudentList => _myMatchingStudentList;
     public List<Student> RivalMatchingStudentList => _rivalMatchingStudentList;
 
+    public void OnClickSetUIIndex()
+    {
+        PlayerPrefs.SetInt(PrefKeys.MATCH_PREP_UI_INDEX, 0);
+    }
+
     public void Init()
     {
         // Init이 호출될 때 가장 먼저 뒤로가기 버튼 상태를 결정합니다.
@@ -205,6 +210,7 @@ public class FightingPower : MonoBehaviour
 
         GameManager.Instance.LoadMatchSceneWithData("Test_Simul", MyMatchingStudentList, RivalMatchingStudentList);
     }
+    
     // 리그 진행 상태에 따라 뒤로가기 버튼 켜기/끄기
     private void CheckBackButtonVisibility()
     {
