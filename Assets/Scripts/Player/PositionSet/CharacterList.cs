@@ -113,59 +113,59 @@ public class CharacterList : MonoBehaviour
         }
     }
 
-private StudentSaveData CheckSaveData()
-{
-    if (SaveLoadManager.Instance == null)
-        return null;
-
-    SaveLoadManager.Instance.TryLoad<StudentSaveData>(FilePath.MY_STUDENT_MATCHING_PATH, out var stdData);
-
-    int idx = PlayerPrefs.GetInt(PrefKeys.MATCH_PREP_UI_INDEX, 0);
-    Debug.Log($"현재 인덱스: {idx}");
-
-    // 기본 상태 먼저 초기화
-    if (_matchStartPanelObj != null)
-        _matchStartPanelObj.SetActive(false);
-
-    if (_fightingPower != null)
-        _fightingPower.gameObject.SetActive(false);
-
-    this.gameObject.SetActive(true);
-
-    // 저장 데이터가 없으면 그대로 종료
-    if (stdData == null || stdData.studentList == null || stdData.studentList.Count <= 0)
-        return null;
-
-    if (StudentManager.Instance != null)
-        StudentManager.Instance.SetCurrentTeam(stdData.studentList);
-
-    switch (idx)
+    private StudentSaveData CheckSaveData()
     {
-        case 1:
-            // 배치 완료, 시작 전 상태
-            if (_matchStartPanelObj != null)
-                _matchStartPanelObj.SetActive(true);
-            break;
+        if (SaveLoadManager.Instance == null)
+            return null;
 
-        case 2:
-            // 매치 시작 눌러서 전투력 화면으로 넘어간 상태
-            if (_fightingPower != null)
-            {
-                _fightingPower.gameObject.SetActive(true);
-                _fightingPower.Init();
-            }
+        SaveLoadManager.Instance.TryLoad<StudentSaveData>(FilePath.MY_STUDENT_MATCHING_PATH, out var stdData);
 
-            this.gameObject.SetActive(false);
-            break;
+        int idx = PlayerPrefs.GetInt(PrefKeys.MATCH_PREP_UI_INDEX, 0);
+        Debug.Log($"현재 인덱스: {idx}");
 
-        default:
-            // idx == 0 또는 예상 밖 값
-            // 아직 배치 전 상태이므로 기본 초기화 상태 유지
-            break;
+        // 기본 상태 먼저 초기화
+        if (_matchStartPanelObj != null)
+            _matchStartPanelObj.SetActive(false);
+
+        if (_fightingPower != null)
+            _fightingPower.gameObject.SetActive(false);
+
+        this.gameObject.SetActive(true);
+
+        // 저장 데이터가 없으면 그대로 종료
+        if (stdData == null || stdData.studentList == null || stdData.studentList.Count <= 0)
+            return null;
+
+        if (StudentManager.Instance != null)
+            StudentManager.Instance.SetCurrentTeam(stdData.studentList);
+
+        switch (idx)
+        {
+            case 1:
+                // 배치 완료, 시작 전 상태
+                if (_matchStartPanelObj != null)
+                    _matchStartPanelObj.SetActive(true);
+                break;
+
+            case 2:
+                // 매치 시작 눌러서 전투력 화면으로 넘어간 상태
+                if (_fightingPower != null)
+                {
+                    _fightingPower.gameObject.SetActive(true);
+                    _fightingPower.Init();
+                }
+
+                this.gameObject.SetActive(false);
+                break;
+
+            default:
+                // idx == 0 또는 예상 밖 값
+                // 아직 배치 전 상태이므로 기본 초기화 상태 유지
+                break;
+        }
+
+        return stdData;
     }
-
-    return stdData;
-}
 
     public void OnClickPosition(DropPosition dPos)
     {

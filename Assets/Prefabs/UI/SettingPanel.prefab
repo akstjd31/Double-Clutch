@@ -8685,7 +8685,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 291.485, y: -612.5}
+  m_AnchoredPosition: {x: 291.485, y: -350}
   m_SizeDelta: {x: 500, y: 600}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1050304242055026439
@@ -8781,6 +8781,7 @@ MonoBehaviour:
     _awardCount: 0
     _prevAttack: 0
     _prevDefense: 0
+    _prevCondition: 0
     _matchPosition: 0
     _totalFame: 0
   _buttons:
@@ -9773,7 +9774,7 @@ MonoBehaviour:
   m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 7c31c93ef95dbfa4987915b09bcc0e1d, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: -2959792390391746788, guid: 7c31c93ef95dbfa4987915b09bcc0e1d, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -12614,7 +12615,7 @@ MonoBehaviour:
   m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 7c31c93ef95dbfa4987915b09bcc0e1d, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: -2959792390391746788, guid: 7c31c93ef95dbfa4987915b09bcc0e1d, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -13592,6 +13593,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PassiveCheatUI
   _dropdown: {fileID: 8201121905648141705}
   _passivesObj: {fileID: 6922456412413745282}
+  skillNameData: []
 --- !u!1 &4669382193341951994
 GameObject:
   m_ObjectHideFlags: 0
@@ -16856,7 +16858,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 716957593730676788}
   m_Direction: 2
   m_Value: 0
-  m_Size: 0.99999595
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -17582,7 +17584,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0.00086623046, y: 0.000666159}
+  m_AnchoredPosition: {x: 0.00086623046, y: 0.0002500238}
   m_SizeDelta: {x: -0.00097656, y: 1576.708}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &6226397160929986601
@@ -18298,7 +18300,7 @@ MonoBehaviour:
   m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 7c31c93ef95dbfa4987915b09bcc0e1d, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: -2959792390391746788, guid: 7c31c93ef95dbfa4987915b09bcc0e1d, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -22211,6 +22213,7 @@ MonoBehaviour:
     _awardCount: 0
     _prevAttack: 0
     _prevDefense: 0
+    _prevCondition: 0
     _matchPosition: 0
     _totalFame: 0
   _2ptFields:
