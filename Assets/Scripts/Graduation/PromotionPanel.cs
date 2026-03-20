@@ -24,8 +24,25 @@ public class PromotionPanel : MonoBehaviour
 
     private bool _isSkillChoise = false;
     Student _currentStudent;
+    string _getPromotionName;
+    bool _needGuideRefresh = false;
 
     public bool IsSkillChoise { get { return _isSkillChoise; } set { _isSkillChoise = value; } }
+
+    private void Start()
+    {
+        UpdateProfile();
+        _passiveBox.GetSkillList(_currentStudent);
+    }
+
+    private void LateUpdate()
+    {
+        if (_needGuideRefresh)
+        {
+            _guideBoxName.text = _getPromotionName;
+            _needGuideRefresh = false;
+        }
+    }
 
     public void GetList()
     {
@@ -56,7 +73,11 @@ public class PromotionPanel : MonoBehaviour
 
         if (_isSkillChoise == false)
         {
-            _guideBoxName.text = $"{name} 학생이 진급 하였습니다.\r\n패시브 스킬을 선택해주세요!";
+            _getPromotionName = StringManager.Instance.GetString("UI_Promotion_진급팝업");
+
+            _getPromotionName = _getPromotionName.Replace("{N}", name);
+            _guideBoxName.text = _getPromotionName;
+            _needGuideRefresh = true;
         }
         else if (_isSkillChoise == true)
         {
@@ -108,7 +129,6 @@ public class PromotionPanel : MonoBehaviour
         Debug.Log($"스킬 선택 상태{_isSkillChoise}/{IsSkillChoise}");
 
         Debug.Log($"남은 학생 수 {_graduationManager.Turn + 1}/{_promotionStudentList.Count}");
-
     }
 
     public void OnClickAfterChoice()
@@ -118,12 +138,12 @@ public class PromotionPanel : MonoBehaviour
 
     public void OnClickNextStudent()
     {
-        UpdateProfile();
         _afterChoice.SetActive(false);
 
         if (_graduationManager.Turn == _promotionStudentList.Count)
         {
             _beforeGuideBox.SetActive(false);
         }
+        UpdateProfile();
     }
 }

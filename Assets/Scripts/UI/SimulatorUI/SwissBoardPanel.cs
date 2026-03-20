@@ -77,12 +77,15 @@ public class SwissBoardPanel : MonoBehaviour
         int maxTabCount = 6;
         for (int i = totalRounds; i < maxTabCount; i++)
         {
-            GameObject dummy = new GameObject("DummyTab");
-            dummy.transform.SetParent(_tabContainer, false);
+            SwissRoundTab dummyTab = Instantiate(_tabPrefab, _tabContainer);
 
-            // 더미가 기존 탭들과 완벽하게 동일한 비율(넓이)을 차지하도록 LayoutElement 추가
-            var layoutElement = dummy.AddComponent<UnityEngine.UI.LayoutElement>();
-            layoutElement.flexibleWidth = 1;
+            // 상호작용 불가능하게 만들고, 안의 내용물(텍스트, 이미지)을 투명하게 처리
+            CanvasGroup cg = dummyTab.gameObject.GetComponent<CanvasGroup>();
+            if (cg == null) cg = dummyTab.gameObject.AddComponent<CanvasGroup>();
+
+            cg.alpha = 0f;               // 완전 투명하게
+            cg.blocksRaycasts = false;   // 터치 방지
+            cg.interactable = false;     // 상호작용 방지
         }
 
     }
@@ -232,11 +235,28 @@ public class SwissBoardPanel : MonoBehaviour
 
         var list = dict.Values.ToList();
 
+        // 실제 리그 랭킹 계산기와 동일하게 티어 비교 타이브레이커 추가
+        var tieBreakers = new List<ILeagueTieBreaker>
+    {
+        new WinCountTieBreaker(),
+        new GoalDiffTieBreaker()
+    };
+
+        var masterData = LeagueDataManager.Instance.GetMasterDataById(league.leagueId);
+        if (masterData.HasValue)
+        {
+            tieBreakers.Add(new TeamTierTieBreaker(masterData.Value.leagueLevelId));
+        }
+
         // 당시 기록을 바탕으로 타이브레이커 정렬
         list.Sort((a, b) =>
         {
-            if (b.win != a.win) return b.win.CompareTo(a.win);
-            if (b.goalDiff != a.goalDiff) return b.goalDiff.CompareTo(a.goalDiff);
+            foreach (var tb in tieBreakers)
+            {
+                int result = tb.Compare(a, b);
+                if (result != 0) return result;
+            }
+            // 끝까지 같으면 teamId 사전식 오름차순 정렬
             return string.Compare(a.teamId, b.teamId, StringComparison.Ordinal);
         });
 

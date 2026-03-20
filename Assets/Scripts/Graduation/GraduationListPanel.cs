@@ -1,7 +1,8 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
 using System.Collections.Generic;
+using TMPro;
+using UnityEngine;
+using UnityEngine.InputSystem.XR;
+using UnityEngine.UI;
 
 
 public class GraduationListPanel : MonoBehaviour
@@ -27,6 +28,11 @@ public class GraduationListPanel : MonoBehaviour
         //플레이어 보유 학생 리스트 가져오기
         //_myStudents = StudentManager.Instance.MyStudents;
         CreatCell();
+        //GuideText();
+    }
+
+    private void Start()
+    {
         GuideText();
     }
 
@@ -41,19 +47,28 @@ public class GraduationListPanel : MonoBehaviour
             var honor = nameBox.transform.Find("Honor").GetComponent<TextMeshProUGUI>();
             var script = nameBox.GetComponent<GraduationNameBox>();
             //var color = nameBox.GetComponent<Color>();
-            //컬러도 따로 설정 해야하는데... 새로 생성하는거보다는 활성화비활성화로 하는거 나을지도 
             //버튼을 생성할 때 학생 데이터 저장
             script.clickData = _graduationStudentList[i];
             script.graduationUI = _characterProfileDetail;
             name.text = manager.GetString(_graduationStudentList[i].Name[0]) + manager.GetString(_graduationStudentList[i].Name[1]) + manager.GetString(_graduationStudentList[i].Name[2]);
-            //honor.text = _graduationStudentList[i].Honor.ToString();
+            honor.text = _graduationStudentList[i].TotalFame.ToString();
         }
     }
 
     private void GuideText()
     {
-        _graduationNumber.text = $"{_graduationStudentList.Count}명의 학생이 졸업 했습니다.";
+        Debug.Log($"졸업자 수: {_graduationStudentList.Count}");
+        Debug.Log($"명예 총 수: {_graduationManager.TotalHonor}");
+        string getGraduationNum = StringManager.Instance.GetString("UI_Graduation_졸업팝업");
 
-        _totalHonorText.text = $"최종 획득 명성 +{_graduationManager.TotalHonor}";
+        Debug.Log(getGraduationNum);
+        getGraduationNum = getGraduationNum.Replace("{N}", $"{_graduationStudentList.Count}");
+        _graduationNumber.text = getGraduationNum;
+
+        string getHonor = StringManager.Instance.GetString("UI_Graduation_졸업팝업2");
+
+        getHonor = getHonor.Replace("{N}", $"{_graduationManager.TotalHonor}");
+
+        _totalHonorText.text = getHonor;
     }
 }

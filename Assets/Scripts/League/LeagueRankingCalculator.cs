@@ -84,27 +84,37 @@ public class LeagueRankingCalculator : ILeagueRankingCalculator
 
         var standings = standingMap.Values.ToList();
 
-        // 타이 브레이커에 따른 정렬
-        standings.Sort(CompareTeams);
+        // 타이 브레이커 동적 생성
+        var tieBreakers = new List<ILeagueTieBreaker>
+    {
+        new WinCountTieBreaker(), // 1순위: 승수
+        new GoalDiffTieBreaker()  // 2순위: 득실차
+    };
 
+        // saveData.leagueId를 통해 현재 리그의 LevelId를 가져와 팀 티어 비교기 추가
+        var masterData = LeagueDataManager.Instance.GetMasterDataById(saveData.leagueId);
+        if (masterData.HasValue)
+        {
+            tieBreakers.Add(new TeamTierTieBreaker(masterData.Value.leagueLevelId));
+        }
+
+        // 타이 브레이커에 따른 정렬
+        standings.Sort((a, b) =>
+        {
+            foreach (var tb in tieBreakers)
+            {
+                int result = tb.Compare(a, b);
+                if (result != 0) return result;
+            }
+            // 끝까지 같으면 teamId 사전식 오름차순 정렬
+            return string.Compare(a.teamId, b.teamId, System.StringComparison.Ordinal);
+        });
+        // 랭크 부여
         for (int i = 0; i < standings.Count; i++)
         {
             standings[i].rank = i + 1;
         }
 
         return standings;
-    }
-
-    private int CompareTeams(LeagueStandingData a, LeagueStandingData b)
-    {
-        foreach (var tieBreaker in _tieBreakers)
-        {
-            int result = tieBreaker.Compare(a, b);
-            if (result != 0)
-                return result;
-        }
-
-        // 끝까지 같으면 teamId로 고정 정렬
-        return string.Compare(a.teamId, b.teamId, System.StringComparison.Ordinal);
     }
 }
