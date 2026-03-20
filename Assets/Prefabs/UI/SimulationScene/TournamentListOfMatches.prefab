@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 2431161785841750214}
   - component: {fileID: 1308797214256992620}
   - component: {fileID: 503368888170086255}
+  - component: {fileID: 8949552225301040885}
   m_Layer: 0
   m_Name: LeagueName
   m_TagString: Untagged
@@ -34,7 +35,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 438.32315, y: -62.077515}
+  m_AnchoredPosition: {x: 438.32315, y: -102.077515}
   m_SizeDelta: {x: 816.6463, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1308797214256992620
@@ -136,6 +137,20 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &8949552225301040885
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 940821779322350057}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.ContentSizeFitter
+  m_HorizontalFit: 0
+  m_VerticalFit: 0
 --- !u!1 &1574461304218745724
 GameObject:
   m_ObjectHideFlags: 0
@@ -945,6 +960,7 @@ GameObject:
   - component: {fileID: 5540833122404380375}
   - component: {fileID: 4394968456084558715}
   - component: {fileID: 2056603331149973381}
+  - component: {fileID: 7313577787996070284}
   m_Layer: 0
   m_Name: BoardScroll
   m_TagString: Untagged
@@ -969,7 +985,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 438.32315, y: -766.6275}
+  m_AnchoredPosition: {x: 438.32315, y: -746.6275}
   m_SizeDelta: {x: 773.4545, y: 1039.1}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5540833122404380375
@@ -1040,6 +1056,20 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &7313577787996070284
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3963701319099554817}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.ContentSizeFitter
+  m_HorizontalFit: 0
+  m_VerticalFit: 0
 --- !u!1 &4480958931912970161
 GameObject:
   m_ObjectHideFlags: 0
@@ -1139,7 +1169,7 @@ MonoBehaviour:
     m_Top: 0
     m_Bottom: 0
   m_ChildAlignment: 4
-  m_Spacing: 20
+  m_Spacing: 0
   m_ChildForceExpandWidth: 0
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 0
@@ -1159,6 +1189,7 @@ GameObject:
   - component: {fileID: 6440501411495565457}
   - component: {fileID: 840282075964659214}
   - component: {fileID: 5385499000234616792}
+  - component: {fileID: 2387242218529756700}
   m_Layer: 0
   m_Name: ReadyButton
   m_TagString: Untagged
@@ -1183,7 +1214,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 438.32312, y: -1355.3704}
+  m_AnchoredPosition: {x: 438.32312, y: -1315.3704}
   m_SizeDelta: {x: 215.2421, y: 98.3858}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6440501411495565457
@@ -1268,6 +1299,20 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &2387242218529756700
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4492250022474956129}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.ContentSizeFitter
+  m_HorizontalFit: 0
+  m_VerticalFit: 0
 --- !u!1 &4982767301668376895
 GameObject:
   m_ObjectHideFlags: 0
@@ -2033,6 +2078,7 @@ GameObject:
   - component: {fileID: 3789909599447334984}
   - component: {fileID: 5559935397581898040}
   - component: {fileID: 4442672640361556038}
+  - component: {fileID: 3870368813399011468}
   m_Layer: 0
   m_Name: TitleText
   m_TagString: Untagged
@@ -2056,7 +2102,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 438.32315, y: -132.07751}
+  m_AnchoredPosition: {x: 438.32315, y: -152.07751}
   m_SizeDelta: {x: 816.6463, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5559935397581898040
@@ -2158,6 +2204,20 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &3870368813399011468
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7379377537473505557}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.ContentSizeFitter
+  m_HorizontalFit: 0
+  m_VerticalFit: 0
 --- !u!1 &7918878318029568474
 GameObject:
   m_ObjectHideFlags: 0
@@ -2169,6 +2229,7 @@ GameObject:
   - component: {fileID: 5498408119043481114}
   - component: {fileID: 3179331375000064634}
   - component: {fileID: 5835069305120359829}
+  - component: {fileID: 7323358010891433640}
   m_Layer: 0
   m_Name: CurrentRound
   m_TagString: Untagged
@@ -2231,6 +2292,20 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &7323358010891433640
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7918878318029568474}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.ContentSizeFitter
+  m_HorizontalFit: 0
+  m_VerticalFit: 0
 --- !u!1 &8425924776538620828
 GameObject:
   m_ObjectHideFlags: 0
