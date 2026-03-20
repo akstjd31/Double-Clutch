@@ -26,6 +26,8 @@ public class PassiveBox : MonoBehaviour
 
     //선택한 스킬
     private Player_PassiveData _selectSkill;
+    string[] _detailText = new string[3];
+    bool _needGuideRefresh = false;
 
     public Player_PassiveData SelectSkill => _selectSkill;
     public Dictionary<int, List<Player_PassiveData>> SelectSkillSave => _selectSkillSave;
@@ -38,6 +40,19 @@ public class PassiveBox : MonoBehaviour
             _skillName[i].text = $"";
             _skillDetail[i].text = $"";
         }
+    }
+
+    private void LateUpdate()
+    {
+        if(_needGuideRefresh)
+        {
+            for (int i = 0; i < _selectSkillList.Count; i++)
+            {
+                _skillDetail[i].text = _detailText[i];
+            }
+            _needGuideRefresh = false;
+        }
+        
     }
 
     //private void OnEnable()
@@ -85,8 +100,11 @@ public class PassiveBox : MonoBehaviour
             {
                 _skillName[i].text = StringManager.Instance.GetString(_selectSkillList[i].skillName);
                 _skillImage[i].sprite = SpriteManager.Instance.GetSprite(_selectSkillList[i].passiveResource);
-                _skillDetail[i].text = StringManager.Instance.GetString(_selectSkillList[i].passiveDesc);
+
+                _detailText[i] = StringManager.Instance.GetString(_selectSkillList[i].passiveDesc);
+                _detailText[i] = _detailText[i].Replace("{effectValue}", _selectSkillList[i].effectValue.ToString());
             }
+            _needGuideRefresh = true;
         }
         else
         {
