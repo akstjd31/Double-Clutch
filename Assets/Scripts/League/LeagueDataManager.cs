@@ -228,9 +228,11 @@ public class LeagueDataManager : Singleton<LeagueDataManager>
             isPlayerEliminated = false,
             teams = CreateTeamEntries(selectedTeams),
             matchRecords = new List<LeagueMatchRecord>(),
-            standings = CreateInitialStandings(selectedTeams)
+            standings = new List<LeagueStandingData>()
         };
-
+        // 랭킹 계산기를 즉시 가동하여 CSV 티어가 반영된 시작 순위를 부여합니다.
+        ILeagueRankingCalculator rankingCalculator = new LeagueRankingCalculator();
+        saveData.standings = rankingCalculator.Calculate(saveData);
         return saveData;
     }
 
