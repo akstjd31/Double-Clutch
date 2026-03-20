@@ -495,6 +495,7 @@ private StudentSaveData CheckSaveData()
                     var mercenary = _mercenaryMaker.MakeMercenary(targetPos);
                     if (mercenary != null)
                     {
+                        StudentManager.Instance.InitStudent(mercenary);
                         mercenary.OnStatChanged();
                         sList.Add(mercenary);
                         continue;
