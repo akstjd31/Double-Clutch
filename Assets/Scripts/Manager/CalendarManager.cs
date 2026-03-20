@@ -136,11 +136,11 @@ public class CalendarManager : Singleton<CalendarManager>
                 // 2. 시즌 아웃 조건 유무 확인
                 if (data.hasSeasonOut)
                 {
-                    weekId = LeagueManager.Instance.IsPlayerSeasonOut() ? data.targetidDefault : data.targetidSpecial;
+                    weekId = data.targetidDefault; // 리그 시즌아웃 처리는 따로 해줘야할듯 
                 }
                 else
                 {
-                    weekId = data.targetidDefault;
+                    weekId = data.targetidSpecial;
                 }
             }
             else
