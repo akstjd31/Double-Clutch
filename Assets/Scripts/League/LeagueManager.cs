@@ -38,6 +38,11 @@ public class LeagueManager : Singleton<LeagueManager>
 
         try
         {
+            // 라운드 대진표 생성 전에 순위(랭킹)를 정확하게 계산합니다.
+            if (_currentLeague.currentRoundIndex == 0 && _currentLeague.matchRecords.Count == 0)
+            {
+                RecalculateStandings();
+            }
             // 1라운드(0 인덱스) 대진표 생성
             GenerateCurrentRoundMatchesIfNeeded();
         }
