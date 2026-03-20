@@ -5,6 +5,7 @@ using UnityEngine;
 public class MercenaryMaker : MonoBehaviour
 {
     [SerializeField] Mercenary_DataReader _mercenaryDB;
+    [SerializeField] Player_VisualDataReader _visualDB;
 
     public Student MakeMercenary(Position position)
     {
@@ -14,7 +15,8 @@ public class MercenaryMaker : MonoBehaviour
         robot.SetPosition(position);
         robot.SetMatchPosition(position);
         robot.SetStat(MakeMercenaryStats(data));
-        robot.ChangeCondition(70);
+        robot.ChangeCondition(70);        
+        robot.SetVisual(GetMercenaryVisual(data.playerImageResource));
 
         return robot;
     }
@@ -38,4 +40,10 @@ public class MercenaryMaker : MonoBehaviour
         return newStat;
     }
 
+    private Player_VisualData GetMercenaryVisual(string visualId)
+    {
+        Player_VisualData data =  _visualDB.DataList.Find(v => v.visualId == visualId);
+
+        return data;
+    }
 }
