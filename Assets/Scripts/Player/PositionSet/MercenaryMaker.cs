@@ -14,7 +14,8 @@ public class MercenaryMaker : MonoBehaviour
         robot.SetPosition(position);
         robot.SetMatchPosition(position);
         robot.SetStat(MakeMercenaryStats(data));
-        robot.ChangeCondition(70);
+        robot.ChangeCondition(70);        
+        robot.SetVisual(GetMercenaryVisual(data));
 
         return robot;
     }
@@ -38,4 +39,12 @@ public class MercenaryMaker : MonoBehaviour
         return newStat;
     }
 
+    private Player_VisualData GetMercenaryVisual(Mercenary_Data data)
+    {
+        Player_VisualData visualData = new Player_VisualData();
+
+        visualData.playerImageResource = data.playerImageResource;
+        visualData.portraitResource = data.portraitResource;
+        return visualData;
+    }
 }

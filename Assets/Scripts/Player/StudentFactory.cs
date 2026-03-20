@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
 
@@ -192,8 +193,17 @@ public class StudentFactory : MonoBehaviour
     }
 
     private Player_SpeciesData GetRandomSpecie()
-    {        
-        return _speciesDataReader.DataList[Random.Range(0, _speciesDataReader.DataList.Count)];
+    {
+        
+        var nonHumanoidList = _speciesDataReader.DataList.Where(d => d.species != speciesType.Humanoid).ToList();
+
+        
+        if (nonHumanoidList.Count == 0)
+        {        
+            return _speciesDataReader.DataList[0];
+        }
+        
+        return nonHumanoidList[Random.Range(0, nonHumanoidList.Count)];        
     }
 
     public Player_SpeciesData GetRandomSpecieByType(speciesType type)
