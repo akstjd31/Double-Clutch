@@ -351,7 +351,10 @@ public class EventController : MonoBehaviour
             _stringTable[_selectedResultData.resultScriptKey], //결과텍스트
             _selectedResultData.reactionPortraitId,//이미지
             _selectedResultData.statusChange, 
-            _myStudents[_currentStudentNum].State.ToString()); 
+            _myStudents[_currentStudentNum].State.ToString());
+
+        //선수 스탯 변동치 초기화
+        _myStudents[_currentStudentNum].PrepareStatChange();
 
         //선수 컨디션 변경
         var beforeConditon = _myStudents[_currentStudentNum].Condition.ToString();
@@ -376,6 +379,8 @@ public class EventController : MonoBehaviour
 
 
         Debug.Log($"다음 학생 ID : {_myStudents[_currentStudentNum].StudentId + 1}");
+
+        _myStudents[_currentStudentNum].OnStatChanged();
 
         //현재 학생의 이벤트 리스트를 가져오기
         List<RandomEvent> studentEventList = _eventManager.CandidateDictionary[_myStudents[_currentStudentNum].StudentId];
