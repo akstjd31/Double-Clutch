@@ -88,7 +88,7 @@ public class FosterManager : MonoBehaviour
     }
     private bool HasProblem(Student target)
     {
-        return target.Condition <= 0 || target.State != StudentState.None;
+        return (target.Condition <= 0 || target.State != StudentState.None) && (target.CurrentTraining is IndividualTraining || target.CurrentTraining is TeamTraining);
     }
 
     public void UpdateScheduleState()
