@@ -89,7 +89,7 @@ public class EnemyTeamFactory : MonoBehaviour
         stats.Add(MatchStatType.Block, s.GetCurrentStat(potential.StatBlock));
         stats.Add(MatchStatType.Rebound, s.GetCurrentStat(potential.StatRebound));
 
-        string actualVisualKey = s.VisualData.playerImageResource;
+        string actualVisualKey = s.VisualData.portraitResource;
         if (string.IsNullOrEmpty(actualVisualKey)) actualVisualKey = "Default_Player_Sprite";
         MatchPlayer matchPlayer = new MatchPlayer(id, s.Name, pos, stats, actualVisualKey, s.Passive);
         matchPlayer.TraitId = s.TraitId;
