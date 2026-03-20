@@ -7,11 +7,23 @@ public class MonthUI : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI _monthText;
     [SerializeField] private GameObject[] _weekObjs;
+    [SerializeField] List<Image> _lineImg = new List<Image>();
     [SerializeField] private List<TextMeshProUGUI> _weekContentList;
     [SerializeField] private bool _isNextMonth;
 
     public void Init(CalendarManager calMgr)
     {
+        if (_weekObjs == null) return;
+
+        if (_lineImg == null)
+        {
+            foreach (var obj in _weekObjs)
+            {
+                var img = obj.GetComponentInChildren<Image>(true);
+                _lineImg.Add(img);
+            }
+        }
+
         var cal = calMgr.GetCalendar();
 
         _monthText.text = (_isNextMonth ? (cal.month + 1).ToString() : cal.month.ToString()) + "월";
@@ -34,5 +46,11 @@ public class MonthUI : MonoBehaviour
         {
             _weekContentList[i].text = descList[i];
         }
+
+        // 현재 날짜 확인용 밑줄긋기
+        // if (!_isNextMonth)
+        // {
+        //     _lineImg[calMgr.GetCalendar().week].gameObject.SetActive(true);
+        // }
     }
 }
