@@ -171,23 +171,41 @@ public class MatchEngine : MonoBehaviour
         // 연장전 처리 (3쿼터가 끝났는데 동점일 때만)
         if (targetQuarter >= 4)
         {
-
-            while (_homeTeam.SimulatedScore == _awayTeam.SimulatedScore)
+            // 4쿼터 종료 직후 동점이 아니면 (연장전에 갈 필요가 없으면)
+            if (_homeTeam.SimulatedScore != _awayTeam.SimulatedScore)
             {
-                RecordLog("GameStart");
-
-                _simTime = 300f;
-
-                while (_simTime > 0)
+                // 다음 쿼터를 위해 미리 올려둔 _simQuarter를 다시 원래 쿼터(4Q)로 되돌림
+                _simQuarter--;
+            }
+            else
+            {
+                // 동점일 경우 연장전 돌입
+                while (_homeTeam.SimulatedScore == _awayTeam.SimulatedScore)
                 {
-                    ProcessTurn();
+                    // 연장전 쿼터 시작 시에도 볼 핸들러 세팅 유지
+                    MatchTeam attackTeam = (_currentPossession == TeamSide.Home) ? _homeTeam : _awayTeam;
+                    _ballHolder = attackTeam.GetPlayerByPosition(Position.PG) ?? attackTeam.Roster[0];
+
+                    RecordLog("GameStart");
+
+                    _simTime = 300f;
+
+                    while (_simTime > 0)
+                    {
+                        ProcessTurn();
+                    }
+
+                    RecordLog("QuarterEnd");
+
+                    // 연장 쿼터 종료 직후 승부가 났으면, 
+                    // 다음 쿼터로 올리지 않고 바로 루프 탈출 (그래야 GameEnd가 해당 연장 쿼터로 찍힘)
+                    if (_homeTeam.SimulatedScore != _awayTeam.SimulatedScore)
+                        break;
+
+                    _simQuarter++;
+                    _currentPossession = (_currentPossession == TeamSide.Home) ? TeamSide.Away : TeamSide.Home;
+                    if (_simQuarter > 7) break;
                 }
-
-                RecordLog("QuarterEnd");
-
-                _simQuarter++;
-                _currentPossession = (_currentPossession == TeamSide.Home) ? TeamSide.Away : TeamSide.Home;
-                if (_simQuarter > 7) break;
             }
 
             RecordLog("GameEnd");
