@@ -11,6 +11,12 @@ public class LobbyProfileIcon : MonoBehaviour
     {
         Refresh();
     }
+
+    public void SetImage(Sprite sprite)
+    {
+        _icon.sprite = sprite;
+    }
+
     public void Refresh()
     {
         var saveData = GameManager.Instance.SaveData;
