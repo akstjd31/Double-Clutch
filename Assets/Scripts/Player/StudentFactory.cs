@@ -97,6 +97,11 @@ public class StudentFactory : MonoBehaviour
         target.SetPosition(bestPosition);
     }
 
+    public void JustInitStudent(Student target)
+    {
+        target.Init(_speciesDataReader, _personalityDataReader, _passiveDataReader, _traitDataReader, _player_PositionDataReader, _visualDataReader);
+    }
+
     public void InitStudentList(List<Student> studentList)
     {
         foreach(Student student in studentList)
