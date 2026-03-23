@@ -5,6 +5,7 @@ using UnityEngine;
 public class SettingSaveData : SaveBase
 {
     public int fps = 60;
+    public Language language = Language.Ko;
     public bool isVibOn = true;
     public float masterVol = 0.8f;
     public bool isMasterVolOn = true;

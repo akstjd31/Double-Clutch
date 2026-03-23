@@ -355,10 +355,10 @@ public class EventController : MonoBehaviour
             CurrentStudent(_currentStudentNum).State.ToString()); //변할 상태
 
         //선수 컨디션 변경
-        var beforeConditon = _myStudents[_currentStudentNum].Condition.ToString();
-        _myStudents[_currentStudentNum].ChangeCondition(_selectedResultData.conditionChange);
-        Debug.Log($"학생 ID : {_myStudents[_currentStudentNum].StudentId}" +
-            $"컨디션 {beforeConditon} > {_myStudents[_currentStudentNum].Condition}");
+        var beforeConditon = CurrentStudent(_currentStudentNum).Condition.ToString();
+        CurrentStudent(_currentStudentNum).ChangeCondition(_selectedResultData.conditionChange);
+        Debug.Log($"학생 ID : {CurrentStudent(_currentStudentNum).StudentId}" +
+            $"컨디션 {beforeConditon} > {CurrentStudent(_currentStudentNum).Condition}");
 
         //선수 상태 변경
         var beforeState = CurrentStudent(_currentStudentNum).State;
@@ -413,7 +413,7 @@ public class EventController : MonoBehaviour
 
         CurrentStudent(_currentStudentNum).OnStatChanged();
 
-        _myStudents[_currentStudentNum].OnStatChanged();
+        CurrentStudent(_currentStudentNum).OnStatChanged();
 
         //현재 학생의 이벤트 리스트를 가져오기
         List<RandomEvent> studentEventList = _eventManager.CandidateDictionary[CurrentStudent(_currentStudentNum).StudentId];

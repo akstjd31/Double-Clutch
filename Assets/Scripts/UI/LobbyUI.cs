@@ -10,6 +10,7 @@ public class LobbyUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _calendarText;
     [SerializeField] private TextMeshProUGUI _moneyText;
     [SerializeField] private TextMeshProUGUI _honorText;
+    [SerializeField] private Button _graduationAlbumButton;
     [SerializeField] private Button _trainingButton;
     [SerializeField] private Button _matchButton;
     [SerializeField] private SwissBoardPanel _swissBoardPanel; // 대진표 연결용
@@ -20,6 +21,9 @@ public class LobbyUI : MonoBehaviour
     [SerializeField] private Toggle _koreanToggle;
     [SerializeField] private Toggle _englishToggle;
     [SerializeField] private Toggle _japanToggle;
+
+
+    [SerializeField] private Button _testButton;
     private void OnEnable()
     {
         if (CalendarManager.Instance != null)
@@ -45,7 +49,6 @@ public class LobbyUI : MonoBehaviour
             _matchButton.onClick.RemoveAllListeners();
             _matchButton.onClick.AddListener(OnClickMatchButton);
         }
-
     }
     // 매치 버튼을 눌렀을 때 실행될 함수
     public void OnClickMatchButton()
@@ -76,6 +79,7 @@ public class LobbyUI : MonoBehaviour
     private void Init()
     {
         if (GameManager.Instance == null) return;
+
         UpdateMoneyText();
         UpdateHonorText();
         UpdateProfileText();
@@ -85,6 +89,10 @@ public class LobbyUI : MonoBehaviour
 
         UpdateCalendarText(calMgr.GetCalendar());
         SetButtonActivate(calMgr.GetCalendar());
+
+        // 앨범 데이터 유무로 앨범 버튼 활성화 유무 결정
+        if (GraduationAlbumManager.Instance == null) return;
+        _graduationAlbumButton.interactable = GraduationAlbumManager.Instance.HasData();
     }
 
     private void OnDisable()
