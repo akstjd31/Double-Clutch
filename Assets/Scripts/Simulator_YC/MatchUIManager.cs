@@ -53,16 +53,21 @@ public class MatchUIManager : MonoBehaviour
     [SerializeField] private Image _imgStandingRight;   // 우측 스탠딩
     [SerializeField] private Image _imgCG;              // CG 패널
 
-    [Header("Left Dialogue UI")]
-    [SerializeField] private GameObject _leftBubbleGroup;         // 좌측 대화창 전체 부모
-    [SerializeField] private TextMeshProUGUI _txtLeftSpeakerName; // 좌측 화자 이름
-    [SerializeField] private TextMeshProUGUI _txtLeftDialogue;    // 좌측 대사
+    // [Header("Left Dialogue UI")]
+    // [SerializeField] private GameObject _leftBubbleGroup;         // 좌측 대화창 전체 부모
+    // [SerializeField] private TextMeshProUGUI _txtLeftSpeakerName; // 좌측 화자 이름
+    // [SerializeField] private TextMeshProUGUI _txtLeftDialogue;    // 좌측 대사
+    // 
+    // [Header("Right Dialogue UI")]
+    // [SerializeField] private GameObject _rightBubbleGroup;         // 우측 대화창 전체 부모
+    // [SerializeField] private TextMeshProUGUI _txtRightSpeakerName; // 우측 화자 이름
+    // [SerializeField] private TextMeshProUGUI _txtRightDialogue;    // 우측 대사
 
-    [Header("Right Dialogue UI")]
-    [SerializeField] private GameObject _rightBubbleGroup;         // 우측 대화창 전체 부모
-    [SerializeField] private TextMeshProUGUI _txtRightSpeakerName; // 우측 화자 이름
-    [SerializeField] private TextMeshProUGUI _txtRightDialogue;    // 우측 대사
-
+    [Header("Halftime Dialogue UI (육성 이벤트 방식)")]
+    [SerializeField] private GameObject _bubblePrefab;       // EventUI에서 사용하는 프리팹
+    [SerializeField] private Transform _bubbleContainer;     // 부모 오브젝트
+    private List<GameObject> _bubbleList = new List<GameObject>();
+    private int _textTurn = 0;
 
     [Header("Cut-In Effect")]
     [SerializeField] private GameObject _cutInPanel;      // 컷인 전체 패널 (Canvas 내 Panel)
@@ -305,6 +310,16 @@ public class MatchUIManager : MonoBehaviour
         _currentLineId = 1; // 스크립트의 첫 번째 줄(currentId = 1)부터 시작
         IsEventFinished = false;
 
+        _textTurn = 0;
+        for (int i = 0; i < _bubbleList.Count; i++)
+        {
+            _bubbleList[i].SetActive(false);
+            var bg = _bubbleList[i].GetComponent<Image>();
+            var nameBg = _bubbleList[i].transform.GetChild(0).GetComponent<Image>();
+            if (bg != null) bg.color = Color.white;
+            if (nameBg != null) nameBg.color = Color.white;
+        }
+
         if (_halftimeVNPanel != null)
         {
             _halftimeVNPanel.SetActive(true);
@@ -335,31 +350,74 @@ public class MatchUIManager : MonoBehaviour
 
         string speakerName = ReplaceVariables(lineData.playerName, matchState);
 
-        if (lineData.speakDirection == "Left" || lineData.speakDirection == "Middle")
-        {
-            // 좌측(또는 중앙) 화자일 때
-            _leftBubbleGroup.SetActive(true);
-            _rightBubbleGroup.SetActive(false);
+        // if (lineData.speakDirection == "Left" || lineData.speakDirection == "Middle")
+        // {
+        //     // 좌측(또는 중앙) 화자일 때
+        //     _leftBubbleGroup.SetActive(true);
+        //     _rightBubbleGroup.SetActive(false);
+        // 
+        //     if (_txtLeftSpeakerName != null) _txtLeftSpeakerName.text = speakerName;
+        //     if (_txtLeftDialogue != null) _txtLeftDialogue.text = rawText;
+        // }
+        // else if (lineData.speakDirection == "Right")
+        // {
+        //     // 우측 화자일 때
+        //     _leftBubbleGroup.SetActive(false);
+        //     _rightBubbleGroup.SetActive(true);
+        // 
+        //     if (_txtRightSpeakerName != null) _txtRightSpeakerName.text = speakerName;
+        //     if (_txtRightDialogue != null) _txtRightDialogue.text = rawText;
+        // }
+        // else
+        // {
+        //     // 독백이나 중앙 텍스트일 경우 (기획에 따라 예외 처리)
+        //     _leftBubbleGroup.SetActive(false);
+        //     _rightBubbleGroup.SetActive(false);
+        // }
 
-            if (_txtLeftSpeakerName != null) _txtLeftSpeakerName.text = speakerName;
-            if (_txtLeftDialogue != null) _txtLeftDialogue.text = rawText;
-        }
-        else if (lineData.speakDirection == "Right")
+        // 중앙 정렬된 프리팹을 생성/재사용하여 표시
+        if (lineData.speakDirection == "Left" || lineData.speakDirection == "Middle" || lineData.speakDirection == "Right" || lineData.speakDirection == "Center")
         {
-            // 우측 화자일 때
-            _leftBubbleGroup.SetActive(false);
-            _rightBubbleGroup.SetActive(true);
+            GameObject textBubble;
 
-            if (_txtRightSpeakerName != null) _txtRightSpeakerName.text = speakerName;
-            if (_txtRightDialogue != null) _txtRightDialogue.text = rawText;
-        }
-        else
-        {
-            // 독백이나 중앙 텍스트일 경우 (기획에 따라 예외 처리)
-            _leftBubbleGroup.SetActive(false);
-            _rightBubbleGroup.SetActive(false);
-        }
+            // 말풍선이 턴수보다 부족하면 새로 생성
+            if (_bubbleList.Count <= _textTurn)
+            {
+                textBubble = Instantiate(_bubblePrefab, _bubbleContainer);
+                _bubbleList.Add(textBubble);
+            }
 
+            textBubble = _bubbleList[_textTurn];
+            TextBubbleScript textBubbleScript = textBubble.GetComponent<TextBubbleScript>();
+
+            // 맨 앞으로 이동시킨 뒤 활성화
+            textBubble.transform.SetSiblingIndex(0);
+            textBubble.SetActive(true);
+
+            // 텍스트 및 이름표 세팅
+            if (textBubbleScript != null)
+            {
+                textBubbleScript.NameText.text = speakerName;
+                textBubbleScript.PrintText.text = rawText;
+
+                // 화자 이름이 비어있으면 이름표 UI 끄기
+                bool hasName = !string.IsNullOrEmpty(speakerName);
+                textBubbleScript.NameText.transform.parent.gameObject.SetActive(hasName);
+            }
+
+            // 이전 말풍선 어둡게 처리
+            if (_textTurn > 0)
+            {
+                var beforeBubble = _bubbleList[_textTurn - 1].GetComponent<Image>();
+                var beforeNameTag = beforeBubble.transform.GetChild(0).GetComponent<Image>();
+
+                Color dimColor = new Color(0.6f, 0.6f, 0.6f, 1f);
+                if (beforeBubble != null) beforeBubble.color = dimColor;
+                if (beforeNameTag != null) beforeNameTag.color = dimColor;
+            }
+
+            _textTurn++;
+        }
 
         // 비주얼 이미지 갱신 로직 추가 (Resources.Load 사용 가정)
         UpdateVisuals(lineData);
@@ -497,6 +555,45 @@ public class MatchUIManager : MonoBehaviour
         else
         {
             _imgStandingRight.gameObject.SetActive(false);
+        }
+        // 기본 순서: 중앙 -> 왼쪽 -> 오른쪽 순서로 위에서 아래에 위치
+        if (_imgStandingRight != null) _imgStandingRight.transform.SetAsFirstSibling(); // 가장 뒤로 보냄
+        if (_imgStandingLeft != null) _imgStandingLeft.transform.SetSiblingIndex(1);      // 중간에 위치
+        if (_imgStandingMiddle != null) _imgStandingMiddle.transform.SetAsLastSibling();  // 가장 앞으로 끌어옴
+
+        // 밝기 조절 (말하지 않는 캐릭터는 어둡게)
+        Color activeColor = Color.white;
+        Color inactiveColor = new Color(0.4f, 0.4f, 0.4f, 1f);
+
+        if (_imgStandingLeft != null) _imgStandingLeft.color = inactiveColor;
+        if (_imgStandingMiddle != null) _imgStandingMiddle.color = inactiveColor;
+        if (_imgStandingRight != null) _imgStandingRight.color = inactiveColor;
+
+        // 화자(말하는 사람)를 가장 앞으로 끌어오고 밝게 처리
+        switch (lineData.speakDirection)
+        {
+            case "Left":
+                if (_imgStandingLeft != null)
+                {
+                    _imgStandingLeft.color = activeColor;
+                    _imgStandingLeft.transform.SetAsLastSibling(); // 맨 앞으로 이동
+                }
+                break;
+            case "Middle":
+            case "Center":
+                if (_imgStandingMiddle != null)
+                {
+                    _imgStandingMiddle.color = activeColor;
+                    _imgStandingMiddle.transform.SetAsLastSibling(); // 맨 앞으로 이동
+                }
+                break;
+            case "Right":
+                if (_imgStandingRight != null)
+                {
+                    _imgStandingRight.color = activeColor;
+                    _imgStandingRight.transform.SetAsLastSibling(); // 맨 앞으로 이동
+                }
+                break;
         }
     }
     private void SetupChoiceButton(Button btn, TextMeshProUGUI txt, string choiceTextKey, potential stat, float statChange, Position pos, changeType posChange, int nextId)
