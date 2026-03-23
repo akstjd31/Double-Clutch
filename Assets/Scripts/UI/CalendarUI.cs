@@ -18,10 +18,8 @@ public class CalendarUI : MonoBehaviour
         _thisMonthUI.gameObject.SetActive(true);
         _thisMonthUI.Init(_calMgr);
 
-        if (_calMgr.GetCalendar().month != 1)
-        {
-            _nextMonthUI.gameObject.SetActive(true);
+        _nextMonthUI.gameObject.SetActive(_calMgr.GetCalendar().month != 2);
+        if (_nextMonthUI.gameObject.activeSelf)
             _nextMonthUI.Init(_calMgr);
-        }
     }
 }

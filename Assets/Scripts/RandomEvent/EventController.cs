@@ -413,6 +413,8 @@ public class EventController : MonoBehaviour
 
         CurrentStudent(_currentStudentNum).OnStatChanged();
 
+        _myStudents[_currentStudentNum].OnStatChanged();
+
         //현재 학생의 이벤트 리스트를 가져오기
         List<RandomEvent> studentEventList = _eventManager.CandidateDictionary[CurrentStudent(_currentStudentNum).StudentId];
 

@@ -35,7 +35,7 @@ public class ProfileUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _coachWarningText;
 
     [Header("아이콘 설정 및 해금")]
-    [SerializeField] private Image _currentLobbyProfileImage;
+    [SerializeField] private LobbyProfileIcon _LobbyProfileIcon;
     [SerializeField] private Image _currentIcon;
     [SerializeField] private ProfileIcon _profilePrefab;
     [SerializeField] private GameObject _pagePanelPrefab;
@@ -69,8 +69,8 @@ public class ProfileUI : MonoBehaviour
             ? _profileDataReader.DataList[0].playerImage
             : saveData.currentProfileImage;
 
-        if (_currentLobbyProfileImage != null && saveData != null)
-            _currentLobbyProfileImage.sprite = SpriteManager.Instance.GetSprite(imgKey);
+        if (_LobbyProfileIcon != null && saveData != null)
+            _LobbyProfileIcon.SetImage(SpriteManager.Instance.GetSprite(imgKey));
 
         if (_profileBoxImage != null)
             _profileBoxImage.sprite = SpriteManager.Instance.GetSprite(_profileDataReader.DataList[0].playerImage);
@@ -213,7 +213,7 @@ public class ProfileUI : MonoBehaviour
         if (_selectedData.HasValue && _selectedData.Value.playerImage != null)
         {
             gm.SetCurrentProfileIcon(_selectedData.Value.playerImage);
-            _currentLobbyProfileImage?.GetComponent<LobbyProfileIcon>()?.Refresh();
+            _LobbyProfileIcon?.Refresh();
         }
 
         this.gameObject.SetActive(false);

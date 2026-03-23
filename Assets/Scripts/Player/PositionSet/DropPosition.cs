@@ -5,7 +5,6 @@ using UnityEngine.UI;
 public class DropPosition : MonoBehaviour, IDropHandler, IPointerClickHandler
 {
     [SerializeField] private Outline _outline;
-    [SerializeField] private bool allowOnlyOne = false;
     [SerializeField] private bool isPositionSlot = false;
     [SerializeField] private CharacterList _charList;
     [SerializeField] private Position _position;

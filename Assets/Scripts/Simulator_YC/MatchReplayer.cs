@@ -23,7 +23,7 @@ public class MatchReplayer : MonoBehaviour
     private RectTransform _homeHoopUI;
     private RectTransform _awayHoopUI;
 
-    // 오디오 관련 컴포넌트 추가
+    // 오디오 관련 컴포넌트
     [Header("Audio Settings")]
     [SerializeField] private AudioSource _audioSource;
     [SerializeField] private AudioClip _sfxCheer; // 2점슛 함성 사운드
@@ -36,6 +36,9 @@ public class MatchReplayer : MonoBehaviour
     private Coroutine _replayCoroutine;
     private int _currentLogIndex = 0;
     private bool _isSkipping = false;
+
+    // 이전 로그의 남은 시간을 추적하기 위한 변수
+    private float _previousRemainTime = 600f; // 1쿼터 시작 시간 기준
 
     public void Init(List<MatchLogData> logs)
     {
@@ -50,13 +53,16 @@ public class MatchReplayer : MonoBehaviour
         SpawnBall();
 
         if (_uiManager != null) _uiManager.UpdateScoreBoard(_matchState);
+
+        // 초기화 시점의 남은 시간 세팅
+        _previousRemainTime = _matchState.RemainTime;
     }
 
     private void CleanUpVisuals()
     {
         foreach (Transform child in _courtPanel)
         {
-            DestroyImmediate(child.gameObject);
+            Destroy(child.gameObject);
         }
 
         _ballUI = null;
@@ -181,20 +187,44 @@ public class MatchReplayer : MonoBehaviour
 
     private IEnumerator ReplayRoutine()
     {
-        if (_uiManager != null) _uiManager.UpdateLogText("=== Match Replay Start ===");
+        if (_uiManager != null) _uiManager.UpdateLogText("===============");
 
         for (_currentLogIndex = 0; _currentLogIndex < _logs.Count; _currentLogIndex++)
         {
             var log = _logs[_currentLogIndex];
             float speed = Mathf.Max(1.0f, PlaybackSpeed);
 
-            _matchState.SetReplayState(log.Quarter, log.GameTime);
+            // 쿼터가 바뀌었으면 previousTime 리셋
+            if (log.EventType == "GameStart" || log.GameTime > _previousRemainTime)
+            {
+                _previousRemainTime = log.GameTime;
+            }
 
+            float startRemainTime = _previousRemainTime;
+            float endRemainTime = log.GameTime;
+
+            // 애니메이션 재생 시간을 고정합니다. (기본 1초)
+
+            float baseDuration = 1.0f;
+            float finalDuration = baseDuration / speed;
+
+            // 다음 턴을 위해 값 갱신
+            _previousRemainTime = endRemainTime;
+
+            // 로그 텍스트는 즉시 띄우기
             if (_uiManager != null)
             {
                 _uiManager.UpdateLogText(log.LogText);
-                _uiManager.UpdateScoreBoard(_matchState);
             }
+
+            // 점수판 타이머를 계산된 시간(finalDuration) 동안 부드럽게 감소
+            DOTween.To(() => startRemainTime, x =>
+            {
+                _matchState.SetReplayState(log.Quarter, x);
+                if (_uiManager != null) _uiManager.UpdateScoreBoard(_matchState);
+            }, endRemainTime, finalDuration).SetEase(Ease.Linear).SetId("MatchReplay");
+
+
 
             if (!string.IsNullOrEmpty(log.SfxType) && _audioSource != null)
             {
@@ -202,8 +232,8 @@ public class MatchReplayer : MonoBehaviour
                 else if (log.SfxType == "CLAP" && _sfxClap != null) _audioSource.PlayOneShot(_sfxClap);
             }
 
-            MoveAllCircles(_matchState.HomeTeam, log.HomePositions, 0.5f / speed);
-            MoveAllCircles(_matchState.AwayTeam, log.AwayPositions, 0.5f / speed);
+            MoveAllCircles(_matchState.HomeTeam, log.HomePositions, finalDuration);
+            MoveAllCircles(_matchState.AwayTeam, log.AwayPositions, finalDuration);
 
             if (_ballUI != null)
             {
@@ -213,14 +243,19 @@ public class MatchReplayer : MonoBehaviour
                 if (log.EventType == "GOAL" || log.EventType == "MISS")
                 {
                     Vector2 hoopUIPos = (log.TeamId == 0) ? _awayHoopUI.anchoredPosition : _homeHoopUI.anchoredPosition;
-                    ballRT.anchoredPosition = LogicToUIPos(log.BallPos);
-                    ballRT.DOAnchorPos(hoopUIPos, 0.5f / speed);
+                    Vector2 shooterPos = LogicToUIPos(log.BallPos);
+
+                    Sequence shootSeq = DOTween.Sequence().SetId("MatchReplay");
+                    shootSeq.Append(ballRT.DOAnchorPos(shooterPos, finalDuration * 0.1f)); // 빠르게 슈터 손으로 정렬
+                    shootSeq.Append(ballRT.DOAnchorPos(hoopUIPos, finalDuration * 0.9f)); // 골대로 슛
                 }
                 else
                 {
-                    ballRT.DOAnchorPos(targetUIPos, 0.3f / speed);
+                    ballRT.DOAnchorPos(targetUIPos, finalDuration * 0.6f).SetId("MatchReplay");
                 }
             }
+
+            yield return new WaitForSeconds(finalDuration);
 
             if (log.EventType == "GOAL")
             {
@@ -238,10 +273,9 @@ public class MatchReplayer : MonoBehaviour
                 }
             }
 
-            yield return new WaitForSeconds(1.0f / speed);
         }
 
-        if (_uiManager != null) _uiManager.UpdateLogText("=== Match Phase Ended ===");
+        if (_uiManager != null) _uiManager.UpdateLogText("===============");
         OnReplayEnded?.Invoke();
     }
 
@@ -253,7 +287,7 @@ public class MatchReplayer : MonoBehaviour
             {
                 RectTransform rt = team.Roster[i].VisualObject.GetComponent<RectTransform>();
                 Vector2 uiPos = LogicToUIPos(posArray[i]);
-                rt.DOAnchorPos(uiPos, duration);
+                rt.DOAnchorPos(uiPos, duration).SetId("MatchReplay");
             }
         }
     }
@@ -268,7 +302,7 @@ public class MatchReplayer : MonoBehaviour
             StopCoroutine(_replayCoroutine);
             _replayCoroutine = null;
         }
-
+        DOTween.Kill("MatchReplay");
         // 남은 로그들을 순식간에 돌리면서 점수만 한방에 합산
         for (int i = _currentLogIndex; i < _logs.Count; i++)
         {
@@ -291,7 +325,7 @@ public class MatchReplayer : MonoBehaviour
         if (_uiManager != null)
         {
             _uiManager.UpdateScoreBoard(_matchState);
-            _uiManager.UpdateLogText("=== Match Phase Skipped ===");
+            _uiManager.UpdateLogText("===============");
             _uiManager.ForceCloseCutIn();
         }
 

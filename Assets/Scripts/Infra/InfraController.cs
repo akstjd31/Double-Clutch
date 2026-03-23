@@ -131,6 +131,6 @@ public class InfraController : MonoBehaviour
         if (GameManager.Instance == null) return false;
         
         var money = GameManager.Instance.SaveData.money;
-        return money > GetCostByNextLevel(); 
+        return money >= GetCostByNextLevel(); 
     }
 }

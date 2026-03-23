@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
 
@@ -94,6 +95,11 @@ public class StudentFactory : MonoBehaviour
         target.Init(_speciesDataReader, _personalityDataReader, _passiveDataReader, _traitDataReader, _player_PositionDataReader, _visualDataReader);
         Position bestPosition = DecideBestPosition(target);
         target.SetPosition(bestPosition);
+    }
+
+    public void JustInitStudent(Student target)
+    {
+        target.Init(_speciesDataReader, _personalityDataReader, _passiveDataReader, _traitDataReader, _player_PositionDataReader, _visualDataReader);
     }
 
     public void InitStudentList(List<Student> studentList)
@@ -192,8 +198,17 @@ public class StudentFactory : MonoBehaviour
     }
 
     private Player_SpeciesData GetRandomSpecie()
-    {        
-        return _speciesDataReader.DataList[Random.Range(0, _speciesDataReader.DataList.Count)];
+    {
+        
+        var nonHumanoidList = _speciesDataReader.DataList.Where(d => d.species != speciesType.Humanoid).ToList();
+
+        
+        if (nonHumanoidList.Count == 0)
+        {        
+            return _speciesDataReader.DataList[0];
+        }
+        
+        return nonHumanoidList[Random.Range(0, nonHumanoidList.Count)];        
     }
 
     public Player_SpeciesData GetRandomSpecieByType(speciesType type)
@@ -400,5 +415,11 @@ public class StudentFactory : MonoBehaviour
         return result;
     }
 
+    // 모든 패시브 정보 가져오기
+    public List<Player_PassiveData> GetPassiveDataList()
+    {
+        if (_passiveDataReader == null) return null;
 
+        return _passiveDataReader.DataList;
+    }
 }

@@ -45,6 +45,11 @@ public class StudentManager : Singleton<StudentManager>
         LoadGame();
     }
     
+    public void InitStudent(Student student)
+    {
+        _studentFactory.JustInitStudent(student);
+    }
+
     public void InitStudenList(List<Student> studentList)
     {
         _studentFactory.InitStudentList(studentList);

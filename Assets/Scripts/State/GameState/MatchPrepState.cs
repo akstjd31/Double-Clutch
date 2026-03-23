@@ -15,7 +15,7 @@ public class MatchPrepState : IState
     {
         // 선수 배치 관련 UI 
         // 꺼져 있는 전력 배치창(CharacterList)을 찾아서 활성화
-        var charList = Object.FindFirstObjectByType<CharacterList>(FindObjectsInactive.Include);
+         var charList = Object.FindFirstObjectByType<CharacterList>(FindObjectsInactive.Include);
         if (charList != null)
         {
             charList.gameObject.SetActive(true);

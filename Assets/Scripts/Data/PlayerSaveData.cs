@@ -17,4 +17,6 @@ public class PlayerSaveData : SaveBase
 
     public List<GraduationRecord> graduationRecord = new List<GraduationRecord>();
 
+    public bool isGraduationPending;
+
 }

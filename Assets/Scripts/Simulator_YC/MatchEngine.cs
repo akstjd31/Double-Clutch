@@ -152,8 +152,10 @@ public class MatchEngine : MonoBehaviour
         // 일반 쿼터 처리 (1~4쿼터)
         while (_simQuarter <= targetQuarter)
         {
-            RecordLog("GameStart");
+            MatchTeam attackTeam = (_currentPossession == TeamSide.Home) ? _homeTeam : _awayTeam;
+            _ballHolder = attackTeam.GetPlayerByPosition(Position.PG) ?? attackTeam.Roster[0];
 
+            RecordLog("GameStart");
             while (_simTime > 0)
             {
                 ProcessTurn();
@@ -169,23 +171,41 @@ public class MatchEngine : MonoBehaviour
         // 연장전 처리 (3쿼터가 끝났는데 동점일 때만)
         if (targetQuarter >= 4)
         {
-
-            while (_homeTeam.SimulatedScore == _awayTeam.SimulatedScore)
+            // 4쿼터 종료 직후 동점이 아니면 (연장전에 갈 필요가 없으면)
+            if (_homeTeam.SimulatedScore != _awayTeam.SimulatedScore)
             {
-                RecordLog("GameStart");
-
-                _simTime = 300f;
-
-                while (_simTime > 0)
+                // 다음 쿼터를 위해 미리 올려둔 _simQuarter를 다시 원래 쿼터(4Q)로 되돌림
+                _simQuarter--;
+            }
+            else
+            {
+                // 동점일 경우 연장전 돌입
+                while (_homeTeam.SimulatedScore == _awayTeam.SimulatedScore)
                 {
-                    ProcessTurn();
+                    // 연장전 쿼터 시작 시에도 볼 핸들러 세팅 유지
+                    MatchTeam attackTeam = (_currentPossession == TeamSide.Home) ? _homeTeam : _awayTeam;
+                    _ballHolder = attackTeam.GetPlayerByPosition(Position.PG) ?? attackTeam.Roster[0];
+
+                    RecordLog("GameStart");
+
+                    _simTime = 300f;
+
+                    while (_simTime > 0)
+                    {
+                        ProcessTurn();
+                    }
+
+                    RecordLog("QuarterEnd");
+
+                    // 연장 쿼터 종료 직후 승부가 났으면, 
+                    // 다음 쿼터로 올리지 않고 바로 루프 탈출 (그래야 GameEnd가 해당 연장 쿼터로 찍힘)
+                    if (_homeTeam.SimulatedScore != _awayTeam.SimulatedScore)
+                        break;
+
+                    _simQuarter++;
+                    _currentPossession = (_currentPossession == TeamSide.Home) ? TeamSide.Away : TeamSide.Home;
+                    if (_simQuarter > 7) break;
                 }
-
-                RecordLog("QuarterEnd");
-
-                _simQuarter++;
-                _currentPossession = (_currentPossession == TeamSide.Home) ? TeamSide.Away : TeamSide.Home;
-                if (_simQuarter > 7) break;
             }
 
             RecordLog("GameEnd");
@@ -250,10 +270,10 @@ public class MatchEngine : MonoBehaviour
         }
     }
 
-    private void DoShoot(MatchPlayer shooter, MatchTeam attackTeam, MatchTeam defendTeam, float distance, Vector2 hoopPos, bool isBuzzerBeater, TeamTactics attackTactics, TeamTactics defendTactics, bool forceSuccess = false)
+    private void DoShoot(MatchPlayer shooter, MatchTeam attackTeam, MatchTeam defendTeam, float distToHoop, Vector2 hoopPos, bool isBuzzerBeater, TeamTactics attackTactics, TeamTactics defendTactics, bool forceSuccess = false)
     {
-        bool isThree = distance > 0.35f;
-        bool isDunk = distance <= 0.05f;
+        bool isThree = distToHoop > 0.35f;
+        bool isDunk = distToHoop <= 0.05f;
 
         if (shooter.PassReceivedBuffTick > 0)
         {
@@ -274,7 +294,7 @@ public class MatchEngine : MonoBehaviour
 
         int score = isThree ? 3 : 2;
 
-        bool success = forceSuccess || MatchCalculator.CalculateShootSuccess(shooter, distance, attackTeam, defendTeam, attackTactics, defendTactics, blockDist);
+        bool success = forceSuccess || MatchCalculator.CalculateShootSuccess(shooter, distToHoop, attackTeam, defendTeam, attackTactics, defendTactics, blockDist);
 
         if (isThree) { attackTeam.Try3pt++; if (success) attackTeam.Succ3pt++; }
 
@@ -357,7 +377,6 @@ public class MatchEngine : MonoBehaviour
         else
         {
             Vector2 randomOffset = UnityEngine.Random.insideUnitCircle * 0.35f;
-            randomOffset.y /= 1.87f; // 종횡비 보정
 
             if (hoopPos.y > 0.5f)
             {
@@ -381,8 +400,9 @@ public class MatchEngine : MonoBehaviour
             TeamTactics awayTactics = MatchDataProxy.Instance.GetTactics(_awayTeam.TeamColorId);
 
             MatchPlayer rebounder = MatchCalculator.CalculateReboundWinner(dropPos, allPlayers, _homeTeam, _awayTeam, homeTactics, awayTactics);
-            RecordLog("Rebound", rebounder);
             _ballHolder = rebounder;
+            RecordLog("Rebound", rebounder);
+            
 
             // 리바운드 기록
             if (_homeTeam.Roster.Contains(rebounder)) _homeTeam.ReboundCount++;
@@ -458,23 +478,16 @@ public class MatchEngine : MonoBehaviour
 
     private void DoDribble(MatchPlayer dribbler, MatchTeam attackTeam, MatchTeam defendTeam, Vector2 hoopPos, TeamTactics attackTactics, TeamTactics defendTactics)
     {
-        bool success = MatchCalculator.CalculateDribbleSuccess(dribbler, attackTeam, defendTeam, attackTactics, defendTactics, dribbleBlockDist);
-        if (success)
-        {
-            Vector2 dir = (hoopPos - dribbler.LogicPosition).normalized; List<MatchPlayer> allPlayers = new List<MatchPlayer>();
-            float currentDistToHoop = MatchCalculator.CalculateDistance(dribbler.LogicPosition, hoopPos);
-            float moveDist = Mathf.Min(UnityEngine.Random.Range(0.1f, 0.2f), MAX_MOVE_PER_TICK, currentDistToHoop);
-            dribbler.LogicPosition += dir * moveDist;
-            RecordLog("Dribble", dribbler);
-        }
-        else
-        {
-            Vector2 sideDir = new Vector2(UnityEngine.Random.value > 0.5f ? 1 : -1, 0);
-            float moveDist = Mathf.Min(0.1f, MAX_MOVE_PER_TICK);
-            dribbler.LogicPosition += sideDir * moveDist;
-            RecordLog("Block", dribbler);
-        }
+        Vector2 dir = (hoopPos - dribbler.LogicPosition).normalized;
+        float currentDistToHoop = MatchCalculator.CalculateDistance(dribbler.LogicPosition, hoopPos);
+
+        // 골대를 향해 전진
+        float moveDist = Mathf.Min(UnityEngine.Random.Range(0.1f, 0.2f), MAX_MOVE_PER_TICK, currentDistToHoop);
+        dribbler.LogicPosition += dir * moveDist;
+
+        // 화면 밖으로 나가지 않도록 보정
         dribbler.LogicPosition = new Vector2(Mathf.Clamp01(dribbler.LogicPosition.x), Mathf.Clamp01(dribbler.LogicPosition.y));
+        RecordLog("Dribble", dribbler);
     }
 
     private void SwitchPossession(bool resetPositions = true)
