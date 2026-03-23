@@ -35,7 +35,7 @@ public class GraduationManager : MonoBehaviour
     {
         _turn = 0;
         _myStudents = StudentManager.Instance.MyStudents;
-        if( _myStudents == null )
+        if (_myStudents == null)
         {
             Debug.Log("학생 리스트없음");
         }
@@ -76,7 +76,7 @@ public class GraduationManager : MonoBehaviour
             else
             {
                 _promotionStudentList.Add(_myStudents[i].StudentId);
-                _myStudents[i].SetGrade(_myStudents[i].Grade+1);
+                _myStudents[i].SetGrade(_myStudents[i].Grade + 1);
                 _myStudents[i].pendingPassiveSelection = true;
                 Debug.Log($"{_myStudents[i].Name} : {_myStudents[i].Grade} 학년 진급생");
             }
@@ -96,7 +96,7 @@ public class GraduationManager : MonoBehaviour
 
         var saveData = gameMgr.SaveData;
         if (saveData == null) return;
-            
+
         // 누적된 명예 계산
         gameMgr.SetHonor(saveData.honor + saveData.totalWinHonor);
         gameMgr.ClearTotalWinHonorData();
@@ -113,19 +113,22 @@ public class GraduationManager : MonoBehaviour
 
             totalHonor += _graduationStudentList[i].TotalFame;
             gameMgr.AddGraduationCount(_graduationStudentList[i].VisualId);
-        }        
+        }
 
         // 졸업한 선수의 누적 명예를 다 더해서 실제로 데이터에 갱신시키기
         gameMgr.SetHonor(gameMgr.SaveData.honor + totalHonor);
         StudentManager.Instance.SaveGame();
 
-        var gaMgr = GraduationAlbumManager.Instance;
-        if (gaMgr == null) return;
+        if (!_isGraduationSkip)
+        {
+            var gaMgr = GraduationAlbumManager.Instance;
+            if (gaMgr == null) return;
 
-        int year = gameMgr.SaveData.year;   // 현재 연차
-        var gStd = new GraduationStudent(year, _graduationStudentList);   // 1기수부터 시작
+            int year = gameMgr.SaveData.year;   // 현재 연차
+            var gStd = new GraduationStudent(year, _graduationStudentList);   // 1기수부터 시작
 
-        gaMgr.Save(gStd);
+            gaMgr.Save(gStd);
+        }
     }
 
     public void NextScene()
