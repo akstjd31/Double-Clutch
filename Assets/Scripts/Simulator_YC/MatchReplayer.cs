@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using DG.Tweening;
 using System.Reflection;
 
@@ -11,7 +12,14 @@ public class MatchReplayer : MonoBehaviour
     [SerializeField] private MatchState _matchState;
     [SerializeField] private RectTransform _courtPanel; // CourtPanel 연결할 곳
 
-    // 배속 기능 (인스펙터에서 1, 2, 8 등으로 조절 가능)
+    // [v0.1.4 Update] 시각적 요소 리소스 및 크기 설정 추가
+    [Header("Match Visual Settings")]
+    [SerializeField, Tooltip("코트 중앙 서클의 지름")]
+    private float _centerCircleDiameter = 200f;
+    [SerializeField] private Image _courtBackgroundImage; // 코트 배경 Image 컴포넌트
+    [SerializeField] private Sprite _circleMaskSprite; // 원형 마스킹용 스프라이트
+
+    // 배속 기능 (인스펙터에서 조절용)
     [Header("Playback Settings")]
     [Range(1f, 10f)]
     public float PlaybackSpeed = 1.0f;
@@ -43,6 +51,12 @@ public class MatchReplayer : MonoBehaviour
     public void Init(List<MatchLogData> logs)
     {
         _logs = logs;
+
+        // 경기장 배경 설정
+        if (_courtBackgroundImage != null)
+        {
+            _courtBackgroundImage.sprite = SpriteManager.Instance.GetSprite("Bg_Basketball_Court");
+        }
 
         // 기존 선수 오브젝트 전부 정리 후 새로 생성
         CleanUpVisuals();
@@ -79,21 +93,64 @@ public class MatchReplayer : MonoBehaviour
     }
 
 
-    // 선수 동그라미 생성
-    private void SpawnPlayerCircles(MatchTeam team, Color color)
+    // 선수 생성 (원형 마스킹 + 포트레이트)
+    private void SpawnPlayerCircles(MatchTeam team, Color outlineColor)
     {
         if (team == null || team.Roster == null) return;
+
+        // 유닛 크기는 센터 서클 지름의 1/2
+        float playerUnitSize = _centerCircleDiameter * 0.5f;
+
         foreach (var player in team.Roster)
         {
             if (player.VisualObject == null)
             {
-                player.VisualObject = CreateCircleUI(MakeName(player.PlayerName), color, 30f);
-                player.VisualObject.GetComponent<RectTransform>().anchoredPosition
-                    = LogicToUIPos(player.LogicPosition);
+                // 선수의 초상화 스프라이트 로드
+                Sprite portraitSprite = SpriteManager.Instance.GetSprite(player.ResourceKey);
+
+                player.VisualObject = CreatePlayerMaskedUI(MakeName(player.PlayerName), outlineColor, playerUnitSize, portraitSprite);
+                player.VisualObject.GetComponent<RectTransform>().anchoredPosition = LogicToUIPos(player.LogicPosition);
             }
         }
     }
+    // 마스크가 적용된 선수 오브젝트를 동적 생성
+    private GameObject CreatePlayerMaskedUI(string name, Color outlineColor, float size, Sprite portraitSprite)
+    {
+        // 최상위 오브젝트 (테두리)
+        GameObject obj = new GameObject(name);
+        obj.transform.SetParent(_courtPanel, false);
+        RectTransform rt = obj.AddComponent<RectTransform>();
+        rt.sizeDelta = new Vector2(size, size);
 
+        Image bgImg = obj.AddComponent<Image>();
+        bgImg.color = outlineColor;
+        bgImg.sprite = _circleMaskSprite != null ? _circleMaskSprite : CreateCircleSprite();
+
+        // 마스크 오브젝트
+        GameObject maskObj = new GameObject("Mask");
+        maskObj.transform.SetParent(obj.transform, false);
+        RectTransform maskRt = maskObj.AddComponent<RectTransform>();
+        float innerSize = size * 0.85f; // 테두리 두께 확보
+        maskRt.sizeDelta = new Vector2(innerSize, innerSize);
+
+        Image maskImg = maskObj.AddComponent<Image>();
+        maskImg.color = Color.black;
+        maskImg.sprite = _circleMaskSprite != null ? _circleMaskSprite : CreateCircleSprite();
+        Mask mask = maskObj.AddComponent<Mask>();
+        mask.showMaskGraphic = true;
+
+        // 실제 초상화 이미지
+        GameObject portraitObj = new GameObject("Portrait");
+        portraitObj.transform.SetParent(maskObj.transform, false);
+        RectTransform portraitRt = portraitObj.AddComponent<RectTransform>();
+        portraitRt.sizeDelta = new Vector2(innerSize, innerSize);
+
+        Image portraitImg = portraitObj.AddComponent<Image>();
+        portraitImg.sprite = portraitSprite;
+        portraitImg.preserveAspect = true; // 비율 유지
+
+        return obj;
+    }
     private string MakeName(string[] nameKey)
     {
         StringManager manager = StringManager.Instance;
@@ -107,8 +164,14 @@ public class MatchReplayer : MonoBehaviour
         // 이미 있으면 생성 안 함
         if (_homeHoopUI != null && _awayHoopUI != null) return;
 
-        GameObject homeHoop = CreateCircleUI("HomeHoop", Color.blue, 20f);
-        GameObject awayHoop = CreateCircleUI("AwayHoop", Color.red, 20f);
+        float hoopSize = _centerCircleDiameter * 0.6f;
+
+        // 골대 리소스 호출
+        Sprite homeHoopSprite = SpriteManager.Instance.GetSprite("Icon_RimHome");
+        Sprite awayHoopSprite = SpriteManager.Instance.GetSprite("Icon_RimAway");
+
+        GameObject homeHoop = CreateIconUI("HomeHoop", homeHoopSprite, hoopSize, true);
+        GameObject awayHoop = CreateIconUI("AwayHoop", awayHoopSprite, hoopSize, true);
 
         _homeHoopUI = homeHoop.GetComponent<RectTransform>();
         _awayHoopUI = awayHoop.GetComponent<RectTransform>();
@@ -122,27 +185,56 @@ public class MatchReplayer : MonoBehaviour
     {
         // 이미 있으면 생성 안 함
         if (_ballUI != null) return;
-        _ballUI = CreateCircleUI("Ball", Color.yellow, 20f);
+
+        // 공 크기는 선수 유닛 지름의 1/2
+        float ballSize = (_centerCircleDiameter * 0.5f) * 0.5f;
+
+        // 농구공 리소스 호출
+        Sprite ballSprite = SpriteManager.Instance.GetSprite("Icon_Basketball");
+
+        _ballUI = CreateIconUI("Ball", ballSprite, ballSize, false);
     }
 
-    // UI 동그라미 오브젝트 생성 공통 함수
-    private GameObject CreateCircleUI(string name, Color color, float size)
+    // 아이콘 생성용 헬퍼 함수
+    private GameObject CreateIconUI(string name, Sprite iconSprite, float size, bool isHoop)
     {
         GameObject obj = new GameObject(name);
         obj.transform.SetParent(_courtPanel, false);
 
         // RectTransform 설정
         RectTransform rt = obj.AddComponent<RectTransform>();
-        rt.sizeDelta = new Vector2(size, size);
 
-        // Image 컴포넌트로 동그라미 표현
+        // Image 컴포넌트로 아이콘 표현
         UnityEngine.UI.Image img = obj.AddComponent<UnityEngine.UI.Image>();
-        img.color = color;
-        img.sprite = CreateCircleSprite(); // 동그라미 스프라이트 생성
+        
+        img.sprite = iconSprite;
+
+        if (iconSprite == null)
+        {
+            img.color = Color.clear; // 스프라이트 미할당 시 투명처리
+            rt.sizeDelta = new Vector2(size, size);
+        }
+
+        else
+        {
+            if (isHoop)
+            {
+                // 골대의 경우 원본 이미지의 비율을 유지
+                img.preserveAspect = true;
+                // 가로 너비를 넉넉하게 설정
+                rt.sizeDelta = new Vector2(size * 1.5f, size);
+            }
+            else
+            {
+                // 1:1 비율인 경우
+                rt.sizeDelta = new Vector2(size, size);
+            }
+        }
 
         return obj;
     }
 
+    
     // 동그라미 스프라이트 생성 함수
     private Sprite CreateCircleSprite()
     {
