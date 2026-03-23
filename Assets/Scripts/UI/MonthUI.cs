@@ -48,9 +48,9 @@ public class MonthUI : MonoBehaviour
         }
 
         // 현재 날짜 확인용 밑줄긋기
-        // if (!_isNextMonth)
-        // {
-        //     _lineImg[calMgr.GetCalendar().week].gameObject.SetActive(true);
-        // }
+        if (!_isNextMonth)
+        {
+            _lineImg[calMgr.GetCalendar().week - 1].gameObject.SetActive(true);
+        }
     }
 }
