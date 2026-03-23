@@ -62,8 +62,8 @@ public class CharacterRecruitBox : MonoBehaviour
 
         _positionText.text = _student.Position.ToString();        
         _nameText.text = name;
-        _attackText.text = _student.Attack.ToString();
-        _defenseText.text = _student.Defense.ToString();        
+        _attackText.text = manager.GetString("UI_Player_공격력")+ " : " + _student.Attack.ToString();
+        _defenseText.text = manager.GetString("UI_Player_수비력") + " : " + _student.Defense.ToString();        
     }
 
     private void ChangeToggleState(bool isOn)

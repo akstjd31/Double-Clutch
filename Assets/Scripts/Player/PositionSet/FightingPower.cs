@@ -5,7 +5,7 @@ using UnityEngine;
 public class FightingPower : MonoBehaviour
 {
     [SerializeField] CharacterList _characterList;
-    [SerializeField] MercenaryMaker _mercenaryMaker;
+    //[SerializeField] MercenaryMaker _mercenaryMaker;
 
     [SerializeField] TextMeshProUGUI _mySchoolName;
     [SerializeField] TextMeshProUGUI _myFightingPowerText;

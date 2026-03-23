@@ -81,6 +81,8 @@ public class Student
     public int AwardCount { get { return _awardCount; } set { _awardCount = value; } }
     public List<potential> ChangedPotentials => _changedPotentials;
     public int TotalFame => _totalFame;
+
+    [SerializeField] public bool pendingPassiveSelection = false;
     public void ResetTrainingSchedule()
     {
         _currentTraining = null;
@@ -281,6 +283,7 @@ public class Student
         {
             _passiveIdList.Add(data.skillId);
         }
+        pendingPassiveSelection = false;
         OnPassiveUpdated();
     }
     public bool HasPassive(string skillId)

@@ -39,12 +39,26 @@ public class GraduationManager : MonoBehaviour
         {
             Debug.Log("학생 리스트없음");
         }
-        ListCreat();
-        
+        if (GameManager.Instance.SaveData.isGraduationPending)
+        {
+            // 학년 이미 증가된 상태 - ListCreat() 생략
+            // pendingPassiveSelection == true 인 학생만 진급 리스트로 복구
+            _myStudents = StudentManager.Instance.MyStudents;
+            foreach (var s in _myStudents)
+            {
+                if (s.pendingPassiveSelection)
+                    _promotionStudentList.Add(s.StudentId);
+            }
+        }
+        else
+        {
+            ListCreat();
+        }
+
         _turn = 0;
         //처음 학생 프로필 띄우기
         _promotionPanel.GetList();
-        //_promotionPanel.UpdateProfile();
+        _promotionPanel.UpdateProfile();
     }
 
     private void ListCreat()
@@ -63,6 +77,7 @@ public class GraduationManager : MonoBehaviour
             {
                 _promotionStudentList.Add(_myStudents[i].StudentId);
                 _myStudents[i].SetGrade(_myStudents[i].Grade+1);
+                _myStudents[i].pendingPassiveSelection = true;
                 Debug.Log($"{_myStudents[i].Name} : {_myStudents[i].Grade} 학년 진급생");
             }
         }
@@ -73,6 +88,7 @@ public class GraduationManager : MonoBehaviour
         }
 
         ReleaseStudent();
+        GameManager.Instance.SetGraduationPending(true);
 
         GameManager.Instance.SetHonor(GameManager.Instance.SaveData.honor + GameManager.Instance.SaveData.totalWinHonor);
         GameManager.Instance.ClearTotalWinHonorData();
@@ -97,6 +113,7 @@ public class GraduationManager : MonoBehaviour
     public void NextScene()
     {
         _isGraduationSkip = false;
+        GameManager.Instance.SetGraduationPending(false);
         _passiveBox.SelectSkillSave.Clear();
 
         //초기화 하기 전에 명예의전당에 전달

@@ -141,9 +141,9 @@ public class HeadlessMatchSimulator : MonoBehaviour
         }
     }
 
-    private void DoShoot(MatchPlayer shooter, MatchTeam attackTeam, MatchTeam defendTeam, float distance, Vector2 hoopPos, bool isBuzzerBeater, TeamTactics atkTac, TeamTactics defTac, bool forceSuccess)
+    private void DoShoot(MatchPlayer shooter, MatchTeam attackTeam, MatchTeam defendTeam, float distToHoop, Vector2 hoopPos, bool isBuzzerBeater, TeamTactics atkTac, TeamTactics defTac, bool forceSuccess)
     {
-        bool isThree = distance > 0.35f;
+        bool isThree = distToHoop > 0.35f;
         int score = isThree ? 3 : 2;
 
         // 하이라이트 필름 시너지 연산
@@ -154,7 +154,7 @@ public class HeadlessMatchSimulator : MonoBehaviour
         }
 
         // MatchCalculator의 슛 성공률 
-        bool success = forceSuccess || MatchCalculator.CalculateShootSuccess(shooter, distance, attackTeam, defendTeam, atkTac, defTac, blockDist);
+        bool success = forceSuccess || MatchCalculator.CalculateShootSuccess(shooter, distToHoop, attackTeam, defendTeam, atkTac, defTac, blockDist);
 
         if (isThree) { attackTeam.Try3pt++; if (success) attackTeam.Succ3pt++; }
         else { attackTeam.Try2pt++; if (success) attackTeam.Succ2pt++; }
@@ -172,11 +172,12 @@ public class HeadlessMatchSimulator : MonoBehaviour
         else
         {
             Vector2 randomOffset = UnityEngine.Random.insideUnitCircle * 0.35f;
-            randomOffset.y /= 1.87f;
             if (hoopPos.y > 0.5f) randomOffset.y = -Mathf.Abs(randomOffset.y);
             else randomOffset.y = Mathf.Abs(randomOffset.y);
 
             Vector2 dropPos = new Vector2(Mathf.Clamp01(hoopPos.x + randomOffset.x), Mathf.Clamp01(hoopPos.y + randomOffset.y));
+
+            _simTime -= UnityEngine.Random.Range(1f, 2f);
 
             List<MatchPlayer> allPlayers = new List<MatchPlayer>();
             allPlayers.AddRange(attackTeam.Roster);
@@ -252,19 +253,11 @@ public class HeadlessMatchSimulator : MonoBehaviour
 
     private void DoDribble(MatchPlayer dribbler, MatchTeam attackTeam, MatchTeam defendTeam, Vector2 hoopPos, TeamTactics atkTac, TeamTactics defTac)
     {
-        bool success = MatchCalculator.CalculateDribbleSuccess(dribbler, attackTeam, defendTeam, atkTac, defTac, dribbleBlockDist);
         Vector2 dir = (hoopPos - dribbler.LogicPosition).normalized;
-        float currentDistToHoop = (hoopPos - dribbler.LogicPosition).magnitude;
+        float currentDistToHoop = MatchCalculator.CalculateDistance(dribbler.LogicPosition, hoopPos);
 
-        if (success)
-        {
-            float moveDist = Mathf.Min(UnityEngine.Random.Range(0.1f, 0.2f), MAX_MOVE_PER_TICK, currentDistToHoop);
-            dribbler.LogicPosition += dir * moveDist;
-        }
-        else
-        {
-            dribbler.LogicPosition += new Vector2(UnityEngine.Random.value > 0.5f ? 1 : -1, 0) * Mathf.Min(0.1f, MAX_MOVE_PER_TICK);
-        }
+        float moveDist = Mathf.Min(UnityEngine.Random.Range(0.1f, 0.2f), MAX_MOVE_PER_TICK, currentDistToHoop);
+        dribbler.LogicPosition += dir * moveDist;
 
         dribbler.LogicPosition = new Vector2(Mathf.Clamp01(dribbler.LogicPosition.x), Mathf.Clamp01(dribbler.LogicPosition.y));
     }
