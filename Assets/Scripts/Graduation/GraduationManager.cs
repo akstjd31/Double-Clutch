@@ -109,8 +109,6 @@ public class GraduationManager : MonoBehaviour
         int totalHonor = 0;
         for (int i = 0; i < _graduationStudentList.Count; i++)
         {
-            StudentManager.Instance.ReleaseStudent(_graduationStudentList[i]);
-
             totalHonor += _graduationStudentList[i].TotalFame;
             gameMgr.AddGraduationCount(_graduationStudentList[i].VisualId);
         }
@@ -133,7 +131,12 @@ public class GraduationManager : MonoBehaviour
 
     public void NextScene()
     {
-        _isGraduationSkip = false;
+        for (int i = 0; i < _graduationStudentList.Count; i++)
+        {
+            //선수 방출
+            StudentManager.Instance.ReleaseStudent(_graduationStudentList[i]);
+        }
+            _isGraduationSkip = false;
         GameManager.Instance.SetGraduationPending(false);
         _passiveBox.SelectSkillSave.Clear();
 
