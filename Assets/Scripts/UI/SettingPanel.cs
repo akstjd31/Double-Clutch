@@ -86,11 +86,9 @@ public class SettingPanel : MonoBehaviour
         // 초기값 세팅
         //------------------------------------------------------------        
 
-        if (manager.SettingData == null || manager.SettingData.fps == 60) _fps60.isOn = true;
-        else _fps30.isOn = true;
-
         if (manager.SettingData == null)
         {
+            _fps60.isOn = true;
             _masterVolSlider.value = 0.8f;
             _bgmVolSlider.value = 0.8f;
             _sfxVolSlider.value = 0.8f;
@@ -100,17 +98,45 @@ public class SettingPanel : MonoBehaviour
             _sfxMuteToggle.isOn = false;
             _viberationToggle.isOn = true;
             return;
-        }
-        _masterVolSlider.value = manager.SettingData.masterVol;
-        _bgmVolSlider.value = manager.SettingData.bgmVol;
-        _sfxVolSlider.value = manager.SettingData.sfxVol;
-
-        
-        _masterMuteToggle.isOn = !manager.SettingData.isMasterVolOn;
-        _bgmMuteToggle.isOn = !manager.SettingData.isBGMVolOn;
-        _sfxMuteToggle.isOn = !manager.SettingData.isSFXVolOn;
-        _viberationToggle.isOn = manager.SettingData.isVibOn;
+        }        
     }
+
+    private void OnEnable()
+    {
+        RefreshUI();
+    }
+
+    public void RefreshUI()
+    {
+        SettingManager manager = SettingManager.Instance;
+        if (manager == null || manager.SettingData == null) return;
+
+        var data = manager.SettingData;
+
+        // ★ 핵심: SetValueWithoutNotify를 써야 '값 변경 이벤트'가 발생해서 
+        // 로직이 꼬이는 걸 방지할 수 있습니다.
+
+        // 볼륨 슬라이더 동기화
+        _masterVolSlider.SetValueWithoutNotify(data.masterVol);
+        _bgmVolSlider.SetValueWithoutNotify(data.bgmVol);
+        _sfxVolSlider.SetValueWithoutNotify(data.sfxVol);
+
+        // 음소거 토글 동기화 (Mute 체크박스라면 데이터의 반대값을 넣어야 함)
+        _masterMuteToggle.SetIsOnWithoutNotify(!data.isMasterVolOn);
+        _bgmMuteToggle.SetIsOnWithoutNotify(!data.isBGMVolOn);
+        _sfxMuteToggle.SetIsOnWithoutNotify(!data.isSFXVolOn);
+
+        // FPS 및 진동 동기화
+        _fps60.SetIsOnWithoutNotify(data.fps == 60);
+        _fps30.SetIsOnWithoutNotify(data.fps == 30);
+        _viberationToggle.SetIsOnWithoutNotify(data.isVibOn);
+
+        // 언어 토글 동기화
+        _korean.SetIsOnWithoutNotify(data.language == Language.Ko);
+        _english.SetIsOnWithoutNotify(data.language == Language.En);
+        _japanese.SetIsOnWithoutNotify(data.language == Language.Ja);
+    }
+
     private void OnFPS30Changed(bool isOn)
     {
         if (isOn) SettingManager.Instance.SetFPS(30);
