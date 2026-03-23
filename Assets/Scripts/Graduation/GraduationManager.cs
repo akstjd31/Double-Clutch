@@ -87,27 +87,45 @@ public class GraduationManager : MonoBehaviour
             _isGraduationSkip = true;
         }
 
-        ReleaseStudent();
-        GameManager.Instance.SetGraduationPending(true);
+        var gameMgr = GameManager.Instance;
+        if (gameMgr == null) return;
 
-        GameManager.Instance.SetHonor(GameManager.Instance.SaveData.honor + GameManager.Instance.SaveData.totalWinHonor);
-        GameManager.Instance.ClearTotalWinHonorData();
+        ReleaseStudent(gameMgr);
+
+        gameMgr.SetGraduationPending(true);
+
+        var saveData = gameMgr.SaveData;
+        if (saveData == null) return;
+            
+        // 누적된 명예 계산
+        gameMgr.SetHonor(saveData.honor + saveData.totalWinHonor);
+        gameMgr.ClearTotalWinHonorData();
     }
 
-    private void ReleaseStudent()
+    private void ReleaseStudent(GameManager gameMgr)
     {
+        if (gameMgr == null) return;
+
         int totalHonor = 0;
         for (int i = 0; i < _graduationStudentList.Count; i++)
         {
             StudentManager.Instance.ReleaseStudent(_graduationStudentList[i]);
 
             totalHonor += _graduationStudentList[i].TotalFame;
-            GameManager.Instance.AddGraduationCount(_graduationStudentList[i].VisualId);
+            gameMgr.AddGraduationCount(_graduationStudentList[i].VisualId);
         }        
 
-        // 졸업한 선수의 누적 명성치를 다 더해서 실제로 데이터에 갱신시키기
-        GameManager.Instance.SetHonor(GameManager.Instance.SaveData.honor + totalHonor);
+        // 졸업한 선수의 누적 명예를 다 더해서 실제로 데이터에 갱신시키기
+        gameMgr.SetHonor(gameMgr.SaveData.honor + totalHonor);
         StudentManager.Instance.SaveGame();
+
+        var gaMgr = GraduationAlbumManager.Instance;
+        if (gaMgr == null) return;
+
+        int year = gameMgr.SaveData.year;   // 현재 연차
+        var gStd = new GraduationStudent(year, _graduationStudentList);   // 1기수부터 시작
+
+        gaMgr.Save(gStd);
     }
 
     public void NextScene()
