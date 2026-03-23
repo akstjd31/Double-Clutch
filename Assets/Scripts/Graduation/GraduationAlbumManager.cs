@@ -16,4 +16,12 @@ public class GraduationAlbumManager : Singleton<GraduationAlbumManager>
     }
 
     public bool HasData() => _saveData != null;
+
+    public GraduationStudent GetGraduationStudentListByIndex(int index)
+    {
+        if (_saveData == null) return null;
+        if (_saveData.graduationStudentList == null) return null;
+
+        return _saveData.graduationStudentList[index];
+    }
 }

@@ -11,14 +11,11 @@ public class GraduationAlbumUI : MonoBehaviour
     [SerializeField] private Transform _classParent;        // 기수 버튼 부모 (Content)
     [SerializeField] private Transform _classButtonPrefab;  // 기수 버튼
     [SerializeField] private GameObject _albumPanelObj;
-    [SerializeField] private GameObject[] _childAlbumPanelObjs = new GameObject[3];
+    private AlbumStudentProfileUI[] _albumStudentProfiles;
     private void OnEnable()
     {
         if (_albumPanelObj == null) return;
-        for (int i = 0; i < _albumPanelObj.transform.childCount; i++)
-        {
-            _childAlbumPanelObjs[i] = _albumPanelObj.transform.GetChild(i).gameObject;
-        }
+        _albumStudentProfiles = _albumPanelObj.GetComponentsInChildren<AlbumStudentProfileUI>(true);
 
         if (_classParent == null) return;
         if (_classButtonPrefab == null) return;
@@ -44,6 +41,24 @@ public class GraduationAlbumUI : MonoBehaviour
 
     public void OnClickClassButton(int idx)
     {
-        
+        if (_albumStudentProfiles[idx] == null) return;
+        if (GraduationAlbumManager.Instance == null) return;
+
+        var gList = GraduationAlbumManager.Instance.GetGraduationStudentListByIndex(idx);
+
+        for (int i = 0; i < _albumStudentProfiles.Length; i++)
+        {
+            bool hasData = gList.studentList != null;
+            _albumStudentProfiles[i].gameObject.SetActive(hasData);
+            if (hasData)
+            {
+                if (SpriteManager.Instance == null) return;
+                var sprite = SpriteManager.Instance.GetSprite(gList.studentList[i].VisualData.portraitResource);
+                _albumStudentProfiles[i].GetComponent<Image>().sprite = sprite;
+
+                string name = gList.studentList[i].Name[0] + gList.studentList[i].Name[1] + gList.studentList[i].Name[2];
+                _albumStudentProfiles[i].GetComponentInChildren<TextMeshProUGUI>().text = name;
+            }
+        }
     }
 }
