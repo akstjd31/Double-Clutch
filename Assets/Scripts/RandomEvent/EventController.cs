@@ -351,19 +351,14 @@ public class EventController : MonoBehaviour
             _selectedResultData.potentialChangeValue, //잠재력 값
             _stringTable[_selectedResultData.resultScriptKey], //결과텍스트
             _selectedResultData.reactionPortraitId,//이미지
-<<<<<<< Updated upstream
-            _selectedResultData.statusChange, 
-            _myStudents[_currentStudentNum].State.ToString()); 
+            _selectedResultData.statusChange, //현재 상태
+            CurrentStudent(_currentStudentNum).State.ToString()); //변할 상태
 
         //선수 컨디션 변경
         var beforeConditon = _myStudents[_currentStudentNum].Condition.ToString();
         _myStudents[_currentStudentNum].ChangeCondition(_selectedResultData.conditionChange);
         Debug.Log($"학생 ID : {_myStudents[_currentStudentNum].StudentId}" +
             $"컨디션 {beforeConditon} > {_myStudents[_currentStudentNum].Condition}");
-=======
-            _selectedResultData.statusChange, //현재 상태
-            CurrentStudent(_currentStudentNum).State.ToString()); //변할 상태
->>>>>>> Stashed changes
 
         //선수 상태 변경
         var beforeState = CurrentStudent(_currentStudentNum).State;
@@ -399,11 +394,11 @@ public class EventController : MonoBehaviour
         CurrentStudent(_currentStudentNum).PrepareStatChange();
 
         //선수 컨디션 변경
-        var beforeConditon = CurrentStudent(_currentStudentNum).Condition.ToString(); //디버그용 변수
+        var beforeCondi = CurrentStudent(_currentStudentNum).Condition.ToString(); //디버그용 변수
         CurrentStudent(_currentStudentNum).ChangeCondition(_selectedResultData.conditionChange);
 
         Debug.Log($"학생 ID : {CurrentStudent(_currentStudentNum).StudentId}" +
-            $"컨디션 {beforeConditon} > {CurrentStudent(_currentStudentNum).Condition}");
+            $"컨디션 {beforeCondi} > {CurrentStudent(_currentStudentNum).Condition}");
 
 
 
@@ -416,11 +411,8 @@ public class EventController : MonoBehaviour
 
         Debug.Log($"다음 학생 ID : {CurrentStudent(_currentStudentNum).StudentId + 1}");
 
-<<<<<<< Updated upstream
-=======
         CurrentStudent(_currentStudentNum).OnStatChanged();
 
->>>>>>> Stashed changes
         //현재 학생의 이벤트 리스트를 가져오기
         List<RandomEvent> studentEventList = _eventManager.CandidateDictionary[CurrentStudent(_currentStudentNum).StudentId];
 
