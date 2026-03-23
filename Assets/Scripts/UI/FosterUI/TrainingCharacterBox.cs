@@ -17,7 +17,11 @@ public class TrainingCharacterBox : MonoBehaviour
 
     [SerializeField] Slider _conditionSlider;
 
-    
+    private Color _restColor = new Color(0, 223, 112);
+    private Color _trainingColor = new Color(0, 93, 232);
+    private Color _overworkColor = new Color(255, 174, 0);
+    private Color _injuredColor = new Color(204, 0, 0);
+
     Student _student;
 
     public Button GetSelectButton() => _button;
@@ -70,11 +74,11 @@ public class TrainingCharacterBox : MonoBehaviour
 
             if (_student.CurrentTraining is IndividualTraining || _student.CurrentTraining is TeamTraining)
             {
-                _stateText.color = Color.blue;
+                _stateText.color = _trainingColor;
             }
             else
             {
-                _stateText.color= Color.green;
+                _stateText.color= _restColor;
             }
 
             return;
@@ -83,14 +87,14 @@ public class TrainingCharacterBox : MonoBehaviour
         {
             cv.alpha = 1f;
             _stateText.text = manager.GetString("UI_Player_과로");            
-            _stateText.color = Color.yellow;
+            _stateText.color = _overworkColor;
             return;
         }
         if (_student.State == StudentState.Injured)
         {
             cv.alpha = 1f;
             _stateText.text = manager.GetString("UI_Player_부상");            
-            _stateText.color = Color.red;
+            _stateText.color = _injuredColor;
             return;
         }
         manager.ApplyFont(_stateText);
