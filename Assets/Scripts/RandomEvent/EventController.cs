@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 
 using UnityEngine;
+using static UnityEngine.Rendering.DebugUI;
 
 
 public class EventController : MonoBehaviour
@@ -127,9 +128,9 @@ public class EventController : MonoBehaviour
         if (_screenPlayDic[_nextId].playerName == "{TName}")
         {
             string nameSet =
-                        manager.GetString(_myStudents[_currentStudentNum].Name[0]) +
-                        manager.GetString(_myStudents[_currentStudentNum].Name[1]) +
-                        manager.GetString(_myStudents[_currentStudentNum].Name[2]);
+                        manager.GetString(CurrentStudent(_currentStudentNum).Name[0]) +
+                        manager.GetString(CurrentStudent(_currentStudentNum).Name[1]) +
+                        manager.GetString(CurrentStudent(_currentStudentNum).Name[2]);
             _currentSpeakerName = nameSet;
         }
         else if (_screenPlayDic[_nextId].playerName == "{ME}")
@@ -181,7 +182,7 @@ public class EventController : MonoBehaviour
                 break;
         }
 
-        Player_VisualData visualData = _myStudents[_currentStudentNum].VisualData;
+        Player_VisualData visualData = CurrentStudent(_currentStudentNum).VisualData;
 
         var field = visualData.GetType().GetField(_speakerImageColomn);
 
@@ -280,9 +281,9 @@ public class EventController : MonoBehaviour
         {
             for (int i = 0; i < value.Count; i++)
             {
-                Debug.Log($"{_myStudents[_currentStudentNum].PersonalityData.personality} == {value[i].matchPersonalityId}");
+                Debug.Log($"{CurrentStudent(_currentStudentNum).PersonalityData.personality} == {value[i].matchPersonalityId}");
                 //코어성격타입 조건 체크
-                if (_myStudents[_currentStudentNum].PersonalityData.personality == value[i].matchPersonalityId)
+                if (CurrentStudent(_currentStudentNum).PersonalityData.personality == value[i].matchPersonalityId)
                 {
                     //다음 아이디 가져오기
                     _nextId = value[i].nextId;
@@ -350,6 +351,7 @@ public class EventController : MonoBehaviour
             _selectedResultData.potentialChangeValue, //잠재력 값
             _stringTable[_selectedResultData.resultScriptKey], //결과텍스트
             _selectedResultData.reactionPortraitId,//이미지
+<<<<<<< Updated upstream
             _selectedResultData.statusChange, 
             _myStudents[_currentStudentNum].State.ToString()); 
 
@@ -358,32 +360,74 @@ public class EventController : MonoBehaviour
         _myStudents[_currentStudentNum].ChangeCondition(_selectedResultData.conditionChange);
         Debug.Log($"학생 ID : {_myStudents[_currentStudentNum].StudentId}" +
             $"컨디션 {beforeConditon} > {_myStudents[_currentStudentNum].Condition}");
+=======
+            _selectedResultData.statusChange, //현재 상태
+            CurrentStudent(_currentStudentNum).State.ToString()); //변할 상태
+>>>>>>> Stashed changes
 
         //선수 상태 변경
-        var beforeState = _myStudents[_currentStudentNum].State.ToString();
+        var beforeState = CurrentStudent(_currentStudentNum).State;
         string getValue = _selectedResultData.statusChange;
-        StudentState value = (StudentState)System.Enum.Parse(typeof(StudentState), getValue);
-        _myStudents[_currentStudentNum].ChangeState(value);
-        Debug.Log($"학생 ID : {_myStudents[_currentStudentNum].StudentId}" +
-            $"상태 {beforeState} > {_myStudents[_currentStudentNum].State.ToString()}");
+        //StudentState value = (StudentState)System.Enum.Parse(typeof(StudentState), getValue);
+        
+        switch(getValue)
+        {
+            case "None": //변화 없음
+                {
+                    CurrentStudent(_currentStudentNum).ChangeState(beforeState);
+                }
+                break;
+            case "Injured": //부상상태로 전환
+                {
+                    CurrentStudent(_currentStudentNum).ChangeState(StudentState.Injured);
+                }
+                break;
+            case "OverWorked": //과로상태로 전환
+                {
+                    CurrentStudent(_currentStudentNum).ChangeState(StudentState.OverWorked);
+                }
+                break;
+        }
+
+        
+        Debug.Log($"학생 ID : {CurrentStudent(_currentStudentNum).StudentId}" +
+            $"상태 {beforeState} > {CurrentStudent(_currentStudentNum).State.ToString()}");
+
+
+
+        //선수 스탯 변동치 초기화
+        CurrentStudent(_currentStudentNum).PrepareStatChange();
+
+        //선수 컨디션 변경
+        var beforeConditon = CurrentStudent(_currentStudentNum).Condition.ToString(); //디버그용 변수
+        CurrentStudent(_currentStudentNum).ChangeCondition(_selectedResultData.conditionChange);
+
+        Debug.Log($"학생 ID : {CurrentStudent(_currentStudentNum).StudentId}" +
+            $"컨디션 {beforeConditon} > {CurrentStudent(_currentStudentNum).Condition}");
+
 
 
         //능력치 변경
-        var beforeStat = _myStudents[_currentStudentNum].GetStat(_selectedResultData.potentialChangeType).Current;
-        _myStudents[_currentStudentNum].GetStat(_selectedResultData.potentialChangeType).GrowAndReturn(_selectedResultData.potentialChangeValue);
-        Debug.Log($"학생 ID : {_myStudents[_currentStudentNum].StudentId}" +
-            $"스탯 {_selectedResultData.potentialChangeType.ToString()} : {beforeStat} > {_myStudents[_currentStudentNum].GetStat(_selectedResultData.potentialChangeType).Current}");
+        var beforeStat = CurrentStudent(_currentStudentNum).GetStat(_selectedResultData.potentialChangeType).Current;
+        CurrentStudent(_currentStudentNum).GetStat(_selectedResultData.potentialChangeType).GrowAndReturn(_selectedResultData.potentialChangeValue);
+        Debug.Log($"학생 ID : {CurrentStudent(_currentStudentNum).StudentId}" +
+            $"스탯 {_selectedResultData.potentialChangeType.ToString()} : {beforeStat} > {CurrentStudent(_currentStudentNum).GetStat(_selectedResultData.potentialChangeType).Current}");
 
 
-        Debug.Log($"다음 학생 ID : {_myStudents[_currentStudentNum].StudentId + 1}");
+        Debug.Log($"다음 학생 ID : {CurrentStudent(_currentStudentNum).StudentId + 1}");
 
+<<<<<<< Updated upstream
+=======
+        CurrentStudent(_currentStudentNum).OnStatChanged();
+
+>>>>>>> Stashed changes
         //현재 학생의 이벤트 리스트를 가져오기
-        List<RandomEvent> studentEventList = _eventManager.CandidateDictionary[_myStudents[_currentStudentNum].StudentId];
+        List<RandomEvent> studentEventList = _eventManager.CandidateDictionary[CurrentStudent(_currentStudentNum).StudentId];
 
         for (int i = 0; i < studentEventList.Count; i++)
         {
 
-            string evnetNumber = $"{studentEventList[i].EventId}_{_myStudents[_currentStudentNum].PersonalityData.core.ToString()}";
+            string evnetNumber = $"{studentEventList[i].EventId}_{CurrentStudent(_currentStudentNum).PersonalityData.core.ToString()}";
 
             Debug.Log($"{_eventId}에서 {studentEventList[i].EventId} 검색");
             Debug.Log($"{evnetNumber == _eventId}");
@@ -395,7 +439,6 @@ public class EventController : MonoBehaviour
                 return;
             }
         }
-        
     }
 
     public void ScreenPlayLanguage()
@@ -414,4 +457,16 @@ public class EventController : MonoBehaviour
         }
     }
 
+    private Student CurrentStudent(int currentStudentId)
+    {
+        Student student = null;
+        for(int i = 0; i < _myStudents.Count; i++)
+        {
+            if (_myStudents[i].StudentId == currentStudentId)
+            {
+                student = _myStudents[i];
+            }
+        }
+        return student;
+    }
 }
