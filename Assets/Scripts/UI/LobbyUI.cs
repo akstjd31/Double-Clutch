@@ -79,7 +79,6 @@ public class LobbyUI : MonoBehaviour
     private void Init()
     {
         if (GameManager.Instance == null) return;
-        _testButton.onClick.AddListener(GameManager.Instance.GoToGraduation);
 
         UpdateMoneyText();
         UpdateHonorText();

@@ -32,6 +32,9 @@ public class GraduationAlbumUI : MonoBehaviour
 
         for (int i = 0; i < gList.Count; i++)
         {
+            // 이미 생성된 데이터 간주
+            if (i < _classParent.childCount) continue;
+
             var newObj = Instantiate(_classButtonPrefab, _classParent);
             newObj.GetComponentInChildren<TextMeshProUGUI>().text = $"{i + 1}기";
 
@@ -43,7 +46,12 @@ public class GraduationAlbumUI : MonoBehaviour
     }
 
     private void OnDisable()
-    {   
+    {
+        _albumPanelObj.SetActive(false);
+    }
+
+    private void OnDestroy()
+    {
         // 기수 버튼 리스너 제거
         if (_classParent.childCount < 1) return;
 
@@ -74,7 +82,7 @@ public class GraduationAlbumUI : MonoBehaviour
 
         if (SpriteManager.Instance == null) return;
         if (StringManager.Instance == null) return;
-        
+
         int i = 0;
         for (; i < gList.studentList.Count; i++)
         {
