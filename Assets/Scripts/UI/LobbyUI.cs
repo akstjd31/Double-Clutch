@@ -10,15 +10,20 @@ public class LobbyUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _calendarText;
     [SerializeField] private TextMeshProUGUI _moneyText;
     [SerializeField] private TextMeshProUGUI _honorText;
+    [SerializeField] private Button _graduationAlbumButton;
     [SerializeField] private Button _trainingButton;
     [SerializeField] private Button _matchButton;
     [SerializeField] private SwissBoardPanel _swissBoardPanel; // 대진표 연결용
+    [SerializeField] private TournamentBoardPanel _tournamentBoardPanel;
 
     [Header("Setting")]
     [SerializeField] private GameObject _settingPanel;
     [SerializeField] private Toggle _koreanToggle;
     [SerializeField] private Toggle _englishToggle;
     [SerializeField] private Toggle _japanToggle;
+
+
+    [SerializeField] private Button _testButton;
     private void OnEnable()
     {
         if (CalendarManager.Instance != null)
@@ -44,25 +49,37 @@ public class LobbyUI : MonoBehaviour
             _matchButton.onClick.RemoveAllListeners();
             _matchButton.onClick.AddListener(OnClickMatchButton);
         }
-
     }
     // 매치 버튼을 눌렀을 때 실행될 함수
     public void OnClickMatchButton()
     {
-        if (_swissBoardPanel != null)
+        var currentLeague = LeagueManager.Instance.CurrentLeague;
+        if (currentLeague != null)
         {
-            // 대진표를 먼저 켬 (내부적으로 null을 넘기면 '경기 준비' 버튼 클릭 시 알아서 MatchPrepState로 넘어감)
-            _swissBoardPanel.OpenPanel(null, "경기 준비");
+            if (currentLeague.leagueType == "Tournament")
+            {
+                // 스위스 패널이 켜져있다면 확실하게 꺼줍니다!
+                if (_swissBoardPanel != null) _swissBoardPanel.gameObject.SetActive(false);
+                if (_tournamentBoardPanel != null) _tournamentBoardPanel.OpenPanel(null, "경기 준비");
+                else GameManager.Instance.ChangeState<MatchPrepState>();
+            }
+            else
+            {
+                // 토너먼트 패널이 켜져있다면 확실하게 꺼줍니다!
+                if (_tournamentBoardPanel != null) _tournamentBoardPanel.gameObject.SetActive(false);
+                if (_swissBoardPanel != null) _swissBoardPanel.OpenPanel(null, "경기 준비");
+                else GameManager.Instance.ChangeState<MatchPrepState>();
+            }
         }
         else
         {
-            // 패널 연결을 깜빡했을 때의 안전장치
             GameManager.Instance.ChangeState<MatchPrepState>();
         }
     }
     private void Init()
     {
         if (GameManager.Instance == null) return;
+
         UpdateMoneyText();
         UpdateHonorText();
         UpdateProfileText();
@@ -72,6 +89,10 @@ public class LobbyUI : MonoBehaviour
 
         UpdateCalendarText(calMgr.GetCalendar());
         SetButtonActivate(calMgr.GetCalendar());
+
+        // 앨범 데이터 유무로 앨범 버튼 활성화 유무 결정
+        if (GraduationAlbumManager.Instance == null) return;
+        _graduationAlbumButton.interactable = GraduationAlbumManager.Instance.HasData();
     }
 
     private void OnDisable()

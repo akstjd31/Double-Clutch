@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,6 +11,7 @@ public class PassiveBox : MonoBehaviour
     [SerializeField] private Image[] _skillImage = new Image[3];
     [SerializeField] private TextMeshProUGUI[] _skillDetail = new TextMeshProUGUI[3];
     [SerializeField] private Button[] _buttons = new Button[3];
+    [SerializeField] private Outline[] _outlines = new Outline[3];
 
     [SerializeField] private Player_PassiveDataReader _passiveDataReader;
     [SerializeField] private Player_PassiveGradeDataReader _passiveGradeDataReader;
@@ -25,6 +26,8 @@ public class PassiveBox : MonoBehaviour
 
     //선택한 스킬
     private Player_PassiveData _selectSkill;
+    string[] _detailText = new string[3];
+    bool _needGuideRefresh = false;
 
     public Player_PassiveData SelectSkill => _selectSkill;
     public Dictionary<int, List<Player_PassiveData>> SelectSkillSave => _selectSkillSave;
@@ -37,6 +40,19 @@ public class PassiveBox : MonoBehaviour
             _skillName[i].text = $"";
             _skillDetail[i].text = $"";
         }
+    }
+
+    private void LateUpdate()
+    {
+        if(_needGuideRefresh)
+        {
+            for (int i = 0; i < _selectSkillList.Count; i++)
+            {
+                _skillDetail[i].text = _detailText[i];
+            }
+            _needGuideRefresh = false;
+        }
+        
     }
 
     //private void OnEnable()
@@ -65,10 +81,12 @@ public class PassiveBox : MonoBehaviour
             {
                 _skillName[i].text = "";
                 _skillDetail[i].text = "";
+                _skillImage[i].sprite = null;
                 _buttons[i].interactable = false;
                 _buttons[i].targetGraphic.color = _buttons[i].colors.disabledColor;
                 Debug.Log($"{i + 1}버튼 비활성화");
             }
+            _outlines[i].enabled = false;
         }
     }
 
@@ -80,9 +98,13 @@ public class PassiveBox : MonoBehaviour
             _selectSkillList = new List<Player_PassiveData>(list);
             for (int i = 0; i < _selectSkillList.Count; i++)
             {
-                _skillName[i].text = _selectSkillList[i].skillName;
-                _skillDetail[i].text = _selectSkillList[i].passiveDesc;
+                _skillName[i].text = StringManager.Instance.GetString(_selectSkillList[i].skillName);
+                _skillImage[i].sprite = SpriteManager.Instance.GetSprite(_selectSkillList[i].passiveResource);
+
+                _detailText[i] = StringManager.Instance.GetString(_selectSkillList[i].passiveDesc);
+                _detailText[i] = _detailText[i].Replace("{effectValue}", _selectSkillList[i].effectValue.ToString());
             }
+            _needGuideRefresh = true;
         }
         else
         {
@@ -126,8 +148,14 @@ public class PassiveBox : MonoBehaviour
                     selectedSkill = _passiveDataList[randomN];
                 }
 
-                _skillName[i].text = selectedSkill.skillName;                    
-                _skillDetail[i].text = selectedSkill.passiveDesc;
+                if(i > _skillName.Length)
+                {
+                    continue;
+                }
+
+                _skillName[i].text = StringManager.Instance.GetString(selectedSkill.skillName);                    
+                _skillDetail[i].text = StringManager.Instance.GetString(selectedSkill.passiveDesc);
+                _skillImage[i].sprite = SpriteManager.Instance.GetSprite(selectedSkill.passiveResource);
 
                 _selectSkillList.Add(selectedSkill);
                 Debug.Log($"{selectedSkill}추가");
@@ -169,7 +197,10 @@ public class PassiveBox : MonoBehaviour
             if (button == _buttons[i])
             {
                 _buttons[i].interactable = true;
-                _buttons[i].targetGraphic.color = _buttons[i].colors.normalColor;
+                _buttons[i].GetComponent<Image>().color = new Color(1f,1f,1f);
+                _skillImage[i].color = new Color(1f, 1f, 1f);
+                _outlines[i].enabled = true;
+
                 //선택한 스킬 저장
                 _selectSkill = _selectSkillList[i];
                 Debug.Log($"{_selectSkill.skillName}");
@@ -177,7 +208,10 @@ public class PassiveBox : MonoBehaviour
             }
             else
             {
-                _buttons[i].targetGraphic.color = _buttons[i].colors.disabledColor;
+                _buttons[i].GetComponent<Image>().color = new Color(0.4f, 0.4f, 0.4f);
+                _skillImage[i].color = new Color(0.4f, 0.4f, 0.4f);
+                _outlines[i].enabled = false;
+
                 Debug.Log($"{gameObject.name} 버튼 비활성화 색상");
             }
         }

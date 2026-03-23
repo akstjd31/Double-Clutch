@@ -4,7 +4,6 @@ using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement;
 
 public class ProfileUI : MonoBehaviour
 {
@@ -35,8 +34,8 @@ public class ProfileUI : MonoBehaviour
     [SerializeField] private Button _cancelCoachButton;
     [SerializeField] private TextMeshProUGUI _coachWarningText;
 
-    [Header("아이콘 설정 및 해금")]    
-    [SerializeField] private Image _currentLobbyProfileImage;
+    [Header("아이콘 설정 및 해금")]
+    [SerializeField] private LobbyProfileIcon _LobbyProfileIcon;
     [SerializeField] private Image _currentIcon;
     [SerializeField] private ProfileIcon _profilePrefab;
     [SerializeField] private GameObject _pagePanelPrefab;
@@ -48,8 +47,8 @@ public class ProfileUI : MonoBehaviour
 
     private GenericObjectPool<ProfileIcon> _pool;
     private List<ProfileIcon> _activeIcons = new List<ProfileIcon>();
-    private List<GameObject> _pages = new List<GameObject>(); // 페이지 추적용 리스트
-    private int _currentPageIndex = 0; // 페이지 상태 관리를 위한 변수 추가
+    private List<GameObject> _pages = new List<GameObject>();
+    private int _currentPageIndex = 0;
 
     [Header("Selected Info")]
     private ProfileIcon _selectedIcon;
@@ -61,29 +60,25 @@ public class ProfileUI : MonoBehaviour
     }
 
     private void Start()
-    {        
+    {
         RefreshProfileList();
-        if (GameManager.Instance.SaveData == null || string.IsNullOrEmpty(GameManager.Instance.SaveData.currentProfileImage))
-        {
-            if (_currentLobbyProfileImage != null)
-            _currentLobbyProfileImage.sprite = SpriteManager.Instance.GetSprite(_profileDataReader.DataList[0].playerImage);
-            if (_profileBoxImage != null)
-                _profileBoxImage.sprite = SpriteManager.Instance.GetSprite(_profileDataReader.DataList[0].playerImage); 
-        }
-        else
-        {
-            _currentLobbyProfileImage.sprite = SpriteManager.Instance.GetSprite(GameManager.Instance.SaveData.currentProfileImage);
+        var saveData = GameManager.Instance.SaveData;
+
+        // 초기 이미지 설정
+        string imgKey = (saveData == null || string.IsNullOrEmpty(saveData.currentProfileImage))
+            ? _profileDataReader.DataList[0].playerImage
+            : saveData.currentProfileImage;
+
+        if (_LobbyProfileIcon != null && saveData != null)
+            _LobbyProfileIcon.SetImage(SpriteManager.Instance.GetSprite(imgKey));
+
+        if (_profileBoxImage != null)
             _profileBoxImage.sprite = SpriteManager.Instance.GetSprite(_profileDataReader.DataList[0].playerImage);
-        }
-            
     }
 
     private void OnEnable()
     {
-        if (_confirmButton != null)
-            _confirmButton.onClick.AddListener(OnClickConfirmButton);
-
-        // 페이지 버튼 이벤트 연결 추가
+        if (_confirmButton != null) _confirmButton.onClick.AddListener(OnClickConfirmButton);
         if (_prevButton != null) _prevButton.onClick.AddListener(() => ChangePage(-1));
         if (_nextButton != null) _nextButton.onClick.AddListener(() => ChangePage(1));
 
@@ -92,62 +87,58 @@ public class ProfileUI : MonoBehaviour
             GameManager gameManager = GameManager.Instance;
             SpriteManager spriteManager = SpriteManager.Instance;
 
-            
             string currentImg = gameManager.SaveData?.currentProfileImage;
+            int index = _profileDataReader.DataList.FindIndex(x => x.playerImage == currentImg);
 
-            if (_selectedData == null && _profileDataReader.DataList.Count > 0)
+            if (index != -1)
+            {
+                _selectedData = _profileDataReader.DataList[index];
+            }
+            else
+            {
                 _selectedData = _profileDataReader.DataList[0];
+            }
 
-            _selectedData = _profileDataReader.DataList.Find(x => x.playerImage == currentImg);
-            if (_selectedData == null) _selectedData = _profileDataReader.DataList[0];
+            _currentIcon.sprite = spriteManager.GetSprite(_selectedData.Value.playerImage);
 
-            _currentIcon.sprite = string.IsNullOrEmpty(gameManager.SaveData.currentProfileImage) ?
-                spriteManager.GetSprite(_profileDataReader.DataList[0].playerImage) : spriteManager.GetSprite(gameManager.SaveData.currentProfileImage);
-
-            if (_warningText == null)
+            if (_warningText == null && _warningTextObj != null)
                 _warningText = _warningTextObj.transform.GetComponentInChildren<TextMeshProUGUI>();
-            _warningText.text = "";
 
-            _schoolNameField.text = GameManager.Instance.SaveData.schoolName;
-            _playerNameField.text = GameManager.Instance.SaveData.coachName;
+            if (_warningText != null) _warningText.text = "";
+
+            _schoolNameField.text = gameManager.SaveData.schoolName;
+            _playerNameField.text = gameManager.SaveData.coachName;
             _schoolNameField.interactable = false;
             _playerNameField.interactable = false;
 
-            if (_schoolSelectButton != null && _playerSelectButton != null)
-            {
-                _schoolSelectButton.onClick.AddListener(() => OpenPopup(_schoolModifyPanel, _schoolPopupInputField));
-                _playerSelectButton.onClick.AddListener(() => OpenPopup(_coachModifyPanel, _coachPopupInputField));
-            }
+            _schoolSelectButton?.onClick.AddListener(() => OpenPopup(_schoolModifyPanel, _schoolPopupInputField));
+            _playerSelectButton?.onClick.AddListener(() => OpenPopup(_coachModifyPanel, _coachPopupInputField));
+            _confirmSchoolButton?.onClick.AddListener(OnClickConfirmSchool);
+            _confirmCoachButton?.onClick.AddListener(OnClickConfirmCoach);
+            _cancelSchoolButton?.onClick.AddListener(() => _schoolModifyPanel.SetActive(false));
+            _cancelCoachButton?.onClick.AddListener(() => _coachModifyPanel.SetActive(false));
 
-            if (_confirmSchoolButton != null) _confirmSchoolButton.onClick.AddListener(OnClickConfirmSchool);
-            if (_confirmCoachButton != null) _confirmCoachButton.onClick.AddListener(OnClickConfirmCoach);
-            if (_cancelSchoolButton != null) _cancelSchoolButton.onClick.AddListener(() => _schoolModifyPanel.SetActive(false));
-            if (_cancelCoachButton != null) _cancelCoachButton.onClick.AddListener(() => _coachModifyPanel.SetActive(false));
-
-            RefreshProfileList();            
-        }        
+            RefreshProfileList();
+        }
     }
 
     private void OnDisable()
     {
-        if (_confirmButton != null) _confirmButton.onClick.RemoveAllListeners();
-
-        // 페이지 버튼 리스너 해제 추가
-        if (_prevButton != null) _prevButton.onClick.RemoveAllListeners();
-        if (_nextButton != null) _nextButton.onClick.RemoveAllListeners();
+        _confirmButton?.onClick.RemoveAllListeners();
+        _prevButton?.onClick.RemoveAllListeners();
+        _nextButton?.onClick.RemoveAllListeners();
 
         if (!_isFirstTime)
         {
-            if (_schoolSelectButton != null) _schoolSelectButton.onClick.RemoveAllListeners();
-            if (_playerSelectButton != null) _playerSelectButton.onClick.RemoveAllListeners();
-            if (_confirmSchoolButton != null) _confirmSchoolButton.onClick.RemoveAllListeners();
-            if (_confirmCoachButton != null) _confirmCoachButton.onClick.RemoveAllListeners();
-            if (_cancelSchoolButton != null) _cancelSchoolButton.onClick.RemoveAllListeners();
-            if (_cancelCoachButton != null) _cancelCoachButton.onClick.RemoveAllListeners();
+            _schoolSelectButton?.onClick.RemoveAllListeners();
+            _playerSelectButton?.onClick.RemoveAllListeners();
+            _confirmSchoolButton?.onClick.RemoveAllListeners();
+            _confirmCoachButton?.onClick.RemoveAllListeners();
+            _cancelSchoolButton?.onClick.RemoveAllListeners();
+            _cancelCoachButton?.onClick.RemoveAllListeners();
         }
     }
 
-    // 페이지 전환 함수 추가
     private void ChangePage(int direction)
     {
         int nextIndex = _currentPageIndex + direction;
@@ -160,7 +151,6 @@ public class ProfileUI : MonoBehaviour
         UpdatePageButtons();
     }
 
-    // 버튼 활성화/비활성화 함수 추가
     private void UpdatePageButtons()
     {
         if (_prevButton != null) _prevButton.interactable = (_currentPageIndex > 0);
@@ -192,13 +182,11 @@ public class ProfileUI : MonoBehaviour
 
     public void OnClickConfirmButton()
     {
-        if (_schoolNameField.text == "" || _playerNameField.text == "")
+        if (string.IsNullOrEmpty(_schoolNameField.text) || string.IsNullOrEmpty(_playerNameField.text))
         {
             if (_warningCoroutine == null) _warningCoroutine = StartCoroutine(PrintWarningText("공백의 이름이 존재합니다!"));
             return;
         }
-
-        if (GameManager.Instance == null || _reader == null) return;
 
         if (!IsValidNameLength(_schoolNameField.text) || !IsValidNameLength(_playerNameField.text))
         {
@@ -208,15 +196,15 @@ public class ProfileUI : MonoBehaviour
 
         if (CheckBadWord(_schoolNameField.text) || CheckBadWord(_playerNameField.text))
         {
-            if (_isFirstTime) { if (_warningTextObj != null) _warningTextObj.SetActive(true); }
-            else { if (_warningCoroutine == null) _warningCoroutine = StartCoroutine(PrintWarningText("비속어가 포함되어 있습니다!")); }
+            if (_isFirstTime) _warningTextObj?.SetActive(true);
+            else if (_warningCoroutine == null) _warningCoroutine = StartCoroutine(PrintWarningText("비속어가 포함되어 있습니다!"));
             return;
         }
 
         var gm = GameManager.Instance;
         if (_isFirstTime)
         {
-            var data = new PlayerSaveData { schoolName = _schoolNameField.text, coachName = _playerNameField.text, weekId = 9, year = 0 };
+            var data = new PlayerSaveData { schoolName = _schoolNameField.text, coachName = _playerNameField.text, weekId = 9, year = 1 };
             gm.InitData(data);
             CalendarManager.Instance.CalcWeek(data.weekId, gm);
             gm.Dispatch(UIAction.Main_Start);
@@ -225,7 +213,7 @@ public class ProfileUI : MonoBehaviour
         if (_selectedData.HasValue && _selectedData.Value.playerImage != null)
         {
             gm.SetCurrentProfileIcon(_selectedData.Value.playerImage);
-            _currentLobbyProfileImage.sprite = _currentIcon.sprite;
+            _LobbyProfileIcon?.Refresh();
         }
 
         this.gameObject.SetActive(false);
@@ -295,7 +283,7 @@ public class ProfileUI : MonoBehaviour
         }
         if (CheckBadWord(inputText))
         {
-            if (_isFirstTime && _warningTextObj != null) _warningTextObj.SetActive(true);
+            if (_isFirstTime) _warningTextObj?.SetActive(true);
             else if (_warningCoroutine == null) _warningCoroutine = StartCoroutine(PrintWarningTextPopup(targetWarningText, "비속어가 포함되어 있습니다!"));
             return false;
         }
@@ -303,41 +291,31 @@ public class ProfileUI : MonoBehaviour
     }
 
     public void RefreshProfileList()
-    {        
+    {
+        // 1. 기존 아이콘 풀 회수 (Destroy 대신 사용)
         foreach (var icon in _activeIcons) _pool.Release(icon);
         _activeIcons.Clear();
 
-        if (_pageWindow == null)
-        {
-            return;
-        }
-        if (GameManager.Instance.SaveData == null || string.IsNullOrEmpty(GameManager.Instance.SaveData.currentProfileImage))
-        {
-            _profileBoxImage.sprite = SpriteManager.Instance.GetSprite(_profileDataReader.DataList[0].playerImage);
-        }
-        else
-        {
-            _profileBoxImage.sprite = SpriteManager.Instance.GetSprite(_profileDataReader.DataList[0].playerImage);
-        }
+        if (_pageWindow == null) return;
 
-            foreach (Transform child in _pageWindow) Destroy(child.gameObject);
-        _pages.Clear(); // 페이지 리스트 초기화
-        _currentPageIndex = 0; // 초기화 시 인덱스 리셋 추가
+        // 2. 페이지 패널 재사용 (Destroy 대신 SetActive 활용)
+        foreach (var page in _pages) page.SetActive(false);
 
-        GameObject currentPage = null;
-
+        int iconsPerPage = 15;
         for (int i = 0; i < _profileDataReader.DataList.Count; i++)
         {
-            if (i % 15 == 0)
+            int pageIndex = i / iconsPerPage;
+
+            // 페이지가 모자랄 때만 추가 생성
+            if (pageIndex >= _pages.Count)
             {
-                currentPage = Instantiate(_pagePanelPrefab, _pageWindow);
-                currentPage.name = $"Page_{_pages.Count + 1}";
-
-                // 첫 번째 페이지만 활성화, 나머지는 비활성화
-                if (_pages.Count > 0) currentPage.SetActive(false);
-
-                _pages.Add(currentPage);
+                GameObject newPage = Instantiate(_pagePanelPrefab, _pageWindow);
+                newPage.name = $"Page_{_pages.Count + 1}";
+                _pages.Add(newPage);
             }
+
+            GameObject currentPage = _pages[pageIndex];
+            if (pageIndex == _currentPageIndex) currentPage.SetActive(true);
 
             ProfileIcon icon = _pool.Get();
             icon.transform.SetParent(currentPage.transform, false);
@@ -351,33 +329,30 @@ public class ProfileUI : MonoBehaviour
             if (isUnlocked)
             {
                 icon.Unlock();
-                if (_selectedData.HasValue && data.playerImage == _selectedData.Value.playerImage)
-                {
-                    icon.OnOffOutLine(true);
-                    _selectedIcon = icon;
-                }
-                else icon.OnOffOutLine(false);
+                bool isSelected = _selectedData.HasValue && data.playerImage == _selectedData.Value.playerImage;
+                icon.OnOffOutLine(isSelected);
+                if (isSelected) _selectedIcon = icon;
 
                 icon.GetButton().onClick.RemoveAllListeners();
                 icon.GetButton().onClick.AddListener(() => OnSelectProfile(icon));
             }
             else
             {
+                icon.OnOffOutLine(false);
                 icon.GetButton().interactable = false;
-                // 필요 시 아이콘 실루엣/잠금 처리 추가 가능
             }
 
             _activeIcons.Add(icon);
         }
 
-        UpdatePageButtons(); // 리스트 생성 후 버튼 상태 업데이트 추가
+        UpdatePageButtons();
     }
 
     private void OnSelectProfile(ProfileIcon icon)
     {
         _selectedIcon?.OnOffOutLine(false);
         _selectedIcon = icon;
-        _selectedData = icon.Data;        
+        _selectedData = icon.Data;
         _selectedIcon.OnOffOutLine(true);
     }
 }

@@ -2,23 +2,23 @@ using System.Collections.Generic;
 using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
 /// <summary>
-/// todo : 1. °³ÀÎ ÈÆ·Ã, 2. °³ÀÎ ÈŞ½Ä, 3. ÆÀ ÈÆ·Ã, 4. ÆÀ ÈŞ½Ä
+/// todo : 1. ê°œì¸ í›ˆë ¨, 2. ê°œì¸ íœ´ì‹, 3. íŒ€ í›ˆë ¨, 4. íŒ€ íœ´ì‹
 /// </summary>
 public class FosterManager : MonoBehaviour
 {
     public static FosterManager Instance;
-    [Header("<size=18>µ¥ÀÌÅÍ ¸®´õ SO ¸ğÀ½</size>")]
-    [Header("Individual_TrainingDataReader(°³ÀÎ ÈÆ·Ã µ¥ÀÌÅÍ)")]
+    [Header("<size=18>ë°ì´í„° ë¦¬ë” SO ëª¨ìŒ</size>")]
+    [Header("Individual_TrainingDataReader(ê°œì¸ í›ˆë ¨ ë°ì´í„°)")]
     [SerializeField] Individual_TrainingDataReader _individual_TrainingDB;
-    [Header("Individual_RestDataReader(°³ÀÎ ÈŞ½Ä µ¥ÀÌÅÍ)")]
+    [Header("Individual_RestDataReader(ê°œì¸ íœ´ì‹ ë°ì´í„°)")]
     [SerializeField] Individual_RestDataReader _individual_RestDB;
-    [Header("Team_TrainingDataReader(ÆÀ ÈÆ·Ã µ¥ÀÌÅÍ)")]
+    [Header("Team_TrainingDataReader(íŒ€ í›ˆë ¨ ë°ì´í„°)")]
     [SerializeField] Team_TrainingDataReader _team_TrainingDB;
-    [Header("Team_RestDataReader(ÆÀ ÈŞ½Ä µ¥ÀÌÅÍ)")]
+    [Header("Team_RestDataReader(íŒ€ íœ´ì‹ ë°ì´í„°)")]
     [SerializeField] Team_RestDataReader _team_RestDB;
-    [Header("Team_Position_MappingDataReader(ÆÀ Æ÷Áö¼Ç ¸ÅÇÎ µ¥ÀÌÅÍ)")]
+    [Header("Team_Position_MappingDataReader(íŒ€ í¬ì§€ì…˜ ë§¤í•‘ ë°ì´í„°)")]
     [SerializeField] Team_Position_MappingDataReader _team_Position_MappingDB;
-    [Header("Team_Position_MappingDataReader(ÈÆ·Ã Ä«Å×°í¸® ¸ÅÇÎ µ¥ÀÌÅÍ)")]
+    [Header("Team_Position_MappingDataReader(í›ˆë ¨ ì¹´í…Œê³ ë¦¬ ë§¤í•‘ ë°ì´í„°)")]
     [SerializeField] Training_MappingDataReader _training_MappingDB;
 
     public Individual_TrainingDataReader IndividualTrainingDB => _individual_TrainingDB;
@@ -27,10 +27,11 @@ public class FosterManager : MonoBehaviour
     public Team_TrainingDataReader Team_TrainingDB => _team_TrainingDB;
     public Team_RestDataReader Team_RestDB => _team_RestDB;
     private int _myGold => GameManager.Instance.SaveData.money;
+    private List<Student> _problemStudents = new List<Student>();
 
-    Dictionary<Student, ITraining> _schedules = new Dictionary<Student, ITraining>(); //°³ÀÎ ½ºÄÉÁÙ ¿¹¾à ¸ñ·Ï
+    Dictionary<Student, ITraining> _schedules = new Dictionary<Student, ITraining>(); //ê°œì¸ ìŠ¤ì¼€ì¤„ ì˜ˆì•½ ëª©ë¡
     
-    ITraining _teamSchedule; //ÆÀ ½ºÄÉÁÙ ¿¹¾à ¸ñ·Ï
+    ITraining _teamSchedule; //íŒ€ ìŠ¤ì¼€ì¤„ ì˜ˆì•½ ëª©ë¡
 
     int _scheduleCost = 0;
     int _scheduleCount => (_teamSchedule != null)? StudentManager.Instance.MyStudents.Count : _schedules.Count;
@@ -47,105 +48,105 @@ public class FosterManager : MonoBehaviour
 
         if (!isTeamReserved && !isAllIndividualReserved)
         {
-            //¾ÖÃÊ¿¡ ¹öÆ° È°¼ºÈ­°¡ ¾ÈµÇ¾î¾ß ÇÔ
+            //ì• ì´ˆì— ë²„íŠ¼ í™œì„±í™”ê°€ ì•ˆë˜ì–´ì•¼ í•¨
             return;
         }
 
-        List<Student> problemStudents = new List<Student>();
+        _problemStudents.Clear();
 
-        if (_teamSchedule != null) //ÆÀ ½ºÄÉÁÙÀÌ ¿¹¾àµÇ¾î ÀÖ´Ù¸é ÀüÃ¼ ÇĞ»ı ¸ñ·ÏÀ» »ç¿ë
+        if (_teamSchedule != null) //íŒ€ ìŠ¤ì¼€ì¤„ì´ ì˜ˆì•½ë˜ì–´ ìˆë‹¤ë©´ ì „ì²´ í•™ìƒ ëª©ë¡ì„ ì‚¬ìš©
         {
             foreach (var student in StudentManager.Instance.MyStudents)
             {
-                if (HasProblem(student)) //¹®Á¦ ÀÖ´Â ÇĞ»ı °Ë»ç ¹× ºĞ·ù
+                if (HasProblem(student)) //ë¬¸ì œ ìˆëŠ” í•™ìƒ ê²€ì‚¬ ë° ë¶„ë¥˜
                 {
-                    problemStudents.Add(student);
+                    _problemStudents.Add(student);
                 }
             }
         }
         else
         {
-            foreach (var student in _schedules.Keys) //°³ÀÎ ½ºÄÉÁÙ ¸ñ·Ï¿¡¼­ ÇĞ»ı °Ë»ç
+            foreach (var student in _schedules.Keys) //ê°œì¸ ìŠ¤ì¼€ì¤„ ëª©ë¡ì—ì„œ í•™ìƒ ê²€ì‚¬
             {
-                if (HasProblem(student)) //¹®Á¦ ÀÖ´Â ÇĞ»ı °Ë»ç ¹× ºĞ·ù
+                if (HasProblem(student)) //ë¬¸ì œ ìˆëŠ” í•™ìƒ ê²€ì‚¬ ë° ë¶„ë¥˜
                 {
-                    problemStudents.Add(student);
+                    _problemStudents.Add(student);
                 }                
             }
         }
         
-        if (problemStudents.Count > 0) //¹®Á¦ ÀÖ´Â ÇĞ»ıÀÌ ÇÏ³ª¶óµµ ÀÖ´Ù¸é
+        if (_problemStudents.Count > 0) //ë¬¸ì œ ìˆëŠ” í•™ìƒì´ í•˜ë‚˜ë¼ë„ ìˆë‹¤ë©´
         {
-            StudentUIManager.Instance.OpenConditionWarningPopUp(problemStudents, _scheduleCost); //ÄÁµğ¼Ç °æ°í ÆË¾÷ È£Ãâ
-            Debug.Log("ÄÁµğ¼Ç °æ°íÃ¢ È£Ãâ");
+            StudentUIManager.Instance.OpenConditionWarningPopUp(_problemStudents, _scheduleCost); //ì»¨ë””ì…˜ ê²½ê³  íŒì—… í˜¸ì¶œ
+            Debug.Log("ì»¨ë””ì…˜ ê²½ê³ ì°½ í˜¸ì¶œ");
         }
         else
         {
             StudentUIManager.Instance.OpenTrainingStartConfirmPopUp(_scheduleCost);
-            Debug.Log("ÈÆ·Ã È®ÀÎÃ¢ È£Ãâ");
+            Debug.Log("í›ˆë ¨ í™•ì¸ì°½ í˜¸ì¶œ");
         }
     }
     private bool HasProblem(Student target)
     {
-        return target.Condition <= 0 || target.State != StudentState.None;
+        return (target.Condition <= 0 || target.State != StudentState.None) && (target.CurrentTraining is IndividualTraining || target.CurrentTraining is TeamTraining);
     }
 
     public void UpdateScheduleState()
     {
         if (StudentManager.Instance == null || StudentUIManager.Instance == null) return;
 
-        // 2. ÇĞ»ı ¸ñ·Ï °¡Á®¿À±â
+        // 2. í•™ìƒ ëª©ë¡ ê°€ì ¸ì˜¤ê¸°
         var students = StudentManager.Instance.MyStudents;
         int maxStudentCount = (students != null) ? students.Count : 0;
         int currentReservedCount = 0;
         bool canStart = false;
 
-        // µğ¹ö±ë: ÇöÀç ÇĞ»ı ¼ö°¡ ¸î ¸íÀ¸·Î ÂïÈ÷´ÂÁö È®ÀÎ (0ÀÌ ³ª¿Â´Ù¸é µ¥ÀÌÅÍ ·Îµå ¼ø¼­ ¹®Á¦)
-        Debug.Log($"[FosterManager] ÇöÀç ÇĞ»ı ¼ö: {maxStudentCount}, ¿¹¾àµÈ ¼ö: {_schedules.Count}");
+        // ë””ë²„ê¹…: í˜„ì¬ í•™ìƒ ìˆ˜ê°€ ëª‡ ëª…ìœ¼ë¡œ ì°íˆëŠ”ì§€ í™•ì¸ (0ì´ ë‚˜ì˜¨ë‹¤ë©´ ë°ì´í„° ë¡œë“œ ìˆœì„œ ë¬¸ì œ)
+        Debug.Log($"[FosterManager] í˜„ì¬ í•™ìƒ ìˆ˜: {maxStudentCount}, ì˜ˆì•½ëœ ìˆ˜: {_schedules.Count}");
 
         if (_teamSchedule != null)
         {
             currentReservedCount = maxStudentCount;
-            // ÇĞ»ıÀÌ ÃÖ¼Ò 1¸íÀº ÀÖ¾î¾ß ÆÀ ÈÆ·Ã ½ÃÀÛ °¡´É
+            // í•™ìƒì´ ìµœì†Œ 1ëª…ì€ ìˆì–´ì•¼ íŒ€ í›ˆë ¨ ì‹œì‘ ê°€ëŠ¥
             canStart = (maxStudentCount > 0);
         }
         else
         {
             currentReservedCount = _schedules.Count;
-            // °³ÀÎ ÈÆ·ÃÀº ¿¹¾àµÈ ¼ö¿Í ÀüÃ¼ ÇĞ»ı ¼ö°¡ °°¾Æ¾ß ÇÏ¸ç, ÇĞ»ı ¼ö°¡ 0º¸´Ù Ä¿¾ß ÇÔ
+            // ê°œì¸ í›ˆë ¨ì€ ì˜ˆì•½ëœ ìˆ˜ì™€ ì „ì²´ í•™ìƒ ìˆ˜ê°€ ê°™ì•„ì•¼ í•˜ë©°, í•™ìƒ ìˆ˜ê°€ 0ë³´ë‹¤ ì»¤ì•¼ í•¨
             canStart = (maxStudentCount > 0 && currentReservedCount == maxStudentCount);
         }
 
-        // 3. UI ¸Å´ÏÀú¿¡°Ô Àü´Ş
+        // 3. UI ë§¤ë‹ˆì €ì—ê²Œ ì „ë‹¬
         StudentUIManager.Instance.RefreshStartFosterButton(canStart, currentReservedCount, maxStudentCount);
     }
 
     public void StartFoster()
     {
-        Debug.Log("StartFoster ÁøÀÔ");
+        Debug.Log("StartFoster ì§„ì…");
         foreach (var student in StudentManager.Instance.MyStudents)
         {
             student.PrepareStatChange();
         }
         if (_teamSchedule != null)
         {
-            Debug.Log("ÆÀ ½ºÄÉÁÙ ½ÇÇà ½Ãµµ");
+            Debug.Log("íŒ€ ìŠ¤ì¼€ì¤„ ì‹¤í–‰ ì‹œë„");
             _teamSchedule.StartAction();
-            Debug.Log("ÆÀ ½ºÄÉÁÙ ½ÇÇà ¿Ï·á");
+            Debug.Log("íŒ€ ìŠ¤ì¼€ì¤„ ì‹¤í–‰ ì™„ë£Œ");
         }
         else
         {
-            Debug.Log($"°³ÀÎ ½ºÄÉÁÙ ½ÇÇà ½Ãµµ (°³¼ö: {_schedules.Count})");
+            Debug.Log($"ê°œì¸ ìŠ¤ì¼€ì¤„ ì‹¤í–‰ ì‹œë„ (ê°œìˆ˜: {_schedules.Count})");
             foreach (var training in _schedules.Values)
             {
                 training.StartAction();                
             }
-            Debug.Log("°³ÀÎ ½ºÄÉÁÙ ½ÇÇà ¿Ï·á");
+            Debug.Log("ê°œì¸ ìŠ¤ì¼€ì¤„ ì‹¤í–‰ ì™„ë£Œ");
         }        
         
         GameManager.Instance.SetMoney(_myGold - _scheduleCost);
 
-        _schedules.Clear(); //³»ºÎ Ä«¿îÆ® ¹× UI »óÅÂ ÃÊ±âÈ­
+        _schedules.Clear(); //ë‚´ë¶€ ì¹´ìš´íŠ¸ ë° UI ìƒíƒœ ì´ˆê¸°í™”
         _scheduleCost = 0;
         _teamSchedule = null;
         UpdateScheduleState();         
@@ -156,8 +157,14 @@ public class FosterManager : MonoBehaviour
     public void ReserveIndividualTraining(ITraining command)
     {
         Student target = command.GetTarget();
-        if (_teamSchedule != null) //°³ÀÎ ½ºÄÉÁÙ ¿¹¾à½Ã ÆÀ ½ºÄÉÁÙ ¿¹¾àÀº »èÁ¦
+        if (_teamSchedule != null) //ê°œì¸ ìŠ¤ì¼€ì¤„ ì˜ˆì•½ì‹œ íŒ€ ìŠ¤ì¼€ì¤„ ì˜ˆì•½ì€ ì‚­ì œ
         {
+            foreach(var student in StudentManager.Instance.MyStudents)
+            {
+                student.ResetTrainingSchedule();                
+            }
+            StudentUIManager.Instance.OnTrainingReserved(); //ëª¨ë“  í•™ìƒì˜ í›ˆë ¨ ì •ë³´ë¥¼ ì—†ì• ê³  ui ìƒíƒœ ê°±ì‹ 
+
             _schedules.Clear();
             _scheduleCost = 0;
             _teamSchedule = null;
@@ -166,29 +173,29 @@ public class FosterManager : MonoBehaviour
         int oldCost = _schedules.ContainsKey(target) ? _schedules[target].GetCost() : 0;
         int nextTotalCost = _scheduleCost - oldCost + command.GetCost();
         
-        if (nextTotalCost > _myGold) // µ· Ã¼Å©
+        if (nextTotalCost > _myGold) // ëˆ ì²´í¬
         {
             StudentUIManager.Instance.OpenCostWarningPopUp();
             return;
         }
 
-        if (target.State != StudentState.None && command is IndividualTraining) //ÇĞ»ı¿¡°Ô ºÎ»ó ¹× °ú·Î°¡ ÀÖ´Âµ¥ °³ÀÎ ÈÆ·ÃÀ» ÇÒ´çÇÏ·Á°í ÇÏ¸é ¿©±â¼­ ÆË¾÷¶ç¿ì°í ÇÒ´ç ¸øÇÏ°Ô ÇÔ.
+        if (target.State != StudentState.None && command is IndividualTraining) //í•™ìƒì—ê²Œ ë¶€ìƒ ë° ê³¼ë¡œê°€ ìˆëŠ”ë° ê°œì¸ í›ˆë ¨ì„ í• ë‹¹í•˜ë ¤ê³  í•˜ë©´ ì—¬ê¸°ì„œ íŒì—…ë„ìš°ê³  í• ë‹¹ ëª»í•˜ê²Œ í•¨.
         {
             StudentUIManager.Instance.OpenStateWarningPopUp_Individual(target);
             return;
         }
 
-        if (_schedules.ContainsKey(command.GetTarget())) // ÇØ´ç ÇĞ»ı °³ÀÎ ¿¹¾àÀÌ ÀÌ¹Ì Á¸ÀçÇÏ¸é Ä¿¸Çµå¸¸ ±³Ã¼
+        if (_schedules.ContainsKey(command.GetTarget())) // í•´ë‹¹ í•™ìƒ ê°œì¸ ì˜ˆì•½ì´ ì´ë¯¸ ì¡´ì¬í•˜ë©´ ì»¤ë§¨ë“œë§Œ êµì²´
         {
             _schedules[target] = command;
         }
         else
         {
-            _schedules.Add(target, command); // ¾Æ´Ï¶ó¸é µñ¼Å³Ê¸®¿¡ ÇĞ»ı / Ä¿¸Çµå Ãß°¡
+            _schedules.Add(target, command); // ì•„ë‹ˆë¼ë©´ ë”•ì…”ë„ˆë¦¬ì— í•™ìƒ / ì»¤ë§¨ë“œ ì¶”ê°€
         }
         target.SetCurrentTraining(command);
-        _scheduleCost = nextTotalCost; // ÃÖÁ¾ ºñ¿ë ¾÷µ¥ÀÌÆ®
-        UpdateScheduleState(); //¹öÆ° Ç¥½Ã ¹× È°¼ºÈ­ ¿©ºÎ °»½Å
+        _scheduleCost = nextTotalCost; // ìµœì¢… ë¹„ìš© ì—…ë°ì´íŠ¸
+        UpdateScheduleState(); //ë²„íŠ¼ í‘œì‹œ ë° í™œì„±í™” ì—¬ë¶€ ê°±ì‹ 
         StudentUIManager.Instance.OnTrainingReserved();
     }
 
@@ -196,7 +203,7 @@ public class FosterManager : MonoBehaviour
     {
         int nextTotalCost = command.GetCost();
 
-        if (nextTotalCost > _myGold) //µ· Ã¼Å©
+        if (nextTotalCost > _myGold) //ëˆ ì²´í¬
         {
             StudentUIManager.Instance.OpenCostWarningPopUp();
             return;
@@ -204,18 +211,18 @@ public class FosterManager : MonoBehaviour
 
         foreach (var target in StudentManager.Instance.MyStudents)
         {
-            //if (target.State != StudentState.None && command is TeamTraining) //¼±¼ö ÇÑ ¸íÀÌ¶óµµ ºÎ»ó ¹× °ú·Î°¡ ÀÖ´Âµ¥ ÆÀ ÈÆ·ÃÀ» ¿¹¾àÇÏ·Á°í ÇÏ¸é ¿©±â¼­ ÆË¾÷¶ç¿ì°í °æ°í¸¸ ÇØÁÖ±â(¿¹¾àÀº µÊ)
+            //if (target.State != StudentState.None && command is TeamTraining) //ì„ ìˆ˜ í•œ ëª…ì´ë¼ë„ ë¶€ìƒ ë° ê³¼ë¡œê°€ ìˆëŠ”ë° íŒ€ í›ˆë ¨ì„ ì˜ˆì•½í•˜ë ¤ê³  í•˜ë©´ ì—¬ê¸°ì„œ íŒì—…ë„ìš°ê³  ê²½ê³ ë§Œ í•´ì£¼ê¸°(ì˜ˆì•½ì€ ë¨)
             //{
-            //    StudentUIManager.Instance.OpenStateWarningPopUp_Team();                ==>>> ÃÖÁ¾ ÈÆ·Ã ¹öÆ° Å¬¸¯ ½Ã °³º° ¸ÂÃãÇü °æ°íÇÏ´Â °ÍÀ¸·Î ¼öÁ¤(±âÈ¹ º¯°æ)
+            //    StudentUIManager.Instance.OpenStateWarningPopUp_Team();                ==>>> ìµœì¢… í›ˆë ¨ ë²„íŠ¼ í´ë¦­ ì‹œ ê°œë³„ ë§ì¶¤í˜• ê²½ê³ í•˜ëŠ” ê²ƒìœ¼ë¡œ ìˆ˜ì •(ê¸°íš ë³€ê²½)
             //}
             target.SetCurrentTraining(command);
         }
 
-        _schedules.Clear(); //ÆÀ ½ºÄÉÁÙ ¿¹¾à ½Ã °³ÀÎ ½ºÄÉÁÙ ¿¹¾à ¸ñ·Ï »èÁ¦.
+        _schedules.Clear(); //íŒ€ ìŠ¤ì¼€ì¤„ ì˜ˆì•½ ì‹œ ê°œì¸ ìŠ¤ì¼€ì¤„ ì˜ˆì•½ ëª©ë¡ ì‚­ì œ.
         _teamSchedule = command;        
         _scheduleCost = nextTotalCost;
 
-        UpdateScheduleState(); //¹öÆ° Ç¥½Ã ¹× È°¼ºÈ­ ¿©ºÎ °»½Å
+        UpdateScheduleState(); //ë²„íŠ¼ í‘œì‹œ ë° í™œì„±í™” ì—¬ë¶€ ê°±ì‹ 
         StudentUIManager.Instance.OnTrainingReserved();
     }
 
@@ -229,7 +236,7 @@ public class FosterManager : MonoBehaviour
                 return data;
             }
         }
-        Debug.LogWarning($"{student.Position} Æ÷Áö¼Ç¿¡ ´ëÇÑ ¸ÅÇÎ µ¥ÀÌÅÍ¸¦ Ã£À» ¼ö ¾ø½À´Ï´Ù.");
+        Debug.LogWarning($"{student.Position} í¬ì§€ì…˜ì— ëŒ€í•œ ë§¤í•‘ ë°ì´í„°ë¥¼ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤.");
         return default;
     }
 
@@ -242,7 +249,7 @@ public class FosterManager : MonoBehaviour
                 return data;
             }
         }
-        Debug.LogWarning($"{potential} ÀáÀç·Â¿¡ ´ëÇÑ ¸ÅÇÎ µ¥ÀÌÅÍ¸¦ Ã£À» ¼ö ¾ø½À´Ï´Ù.");
+        Debug.LogWarning($"{potential} ì ì¬ë ¥ì— ëŒ€í•œ ë§¤í•‘ ë°ì´í„°ë¥¼ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤.");
         return default;        
     }
 }

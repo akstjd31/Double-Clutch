@@ -40,6 +40,14 @@ public class CharacterRecruitBox : MonoBehaviour
         SetText();
         SetButton();
         _characterImage.sprite = SpriteManager.Instance.GetSprite(target.VisualData.portraitResource);
+
+        switch(target.Grade)
+        {
+            case 1: _gradeText.text = StringManager.Instance.GetString("UI_Player_1학년"); break;
+            case 2: _gradeText.text = StringManager.Instance.GetString("UI_Player_2학년"); break;
+            case 3: _gradeText.text = StringManager.Instance.GetString("UI_Player_3학년"); break;
+        }
+        StringManager.Instance.ApplyFont(_gradeText);
     }
 
     public Student GetStudent()
@@ -52,11 +60,10 @@ public class CharacterRecruitBox : MonoBehaviour
         StringManager manager = StringManager.Instance;
         string name = manager.GetString(_student.Name[0]) + manager.GetString(_student.Name[1]) + manager.GetString(_student.Name[2]);
 
-        _positionText.text = _student.Position.ToString();
-        _gradeText.text = _student.Grade.ToString() + "학년";
+        _positionText.text = _student.Position.ToString();        
         _nameText.text = name;
-        _attackText.text = _student.Attack.ToString();
-        _defenseText.text = _student.Defense.ToString();
+        _attackText.text = manager.GetString("UI_Player_공격력")+ " : " + _student.Attack.ToString();
+        _defenseText.text = manager.GetString("UI_Player_수비력") + " : " + _student.Defense.ToString();        
     }
 
     private void ChangeToggleState(bool isOn)

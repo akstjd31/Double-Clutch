@@ -42,5 +42,6 @@ public class MatchHistoryRow : MonoBehaviour
         // 이 줄의 로그 버튼을 누르면 자신의 라운드 번호를 들고 로그 패널을 열도록 연결
         _btnLogCheck.onClick.RemoveAllListeners();
         _btnLogCheck.onClick.AddListener(() => onClickLog?.Invoke(round));
+        
     }
 }

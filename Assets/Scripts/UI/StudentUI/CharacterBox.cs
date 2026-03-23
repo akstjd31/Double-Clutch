@@ -6,10 +6,10 @@ using TMPro;
 public class CharacterBox : MonoBehaviour
 {
     [SerializeField] Image _studentImage;
-    [SerializeField] TextMeshProUGUI _nameText;
+    //[SerializeField] TextMeshProUGUI _nameText;
     [SerializeField] Button _selectButton;
-    [SerializeField] TextMeshProUGUI _position;
-    [SerializeField] TextMeshProUGUI _state;
+    [SerializeField] Image _position;
+    [SerializeField] Image _trait;
 
     Student _target;
 
@@ -17,16 +17,17 @@ public class CharacterBox : MonoBehaviour
 
     public void Init(Student student)
     {        
-        StringManager manager = StringManager.Instance;
-        string name = manager.GetString(student.Name[0]) + manager.GetString(student.Name[1]) + manager.GetString(student.Name[2]);
+        //StringManager manager = StringManager.Instance;
+        //string name = manager.GetString(student.Name[0]) + manager.GetString(student.Name[1]) + manager.GetString(student.Name[2]);
 
-        _nameText.text = name;
-        manager.ApplyFont(_nameText);
-        _target = student;                
-        _studentImage.sprite = SpriteManager.Instance.GetSprite(student.VisualData.playerImageResource);
-        _position.text = student.Position.ToString();
-        _state.text = student.Condition.ToString();
+        //_nameText.text = name;
+        //manager.ApplyFont(_nameText);
+        _target = student;
 
+        SpriteManager spriteManager = SpriteManager.Instance;
+        _studentImage.sprite = spriteManager.GetSprite(student.VisualData.playerImageResource);
+        _position.sprite = spriteManager.GetPositionSprite(_target.Position);
+        _trait.sprite = spriteManager.GetSprite(_target.TraitData.traitResource);
     }
 
     public Button GetSelectButton() => _selectButton;

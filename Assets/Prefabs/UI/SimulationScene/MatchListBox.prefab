@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 5055764814987154342}
   - component: {fileID: 3889056997257251603}
   - component: {fileID: 6759636318582100939}
+  - component: {fileID: 4892653448447274686}
   m_Layer: 0
   m_Name: MatchListBox
   m_TagString: Untagged
@@ -62,7 +63,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.392}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -119,6 +120,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.ContentSizeFitter
   m_HorizontalFit: 2
   m_VerticalFit: 2
+--- !u!114 &4892653448447274686
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 161503157198292564}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b09cc7ea1ecfd5f4d83509796f991c46, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TournamentNode
+  _txtTeamName: {fileID: 5717593173924173026}
+  _outline: {fileID: 146641950689992744}
+  _canvasGroup: {fileID: 991420659428186817}
+  _outPipeImage: {fileID: 44506857447953159}
+  _txtScore: {fileID: 2073775368075894106}
 --- !u!1 &5539054775307125670
 GameObject:
   m_ObjectHideFlags: 0
@@ -306,6 +324,30 @@ PrefabInstance:
       propertyPath: m_AspectRatio
       value: 2.4
       objectReference: {fileID: 0}
+    - target: {fileID: 5214675725579899624, guid: 30d4cf58a2513c449a1bba775d818255, type: 3}
+      propertyPath: m_Type
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5214675725579899624, guid: 30d4cf58a2513c449a1bba775d818255, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: -2253049326991968608, guid: fd4a36e92c4445546a208f66dfa5ead5, type: 3}
+    - target: {fileID: 5214675725579899624, guid: 30d4cf58a2513c449a1bba775d818255, type: 3}
+      propertyPath: m_Color.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5214675725579899624, guid: 30d4cf58a2513c449a1bba775d818255, type: 3}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5214675725579899624, guid: 30d4cf58a2513c449a1bba775d818255, type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5214675725579899624, guid: 30d4cf58a2513c449a1bba775d818255, type: 3}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6219397980969122934, guid: 30d4cf58a2513c449a1bba775d818255, type: 3}
       propertyPath: m_AnchorMax.y
       value: 1
@@ -366,15 +408,43 @@ PrefabInstance:
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 7875389727645368069, guid: 30d4cf58a2513c449a1bba775d818255, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 991420659428186817}
+    - targetCorrespondingSourceObject: {fileID: 7875389727645368069, guid: 30d4cf58a2513c449a1bba775d818255, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 146641950689992744}
     - targetCorrespondingSourceObject: {fileID: 8068390167902809650, guid: 30d4cf58a2513c449a1bba775d818255, type: 3}
       insertIndex: -1
       addedObject: {fileID: 5383082137800202725}
   m_SourcePrefab: {fileID: 100100000, guid: 30d4cf58a2513c449a1bba775d818255, type: 3}
+--- !u!114 &2073775368075894106 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2540850095844155425, guid: 30d4cf58a2513c449a1bba775d818255, type: 3}
+  m_PrefabInstance: {fileID: 4577185570493611387}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!224 &3872851545179334451 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 736989383561583176, guid: 30d4cf58a2513c449a1bba775d818255, type: 3}
   m_PrefabInstance: {fileID: 4577185570493611387}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &5717593173924173026 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8132822203375970713, guid: 30d4cf58a2513c449a1bba775d818255, type: 3}
+  m_PrefabInstance: {fileID: 4577185570493611387}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5800003115361588041}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!1 &5800003115361588041 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8068390167902809650, guid: 30d4cf58a2513c449a1bba775d818255, type: 3}
@@ -394,3 +464,35 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.ContentSizeFitter
   m_HorizontalFit: 0
   m_VerticalFit: 2
+--- !u!1 &5966828867592077950 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7875389727645368069, guid: 30d4cf58a2513c449a1bba775d818255, type: 3}
+  m_PrefabInstance: {fileID: 4577185570493611387}
+  m_PrefabAsset: {fileID: 0}
+--- !u!225 &991420659428186817
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5966828867592077950}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
+--- !u!114 &146641950689992744
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5966828867592077950}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e19747de3f5aca642ab2be37e372fb86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Outline
+  m_EffectColor: {r: 0, g: 0, b: 0, a: 0.5}
+  m_EffectDistance: {x: 1, y: -1}
+  m_UseGraphicAlpha: 1

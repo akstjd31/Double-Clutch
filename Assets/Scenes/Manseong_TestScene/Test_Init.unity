@@ -243,8 +243,10 @@ MonoBehaviour:
     money: 0
     weekId: 0
     year: 0
+    totalWinHonor: 0
     currentProfileImage: 
     graduationRecord: []
+    isGraduationPending: 0
 --- !u!4 &400084808
 Transform:
   m_ObjectHideFlags: 0
@@ -548,6 +550,53 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1173977135
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1173977137}
+  - component: {fileID: 1173977136}
+  m_Layer: 0
+  m_Name: GraduationAlbumManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1173977136
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1173977135}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00c46274465ea8b4487c51b67300ff52, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GraduationAlbumManager
+  dontDestroyOnLoad: 1
+  _saveData:
+    graduationStudentList: []
+--- !u!4 &1173977137
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1173977135}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1279324329
 GameObject:
   m_ObjectHideFlags: 0
@@ -674,6 +723,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SpriteManager
   dontDestroyOnLoad: 1
   _db: {fileID: 11400000, guid: 7ea8353004daa3f4f9585ab06a2689b9, type: 2}
+  _c: {fileID: 21300000, guid: 0b92ee6229d04e947ae285960786005d, type: 3}
+  _sf: {fileID: 21300000, guid: f543f31c8f5be374d8bfbb734ddf7fd0, type: 3}
+  _sg: {fileID: 21300000, guid: 67b530e24d0594841adefcb641338dd6, type: 3}
+  _pf: {fileID: 21300000, guid: e7fc2a5bc2971984982761c58fcdcf3f, type: 3}
+  _pg: {fileID: 21300000, guid: 39e1e538e082f8b4ea5af0cebd6cafc6, type: 3}
 --- !u!4 &1602226387
 Transform:
   m_ObjectHideFlags: 0
@@ -813,8 +867,12 @@ MonoBehaviour:
       _condition: 100
       _cureCount: 0
       _awardCount: 0
+      _prevAttack: 0
+      _prevDefense: 0
+      _prevCondition: 0
       _matchPosition: 0
       _totalFame: 0
+      pendingPassiveSelection: 0
     - _studentId: -1
       _name: []
       _specieId: 
@@ -829,8 +887,12 @@ MonoBehaviour:
       _condition: 100
       _cureCount: 0
       _awardCount: 0
+      _prevAttack: 0
+      _prevDefense: 0
+      _prevCondition: 0
       _matchPosition: 0
       _totalFame: 0
+      pendingPassiveSelection: 0
     - _studentId: -1
       _name: []
       _specieId: 
@@ -845,8 +907,12 @@ MonoBehaviour:
       _condition: 100
       _cureCount: 0
       _awardCount: 0
+      _prevAttack: 0
+      _prevDefense: 0
+      _prevCondition: 0
       _matchPosition: 0
       _totalFame: 0
+      pendingPassiveSelection: 0
     - _studentId: -1
       _name: []
       _specieId: 
@@ -861,8 +927,12 @@ MonoBehaviour:
       _condition: 100
       _cureCount: 0
       _awardCount: 0
+      _prevAttack: 0
+      _prevDefense: 0
+      _prevCondition: 0
       _matchPosition: 0
       _totalFame: 0
+      pendingPassiveSelection: 0
     - _studentId: -1
       _name: []
       _specieId: 
@@ -877,8 +947,12 @@ MonoBehaviour:
       _condition: 100
       _cureCount: 0
       _awardCount: 0
+      _prevAttack: 0
+      _prevDefense: 0
+      _prevCondition: 0
       _matchPosition: 0
       _totalFame: 0
+      pendingPassiveSelection: 0
     _teamId: Player_Team
     _winCount: 0
     _LoseCount: 0
@@ -1038,6 +1112,63 @@ MonoBehaviour:
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
   m_Version: 2
+--- !u!1 &1925240176
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1925240178}
+  - component: {fileID: 1925240177}
+  m_Layer: 0
+  m_Name: SettingManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1925240177
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1925240176}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9dba9430eb77a3a4888a24133293d059, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SettingManager
+  dontDestroyOnLoad: 1
+  _settingData:
+    fps: 60
+    language: 0
+    isVibOn: 1
+    masterVol: 0.8
+    isMasterVolOn: 1
+    bgmVol: 0.8
+    isBGMVolOn: 1
+    sfxVol: 0.8
+    isSFXVolOn: 1
+  _privacyPolicy: "https://sites.google.com/view/doubleclutch-policy/\uAC1C\uC778\uC815\uBCF4-\uCC98\uB9AC\uBC29\uCE68"
+  _userPolicy: "https://sites.google.com/view/doubleclutch-policy/\uC774\uC6A9\uC57D\uAD00-\uBC0F-\uD658\uBD88\uC815\uCC45"
+--- !u!4 &1925240178
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1925240176}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -1054,3 +1185,5 @@ SceneRoots:
   - {fileID: 1279324331}
   - {fileID: 1613157976}
   - {fileID: 1602226387}
+  - {fileID: 1173977137}
+  - {fileID: 1925240178}

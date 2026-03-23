@@ -27,6 +27,7 @@ public static class FilePath
     public const string RIVAL_STUDENT_MATCHING_PATH = "RivalStudentMatchingSaveData.json";
     public const string INFRA_PATH = "InfraSaveData.json";
     public const string LEAGUE_PATH = "LeagueSaveData.json";
+    public const string GRADUATION_PATH = "GraduationAlbumSaveData.json";
     
 }
 
@@ -268,6 +269,12 @@ public class GameManager : Singleton<GameManager>
     public void SetCurrentProfileIcon(string imageKey)
     {
         SaveData.currentProfileImage = imageKey;
+        OnDataChanged?.Invoke();
+    }
+
+    public void SetGraduationPending(bool value)
+    {
+        _saveData.isGraduationPending = value;
         OnDataChanged?.Invoke();
     }
 }

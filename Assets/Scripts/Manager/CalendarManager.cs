@@ -120,9 +120,11 @@ public class CalendarManager : Singleton<CalendarManager>
             gm.SetYear(y + 1);
         }
 
+        bool flag = false;
         if (PlayerPrefs.GetInt(PrefKeys.KEY_FIRST_RUN_DONE) == 0)
         {
             // 튜토리얼 수행 완료
+            flag = true;
             PlayerPrefs.SetInt(PrefKeys.KEY_FIRST_RUN_DONE, 1);
             PlayerPrefs.Save();
         }
@@ -134,11 +136,11 @@ public class CalendarManager : Singleton<CalendarManager>
                 // 2. 시즌 아웃 조건 유무 확인
                 if (data.hasSeasonOut)
                 {
-                    weekId = LeagueManager.Instance.IsPlayerSeasonOut() ? data.targetidDefault : data.targetidSpecial;
+                    weekId = LeagueManager.Instance.IsPlayerSeasonOut() ? data.targetidSpecial : data.targetidDefault; // 리그 시즌아웃 처리는 따로 해줘야할듯 
                 }
                 else
                 {
-                    weekId = data.targetidDefault;
+                    weekId = data.targetidSpecial;
                 }
             }
             else
@@ -158,7 +160,9 @@ public class CalendarManager : Singleton<CalendarManager>
         if (IsFundingDay())
         {
             var m = gm.SaveData.money;
-            gm.SetMoney(m + (1000 * accSub));
+
+            if (!flag)
+                gm.SetMoney(m + (1000 * accSub));
         }
 
         gm.SetWeekId(weekId);
@@ -272,7 +276,11 @@ public class CalendarManager : Singleton<CalendarManager>
         }
 
         for (int i = start; i < end; i++)
-            descList.Add(_calReader.DataList[i].desc);
+        {
+            string desc = StringManager.Instance.GetString(_calReader.DataList[i].weekDescKey);
+            descList.Add(desc);
+        }
+            
 
         return descList;
     }
@@ -287,7 +295,10 @@ public class CalendarManager : Singleton<CalendarManager>
         int end = start + MonthWeekTable.weekCounts[calendar.month];
 
         for (int i = start; i < end; i++)
-            descList.Add(_calReader.DataList[i].desc);
+        {
+            string desc = StringManager.Instance.GetString(_calReader.DataList[i].weekDescKey);
+            descList.Add(desc);
+        }
 
         return descList;
     }

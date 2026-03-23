@@ -107,8 +107,8 @@ public class MatchSimState : IState
 
     private System.Collections.IEnumerator CoGoToResult()
     {
-        Debug.Log("경기 종료! 3초 뒤 결과 창으로 이동합니다...");
-        yield return new WaitForSeconds(3.0f); // 연출 볼 시간 확보
+        Debug.Log("경기 종료! 0.5초 뒤 결과 창으로 이동합니다...");
+        yield return new WaitForSeconds(0.5f); // 연출 볼 시간 확보
         _sm.ChangeState<ResultState>();        // ResultState로 전환
     }
 

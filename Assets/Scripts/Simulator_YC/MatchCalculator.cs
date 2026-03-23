@@ -10,9 +10,6 @@ public static class MatchCalculator
     public static float LastShootStat;
     public static float LastBlockPressure;
 
-    // [기획서 3.1] 종횡비 보정값 1.87 (16:9)
-    private const float ASPECT_RATIO = 1.87f;
-
     // 팀의 활성화된 시너지 합산을 가져오는 헬퍼 함수
     public static float GetSynergyBonus(MatchTeam team, effectType type)
     {
@@ -56,8 +53,8 @@ public static class MatchCalculator
 
     public static float CalculateDistance(Vector2 p1, Vector2 p2)
     {
-        float dx = (p2.x - p1.x) * 1.0f;
-        float dy = (p2.y - p1.y) * ASPECT_RATIO;
+        float dx = p2.x - p1.x;
+        float dy = p2.y - p1.y;
         return Mathf.Sqrt(dx * dx + dy * dy);
     }
 
@@ -207,9 +204,9 @@ public static class MatchCalculator
                            + (distToHoop * wDistBonus)
                            - (enemySteal * (1f / (nearestEnemyDist + penSteal)) * wStealBase);
 
-        if (distToHoop > 0.84f && remainTime > 0f)
+        if (distToHoop > 0.45f && remainTime > 0f)
         {
-            scoreShoot = -999f; // 거리가 0.8415(하프라인) 밖이면 슛 점수를 마이너스로 고정해 절대 안 쏘게 만듦 ( 역습이나 공수전환중에 노마크 발생으로 인한 확정 골 오류 방지 )
+            scoreShoot = -999f; // 거리가 0.45(하프라인) 밖이면 슛 점수를 마이너스로 고정해 절대 안 쏘게 만듦 ( 역습이나 공수전환중에 노마크 발생으로 인한 확정 골 오류 방지 )
         }
         else
         {
@@ -253,14 +250,14 @@ public static class MatchCalculator
 
 
     // 슛 성공 확률
-    public static bool CalculateShootSuccess(MatchPlayer attacker, float distance, MatchTeam attackTeam, MatchTeam defendTeam, TeamTactics attackTactics, TeamTactics defendTactics, float blockDist)
+    public static bool CalculateShootSuccess(MatchPlayer attacker, float distToHoop, MatchTeam attackTeam, MatchTeam defendTeam, TeamTactics attackTactics, TeamTactics defendTactics, float blockDist)
     {
 
         List<MatchPlayer> enemies = defendTeam.Roster;
 
-        float shootStat = (distance > 0.35f) ? GetPlayerStat(attacker, MatchStatType.ThreePoint, attackTeam) : GetPlayerStat(attacker, MatchStatType.TwoPoint, attackTeam);
+        float shootStat = (distToHoop > 0.35f) ? GetPlayerStat(attacker, MatchStatType.ThreePoint, attackTeam) : GetPlayerStat(attacker, MatchStatType.TwoPoint, attackTeam);
 
-        shootStat *= (distance > 0.35f) ? attackTactics.bonusThreePoint : attackTactics.bonusTwoPoint;
+        shootStat *= (distToHoop > 0.35f) ? attackTactics.bonusThreePoint : attackTactics.bonusTwoPoint;
 
         float blockStat = 0f;
 
@@ -280,11 +277,11 @@ public static class MatchCalculator
         Debug.Log($"[수비 체크] 공격수 위치: {attacker.LogicPosition} | 수비수 위치: {defPosStr} | 최단거리: {minEnemyDist:F4} | 수비발동?: {minEnemyDist <= blockDist}");
 
         float penDistHoop = MatchDataProxy.Instance.GetBalance("Pen_Dist_Hoop");
-        float distancePenalty = 1f + (distance * penDistHoop);
+        float distancePenalty = distToHoop * penDistHoop;
 
         // 공식: { 33 + (공격수 슛 * 0.67) / (100 + 적 블록 * 거리 페널티) } * 100
-        float calcStat = (shootStat * 0.67f) / (100f + blockStat * distancePenalty);
-        float prob = 33f + (calcStat * 100f);
+        float calcStat = (33f + (shootStat * 0.67f)) / (100f + blockStat * distancePenalty);
+        float prob = calcStat * 100f;
 
         float extraBonus = 0f;
         string activeSynergyLog = ""; // 디버그 로그용
@@ -294,14 +291,14 @@ public static class MatchCalculator
 
 
         // 승부사의 심장 (10점 차 이상 지고 있을 때 3점슛 확률 증가)
-        if (distance > 0.35f && scoreGap <= -10)
+        if (distToHoop > 0.35f && scoreGap <= -10)
         {
             extraBonus += GetSynergyBonus(attackTeam, effectType.ClutchHeart); // 확률이므로 100을 곱해 % 단위로 맞춤
             activeSynergyLog += "[승부사의심장] ";
         }
 
         // 고릴라 덩크 (거리 0.01 ~ 0.05 사이일 때 슛 성공률 증가 - 패스 무관)
-        if (distance >= 0.01f && distance <= 0.05f)
+        if (distToHoop >= 0.01f && distToHoop <= 0.05f)
         {
             extraBonus += GetSynergyBonus(attackTeam, effectType.GorillaDunk);
             activeSynergyLog += "[고릴라덩크] ";
@@ -310,7 +307,7 @@ public static class MatchCalculator
         // 패스 연계 시너지 (패스받은 직후 3틱 이내일 때만 발동)
         if (attacker.PassReceivedBuffTick > 0)
         {
-            if (distance > 0.35f) // 3점 (스페이스 오퍼레이터)
+            if (distToHoop > 0.35f) // 3점 (스페이스 오퍼레이터)
             {
                 extraBonus += GetMaxSynergyBonus(attackTeam, effectType.SpaceOperator);
                 activeSynergyLog += "[스페이스오퍼레이터] ";
@@ -328,12 +325,12 @@ public static class MatchCalculator
 
         string attackerName = MakeName(attacker.PlayerName);
         string eName = nearestEnemy != null ? MakeName(nearestEnemy.PlayerName) : "없음";
-        Debug.Log($"<color=#FF8C00>[슛 디버그]</color> {attackerName} 슛 시도 (골대거리:{distance:F2})\n" +
-              $"▶ 공격 슛스탯: {shootStat} | 수비({eName}) 블록스탯: {blockStat} (수비거리:{minEnemyDist:F2})\n" +
-              $"▶ 발동된 확률 추가 시너지: {(string.IsNullOrEmpty(activeSynergyLog) ? "없음" : activeSynergyLog)}\n" +
-              $"▶ 공식: 33 + ( ({shootStat} * 0.67) / (100 + {blockStat} * {distancePenalty:F2}) ) * 100\n" +
-              $"▶ 적용: 33 + {calcStat * 100f:F2} + 추가확률보정({extraBonus:F4}%) = {prob:F4}%\n" +
-              $"▶ <color=#00FF00>최종확률: {prob:F4}%</color> | 주사위: {dice:F4} => {(isSuccess ? "<b>골!</b>" : "<b>노골</b>")}");
+        Debug.Log($"<color=#FF8C00>[슛 디버그]</color> {attackerName} 슛 시도 (골대거리:{distToHoop:F2})\n" +
+          $"▶ 공격 슛스탯: {shootStat} | 수비({eName}) 블록스탯: {blockStat} (수비거리:{minEnemyDist:F2})\n" +
+          $"▶ 발동된 확률 추가 시너지: {(string.IsNullOrEmpty(activeSynergyLog) ? "없음" : activeSynergyLog)}\n" +
+          $"▶ 공식: ( (33 + {shootStat} * 0.67) / (100 + {blockStat} * {distancePenalty:F2}) ) * 100\n" +
+          $"▶ 적용: {calcStat * 100f:F2} + 추가확률보정({extraBonus:F4}%) = {prob:F4}%\n" +
+          $"▶ <color=#00FF00>최종확률: {prob:F4}%</color> | 주사위: {dice:F4} => {(isSuccess ? "<b>골!</b>" : "<b>노골</b>")}");
 
         return isSuccess;
     }

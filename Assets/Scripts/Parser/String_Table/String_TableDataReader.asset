@@ -34,8 +34,8 @@ MonoBehaviour:
     en: Instinct
     ja: "\u672C\u80FD"
   - stringKey: Str_Infra_Clinic_Desc_0001
-    ko: "\uD734\uC2DD \uD65C\uB3D9\uC5D0 \uC18C\uBAA8\uB418\uB294 \uBE44\uC6A9\uC744
-      {infraEffectValue}%\uB9CC\uD07C \uD560\uC778\uD569\uB2C8\uB2E4. (\uC9D1\uC911\uCE58\uB8CC
+    ko: "\uD734\uC2DD \uD65C\uB3D9\uC5D0 \uC18C\uBAA8\uB418\uB294 \uBE44\uC6A9\uC774
+      {infraEffectValue}%\uB9CC\uD07C \uAC10\uC18C\uD569\uB2C8\uB2E4. (\uC9D1\uC911\uCE58\uB8CC
       \uC81C\uC678)"
     en: Reduces rest activity costs by {infraEffectValue}% (Excl. Intensive Care).
     ja: "\u4F11\u606F\u6D3B\u52D5\u306B\u304B\u304B\u308B\u8CBB\u7528\u3092{infraEffectValue}%\u5272\u5F15\u3057\u307E\u3059\u3002\uFF08\u96C6\u4E2D\u6CBB\u7642\u3092\u9664\u304F\uFF09"
@@ -44,7 +44,7 @@ MonoBehaviour:
     en: Clinic
     ja: "\u533B\u52D9\u5BA4"
   - stringKey: Str_Infra_Dormitory_Desc_0001
-    ko: "\uBCF4\uC720 \uC120\uC218\uB97C +{infraEffectValue} \uB9CC\uD07C \uC99D\uAC00\uD569\uB2C8\uB2E4."
+    ko: "\uBCF4\uC720 \uC120\uC218\uAC00 +{infraEffectValue} \uB9CC\uD07C \uC99D\uAC00\uD569\uB2C8\uB2E4."
     en: Increases max roster size by {infraEffectValue}.
     ja: "\u4FDD\u6709\u9078\u624B\u67A0\u3092{infraEffectValue}\u5897\u52A0\u3055\u305B\u307E\u3059\u3002"
   - stringKey: Str_Infra_Dormitory_Name_0001
@@ -52,7 +52,7 @@ MonoBehaviour:
     en: Dormitory
     ja: "\u5BEE"
   - stringKey: Str_Infra_Front_Desc_0001
-    ko: "\uACBD\uAE30 \uC9C0\uC6D0\uAE08 \uD68D\uB4DD\uB7C9\uC744 {infraEffectValue}%
+    ko: "\uACBD\uAE30 \uC9C0\uC6D0\uAE08 \uD68D\uB4DD\uB7C9\uC774 {infraEffectValue}%
       \uB9CC\uD07C \uC99D\uAC00\uD569\uB2C8\uB2E4."
     en: Increases match funding by {infraEffectValue}%.
     ja: "\u8A66\u5408\u652F\u63F4\u91D1\u306E\u7372\u5F97\u91CF\u304C{infraEffectValue}%\u5897\u52A0\u3057\u307E\u3059\u3002"
@@ -61,7 +61,8 @@ MonoBehaviour:
     en: Front Office
     ja: "\u30D5\u30ED\u30F3\u30C8"
   - stringKey: Str_Infra_Tactic_Desc_0001
-    ko: "\uC120\uC218 \uBC84\uD504\uAC00 +{infraEffectValue} \uB9CC\uD07C \uC99D\uAC00\uB429\uB2C8\uB2E4."
+    ko: "\uC120\uC218\uC758 \uBAA8\uB4E0 \uB2A5\uB825\uCE58\uAC00 +{infraEffectValue}
+      \uB9CC\uD07C \uC99D\uAC00\uD569\uB2C8\uB2E4."
     en: Increases player buffs by {infraEffectValue}.
     ja: "\u9078\u624B\u30D0\u30D5\u304C{infraEffectValue}\u5897\u52A0\u3057\u307E\u3059\u3002"
   - stringKey: Str_Infra_Tactic_Name_0001
@@ -69,8 +70,8 @@ MonoBehaviour:
     en: Analytics Room
     ja: "\u6226\u8853\u30C7\u30FC\u30BF\u5206\u6790\u5BA4"
   - stringKey: Str_Infra_Training_Desc_0001
-    ko: "\uBAA8\uB4E0 \uD6C8\uB828\uC758 \uD6A8\uC728\uC744 {infraEffectValue}% \uB9CC\uD07C
-      \uC99D\uAC00\uC2DC\uD0B5\uB2C8\uB2E4."
+    ko: "\uBAA8\uB4E0 \uD6C8\uB828\uC758 \uD6A8\uC728\uC774 {infraEffectValue}% \uB9CC\uD07C
+      \uC99D\uAC00\uD569\uB2C8\uB2E4."
     en: Increases overall training efficiency by {infraEffectValue}%.
     ja: "\u3059\u3079\u3066\u306E\u30C8\u30EC\u30FC\u30CB\u30F3\u30B0\u52B9\u7387\u304C{infraEffectValue}%\u5897\u52A0\u3057\u307E\u3059\u3002"
   - stringKey: Str_Infra_Training_Name_0001
@@ -169,6 +170,10 @@ MonoBehaviour:
     ko: "{PlayerName}, \uB9AC\uBC14\uC6B4\uB4DC \uC7A1\uC544\uB0C5\uB2C8\uB2E4."
     en: '{PlayerName} clears the board.'
     ja: "{PlayerName}\u3001\u30EA\u30D0\u30A6\u30F3\u30C9\u3092\u5236\u3059\uFF01"
+  - stringKey: Str_Match_Log_0015
+    ko: "{PlayerName}, \uAE38\uAC8C \uB4DC\uB9AC\uBE14\uC744 \uC2DC\uB3C4\uD569\uB2C8\uB2E4."
+    en: '{PlayerName} drives to the hoop.'
+    ja: "{PlayerName}\u3001\u30C9\u30EA\u30D6\u30EB\u3067\u4ED5\u639B\u3051\u308B\uFF01"
   - stringKey: Str_Personality_Name_0001
     ko: "\uC6D0\uCE59\uC8FC\uC758"
     en: Principled
@@ -1593,6 +1598,22 @@ MonoBehaviour:
       \uCD94\uAC00\uB85C \uD68D\uB4DD\uD569\uB2C8\uB2E4."
     en: Grants an additional {effectValue} Gold upon player graduation.
     ja: "\u9078\u624B\u5352\u696D\u6642\u3001\u8FFD\u52A0\u3067{effectValue}\u30B4\u30FC\u30EB\u30C9\u3092\u7372\u5F97\u3057\u307E\u3059\u3002"
+  - stringKey: Str_Skill_Grade_0001
+    ko: "\uB178\uB9D0"
+    en: Normal
+    ja: "\u30CE\u30FC\u30DE\u30EB"
+  - stringKey: Str_Skill_Grade_0002
+    ko: "\uB808\uC5B4"
+    en: Rare
+    ja: "\u30EC\u30A2"
+  - stringKey: Str_Skill_Grade_0003
+    ko: "\uC5D0\uD53D"
+    en: Epic
+    ja: "\u30A8\u30D4\u30C3\u30AF"
+  - stringKey: Str_Skill_Grade_0004
+    ko: "\uC720\uB2C8\uD06C"
+    en: Unique
+    ja: "\u30E6\u30CB\u30FC\u30AF"
   - stringKey: Str_Syn_Name_0001
     ko: "\uD2B8\uB79C\uC9C0\uC158 \uB9C8\uC2A4\uD130"
     en: Transition Master
@@ -1600,7 +1621,7 @@ MonoBehaviour:
   - stringKey: Str_Syn_Name_0002
     ko: "\uACE0\uB9B4\uB77C \uB369\uD06C"
     en: Gorilla Dunk
-    ja: "\u30DA\u30A4\u30F3\u30C8\u30BE\u30FC\u30F3\u306E\u5931\u696D\u8005"
+    ja: "\u30B4\u30EA\u30E9\u30C0\u30F3\u30AF"
   - stringKey: Str_Syn_Name_0003
     ko: "\uB09C\uACF5\uBD88\uB77D"
     en: Iron Wall
@@ -1608,43 +1629,43 @@ MonoBehaviour:
   - stringKey: Str_Syn_Name_0004
     ko: "\uCEF7\uC778 \uD50C\uB808\uC774"
     en: Cut-In Play
-    ja: "\u7121\u9650\u306E\u52D5\u529B"
+    ja: "\u30AB\u30C3\u30C8\u30A4\u30F3\u30D7\u30EC\u30A4"
   - stringKey: Str_Syn_Name_0005
     ko: "\uC2A4\uD398\uC774\uC2A4 \uC624\uD37C\uB808\uC774\uD130"
     en: Space Operator
-    ja: "\u30AB\u30C3\u30C8\u30A4\u30F3\u30D7\u30EC\u30A4"
+    ja: "\u30B9\u30DA\u30FC\u30B9\u30AA\u30DA\u30EC\u30FC\u30BF\u30FC"
   - stringKey: Str_Syn_Name_0006
     ko: "\uD558\uC774\uB77C\uC774\uD2B8 \uD544\uB984"
     en: Highlight Film
-    ja: "\u30B9\u30C6\u30C3\u30D7\u30D0\u30C3\u30AF\u8077\u4EBA"
+    ja: "\u30CF\u30A4\u30E9\u30A4\u30C8\u30D5\u30A3\u30EB\u30E0"
   - stringKey: Str_Syn_Name_0007
     ko: "\uC2DC\uC2A4\uD15C \uBC14\uC2A4\uCF13"
     en: System Basket
-    ja: "\u30B9\u30DA\u30FC\u30B9\u30AA\u30DA\u30EC\u30FC\u30BF\u30FC"
+    ja: "\u30B7\u30B9\u30C6\u30E0\u30D0\u30B9\u30B1"
   - stringKey: Str_Syn_Name_0008
     ko: "\uC575\uD074 \uBE0C\uB808\uC774\uCEE4"
     en: Ankle Breaker
-    ja: "\u30CF\u30A4\u30E9\u30A4\u30C8\u30D5\u30A3\u30EB\u30E0"
+    ja: "\u30A2\u30F3\u30AF\u30EB\u30D6\u30EC\u30A4\u30AB\u30FC"
   - stringKey: Str_Syn_Name_0009
     ko: "\uC9C8\uC2DD \uC218\uBE44"
     en: Suffocating Defense
-    ja: "\u30B7\u30B9\u30C6\u30E0\u30D0\u30B9\u30B1"
+    ja: "\u7A92\u606F\u30C7\u30A3\u30D5\u30A7\u30F3\u30B9"
   - stringKey: Str_Syn_Name_0010
     ko: "\uC2B9\uBD80\uC0AC\uC758 \uC2EC\uC7A5"
     en: Clutch Heart
-    ja: "\u30A2\u30F3\u30AF\u30EB\u30D6\u30EC\u30A4\u30AB\u30FC"
+    ja: "\u52DD\u8CA0\u5E2B\u306E\u5FC3\u81D3"
   - stringKey: Str_Syn_Name_0011
     ko: "\uBB34\uD55C \uC2E0\uB8B0"
     en: Absolute Trust
-    ja: "\u7A92\u606F\u30C7\u30A3\u30D5\u30A7\u30F3\u30B9"
+    ja: "\u7121\u9650\u306E\u4FE1\u983C"
   - stringKey: Str_Syn_Name_0012
     ko: "\uBD88\uD611\uD654\uC74C"
     en: Discordance
-    ja: "\u52DD\u8CA0\u5E2B\u306E\u5FC3\u81D3"
+    ja: "\u4E0D\u5354\u548C\u97F3"
   - stringKey: Str_Syn_Name_0013
     ko: "\uB3D9\uC0C1\uC774\uBABD"
     en: Different Dreams
-    ja: "\u9078\u624B\u7BA1\u7406"
+    ja: "\u540C\u5E8A\u7570\u5922"
   - stringKey: Str_Syn_Desc_1001
     ko: "\uC544\uAD70 \uC120\uC218\uAC00 \uD328\uC2A4\uB97C \uBC1B\uC558\uC744 \uB54C
       2\uC810 \uC29B\uC744 \uC2DC\uB3C4\uD560 \uD655\uB960\uC774 \uC99D\uAC00\uD569\uB2C8\uB2E4."
@@ -1743,6 +1764,10 @@ MonoBehaviour:
     ja: "\u30A4\u30F3\u30D5\u30E9"
   - stringKey: "UI_Main_\uB300\uD68C\uC2DC\uC791"
     ko: "\uB300\uD68C \uC2DC\uC791"
+    en: Game start
+    ja: "\u30B2\u30FC\u30E0\u30B9\u30BF\u30FC\u30C8"
+  - stringKey: "UI_Main_\uACBD\uAE30\uC2DC\uC791"
+    ko: "\uACBD\uAE30 \uC2DC\uC791"
     en: Game start
     ja: "\u30B2\u30FC\u30E0\u30B9\u30BF\u30FC\u30C8"
   - stringKey: "UI_Setting_\uADF8\uB798\uD53D\uC124\uC815"
@@ -1939,10 +1964,9 @@ MonoBehaviour:
     en: Insufficient funds to start development.
     ja: "\u80B2\u6210\u3092\u958B\u59CB\u3059\u308B\u305F\u3081\u306E\u8CC7\u91D1\u304C\u4E0D\u8DB3\u3057\u3066\u3044\u307E\u3059\u3002"
   - stringKey: "UI_Development_\uD300\uD6C8\uB828\uBD80\uC871\uD31D\uC5C5"
-    ko: "\uD53C\uB85C, \uBD80\uC0C1 \uC911\uC778 \uC120\uC218\uB294 \uD6C8\uB828\uC5D0\uC11C
-      \uC81C\uC678\uB429\uB2C8\uB2E4."
-    en: Fatigued or injured players are excluded from training.
-    ja: "\u75B2\u52B4\u307E\u305F\u306F\u8CA0\u50B7\u3057\u305F\u9078\u624B\u306F\u30C8\u30EC\u30FC\u30CB\u30F3\u30B0\u304B\u3089\u9664\u5916\u3055\u308C\u307E\u3059\u3002"
+    ko: "{} \uC120\uC218\uB294 \uD6C8\uB828\uC5D0\uC11C \uC81C\uC678\uB429\uB2C8\uB2E4."
+    en: '{} players are excluded from training.'
+    ja: "{}\u3057\u305F\u9078\u624B\u306F\u30C8\u30EC\u30FC\u30CB\u30F3\u30B0\u304B\u3089\u9664\u5916\u3055\u308C\u307E\u3059\u3002"
   - stringKey: "UI_Development_\uC2DC\uC791\uD31D\uC5C5"
     ko: "\uC721\uC131 \uC2DC\uC791 \uC2DC {N} G\uAC00 \uC0AC\uC6A9\uB429\uB2C8\uB2E4."
     en: '{N} G will be consumed to start training.'
@@ -1972,7 +1996,7 @@ MonoBehaviour:
     en: Name
     ja: "\u540D\u524D"
   - stringKey: "UI_Development_\uBD80\uC0C1\uD31D\uC5C5"
-    ko: "\uD53C\uB85C(\uBD80\uC0C1) \uC0C1\uD0DC\uC778 \uC120\uC218\uB294 \uD6C8\uB828\uD560
+    ko: "\uACFC\uB85C(\uBD80\uC0C1) \uC0C1\uD0DC\uC778 \uC120\uC218\uB294 \uD6C8\uB828\uD560
       \uC218 \uC5C6\uC2B5\uB2C8\uB2E4."
     en: Fatigued (Injured) players cannot train.
     ja: "\u75B2\u52B4(\u8CA0\u50B7)\u9078\u624B\u306F\u30C8\u30EC\u30FC\u30CB\u30F3\u30B0\u3067\u304D\u307E\u305B\u3093\u3002"
@@ -1980,6 +2004,18 @@ MonoBehaviour:
     ko: ({N}/{N})
     en: ({N}/{N})
     ja: ({N}/{N})
+  - stringKey: "UI_Development_\uCEE8\uB514\uC158\uBD80\uC871"
+    ko: " \uC120\uC218\uC758 \uCEE8\uB514\uC158\uC774 \uB0AE\uC2B5\uB2C8\uB2E4."
+    en: The player is not in good condition.
+    ja: "\u9078\u624B\u306E\u30B3\u30F3\u30C7\u30A3\u30B7\u30E7\u30F3\u304C\u60AA\u3044\u3067\u3059\u3002"
+  - stringKey: "UI_Player_\uACFC\uB85C"
+    ko: "\uACFC\uB85C"
+    en: Overwork
+    ja: "\u904E\u52B4"
+  - stringKey: "UI_Player_\uBD80\uC0C1"
+    ko: "\uBD80\uC0C1"
+    en: Injury
+    ja: "\u602A\u6211"
   - stringKey: "UI_Infra_\uC804\uC220\uB370\uC774\uD130\uBD84\uC11D\uC2E4"
     ko: "\uC804\uC220 \uB370\uC774\uD130 \uBD84\uC11D\uC2E4"
     en: Tactical Analysis Center

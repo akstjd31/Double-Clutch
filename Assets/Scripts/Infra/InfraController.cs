@@ -13,7 +13,7 @@ public class InfraController : MonoBehaviour
     [SerializeField] private infraEffectType _infraEffectType;
     [SerializeField] private List<int> _needCost;
     
-    private Infra infra;
+    [SerializeField] private Infra infra;
     
     public event Action<int> Upgraded;
     private bool initComplete = false;                     // 초기 세팅이 완료되었는지 여부 확인
@@ -131,6 +131,6 @@ public class InfraController : MonoBehaviour
         if (GameManager.Instance == null) return false;
         
         var money = GameManager.Instance.SaveData.money;
-        return money > GetCostByNextLevel(); 
+        return money >= GetCostByNextLevel(); 
     }
 }

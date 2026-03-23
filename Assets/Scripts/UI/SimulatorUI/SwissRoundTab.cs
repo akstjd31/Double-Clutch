@@ -17,7 +17,7 @@ public class SwissRoundTab : MonoBehaviour
     {
         _myRoundIndex = roundIndex;
         _onTabClicked = onClickAction;
-        _txtRound.text = $"{roundIndex + 1}라운드";
+        _txtRound.text = $"{roundIndex + 1}";
 
         // 버튼 클릭 이벤트 연결
         _tabButton.onClick.RemoveAllListeners();

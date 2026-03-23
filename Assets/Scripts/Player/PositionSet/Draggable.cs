@@ -1,11 +1,11 @@
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
 [RequireComponent(typeof(CanvasGroup))]
 public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
     [SerializeField] private Canvas _rootCanvas;
-
     private Transform _originParent;
     private RectTransform _rect;
     private CanvasGroup _canvasGroup;
@@ -24,7 +24,7 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
     public void OnBeginDrag(PointerEventData eventData)
     {
         if (_rootCanvas == null) return;
-
+        
         _droppedSuccessfully = false;
         _originParent = transform.parent;
 

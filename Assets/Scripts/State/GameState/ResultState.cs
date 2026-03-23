@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -16,10 +17,10 @@ public class ResultState : IState
     public void Enter()
     {
         // 씬에 있는 데이터(MatchState)와 UI 관리자(MatchUIManager)를 찾습니다.
-        MatchState matchState = Object.FindFirstObjectByType<MatchState>();
-        MatchUIManager uiManager = Object.FindFirstObjectByType<MatchUIManager>();
-        MatchEngine matchEngine = Object.FindFirstObjectByType<MatchEngine>();
-        HeadlessMatchSimulator headlessSim = Object.FindFirstObjectByType<HeadlessMatchSimulator>();
+        MatchState matchState = UnityEngine.Object.FindFirstObjectByType<MatchState>();
+        MatchUIManager uiManager = UnityEngine.Object.FindFirstObjectByType<MatchUIManager>();
+        MatchEngine matchEngine = UnityEngine.Object.FindFirstObjectByType<MatchEngine>();
+        HeadlessMatchSimulator headlessSim = UnityEngine.Object.FindFirstObjectByType<HeadlessMatchSimulator>();
 
         if (matchState == null || uiManager == null || matchEngine == null)
         {
@@ -164,7 +165,7 @@ public class ResultState : IState
                         foreach (var passive in realStudent.Passive)
                         {
                             // 현재 effectType Enum에 MatchGoldUp이 아직 없다면 문자열로 임시 체크
-                            if (passive.effectType.ToString() == "MatchGoldUp")
+                            if (passive.effectType == effectType.MatchGoldUp)
                             {
                                 passiveBonusPercent += passive.effectValue; // 예: 0.01 (1%), 0.04 (4%)
                             }
@@ -175,10 +176,10 @@ public class ResultState : IState
             // 변경된 컨디션 상태를 저장
             StudentManager.Instance.SaveGame();
         }
-        // 최종 지원금 & 명성 지급
-        // 계산식: 기본 지급금 * (1 + 인프라 프런트 % + 선수 패시브 %)
-        float totalMultiplier = 1f + infraBonusPercent + passiveBonusPercent;
-        int finalRewardAmount = Mathf.RoundToInt(baseGold * totalMultiplier);
+        // 최종 지원금 & 명성 지급        
+        float infraBonus = baseGold * (infraBonusPercent / 100f);
+        float totalMultiplier = 1f + passiveBonusPercent;
+        int finalRewardAmount = Mathf.FloorToInt((baseGold + infraBonus) * totalMultiplier);
 
         // 결승 진출 시 선수들의 명성 누적값 적용
         if (currentLeague != null && currentLeague.teams.Count < 3 && StudentManager.Instance != null)
@@ -230,20 +231,38 @@ public class ResultState : IState
             matchPlayers,
             () =>
             {
-                // ▼ 리그가 완전히 끝났을 때만 대진표/순위표 결산 창을 띄움
-                if (currentLeague != null && currentLeague.isFinished)
+                if (currentLeague != null)
                 {
-                    uiManager.ShowLeagueCalculatePanel(currentMatchId, () => GoToLobby());
-                }
-                else
-                {
-                    // 다음 라운드 진입 시  '선수 배치창'이 뜨도록 UI 인덱스 초기화
-                    PlayerPrefs.SetInt(PrefKeys.MATCH_PREP_UI_INDEX, 1);
-                    PlayerPrefs.Save();
+                    // W2, L1, L2 판별 (리그가 완전히 끝났거나, 우리 팀이 져서 탈락했거나)
+                    bool isTournamentEndForMe = currentLeague.isFinished || currentLeague.isPlayerEliminated;
 
-                    // 리그 진행 중이라면: 대회 대진표 띄움 
-                    // (onActionClick을 null로 넘기면 SwissBoardPanel이 알아서 MatchPrepState로 넘겨줍니다)
-                    uiManager.ShowSwissBoardPanel(null, "다음 경기 준비");
+                    // 상태에 따른 버튼 텍스트와 다음 액션 정의
+                    string btnText = isTournamentEndForMe ? "결산 확인" : "경기 준비";
+                    Action nextAction = () =>
+                    {
+                        if (isTournamentEndForMe)
+                        {
+                            // 결산창으로 이동
+                            uiManager.ShowLeagueCalculatePanel(currentMatchId, () => GoToLobby());
+                        }
+                        else
+                        {
+                            // 다음 경기 준비로 이동
+                            PlayerPrefs.SetInt(PrefKeys.MATCH_PREP_UI_INDEX, 1);
+                            PlayerPrefs.Save();
+                            _gm.ChangeState<MatchPrepState>();
+                        }
+                    };
+
+                    // 리그 타입에 따라 대진표 띄우며 텍스트와 액션 전달
+                    if (currentLeague.leagueType == "Tournament")
+                    {
+                        uiManager.ShowTournamentBoardPanel(nextAction, btnText);
+                    }
+                    else
+                    {
+                        uiManager.ShowSwissBoardPanel(nextAction, btnText);
+                    }
                 }
             }
          );
