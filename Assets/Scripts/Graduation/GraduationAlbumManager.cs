@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class GraduationAlbumManager : Singleton<GraduationAlbumManager>
 {
-    private GraduationAlbumSaveData _saveData;
+    [SerializeField] private GraduationAlbumSaveData _saveData;
     public GraduationAlbumSaveData SaveData => _saveData;
     protected override void Awake()
     {
