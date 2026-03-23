@@ -119,21 +119,13 @@ public class GraduationManager : MonoBehaviour
         gameMgr.SetHonor(gameMgr.SaveData.honor + totalHonor);
         StudentManager.Instance.SaveGame();
 
-        // 졸업 데이터가 있는지 확인
-        SaveLoadManager.Instance.TryLoad<GraduationAlbumSaveData>(FilePath.GRADUATION_PATH, out var data);
+        var gaMgr = GraduationAlbumManager.Instance;
+        if (gaMgr == null) return;
 
         int year = gameMgr.SaveData.year;   // 현재 연차
-        var gStd = new GraduationStudent(year + 1, _graduationStudentList);   // 1기수부터 시작
-        if (data == null)
-        {
-            data = new GraduationAlbumSaveData(gStd);
-        }
-        else
-        {
-            data.graduationStudentList.Add(gStd);
-        }
+        var gStd = new GraduationStudent(year, _graduationStudentList);   // 1기수부터 시작
 
-        SaveLoadManager.Instance.Save<GraduationAlbumSaveData>(FilePath.GRADUATION_PATH, data);
+        gaMgr.Save(gStd);
     }
 
     public void NextScene()

@@ -21,6 +21,9 @@ public class LobbyUI : MonoBehaviour
     [SerializeField] private Toggle _koreanToggle;
     [SerializeField] private Toggle _englishToggle;
     [SerializeField] private Toggle _japanToggle;
+
+
+    [SerializeField] private Button _testButton;
     private void OnEnable()
     {
         if (CalendarManager.Instance != null)
@@ -46,7 +49,6 @@ public class LobbyUI : MonoBehaviour
             _matchButton.onClick.RemoveAllListeners();
             _matchButton.onClick.AddListener(OnClickMatchButton);
         }
-
     }
     // 매치 버튼을 눌렀을 때 실행될 함수
     public void OnClickMatchButton()
@@ -77,6 +79,8 @@ public class LobbyUI : MonoBehaviour
     private void Init()
     {
         if (GameManager.Instance == null) return;
+        _testButton.onClick.AddListener(GameManager.Instance.GoToGraduation);
+
         UpdateMoneyText();
         UpdateHonorText();
         UpdateProfileText();

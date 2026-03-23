@@ -9,18 +9,14 @@ public class GraduationAlbumSaveData : SaveBase
     public List<GraduationStudent> graduationStudentList = new List<GraduationStudent>();
 
     public GraduationAlbumSaveData() {}
-
-    public GraduationAlbumSaveData(GraduationStudent gStd)
-    {
-        graduationStudentList.Add(gStd);
-    }
 }
 
 // 기수별 학생 목록 데이터
+[Serializable]
 public class GraduationStudent
 {
     public int graduatingClass;         // 기수
-    public List<Student> studentList;
+    public List<Student> studentList = new List<Student>();
 
     public GraduationStudent(int gClass, List<Student> stuList)
     {

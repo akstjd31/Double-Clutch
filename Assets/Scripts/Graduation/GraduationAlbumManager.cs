@@ -7,21 +7,47 @@ public class GraduationAlbumManager : Singleton<GraduationAlbumManager>
     protected override void Awake()
     {
         base.Awake();
+        
     }
 
-    private void Start()
+    public void Save(GraduationStudent gStd)
     {
-        if (SaveLoadManager.Instance == null) return;
-        SaveLoadManager.Instance.TryLoad<GraduationAlbumSaveData>(FilePath.GRADUATION_PATH, out _saveData);
+        if (_saveData == null)
+        {
+            _saveData = new GraduationAlbumSaveData();
+        }
+
+        _saveData.graduationStudentList.Add(gStd);
+        SaveLoadManager.Instance.Save<GraduationAlbumSaveData>(FilePath.GRADUATION_PATH, _saveData);
     }
 
-    public bool HasData() => _saveData != null;
+    public bool HasData()
+    {
+        if (SaveLoadManager.Instance == null) return false;
+        SaveLoadManager.Instance.TryLoad<GraduationAlbumSaveData>(FilePath.GRADUATION_PATH, out _saveData);
+
+        return _saveData != null;
+    }
 
     public GraduationStudent GetGraduationStudentListByIndex(int index)
     {
         if (_saveData == null) return null;
         if (_saveData.graduationStudentList == null) return null;
 
-        return _saveData.graduationStudentList[index];
+
+        foreach (var gList in _saveData.graduationStudentList)
+        {
+            if (gList.graduatingClass == index)
+            {
+                if (StudentManager.Instance != null)
+                {
+                    StudentManager.Instance.InitStudenList(gList.studentList);
+                }
+                
+                return gList;
+            }
+        }
+
+        return null;
     }
 }

@@ -11,7 +11,8 @@ public class GraduationAlbumUI : MonoBehaviour
     [SerializeField] private Transform _classParent;        // 기수 버튼 부모 (Content)
     [SerializeField] private Transform _classButtonPrefab;  // 기수 버튼
     [SerializeField] private GameObject _albumPanelObj;
-    private AlbumStudentProfileUI[] _albumStudentProfiles;
+    [SerializeField] private GameObject _charProfilePopupObj;
+    [SerializeField] private AlbumStudentProfileUI[] _albumStudentProfiles;
     private void OnEnable()
     {
         if (_albumPanelObj == null) return;
@@ -19,7 +20,7 @@ public class GraduationAlbumUI : MonoBehaviour
 
         if (_classParent == null) return;
         if (_classButtonPrefab == null) return;
-        
+
         var gaMgr = GraduationAlbumManager.Instance;
         if (gaMgr == null) return;
 
@@ -32,33 +33,80 @@ public class GraduationAlbumUI : MonoBehaviour
         for (int i = 0; i < gList.Count; i++)
         {
             var newObj = Instantiate(_classButtonPrefab, _classParent);
-            newObj.GetComponentInChildren<TextMeshProUGUI>().text = $"{i+1}기";
+            newObj.GetComponentInChildren<TextMeshProUGUI>().text = $"{i + 1}기";
 
             int index = i;
-            newObj.GetComponent<Button>().onClick.AddListener(() => OnClickClassButton(index));
+            var btn = newObj.GetComponent<Button>();
+            btn.onClick.RemoveAllListeners();
+            btn.onClick.AddListener(() => OnClickClassButton(index + 1));
+        }
+    }
+
+    private void OnDisable()
+    {   
+        // 기수 버튼 리스너 제거
+        if (_classParent.childCount < 1) return;
+
+        for (int i = 0; i < _classParent.childCount; i++)
+        {
+            var btn = _classParent.GetChild(i).GetComponent<Button>();
+            btn.onClick.RemoveAllListeners();
+        }
+
+        // 앨범 프로필 버튼 리스너 제거
+        if (_albumStudentProfiles == null) return;
+        for (int i = 0; i < _albumStudentProfiles.Length; i++)
+        {
+            _albumStudentProfiles[i].GetButton().onClick.RemoveAllListeners();
         }
     }
 
     public void OnClickClassButton(int idx)
     {
-        if (_albumStudentProfiles[idx] == null) return;
+        if (_albumPanelObj == null) return;
+        if (_albumStudentProfiles == null) return;
         if (GraduationAlbumManager.Instance == null) return;
 
+        _albumPanelObj.SetActive(true);
+
         var gList = GraduationAlbumManager.Instance.GetGraduationStudentListByIndex(idx);
+        if (gList == null) return;
 
-        for (int i = 0; i < _albumStudentProfiles.Length; i++)
+        if (SpriteManager.Instance == null) return;
+        if (StringManager.Instance == null) return;
+        
+        int i = 0;
+        for (; i < gList.studentList.Count; i++)
         {
-            bool hasData = gList.studentList != null;
-            _albumStudentProfiles[i].gameObject.SetActive(hasData);
-            if (hasData)
-            {
-                if (SpriteManager.Instance == null) return;
-                var sprite = SpriteManager.Instance.GetSprite(gList.studentList[i].VisualData.portraitResource);
-                _albumStudentProfiles[i].GetComponent<Image>().sprite = sprite;
+            var sprite = SpriteManager.Instance.GetSprite(gList.studentList[i].VisualData.portraitResource);
 
-                string name = gList.studentList[i].Name[0] + gList.studentList[i].Name[1] + gList.studentList[i].Name[2];
-                _albumStudentProfiles[i].GetComponentInChildren<TextMeshProUGUI>().text = name;
+            string name = StringManager.Instance.GetString(gList.studentList[i].Name[0]) +
+                            StringManager.Instance.GetString(gList.studentList[i].Name[1]) +
+                            StringManager.Instance.GetString(gList.studentList[i].Name[2]);
+
+            _albumStudentProfiles[i].SetSprite(sprite);
+            _albumStudentProfiles[i].SetName(name);
+
+            if (_charProfilePopupObj != null)
+            {
+                int index = i;
+                _albumStudentProfiles[index].GetButton().onClick.RemoveAllListeners();
+                _albumStudentProfiles[index].GetButton().onClick.AddListener(() => OnClickProfileBox(gList.studentList[index]));
             }
         }
+
+        // 남은 빈 프로필 처리
+        for (; i < _albumStudentProfiles.Length; i++)
+        {
+            _albumStudentProfiles[i].SetName("");
+        }
+    }
+
+    public void OnClickProfileBox(Student std)
+    {
+        _charProfilePopupObj.SetActive(true);
+        var profile = _charProfilePopupObj.GetComponent<CharacterProfilePopUp>();
+
+        profile.Init(std);
     }
 }
