@@ -15,7 +15,7 @@ public class ProfileUI : MonoBehaviour
     [SerializeField] private Button _schoolSelectButton;
     [SerializeField] private Button _playerSelectButton;
     [SerializeField] private GameObject _warningTextObj;
-    private TextMeshProUGUI _warningText;
+    [SerializeField] private TextMeshProUGUI _warningText;
     [SerializeField] private Button _confirmButton;
     [SerializeField] private bool _isFirstTime;
     private Coroutine _warningCoroutine;
@@ -101,9 +101,6 @@ public class ProfileUI : MonoBehaviour
 
             _currentIcon.sprite = spriteManager.GetSprite(_selectedData.Value.playerImage);
 
-            if (_warningText == null && _warningTextObj != null)
-                _warningText = _warningTextObj.transform.GetComponentInChildren<TextMeshProUGUI>();
-
             if (_warningText != null) _warningText.text = "";
 
             _schoolNameField.text = gameManager.SaveData.schoolName;
@@ -182,24 +179,14 @@ public class ProfileUI : MonoBehaviour
 
     public void OnClickConfirmButton()
     {
-        if (string.IsNullOrEmpty(_schoolNameField.text) || string.IsNullOrEmpty(_playerNameField.text))
-        {
-            if (_warningCoroutine == null) _warningCoroutine = StartCoroutine(PrintWarningText("공백의 이름이 존재합니다!"));
-            return;
-        }
+        // if (string.IsNullOrWhiteSpace(_schoolNameField.text) || string.IsNullOrWhiteSpace(_playerNameField.text))
+        // {
+        //     _warningTextObj.SetActive(true);
+        //     _warningText.text = "공백인 필드가 존재합니다!";
+        //     return;
+        // }
 
-        if (!IsValidNameLength(_schoolNameField.text) || !IsValidNameLength(_playerNameField.text))
-        {
-            if (_warningCoroutine == null) _warningCoroutine = StartCoroutine(PrintWarningText("한글 1자 이상, 영어 2자 이상으로 구성되게 작성해주세요!"));
-            return;
-        }
-
-        if (CheckBadWord(_schoolNameField.text) || CheckBadWord(_playerNameField.text))
-        {
-            if (_isFirstTime) _warningTextObj?.SetActive(true);
-            else if (_warningCoroutine == null) _warningCoroutine = StartCoroutine(PrintWarningText("비속어가 포함되어 있습니다!"));
-            return;
-        }
+        if (!IsValidInput(_schoolNameField.text, _warningText) || !IsValidInput(_playerNameField.text, _warningText)) return;
 
         var gm = GameManager.Instance;
         if (_isFirstTime)
@@ -250,14 +237,14 @@ public class ProfileUI : MonoBehaviour
         return Regex.Replace(text, @"[^a-zA-Z가-힣]", "").ToLower();
     }
 
-    private IEnumerator PrintWarningText(string prompt)
-    {
-        if (_warningText == null) yield break;
-        _warningText.text = prompt;
-        yield return new WaitForSeconds(2.0f);
-        _warningText.text = "";
-        _warningCoroutine = null;
-    }
+    // private IEnumerator PrintWarningText(string prompt)
+    // {
+    //     if (_warningText == null) yield break;
+    //     _warningText.text = prompt;
+    //     yield return new WaitForSeconds(2.0f);
+    //     _warningText.text = "";
+    //     _warningCoroutine = null;
+    // }
 
     private IEnumerator PrintWarningTextPopup(TextMeshProUGUI targetText, string prompt)
     {
@@ -271,22 +258,32 @@ public class ProfileUI : MonoBehaviour
 
     private bool IsValidInput(string inputText, TextMeshProUGUI targetWarningText)
     {
-        if (string.IsNullOrEmpty(inputText))
+        string t = null;
+        if (string.IsNullOrWhiteSpace(inputText))
+            t = "공백인 필드가 존재합니다!";
+
+        else if (!IsValidNameLength(inputText))
+            t = "한글 1자 이상, 또는 영어 2자 이상으로 구성해주세요!";
+
+        else if (CheckBadWord(inputText))
+            t = "비속어가 포함되어 있습니다!";
+        
+        if (t != null)
         {
-            if (_warningCoroutine == null) _warningCoroutine = StartCoroutine(PrintWarningTextPopup(targetWarningText, "공백인 이름이 존재합니다."));
+            if (_isFirstTime)
+            {
+                _warningTextObj.SetActive(true);
+                targetWarningText.text = t;
+            }
+            else
+            {
+                if (_warningCoroutine == null)
+                    _warningCoroutine = StartCoroutine(PrintWarningTextPopup(targetWarningText, t));
+            }
+            
             return false;
         }
-        if (!IsValidNameLength(inputText))
-        {
-            if (_warningCoroutine == null) _warningCoroutine = StartCoroutine(PrintWarningTextPopup(targetWarningText, "한글 1자 이상, 영어 2자 이상으로 구성해주세요!"));
-            return false;
-        }
-        if (CheckBadWord(inputText))
-        {
-            if (_isFirstTime) _warningTextObj?.SetActive(true);
-            else if (_warningCoroutine == null) _warningCoroutine = StartCoroutine(PrintWarningTextPopup(targetWarningText, "비속어가 포함되어 있습니다!"));
-            return false;
-        }
+
         return true;
     }
 
