@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem.XR;
 
 public class IndividualTrainingCommandPopUp : MonoBehaviour
 {
@@ -17,7 +18,15 @@ public class IndividualTrainingCommandPopUp : MonoBehaviour
     {        
         _pool = new GenericObjectPool<TrainingBox>(_trainingBoxPrefab, _trainingListParent);
     }
-  
+    private void OnEnable()
+    {
+        StringManager.OnLanguageChanged += Refresh;
+    }
+    private void OnDisable()
+    {
+        StringManager.OnLanguageChanged -= Refresh;
+    }
+
     public void Init(Student student)
     {
         _selectedStudent = student;
@@ -45,7 +54,15 @@ public class IndividualTrainingCommandPopUp : MonoBehaviour
 
         StringManager manager = StringManager.Instance;
         string name = manager.GetString(_selectedStudent.Name[0]) + manager.GetString(_selectedStudent.Name[1]) + manager.GetString(_selectedStudent.Name[2]);
-        _nameText.text = name + " 육성 커맨드";
+        _nameText.text = name + manager.GetString("UI_Popup_육성커맨드");
+        manager.ApplyFont(_nameText);
+    }
+
+    private void Refresh()
+    {
+        StringManager manager = StringManager.Instance;
+        string name = manager.GetString(_selectedStudent.Name[0]) + manager.GetString(_selectedStudent.Name[1]) + manager.GetString(_selectedStudent.Name[2]);
+        _nameText.text = name + manager.GetString("UI_Popup_육성커맨드");
         manager.ApplyFont(_nameText);
     }
 

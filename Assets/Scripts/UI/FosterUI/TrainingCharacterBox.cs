@@ -63,6 +63,9 @@ public class TrainingCharacterBox : MonoBehaviour
     public void SetStudentState()
     {
         StringManager manager = StringManager.Instance;
+        string name = manager.GetString(_student.Name[0]) + manager.GetString(_student.Name[1]) + manager.GetString(_student.Name[2]);
+        _nameText.text = name;
+        manager.ApplyFont(_nameText);
         if (_student == null) return;
         var cv = _stateBackGround.GetComponent<CanvasGroup>();
         cv.alpha = 0f;
@@ -76,10 +79,12 @@ public class TrainingCharacterBox : MonoBehaviour
             if (_student.CurrentTraining is IndividualTraining || _student.CurrentTraining is TeamTraining)
             {
                 _stateText.color = _trainingColor;
+                manager.ApplyFont(_stateText);
             }
             else
             {
                 _stateText.color= _restColor;
+                manager.ApplyFont(_stateText);
             }
 
             return;
@@ -89,16 +94,17 @@ public class TrainingCharacterBox : MonoBehaviour
             cv.alpha = 1f;
             _stateText.text = manager.GetString("UI_Player_과로");            
             _stateText.color = _overworkColor;
+            manager.ApplyFont(_stateText);
             return;
         }
         if (_student.State == StudentState.Injured)
         {
             cv.alpha = 1f;
             _stateText.text = manager.GetString("UI_Player_부상");            
+            manager.ApplyFont(_stateText);
             _stateText.color = _injuredColor;
             return;
         }
-        manager.ApplyFont(_stateText);
     }
     
     public float NormalizeConditionValue(int condition)
