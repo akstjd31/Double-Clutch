@@ -53,8 +53,10 @@ public static class MatchCalculator
 
     public static float CalculateDistance(Vector2 p1, Vector2 p2)
     {
+        float cGamma = MatchDataProxy.Instance.GetBalance("C_gamma");
+        if (cGamma <= 0f) cGamma = 1.87f;
         float dx = p2.x - p1.x;
-        float dy = p2.y - p1.y;
+        float dy = (p2.y - p1.y) * cGamma;
         return Mathf.Sqrt(dx * dx + dy * dy);
     }
 
@@ -204,7 +206,11 @@ public static class MatchCalculator
                            + (distToHoop * wDistBonus)
                            - (enemySteal * (1f / (nearestEnemyDist + penSteal)) * wStealBase);
 
-        if (distToHoop > 0.45f && remainTime > 0f)
+        float cGamma = MatchDataProxy.Instance.GetBalance("C_gamma");
+        if (cGamma <= 0f) cGamma = 1.87f;
+        float halfLineDist = 0.45f * cGamma;
+
+        if (distToHoop > halfLineDist && remainTime > 0f)
         {
             scoreShoot = -999f; // 거리가 0.45(하프라인) 밖이면 슛 점수를 마이너스로 고정해 절대 안 쏘게 만듦 ( 역습이나 공수전환중에 노마크 발생으로 인한 확정 골 오류 방지 )
         }
@@ -453,18 +459,35 @@ public static class MatchCalculator
     // 리바운드 가중치 추첨
     public static MatchPlayer CalculateReboundWinner(Vector2 ballDropPos, List<MatchPlayer> allPlayers, MatchTeam homeTeam, MatchTeam awayTeam, TeamTactics homeTactics, TeamTactics awayTactics)
     {
-        // 낙구 지점 반경 0.35 내의 후보 선정
+        float rRebCand = MatchDataProxy.Instance.GetBalance("R_Reb_Cand");
+        if (rRebCand <= 0f) rRebCand = 0.35f;
+        // 낙구 지점 반경 내의 후보 선정
         List<MatchPlayer> candidates = new List<MatchPlayer>();
+        MatchPlayer closestPlayer = null;
+        float minDistance = float.MaxValue;
+
         foreach (var p in allPlayers)
         {
-            if (CalculateDistance(p.LogicPosition, ballDropPos) <= 0.35f)
+            float dist = CalculateDistance(p.LogicPosition, ballDropPos);
+
+            // 예외 처리를 위해 가장 가까운 선수 기억
+            if (dist < minDistance)
+            {
+                minDistance = dist;
+                closestPlayer = p;
+            }
+
+            // 0.35f 대신 rRebCand 적용
+            if (dist <= rRebCand)
             {
                 candidates.Add(p);
             }
         }
 
-        if (candidates.Count == 0) return allPlayers[Random.Range(0, allPlayers.Count)]; // 아무도 없으면 완전 랜덤
-
+        if (candidates.Count == 0)
+        {
+            return closestPlayer;
+        }
 
         // Ticket 계산 및 총합
         float homeIronWall = GetSynergyBonus(homeTeam, effectType.IronWall);

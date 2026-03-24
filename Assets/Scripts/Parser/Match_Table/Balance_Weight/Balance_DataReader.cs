@@ -1,4 +1,4 @@
-﻿using GoogleSheetsToUnity;
+using GoogleSheetsToUnity;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,7 +14,7 @@ public class Balance_DataReader : DataReaderBase
     {
         int index = 0;
         string weightId = null;
-        int value = 0;
+        float value = 0;
 
         for (int i = 0; i < list.Count; i++)
         {
@@ -33,7 +33,7 @@ public class Balance_DataReader : DataReaderBase
                     weightId = val;
                     break;
                 case "value":
-                    int.TryParse(val, out value);
+                    float.TryParse(val, out value);
                     break;
             }
         }

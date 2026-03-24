@@ -376,7 +376,9 @@ public class MatchEngine : MonoBehaviour
         }
         else
         {
-            Vector2 randomOffset = UnityEngine.Random.insideUnitCircle * 0.35f;
+            float rRebBall = MatchDataProxy.Instance.GetBalance("R_Reb_Ball");
+            if (rRebBall <= 0f) rRebBall = 0.35f;
+            Vector2 randomOffset = UnityEngine.Random.insideUnitCircle * rRebBall;
 
             if (hoopPos.y > 0.5f)
             {
