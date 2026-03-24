@@ -294,7 +294,7 @@ public class HeadlessMatchSimulator : MonoBehaviour
 
             if (dist > 0.01f)
             {
-                Vector2 move = dir.normalized * Mathf.Min(dist, MAX_MOVE_PER_TICK);
+                Vector2 move = dir.normalized * dist;
                 p.LogicPosition += move;
             }
 
@@ -307,7 +307,11 @@ public class HeadlessMatchSimulator : MonoBehaviour
 
         if (_presetCache.TryGetValue(player.MainPosition, out Position_PresetData preset))
         {
-            x = UnityEngine.Random.Range(preset.offenseXMin, preset.offenseXMax);
+            bool isFirstZone = UnityEngine.Random.value > 0.5f;
+            float minX = isFirstZone ? preset.offenseXMin : preset.offenseXMin2;
+            float maxX = isFirstZone ? preset.offenseXMax : preset.offenseXMax2;
+
+            x = UnityEngine.Random.Range(minX, maxX);
             y = UnityEngine.Random.Range(preset.offenseYMin, preset.offenseYMax);
         }
         else
@@ -322,13 +326,14 @@ public class HeadlessMatchSimulator : MonoBehaviour
                 case Position.C: x = 0.5f; y = 0.9f; break;
                 default: x = 0.5f; y = 0.5f; break;
             }
+            x += UnityEngine.Random.Range(-0.03f, 0.03f);
+            y += UnityEngine.Random.Range(-0.03f, 0.03f);
         }
 
         if (side == TeamSide.Away) y = 1.0f - y;
         if (!isAttacking) y = 1.0f - y;
 
-        x += UnityEngine.Random.Range(-0.03f, 0.03f);
-        y += UnityEngine.Random.Range(-0.03f, 0.03f);
+       
 
         return new Vector2(Mathf.Clamp01(x), Mathf.Clamp01(y));
     }

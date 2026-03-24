@@ -619,7 +619,7 @@ public class MatchEngine : MonoBehaviour
 
             if (dist > 0.01f)
             {
-                Vector2 move = dir.normalized * Mathf.Min(dist, MAX_MOVE_PER_TICK);
+                Vector2 move = dir.normalized * dist;
                 p.LogicPosition += move;
             }
 
@@ -656,7 +656,12 @@ public class MatchEngine : MonoBehaviour
             if (targetIndex >= 0)
             {
                 var preset = _positionPresetReader.DataList[targetIndex];
-                x = UnityEngine.Random.Range(preset.offenseXMin, preset.offenseXMax);
+
+                bool isFirstZone = UnityEngine.Random.value > 0.5f;
+                float minX = isFirstZone ? preset.offenseXMin : preset.offenseXMin2;
+                float maxX = isFirstZone ? preset.offenseXMax : preset.offenseXMax2;
+
+                x = UnityEngine.Random.Range(minX, maxX);
                 y = UnityEngine.Random.Range(preset.offenseYMin, preset.offenseYMax);
                 isDataFound = true;
             }
@@ -675,6 +680,8 @@ public class MatchEngine : MonoBehaviour
                 case Position.C: x = 0.5f; y = 0.9f; break;  // 골밑
                 default: x = 0.5f; y = 0.5f; break;
             }
+            x += UnityEngine.Random.Range(-0.03f, 0.03f);
+            y += UnityEngine.Random.Range(-0.03f, 0.03f);
         }
 
         // 진영(Home/Away) 및 공수(공격/수비) 전환에 따른 Y좌표 대칭 반전
@@ -683,9 +690,6 @@ public class MatchEngine : MonoBehaviour
 
         if (!isAttacking)
             y = 1.0f - y;
-
-        x += UnityEngine.Random.Range(-0.03f, 0.03f);
-        y += UnityEngine.Random.Range(-0.03f, 0.03f);
 
         return new Vector2(Mathf.Clamp01(x), Mathf.Clamp01(y));
     }

@@ -293,14 +293,14 @@ public static class MatchCalculator
         // 승부사의 심장 (10점 차 이상 지고 있을 때 3점슛 확률 증가)
         if (distToHoop > 0.35f && scoreGap <= -10)
         {
-            extraBonus += GetSynergyBonus(attackTeam, effectType.ClutchHeart); // 확률이므로 100을 곱해 % 단위로 맞춤
+            extraBonus += GetSynergyBonus(attackTeam, effectType.ClutchHeart) * 100f; // 확률이므로 100을 곱해 % 단위로 맞춤
             activeSynergyLog += "[승부사의심장] ";
         }
 
         // 고릴라 덩크 (거리 0.01 ~ 0.05 사이일 때 슛 성공률 증가 - 패스 무관)
         if (distToHoop >= 0.01f && distToHoop <= 0.05f)
         {
-            extraBonus += GetSynergyBonus(attackTeam, effectType.GorillaDunk);
+            extraBonus += GetSynergyBonus(attackTeam, effectType.GorillaDunk) * 100f;
             activeSynergyLog += "[고릴라덩크] ";
         }
 
@@ -309,12 +309,12 @@ public static class MatchCalculator
         {
             if (distToHoop > 0.35f) // 3점 (스페이스 오퍼레이터)
             {
-                extraBonus += GetMaxSynergyBonus(attackTeam, effectType.SpaceOperator);
+                extraBonus += GetMaxSynergyBonus(attackTeam, effectType.SpaceOperator) * 100f;
                 activeSynergyLog += "[스페이스오퍼레이터] ";
             }
             else  // 2점 (컷인 플레이)
             {
-                extraBonus += GetMaxSynergyBonus(attackTeam, effectType.CutInPlay);
+                extraBonus += GetMaxSynergyBonus(attackTeam, effectType.CutInPlay) * 100f;
                 activeSynergyLog += "[컷인플레이] ";
             }
                 
