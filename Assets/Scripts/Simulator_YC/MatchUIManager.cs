@@ -162,7 +162,7 @@ public class MatchUIManager : MonoBehaviour
             if (i == _logHistory.Count - 1)
             {
                 // 방금 들어온 최신 로그
-                combinedText += $"<color=#FFFFFF>{_logHistory[i]}</color>";
+                combinedText += $"<color=#888888>{_logHistory[i]}</color>";
             }
             else
             {
