@@ -153,4 +153,22 @@ public class StringManager : Singleton<StringManager>
     public static void RegisterFontLock(TMP_Text text) => _fontLockedTexts.Add(text);
     public static void UnregisterFontLock(TMP_Text text) => _fontLockedTexts.Remove(text);
 
+    public string GetFormattedString(string key, params object[] args)
+    {
+        // 1. 기존 GetString 메서드로 해당 언어의 포맷 문자열(예: "{0}년차 {1}월 {2}주")을 가져옵니다.
+        string formatString = GetString(key);
+
+        try
+        {
+            // 2. string.Format을 사용해 {0}, {1} 자리에 args 값들을 넣어줍니다.
+            return string.Format(formatString, args);
+        }
+        catch (FormatException)
+        {
+            // 포맷 인덱스 개수가 안 맞거나 문법 오류가 있을 때를 대비한 예외 처리
+            Debug.LogError($"[StringManager] 포맷 오류! Key: {key}, Format: {formatString}");
+            return formatString;
+        }
+    }
+
 }

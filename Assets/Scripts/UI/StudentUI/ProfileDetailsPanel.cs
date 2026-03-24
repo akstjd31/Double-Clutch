@@ -71,6 +71,8 @@ public class ProfileDetailsPanel : MonoBehaviour
         if (_student == null) return;
         StringManager.Instance.GetString(_student.PersonalityData.personalityName, _personalityText);
         StringManager.Instance.GetString(_student.TraitData.traitName, _traitText);
+        StringManager.Instance.GetString(SetName(_student.Grade), _gradeText);
+        StringManager.Instance.GetString(StringManager.Instance.GetString(_student.Name[0]) + StringManager.Instance.GetString(_student.Name[1]) + StringManager.Instance.GetString(_student.Name[2]), _nameText);
         MakeTriangle();
     }
 
