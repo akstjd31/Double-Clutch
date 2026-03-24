@@ -31,7 +31,7 @@ public class CharacterPassiveProfileRow : MonoBehaviour, IPointerUpHandler, IPoi
     {
         _data = default;
         _isEmpty = true;
-        _passiveText.text = StringManager.Instance.GetString(DEFAULT_KEY);
+        SetPassiveText();
     }
 
     public void SetPassiveText()
@@ -39,9 +39,11 @@ public class CharacterPassiveProfileRow : MonoBehaviour, IPointerUpHandler, IPoi
         if (_isEmpty)
         {
             StringManager.Instance.GetString(DEFAULT_KEY, _passiveText);
+            StringManager.Instance.ApplyFont(_passiveText);
             return;
         }
         StringManager.Instance.GetString(_data.skillName, _passiveText);
+        StringManager.Instance.ApplyFont(_passiveText);
     }
 
     public void OnPointerUp(PointerEventData eventData)
