@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 
 public class PassiveProfileBox : MonoBehaviour, IPointerUpHandler, IPointerDownHandler
 {
-    const string DEFAULT_TEXT = "비어 있음";
+    const string DEFAULT_TEXT_KEY = "UI_Player_비어있음";
     Player_PassiveData _data;
     bool _isEmpty = true;
     [SerializeField] Image _passiveIcon;
@@ -68,16 +68,10 @@ public class PassiveProfileBox : MonoBehaviour, IPointerUpHandler, IPointerDownH
         _data = default;
         _isEmpty = true;
 
-        _passiveText.text = DEFAULT_TEXT;
+        SetPassiveText();
         _passiveFrame.sprite = null;
         _passiveFrame.sprite = null;
         _imageParent.alpha = 0;
-    }
-
-    public void SetPassiveText()
-    {
-        if (_isEmpty) return;
-        StringManager.Instance.GetString(_data.skillName, _passiveText);
     }
 
     public void OnPointerUp(PointerEventData eventData)
@@ -88,5 +82,17 @@ public class PassiveProfileBox : MonoBehaviour, IPointerUpHandler, IPointerDownH
     public void OnPointerDown(PointerEventData eventData)
     {
         StudentUIManager.Instance.OnPassiveBoxMouseOverStart(_data);
+    }
+
+    public void SetPassiveText()
+    {
+        if (_isEmpty)
+        {
+            StringManager.Instance.GetString(DEFAULT_TEXT_KEY, _passiveText);
+            StringManager.Instance.ApplyFont(_passiveText);
+            return;
+        }
+        StringManager.Instance.GetString(_data.skillName, _passiveText);
+        StringManager.Instance.ApplyFont(_passiveText);
     }
 }
