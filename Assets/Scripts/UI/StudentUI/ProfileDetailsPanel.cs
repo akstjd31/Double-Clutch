@@ -34,7 +34,7 @@ public class ProfileDetailsPanel : MonoBehaviour
 
     public void Init(Student student)
     {
-        Debug.Log("Profile Details Panel Init!");
+        //Debug.Log("Profile Details Panel Init!");
         _student = student;
 
         _studentImage.sprite = SpriteManager.Instance.GetSprite(_student.VisualData.playerImageResource);
@@ -44,13 +44,26 @@ public class ProfileDetailsPanel : MonoBehaviour
 
         _positionDropdown.value = PositionIntoValue(student.Position);
         _nameText.text = name;
-        _gradeText.text = student.Grade.ToString() + "학년";
+        _gradeText.text = manager.GetString(SetName(student.Grade));
         _attackText.text = student.Attack.ToString();
         _defenseText.text = student.Defense.ToString();
         _conditionSlider.value = NormalizeConditionValue(student.Condition);
         manager.ApplyFont(_nameText);
         SetPassiveText(student);
         Refresh();        
+    }
+
+    private string SetName(int grade)
+    {
+        string namekey = null;
+        switch(grade)
+        {
+            case 1: namekey =  "UI_Player_1학년"; break;
+            case 2: namekey = "UI_Player_2학년"; break;
+            case 3: namekey = "UI_Player_3학년"; break;
+            default: namekey = "학년 설정 오류"; break;
+        }
+        return namekey;
     }
 
     private void Refresh()
