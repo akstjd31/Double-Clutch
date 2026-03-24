@@ -32,7 +32,24 @@ public class SynergyPanel : MonoBehaviour
         _btnNext.onClick.AddListener(() => ChangePageGroup(1));
     }
 
-    private void OnEnable() => RefreshPanel();
+    private void OnEnable()
+    {
+        StringManager.OnLanguageChanged += RefreshPanel;
+        RefreshPanel();
+    }
+
+    private void OnDisable()
+    {
+        StringManager.OnLanguageChanged -= RefreshPanel;
+    }
+
+
+
+    private void OnDestroy()
+    {
+        _btnPrev.onClick.RemoveAllListeners();
+        _btnNext.onClick.RemoveAllListeners();
+    }
 
     private void RefreshPanel()
     {
