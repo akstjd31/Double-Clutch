@@ -17,10 +17,10 @@ public class TrainingCharacterBox : MonoBehaviour
 
     [SerializeField] Slider _conditionSlider;
 
-    private Color _restColor = new Color(0, 223, 112);
-    private Color _trainingColor = new Color(0, 93, 232);
-    private Color _overworkColor = new Color(255, 174, 0);
-    private Color _injuredColor = new Color(204, 0, 0);
+    private Color _restColor = new Color32(0, 223, 112, 255);
+    private Color _trainingColor = new Color32(0, 93, 232, 255);
+    private Color _overworkColor = new Color32(255, 174, 0, 255);
+    private Color _injuredColor = new Color32(204, 0, 0, 255);
 
     Student _student;
 
