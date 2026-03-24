@@ -67,6 +67,7 @@ public class TrainingCharacterBox : MonoBehaviour
         var cv = _stateBackGround.GetComponent<CanvasGroup>();
         cv.alpha = 0f;
         _stateText.text = "";
+        _stateText.color = Color.white;
         if (_student.CurrentTraining != null)
         {
             cv.alpha = 1f;
