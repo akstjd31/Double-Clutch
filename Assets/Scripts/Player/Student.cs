@@ -339,7 +339,10 @@ public class Student
         _condition = Mathf.Clamp(_condition += amount, 0, 100);
     }
 
-    public void SetCondition(int value) => _condition = value;
+    public void SetCondition(int value)
+    {
+         _condition = Mathf.Clamp(value, 0, 100);
+    }
 
     public void ChangeState(StudentState newState)
     {
