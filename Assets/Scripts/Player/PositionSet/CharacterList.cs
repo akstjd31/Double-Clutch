@@ -475,9 +475,16 @@ public class CharacterList : MonoBehaviour
         {
             ClearSynergyUI();
             return;
-        }
-        
+        }        
+
         var allSynergyData = StudentManager.Instance.GetFactory().GetSynergyDataList();
+        if (allSynergyData == null)
+        {
+            Debug.LogError("SynergyDataList가 Null입니다! 데이터 로드 상태를 확인하세요.");
+            ClearSynergyUI();
+            return;
+        }
+
         int totalCount = allSynergyData.Count;
 
         for (int i = 0; i < totalCount; i++)

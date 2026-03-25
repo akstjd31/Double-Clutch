@@ -52,7 +52,7 @@ public class TournamentBoardPanel : MonoBehaviour
         // 대진표 데이터 채우기 (16강)
         PopulateBracket(league, currentRound);
         bool cannotPlay = league.isFinished || league.isPlayerEliminated;
-        _txtBtnAction.text = string.IsNullOrEmpty(actionText) ? (cannotPlay ? "닫기" : "경기 준비") : actionText;
+        _txtBtnAction.text = string.IsNullOrEmpty(actionText) ? (cannotPlay ? StringManager.Instance.GetString("UI_Popup_닫기") : StringManager.Instance.GetString("UI_Matchlog_경기준비")) : actionText;
 
         _btnAction.onClick.RemoveAllListeners();
         _btnAction.onClick.AddListener(() =>
