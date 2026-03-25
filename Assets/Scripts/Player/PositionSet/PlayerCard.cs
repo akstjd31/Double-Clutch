@@ -81,5 +81,22 @@ public class PlayerCard : MonoBehaviour, IPointerClickHandler
         string name = manager.GetString(_player.Name[0]) + manager.GetString(_player.Name[1]) + manager.GetString(_player.Name[2]);
         _playerName.text = name;
         manager.ApplyFont(_playerName);
+        if (_player.State == StudentState.OverWorked)
+        {
+            _playerState.text = manager.GetString("UI_Player_과로");
+            _isAvailable = false;
+        }
+        else if (_player.State == StudentState.Injured)
+        {
+            _playerState.text = manager.GetString("UI_Player_부상");
+            _isAvailable = false;
+        }
+        else
+        {
+            _playerState.text = string.Empty;
+            _isAvailable = true;
+        }
+
+        manager.ApplyFont(_playerState);
     }
 }
