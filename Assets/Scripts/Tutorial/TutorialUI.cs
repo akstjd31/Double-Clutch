@@ -34,7 +34,7 @@ public class TutorialUI : MonoBehaviour
         _skipButton.onClick.AddListener(OnClickSkipButton);
 
         // 보상 저장
-        reward = InfraManager.Instance.GetCostListByEffectType(infraEffectType.TrainingBonus)[0];
+        reward = InfraManager.Instance.GetCostListByEffectType(infraEffectType.TrainingBonus)[1];
     }
 
     private void OnDestroy()
