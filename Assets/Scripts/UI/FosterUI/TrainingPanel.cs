@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UIElements;
+using UnityEngine.UI;
 
 /// <summary>
 /// 육성 버튼을 누르면 나오는 TrainingPanel에 부착.
@@ -10,6 +10,8 @@ using UnityEngine.UIElements;
 
 public class TrainingPanel : MonoBehaviour
 {
+    [SerializeField] private GameObject _backButton;
+    [SerializeField] private GameObject _homeButton;
     [SerializeField] TrainingCharacterBox _trainingCharacterBoxPrefab;
     [SerializeField] Transform _trainingCharacterBoxParent;    
 
@@ -27,6 +29,11 @@ public class TrainingPanel : MonoBehaviour
         RefreshPlayerList();
     }
 
+    private void OnDisable()
+    {
+        if (_boxList == null) return;
+    }
+
     public void RefreshPlayerList()
     {        
         for (int i = 0; i < _boxList.Count; i++)
@@ -41,7 +48,10 @@ public class TrainingPanel : MonoBehaviour
         {            
             TrainingCharacterBox newBox = _trainingBoxPool.Get(); //박스 채우기
             newBox.transform.SetAsLastSibling();
-            newBox.Init(students[i]); //박스에 선수 정보 주입            
+            newBox.Init(students[i]); //박스에 선수 정보 주입   
+
+            var btn = newBox.GetComponent<Button>();
+            btn.onClick.AddListener(() => OnClickBackAndHomeButtonSetActive(false));
             
             _boxList.Add(newBox);
         }
@@ -56,5 +66,11 @@ public class TrainingPanel : MonoBehaviour
                 _boxList[i].SetStudentState();
             }
         }
+    }
+    
+    public void OnClickBackAndHomeButtonSetActive(bool active)
+    {
+        _backButton.SetActive(active);
+        _homeButton.SetActive(active);
     }
 }

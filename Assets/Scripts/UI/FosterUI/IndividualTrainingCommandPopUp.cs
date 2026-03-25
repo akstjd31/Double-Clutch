@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem.XR;
+using UnityEngine.UI;
 
 public class IndividualTrainingCommandPopUp : MonoBehaviour
 {
@@ -13,11 +14,14 @@ public class IndividualTrainingCommandPopUp : MonoBehaviour
     private GenericObjectPool<TrainingBox> _pool;
     private List<TrainingBox> _boxList = new List<TrainingBox>();
     private Student _selectedStudent;
+    private TrainingPanel _trainingPanel;
 
     private void Awake()
     {        
         _pool = new GenericObjectPool<TrainingBox>(_trainingBoxPrefab, _trainingListParent);
+        _trainingPanel = GameObject.FindAnyObjectByType<TrainingPanel>();
     }
+
     private void OnEnable()
     {
         StringManager.OnLanguageChanged += Refresh;
@@ -36,6 +40,7 @@ public class IndividualTrainingCommandPopUp : MonoBehaviour
         {
             _pool.Release(box);
         }
+
         _boxList.Clear();
 
         // 개인 훈련 데이터 생성 및 배치
@@ -73,7 +78,7 @@ public class IndividualTrainingCommandPopUp : MonoBehaviour
         box.transform.SetAsLastSibling();
 
         // 데이터 주입 (학생 설정 후 Init 호출)
-        box.Init(command);
+        box.Init(command, _trainingPanel);
         box.SetStudent(_selectedStudent);        
 
         _boxList.Add(box);
