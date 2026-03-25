@@ -296,11 +296,12 @@ public class SwissBoardPanel : MonoBehaviour
         var currentLeague = LeagueManager.Instance.CurrentLeague;
         _btnAction.onClick.RemoveAllListeners();
 
+        bool cannotPlay = currentLeague.isFinished || currentLeague.isPlayerEliminated;
         // 버튼 텍스트 세팅 수정
-        _txtBtnAction.text = string.IsNullOrEmpty(_customActionText) ? (currentLeague.isFinished ? StringManager.Instance.GetString("UI_Popup_닫기") : StringManager.Instance.GetString("UI_Matchlog_경기준비")) : _customActionText;
+        _txtBtnAction.text = string.IsNullOrEmpty(_customActionText) ? (cannotPlay ? StringManager.Instance.GetString("UI_Popup_닫기") : StringManager.Instance.GetString("UI_Matchlog_경기준비")) : _customActionText;
 
         // 리그가 완전히 종료된 상태 (수정: _customAction.Invoke() 추가)
-        if (currentLeague.isFinished)
+        if (cannotPlay)
         {
             _btnAction.interactable = true;
             _btnAction.onClick.AddListener(() =>
