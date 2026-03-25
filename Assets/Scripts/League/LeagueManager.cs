@@ -249,11 +249,11 @@ public class LeagueManager : Singleton<LeagueManager>
             if (standing.teamId.Equals(PLAYER_TEAM_ID))
             {
                 // 순위에 들었는지 확인
-                return masterData.Value.outConditionValue >= standing.rank;
+                return standing.rank > masterData.Value.outConditionValue;
             }
         }
 
-        return false;
+        return true;
     }
     
     private void SaveCurrentLeague()

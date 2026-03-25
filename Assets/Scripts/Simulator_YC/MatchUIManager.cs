@@ -262,6 +262,22 @@ public class MatchUIManager : MonoBehaviour
     public void ShowResultPopup(string homeName, int homeScore, string awayName, int awayScore, int rewardAmount = 0, List<MatchPlayerData> players = null, Action onConfirm = null)
     {
         _onResultConfirmAction = onConfirm;
+
+        // 승패 판정 (동점은 연장전 로직상 발생하지 않음)
+        if (_textResultTitle != null)
+        {
+            if (homeScore > awayScore)
+            {
+                _textResultTitle.text = "승리";
+                _textResultTitle.color = new Color(1f, 0.8f, 0f); // 승리 시 텍스트 색상 (노란색/금색 계열)
+            }
+            else
+            {
+                _textResultTitle.text = "패배";
+                _textResultTitle.color = Color.white; // 패배 시 기본 흰색
+            }
+        }
+
         // 패널 켜기
         if (_resultPanel != null)
         {
@@ -274,20 +290,7 @@ public class MatchUIManager : MonoBehaviour
             if (_textResultAwayName != null) _textResultAwayName.text = awayName;
             if (_textResultAwayScore != null) _textResultAwayScore.text = awayScore.ToString();
 
-            // 승패 판정 (동점은 연장전 로직상 발생하지 않음)
-            if (_textResultTitle != null)
-            {
-                if (homeScore > awayScore)
-                {
-                    _textResultTitle.text = "승리";
-                    _textResultTitle.color = new Color(1f, 0.8f, 0f); // 승리 시 텍스트 색상 (노란색/금색 계열)
-                }
-                else
-                {
-                    _textResultTitle.text = "패배";
-                    _textResultTitle.color = Color.white; // 패배 시 기본 흰색
-                }
-            }
+            
 
             // 지원금 세팅 (지원금 작업 완료 전까지는 0이나 임의의 값 출력)
             if (_textResultReward != null)
