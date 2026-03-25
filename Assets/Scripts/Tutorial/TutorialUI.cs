@@ -1,10 +1,12 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System;
 
 public class TutorialUI : MonoBehaviour
 {
     [SerializeField] private TutorialManager _tutorialMgr;
+    [SerializeField] private Image _backgroundImage;
     [SerializeField] private TextMeshProUGUI _narraitionText;
     [SerializeField] private TextMeshProUGUI _nameText;
     [SerializeField] private TextMeshProUGUI _dialogueText;
@@ -54,10 +56,14 @@ public class TutorialUI : MonoBehaviour
         var data = _tutorialMgr.GetData(index);
         if (data == null) return;
 
-        // 임시 (나중에 해당 리소스, 스트링 테이블 채워지면 그떄 반영할 예정)
-        _narraitionText.text = data.Value.narrationKey;
-        _nameText.text = data.Value.speakerKey;
-        _dialogueText.text = data.Value.dialogueKey;
+        var sMgr = StringManager.Instance;
+        if (sMgr == null) return;
+
+        _backgroundImage.sprite = SpriteManager.Instance.GetSprite(data.Value.tutorialImageId);
+
+        _narraitionText.text = sMgr.GetString(data.Value.narrationKey);
+        _nameText.text = sMgr.GetString(data.Value.speakerKey);
+        _dialogueText.text = sMgr.GetString(data.Value.dialogueKey);
 
         _pageText.text = $"{index + 1}/{_tutorialMgr.GetDataListLength()}";
         index++;
@@ -78,13 +84,15 @@ public class TutorialUI : MonoBehaviour
         _skipPanelObj.SetActive(true);
 
         var tmp = _skipPanelObj.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
-        
         tmp.text = $"튜토리얼을 스킵 하시겠습니까?\n튜토리얼 지원금 : {reward} G";
     }
 
     private void OnClickStartButton()
     {
         _endPanelObj.SetActive(true);
+
+        var tmp = _endPanelObj.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
+        tmp.text = $"튜토리얼 종료\n튜토리얼 지원금 : {reward} G";
     }
 
     public void OnClickConfirmButton()
