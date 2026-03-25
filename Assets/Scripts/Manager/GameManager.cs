@@ -118,7 +118,7 @@ public class GameManager : Singleton<GameManager>
     }
 
     // LoadingScene에서 호출
-    private void NotifyLoadingDone()
+    public void NotifyLoadingDone()
     {
         if (NextStateAfterLoading != null)
             _sm.ChangeState(NextStateAfterLoading);
