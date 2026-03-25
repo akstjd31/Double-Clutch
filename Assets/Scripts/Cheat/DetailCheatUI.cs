@@ -53,6 +53,8 @@ public class DetailCheatUI : MonoBehaviour
                 
                 break;
             case CheatDetails.Trait:
+                if (_detailsPanelObjs[(int)detail].TryGetComponent<TraitCheatUI>(out var traitCheat))
+                    traitCheat.Init(_student);
                 break;
         }
 

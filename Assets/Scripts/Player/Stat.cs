@@ -69,5 +69,12 @@ public class Stat
 
     // 치트용
     public void SetCurrent(int num) => _current = num;
-    public void SetLimit(int num) => _limit = num;
+    public void SetLimit(int num)
+    {
+        _limit = num;
+        if (_limit < _current)
+        {
+            _limit = _current;
+        }
+    }
 }
