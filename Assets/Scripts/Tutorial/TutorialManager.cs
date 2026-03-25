@@ -7,6 +7,7 @@ public class TutorialManager : MonoBehaviour
     public TutorialData? GetData(int idx)
     {
         if (_reader == null) return null;
+        if (_reader.DataList.Count <= idx) return null;
         return _reader.DataList[idx];
     }
 
