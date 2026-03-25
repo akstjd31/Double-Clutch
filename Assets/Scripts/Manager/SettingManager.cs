@@ -14,7 +14,8 @@ public class SettingManager : Singleton<SettingManager>
     private void Start()
     {
         LoadSetting();
-        ApplyFPS();        
+        ApplyFPS();
+        ApplyVolum();
     }
 
     // 진동 기능은 여기서 호출
@@ -138,6 +139,9 @@ public class SettingManager : Singleton<SettingManager>
             SetFPS(60);
             ToggleVibration(false);
         }
+
+        ApplyFPS();
+        ApplyVolum();
     }
 
     #endregion

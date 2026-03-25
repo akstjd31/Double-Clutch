@@ -12,16 +12,20 @@ public struct Position_PresetData
     public changeType changeType;
     public float offenseXMin;
     public float offenseXMax;
+    public float offenseXMin2;
+    public float offenseXMax2;
     public float offenseYMin;
     public float offenseYMax;
 
-    public Position_PresetData(int presetId,Position positionType,changeType changeType,float offenseXMin,float offenseXMax,float offenseYMin,float offenseYMax)
+    public Position_PresetData(int presetId, Position positionType, changeType changeType, float offenseXMin, float offenseXMax, float offenseXMin2, float offenseXMax2, float offenseYMin, float offenseYMax)
     {
         this.presetId = presetId;
         this.positionType = positionType;
         this.changeType = changeType;
         this.offenseXMin = offenseXMin;
         this.offenseXMax = offenseXMax;
+        this.offenseXMin2 = offenseXMin2;
+        this.offenseXMax2 = offenseXMax2;
         this.offenseYMin = offenseYMin;
         this.offenseYMax = offenseYMax;
     }

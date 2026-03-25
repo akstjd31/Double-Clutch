@@ -422,4 +422,11 @@ public class StudentFactory : MonoBehaviour
 
         return _passiveDataReader.DataList;
     }
+
+    public List<Player_TraitData> GetTraitDataList()
+    {
+        if (_traitDataReader == null) return null;
+
+        return _traitDataReader.DataList;
+    }
 }

@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using TMPro;
 
 
@@ -7,6 +7,7 @@ public class GradutaionPanel : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _graduationText;
     [SerializeField] private GameObject _graduationListPanel;
     [SerializeField] private GraduationManager _graduationManager;
+    [SerializeField] private GameObject _promotionPanel;
 
 
     private void Start()
@@ -18,7 +19,7 @@ public class GradutaionPanel : MonoBehaviour
     {
         if (_graduationManager.IsGraduationSkip)
         {
-            _graduationText.text = "2월이 되었습니다. \n 팀 내에 졸업생이 없음 \n 진급페이지 이동";
+            _graduationText.text = "2월이 되었습니다.";
         }
         else
         {

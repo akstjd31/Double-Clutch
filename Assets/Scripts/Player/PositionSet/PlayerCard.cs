@@ -16,7 +16,15 @@ public class PlayerCard : MonoBehaviour, IPointerClickHandler
     public Student Player => _player;
     public bool IsAvailable => _isAvailable;
 
+    private void OnEnable()
+    {
+        StringManager.OnLanguageChanged += Refresh;
+    }
 
+    private void OnDisable()
+    {
+        StringManager.OnLanguageChanged -= Refresh;
+    }
     public void Init(Student student)
     {
         _player = student;
@@ -27,7 +35,7 @@ public class PlayerCard : MonoBehaviour, IPointerClickHandler
         string name = manager.GetString(_player.Name[0]) + manager.GetString(_player.Name[1]) + manager.GetString(_player.Name[2]);
 
         _playerName.text = name;
-        _playerPosition.text = student.Position.ToString();   
+        _playerPosition.text = student.Position.ToString();
         if (student.State == StudentState.OverWorked)
         {
             _playerState.text = manager.GetString("UI_Player_과로");
@@ -66,4 +74,12 @@ public class PlayerCard : MonoBehaviour, IPointerClickHandler
     }
 
     public void SetImageColor(Color color) => this.GetComponent<Image>().color = color;
+
+    private void Refresh()
+    {
+        StringManager manager = StringManager.Instance;
+        string name = manager.GetString(_player.Name[0]) + manager.GetString(_player.Name[1]) + manager.GetString(_player.Name[2]);
+        _playerName.text = name;
+        manager.ApplyFont(_playerName);
+    }
 }

@@ -6,9 +6,9 @@ public struct Balance_Data
 {
     public int index;
     public string weightId;
-    public int value;
+    public float value;
 
-    public Balance_Data(int index, string weightId, int value)
+    public Balance_Data(int index, string weightId, float value)
     {
         this.index = index;
         this.weightId = weightId;

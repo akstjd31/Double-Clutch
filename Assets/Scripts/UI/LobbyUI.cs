@@ -38,6 +38,7 @@ public class LobbyUI : MonoBehaviour
             GameManager.Instance.OnDataChanged += UpdateHonorText;
             GameManager.Instance.OnDataChanged += UpdateProfileText;
         }
+        StringManager.OnLanguageChanged += RefreshCalendarText;
     }
 
     private void Start()
@@ -79,7 +80,6 @@ public class LobbyUI : MonoBehaviour
     private void Init()
     {
         if (GameManager.Instance == null) return;
-        _testButton.onClick.AddListener(GameManager.Instance.GoToGraduation);
 
         UpdateMoneyText();
         UpdateHonorText();
@@ -110,6 +110,7 @@ public class LobbyUI : MonoBehaviour
             GameManager.Instance.OnDataChanged -= UpdateHonorText;
             GameManager.Instance.OnDataChanged -= UpdateProfileText;
         }
+        StringManager.OnLanguageChanged -= RefreshCalendarText;
     }
 
     // ───── Setting ─────
@@ -140,8 +141,8 @@ public class LobbyUI : MonoBehaviour
     {
         if (GameManager.Instance == null) return;
         if (GameManager.Instance.SaveData == null) return;
-
-        _calendarText.text = $"{GameManager.Instance.SaveData.year}년차 {calendar.month}월 {calendar.week}주";
+        _calendarText.text = StringManager.Instance.GetFormattedString("UI_Calendar_달력",GameManager.Instance.SaveData.year, calendar.month, calendar.week);
+        StringManager.Instance.ApplyFont(_calendarText);
     }
 
     public void UpdateMoneyText()
@@ -184,5 +185,10 @@ public class LobbyUI : MonoBehaviour
             _matchButton.gameObject.SetActive(false);
             _trainingButton.gameObject.SetActive(true);
         }
+    }
+    private void RefreshCalendarText()
+    {
+        if (CalendarManager.Instance != null)
+            UpdateCalendarText(CalendarManager.Instance.GetCalendar());
     }
 }

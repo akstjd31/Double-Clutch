@@ -26,7 +26,8 @@ public class MonthUI : MonoBehaviour
 
         var cal = calMgr.GetCalendar();
 
-        _monthText.text = (_isNextMonth ? (cal.month + 1).ToString() : cal.month.ToString()) + "월";
+        _monthText.text = (_isNextMonth ? (cal.month + 1).ToString() : cal.month.ToString()) + StringManager.Instance.GetString("UI_Calendar_월");
+        StringManager.Instance.ApplyFont(_monthText);
 
         // 달에 최대 주차
         int maxWeek = _isNextMonth ? MonthWeekTable.weekCounts[cal.month] : MonthWeekTable.weekCounts[cal.month - 1];
@@ -45,6 +46,7 @@ public class MonthUI : MonoBehaviour
         for (int i = 0; i < descList.Count; i++)
         {
             _weekContentList[i].text = descList[i];
+            StringManager.Instance.ApplyFont(_weekContentList[i]);
         }
 
         // 현재 날짜 확인용 밑줄긋기

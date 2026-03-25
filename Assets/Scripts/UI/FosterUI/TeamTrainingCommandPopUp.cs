@@ -3,15 +3,17 @@ using UnityEngine;
 
 public class TeamTrainingCommandPopUp : MonoBehaviour
 {
-    [SerializeField] Transform _trainingListParent; // ÈÆ·Ã ¼³Á¤ ¹öÆ°ÀÌ ³õÀÏ ºÎ¸ð ¿ÀºêÁ§Æ® À§Ä¡
-    [SerializeField] TrainingBox _trainingBoxPrefab; // ÈÆ·Ã ¼³Á¤ ¹öÆ° ÇÁ¸®ÆÕ
+    [SerializeField] Transform _trainingListParent; // ï¿½Æ·ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Æ°ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Î¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½Ä¡
+    [SerializeField] TrainingBox _trainingBoxPrefab; // ï¿½Æ·ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Æ° ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
     GenericObjectPool<TrainingBox> _teamTrainingPool;
     private List<TrainingBox> _boxList = new List<TrainingBox>();
+    private TrainingPanel _trainingPanel;
 
     private void Awake()
     {
         _teamTrainingPool = new GenericObjectPool<TrainingBox>(_trainingBoxPrefab, _trainingListParent, 4, 6);
+        _trainingPanel = GameObject.FindAnyObjectByType<TrainingPanel>();
     }
 
     private void OnEnable()
@@ -19,14 +21,14 @@ public class TeamTrainingCommandPopUp : MonoBehaviour
         Init();
     }
 
-    public void Init() //ÆÀ ÈÆ·ÃÀº ¾îÂ÷ÇÇ ÀüÃ¼ Àû¿ëÀÌ¹Ç·Î Å¸°Ù ¼¼ÆÃ x
+    public void Init() //ï¿½ï¿½ ï¿½Æ·ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã¼ ï¿½ï¿½ï¿½ï¿½ï¿½Ì¹Ç·ï¿½ Å¸ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ x
     {
         RefreshTrainingList();
     }
 
     public void RefreshTrainingList()
     {
-        foreach (var box in _boxList) //±âÁ¸ ¹Ú½º ¸ñ·Ï ¸®¼Â
+        foreach (var box in _boxList) //ï¿½ï¿½ï¿½ï¿½ ï¿½Ú½ï¿½ ï¿½ï¿½ï¿? ï¿½ï¿½ï¿½ï¿½
         {
             _teamTrainingPool.Release(box);
         }
@@ -51,7 +53,7 @@ public class TeamTrainingCommandPopUp : MonoBehaviour
     {        
         TrainingBox box = _teamTrainingPool.Get();
         box.transform.SetAsLastSibling();
-        box.Init(command);        
+        box.Init(command, _trainingPanel);        
 
         _boxList.Add(box);
     }

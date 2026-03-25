@@ -17,7 +17,11 @@ public class TrainingCharacterBox : MonoBehaviour
 
     [SerializeField] Slider _conditionSlider;
 
-    
+    private Color _restColor = new Color32(0, 223, 112, 255);
+    private Color _trainingColor = new Color32(0, 93, 232, 255);
+    private Color _overworkColor = new Color32(255, 174, 0, 255);
+    private Color _injuredColor = new Color32(204, 0, 0, 255);
+
     Student _student;
 
     public Button GetSelectButton() => _button;
@@ -59,10 +63,14 @@ public class TrainingCharacterBox : MonoBehaviour
     public void SetStudentState()
     {
         StringManager manager = StringManager.Instance;
+        string name = manager.GetString(_student.Name[0]) + manager.GetString(_student.Name[1]) + manager.GetString(_student.Name[2]);
+        _nameText.text = name;
+        manager.ApplyFont(_nameText);
         if (_student == null) return;
         var cv = _stateBackGround.GetComponent<CanvasGroup>();
         cv.alpha = 0f;
         _stateText.text = "";
+        _stateText.color = Color.white;
         if (_student.CurrentTraining != null)
         {
             cv.alpha = 1f;
@@ -70,11 +78,13 @@ public class TrainingCharacterBox : MonoBehaviour
 
             if (_student.CurrentTraining is IndividualTraining || _student.CurrentTraining is TeamTraining)
             {
-                _stateText.color = Color.blue;
+                _stateText.color = _trainingColor;
+                manager.ApplyFont(_stateText);
             }
             else
             {
-                _stateText.color= Color.green;
+                _stateText.color= _restColor;
+                manager.ApplyFont(_stateText);
             }
 
             return;
@@ -83,17 +93,18 @@ public class TrainingCharacterBox : MonoBehaviour
         {
             cv.alpha = 1f;
             _stateText.text = manager.GetString("UI_Player_과로");            
-            _stateText.color = Color.yellow;
+            _stateText.color = _overworkColor;
+            manager.ApplyFont(_stateText);
             return;
         }
         if (_student.State == StudentState.Injured)
         {
             cv.alpha = 1f;
             _stateText.text = manager.GetString("UI_Player_부상");            
-            _stateText.color = Color.red;
+            manager.ApplyFont(_stateText);
+            _stateText.color = _injuredColor;
             return;
         }
-        manager.ApplyFont(_stateText);
     }
     
     public float NormalizeConditionValue(int condition)

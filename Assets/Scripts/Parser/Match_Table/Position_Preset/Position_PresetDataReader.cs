@@ -1,4 +1,4 @@
-﻿using GoogleSheetsToUnity;
+using GoogleSheetsToUnity;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -15,7 +15,7 @@ public class Position_PresetDataReader : DataReaderBase
         int presetId = 0;
         Position positionType = default;
         changeType changeType = default;
-        float offenseXMin = 0, offenseXMax = 0, offenseYMin = 0, offenseYMax = 0;
+        float offenseXMin = 0, offenseXMax = 0, offenseXMin2 = 0, offenseXMax2 = 0, offenseYMin = 0, offenseYMax = 0;
 
         for (int i = 0; i < list.Count; i++)
         {
@@ -52,6 +52,12 @@ public class Position_PresetDataReader : DataReaderBase
                 case "offenseXMax":
                     float.TryParse(val, out offenseXMax);
                     break;
+                case "offenseXMin2": 
+                    float.TryParse(val, out offenseXMin2); 
+                    break;
+                case "offenseXMax2":
+                    float.TryParse(val, out offenseXMax2);
+                    break; 
                 case "offenseYMin":
                     float.TryParse(val, out offenseYMin);
                     break;
@@ -61,7 +67,7 @@ public class Position_PresetDataReader : DataReaderBase
             }
         }
 
-        DataList.Add(new Position_PresetData(presetId,positionType,changeType,offenseXMin,offenseXMax,offenseYMin,offenseYMax
+        DataList.Add(new Position_PresetData(presetId, positionType, changeType, offenseXMin, offenseXMax, offenseXMin2, offenseXMax2, offenseYMin, offenseYMax
         ));
     }
 

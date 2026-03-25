@@ -27,11 +27,12 @@ public class TrainingBox : MonoBehaviour
         StringManager.OnLanguageChanged -= Refresh;
     }
 
-    public void Init(ITraining command)
+    public void Init(ITraining command, TrainingPanel trainingPanel)
     {
         _command = command;
 
         _button.onClick.RemoveAllListeners();
+        _button.onClick.AddListener(() => trainingPanel.OnClickBackAndHomeButtonSetActive(true));
         _button.onClick.AddListener(command.IsTeam() ? (() => FosterManager.Instance.ReserveTeamTraining(_command)) : () => FosterManager.Instance.ReserveIndividualTraining(_command));
         _button.onClick.AddListener(() => StudentUIManager.Instance.OnTrainingBoxClick());
 
