@@ -10,13 +10,12 @@ public class TutorialUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _dialogueText;
     [SerializeField] private TextMeshProUGUI _pageText;
     [SerializeField] private Button _nextButton;
-    
-    [Header("Skip")]
     [SerializeField] private Button _skipButton;
     [SerializeField] private Button _startButton;
     [SerializeField] private GameObject _skipPanelObj;
     [SerializeField] private GameObject _endPanelObj;
     private int index;
+    private int reward;
 
     private void Awake()
     {
@@ -33,6 +32,9 @@ public class TutorialUI : MonoBehaviour
 
         if (_skipButton == null) return;
         _skipButton.onClick.AddListener(OnClickSkipButton);
+
+        // 보상 저장
+        reward = InfraManager.Instance.GetCostListByEffectType(infraEffectType.TrainingBonus)[0];
     }
 
     private void OnDestroy()
@@ -76,8 +78,8 @@ public class TutorialUI : MonoBehaviour
         _skipPanelObj.SetActive(true);
 
         var tmp = _skipPanelObj.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
-        int value = InfraManager.Instance.GetCostListByEffectType(infraEffectType.TrainingBonus)[0];
-        tmp.text = $"튜토리얼을 스킵 하시겠습니까?\n튜토리얼 지원금 : {value} G";
+        
+        tmp.text = $"튜토리얼을 스킵 하시겠습니까?\n튜토리얼 지원금 : {reward} G";
     }
 
     private void OnClickStartButton()
@@ -87,6 +89,12 @@ public class TutorialUI : MonoBehaviour
 
     public void OnClickConfirmButton()
     {
-        // 대충 로비로 이동 부분
+        var gm = GameManager.Instance;
+        if (gm == null) return;
+
+        // 지원금 지급 후 로비 이동
+        gm.SetMoney(reward);
+        gm.SetTutorialCompleted(true);
+        gm.GoToLobby();
     }
 }

@@ -17,7 +17,6 @@ public class ProfileUI : MonoBehaviour
     [SerializeField] private GameObject _warningTextObj;
     [SerializeField] private TextMeshProUGUI _warningText;
     [SerializeField] private Button _confirmButton;
-    [SerializeField] private bool _isFirstTime;
     private Coroutine _warningCoroutine;
 
     [Header("학교 수정 팝업")]
@@ -82,9 +81,11 @@ public class ProfileUI : MonoBehaviour
         if (_prevButton != null) _prevButton.onClick.AddListener(() => ChangePage(-1));
         if (_nextButton != null) _nextButton.onClick.AddListener(() => ChangePage(1));
 
-        if (!_isFirstTime)
+        GameManager gameManager = GameManager.Instance;
+        if (gameManager == null) return;
+
+        if (gameManager.SaveData != null)
         {
-            GameManager gameManager = GameManager.Instance;
             SpriteManager spriteManager = SpriteManager.Instance;
 
             string currentImg = gameManager.SaveData?.currentProfileImage;
@@ -125,7 +126,7 @@ public class ProfileUI : MonoBehaviour
         _prevButton?.onClick.RemoveAllListeners();
         _nextButton?.onClick.RemoveAllListeners();
 
-        if (!_isFirstTime)
+        if (GameManager.Instance.SaveData != null)
         {
             _schoolSelectButton?.onClick.RemoveAllListeners();
             _playerSelectButton?.onClick.RemoveAllListeners();
@@ -185,16 +186,23 @@ public class ProfileUI : MonoBehaviour
         //     _warningText.text = "공백인 필드가 존재합니다!";
         //     return;
         // }
+        var gm = GameManager.Instance;
 
         if (!IsValidInput(_schoolNameField.text, _warningText) || !IsValidInput(_playerNameField.text, _warningText)) return;
-
-        var gm = GameManager.Instance;
-        if (_isFirstTime)
+        if (!gm.HasData())
         {
-            var data = new PlayerSaveData { schoolName = _schoolNameField.text, coachName = _playerNameField.text, weekId = 9, year = 1 };
+            var data = new PlayerSaveData
+            {
+                schoolName = _schoolNameField.text,
+                coachName = _playerNameField.text,
+                weekId = 8,
+                year = 0,
+                isTutorialCompleted = false
+            };
+
             gm.InitData(data);
             CalendarManager.Instance.CalcWeek(data.weekId, gm);
-            gm.Dispatch(UIAction.Main_Start);
+            gm.Dispatch(UIAction.Tutorial);
         }
 
         if (_selectedData.HasValue && _selectedData.Value.playerImage != null)
@@ -270,7 +278,7 @@ public class ProfileUI : MonoBehaviour
         
         if (t != null)
         {
-            if (_isFirstTime)
+            if (GameManager.Instance.SaveData == null)
             {
                 _warningTextObj.SetActive(true);
                 targetWarningText.text = t;

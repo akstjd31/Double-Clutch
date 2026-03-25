@@ -7,13 +7,13 @@ using UnityEngine.SceneManagement;
 
 public static class PrefKeys
 {
-    public const string KEY_FIRST_RUN_DONE = "FIRST_RUN_DONE";          // 튜토리얼 여부 결정
     public const string MATCH_PREP_UI_INDEX = "MATCH_PREP_UI_INDEX";    // 경기 준비 단계 UI 인덱스
 }
 
 public static class SceneName
 {
     public const string MAIN = "Test_Main";
+    public const string TUTORIAL = "Test_Tutorial";
     public const string LOBBY = "Test_Lobby";
     public const string LOADING = "Test_Loading";
     public const string EVENT = "Test_Event";
@@ -55,30 +55,11 @@ public class GameManager : Singleton<GameManager>
     {
         base.Awake();
 
-        InitCommandSystem();
+        SaveLoadManager.Instance.TryLoad<PlayerSaveData>(FilePath.PLAYER_PATH, out _saveData);
         InitRegister();
 
         // 로딩화면에서 시작하여 메인으로 넘어가기
         SetNextFlow(SceneName.MAIN, _sm.Get<MainState>());
-    }
-
-    private void InitCommandSystem()
-    {
-        // 임시 저장 경로 (데이터 존재 여부에 따라 처음인지 아닌지를 판별)
-        if (SaveLoadManager.Instance.TryLoad(FilePath.PLAYER_PATH, out _saveData))
-        {
-            PlayerPrefs.SetInt(PrefKeys.KEY_FIRST_RUN_DONE, 1);
-        }
-        else
-        {
-            PlayerPrefs.SetInt(PrefKeys.KEY_FIRST_RUN_DONE, 0);
-        }
-
-        // _ctx = new GameContext(save, SaveLoadManager.Instance, FilePath.PLAYER_PATH);
-
-        // _bus = new CommandBus();
-        // _bus.OnFailed += (_, msg) => Debug.LogWarning($"실패: {msg}");
-        // _bus.OnExecuted += (cmd) => Debug.Log($"성공: {cmd.GetType().Name}");
     }
 
     // 객체 미리 등록해놓기
@@ -101,6 +82,8 @@ public class GameManager : Singleton<GameManager>
         Debug.Log($"{_saveData.schoolName} 학교 {_saveData.coachName} 감독님 환영합니다!");
         SavePlayerData();
     }
+
+    public bool HasData() => _saveData != null;
 
     private void SavePlayerData() => SaveLoadManager.Instance.Save(FilePath.PLAYER_PATH, _saveData);
 
@@ -170,6 +153,12 @@ public class GameManager : Singleton<GameManager>
         yield return op; // 씬 로드 완료까지 대기
 
         NotifyLoadingDone(); // 로드 끝난 뒤 상태 전환
+    }
+
+    public void SetTutorialCompleted(bool flag)
+    {
+        _saveData.isTutorialCompleted = flag;
+        OnDataChanged?.Invoke();
     }
 
     public void SetCoachName(string name)
