@@ -20,6 +20,8 @@ public class FightingPower : MonoBehaviour
     // 뒤로가기 버튼
     [SerializeField] private GameObject _backButtonObj;
 
+    private MatchTeam _generatedAwayTeam;
+
     int _myTotalFightingPower = 0;
     int _rivalTotalFightingPower = 0;
 
@@ -31,6 +33,16 @@ public class FightingPower : MonoBehaviour
     public void OnClickSetUIIndex()
     {
         PlayerPrefs.SetInt(PrefKeys.MATCH_PREP_UI_INDEX, 0);
+    }
+
+    private void OnEnable()
+    {
+        StringManager.OnLanguageChanged += RefreshUI;
+    }
+
+    private void OnDisable()
+    {
+        StringManager.OnLanguageChanged -= RefreshUI;
     }
 
     public void Init()
@@ -104,7 +116,7 @@ public class FightingPower : MonoBehaviour
         }
 
         MatchTeam homeTeam = EnemyTeamFactory.Instance.ConvertToTeam(TeamSide.Home, StudentManager.Instance.CurrentTeam);
-        MatchTeam generatedAwayTeam = EnemyTeamFactory.Instance.ConvertToTeam(TeamSide.Away, LeagueTeamManager.Instance.GetTeamById(opponentTeamId));
+        _generatedAwayTeam = EnemyTeamFactory.Instance.ConvertToTeam(TeamSide.Away, LeagueTeamManager.Instance.GetTeamById(opponentTeamId));
         if (_rivalMatchingStudentList == null || _rivalMatchingStudentList.Count == 0)
         {
             _rivalMatchingStudentList = new List<Student>();
@@ -174,7 +186,8 @@ public class FightingPower : MonoBehaviour
         //    }
         //}
 
-        _rivalSchoolName.text = generatedAwayTeam.TeamName;
+        _rivalSchoolName.text = StringManager.Instance.GetString(_generatedAwayTeam.TeamName);
+        StringManager.Instance.ApplyFont(_rivalSchoolName);
         _rivalFightingPowerText.text = _rivalTotalFightingPower.ToString();
         SetText();
     }
@@ -231,5 +244,11 @@ public class FightingPower : MonoBehaviour
 
         // 리그 중간(isMidLeague == true)이면 버튼을 숨기고(false), 첫 경기거나 리그 중이 아니면 버튼을 보입니다(true).
         _backButtonObj.SetActive(!isMidLeague);
+    }
+
+    private void RefreshUI()
+    {
+        _rivalSchoolName.text = StringManager.Instance.GetString(_generatedAwayTeam.TeamName);
+        StringManager.Instance.ApplyFont(_rivalSchoolName);
     }
 }
