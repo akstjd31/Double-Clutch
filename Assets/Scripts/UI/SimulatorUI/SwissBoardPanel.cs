@@ -42,6 +42,7 @@ public class SwissBoardPanel : MonoBehaviour
         if (_txtLeagueName != null && masterData.HasValue)
         {
             _txtLeagueName.text = StringManager.Instance.GetString(masterData.Value.leagueNameKey);
+            StringManager.Instance.ApplyFont(_txtLeagueName);
         }
 
         // 자동으로 현재 진행해야 할 라운드 탭으로 진입
@@ -97,7 +98,9 @@ public class SwissBoardPanel : MonoBehaviour
         // 라운드 타이틀 텍스트 갱신 (탭 누를 때마다 변경)
         if (_txtRoundTitle != null)
         {
-            _txtRoundTitle.text = $"스위스 {roundIndex + 1}라운드 대진표";
+            _txtRoundTitle.text = StringManager.Instance.GetFormattedString("UI_Matchlog_스위스", (roundIndex + 1));
+            StringManager.Instance.ApplyFont(_txtRoundTitle);
+                                  //$"스위스 {roundIndex + 1}라운드 대진표";
         }
 
         // 탭 시각적 선택 상태 갱신
@@ -294,7 +297,7 @@ public class SwissBoardPanel : MonoBehaviour
         _btnAction.onClick.RemoveAllListeners();
 
         // 버튼 텍스트 세팅 수정
-        _txtBtnAction.text = string.IsNullOrEmpty(_customActionText) ? (currentLeague.isFinished ? "닫기" : "경기 준비") : _customActionText;
+        _txtBtnAction.text = string.IsNullOrEmpty(_customActionText) ? (currentLeague.isFinished ? StringManager.Instance.GetString("UI_Popup_닫기") : StringManager.Instance.GetString("UI_Matchlog_경기준비")) : _customActionText;
 
         // 리그가 완전히 종료된 상태 (수정: _customAction.Invoke() 추가)
         if (currentLeague.isFinished)
