@@ -34,6 +34,6 @@ public class LoadingController : MonoBehaviour
 
         op.allowSceneActivation = true;
 
-        GameManager.Instance.NotifyLoadingDone();
+        GameManager.Instance.LoadNextScene();
     }
 }
