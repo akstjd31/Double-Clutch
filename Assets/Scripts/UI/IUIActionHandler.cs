@@ -6,5 +6,6 @@ public interface IUIActionHandler
 public enum UIAction
 {
     Main_Start,
+    Tutorial,
     Main_Quit
 }

@@ -120,36 +120,25 @@ public class CalendarManager : Singleton<CalendarManager>
             gm.SetYear(y + 1);
         }
 
-        bool flag = false;
-        if (PlayerPrefs.GetInt(PrefKeys.KEY_FIRST_RUN_DONE) == 0)
+        // 1. 특수 이동 유무 확인
+        if (data.isSpecialWeek)
         {
-            // 튜토리얼 수행 완료
-            flag = true;
-            PlayerPrefs.SetInt(PrefKeys.KEY_FIRST_RUN_DONE, 1);
-            PlayerPrefs.Save();
-        }
-        else
-        {
-            // 1. 특수 이동 유무 확인
-            if (data.isSpecialWeek)
+            // 2. 시즌 아웃 조건 유무 확인
+            if (data.hasSeasonOut)
             {
-                // 2. 시즌 아웃 조건 유무 확인
-                if (data.hasSeasonOut)
-                {
-                    weekId = LeagueManager.Instance.IsPlayerSeasonOut() ? data.targetidSpecial : data.targetidDefault; // 리그 시즌아웃 처리는 따로 해줘야할듯 
-                }
-                else
-                {
-                    weekId = data.targetidSpecial;
-                }
+                weekId = LeagueManager.Instance.IsPlayerSeasonOut() ? data.targetidSpecial : data.targetidDefault; // 리그 시즌아웃 처리는 따로 해줘야할듯 
             }
             else
             {
-                weekId = data.targetidDefault;
+                weekId = data.targetidSpecial;
             }
-
-            data = _calReader.DataList[weekId - 1];
         }
+        else
+        {
+            weekId = data.targetidDefault;
+        }
+
+        data = _calReader.DataList[weekId - 1];
 
         // 만약 시즌아웃을 당했다면 현재 달과 타겟 달 차이를 비교하여 누적시킨 지원금을 추가로 받는다.
         int accSub = data.hasSeasonOut ? (data.month - calendar.month + 12) % 12 : 1;
@@ -159,10 +148,12 @@ public class CalendarManager : Singleton<CalendarManager>
 
         if (IsFundingDay())
         {
-            var m = gm.SaveData.money;
-
-            if (!flag)
+            // 튜토리얼 바로 직후 스케줄은 돈 지급 X
+            if (!(gm.SaveData.year == 0 && calendar.month == 3))
+            {
+                var m = gm.SaveData.money;
                 gm.SetMoney(m + (1000 * accSub));
+            }
         }
 
         gm.SetWeekId(weekId);
@@ -235,21 +226,21 @@ public class CalendarManager : Singleton<CalendarManager>
     public bool HasExistStartCutscene(int weekId) => _calReader.DataList[weekId - 1].startCutscene.Equals("");
 
     public bool HasExistEndCutscene(int weekId) => _calReader.DataList[weekId - 1].endCutscene.Equals("");
-     public bool CheckPhaseType(int weekId)
-     {
-         if (_calReader == null) return false;
+    public bool CheckPhaseType(int weekId)
+    {
+        if (_calReader == null) return false;
 
-         switch (_calReader.DataList[weekId - 1].phase)
-         {
-             case phaseType.League:
-                 
-                 return true;
+        switch (_calReader.DataList[weekId - 1].phase)
+        {
+            case phaseType.League:
 
-             // 경우에 따라 작성 (이벤트일떄) phaseType.Event ..
-         }
+                return true;
 
-         return IsEndPhase;
-     }
+                // 경우에 따라 작성 (이벤트일떄) phaseType.Event ..
+        }
+
+        return IsEndPhase;
+    }
 
     public Calendar GetCalendar() => this.calendar;
     public phaseType CurrentGetPhaseType()
@@ -280,7 +271,7 @@ public class CalendarManager : Singleton<CalendarManager>
             string desc = StringManager.Instance.GetString(_calReader.DataList[i].weekDescKey);
             descList.Add(desc);
         }
-            
+
 
         return descList;
     }
