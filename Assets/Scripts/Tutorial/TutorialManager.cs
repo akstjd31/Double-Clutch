@@ -1,11 +1,19 @@
-using System.Linq;
+using System;
+using System.Collections.Generic;
 using AYellowpaper.SerializedCollections;
 using UnityEngine;
 
 public class TutorialManager : Singleton<TutorialManager>
 {
     [SerializeField] private TutorialDataReader _reader;
-    [SerializeField] private int[] _chapterStartIndices;    // 인덱스: 챕터, 값: 챕터 별 시작 인덱스
+
+    // key: tutorialId, value: 시작 인덱스
+    [SerializeField] private SerializedDictionary<string, int> _chapterStartIndexData;
+
+    // key: tutorialId, value: 끝 인덱스
+    [SerializeField] private SerializedDictionary<string, int> _chapterEndIndexData;
+
+    public event Action<string> OnStartTutorial;
 
     protected override void Awake()
     {
@@ -14,81 +22,89 @@ public class TutorialManager : Singleton<TutorialManager>
 
     private void Start()
     {
-        if (_reader == null) return;
-        _chapterStartIndices = new int[GetChapterCalculator()];
+        if (_reader == null || _reader.DataList == null || _reader.DataList.Count == 0)
+            return;
 
-        for (int i = 0; i < _chapterStartIndices.Length; i++)
-            _chapterStartIndices[i] = -1;
+        _chapterStartIndexData = new SerializedDictionary<string, int>();
+        _chapterEndIndexData = new SerializedDictionary<string, int>();
 
-        SetChapterStartIndices();
+        SetChapterRangeData();
     }
 
-    public TutorialData? GetData(int idx)
+    public void StartTutorial(string id)
     {
-        if (_reader == null) return null;
-        if (_reader.DataList.Count <= idx) return null;
-        return _reader.DataList[idx];
+        if (_chapterStartIndexData == null) return;
+        if (!_chapterStartIndexData.ContainsKey(id)) return;
+
+        OnStartTutorial?.Invoke(id);
+        Debug.Log($"튜토리얼 시작! id:{id}");
+    }
+
+    public List<TutorialData> GetData(string id)
+    {
+        if (_reader == null || _reader.DataList == null) return null;
+        if (_chapterStartIndexData == null || _chapterEndIndexData == null) return null;
+        if (!_chapterStartIndexData.ContainsKey(id) || !_chapterEndIndexData.ContainsKey(id)) return null;
+
+        int start = _chapterStartIndexData[id];
+        int end = _chapterEndIndexData[id];
+
+        var result = new List<TutorialData>();
+
+        for (int i = start; i <= end; i++)
+        {
+            result.Add(_reader.DataList[i]);
+        }
+
+        return result;
+    }
+
+    private void SetChapterRangeData()
+    {
+        if (_reader == null || _reader.DataList == null) return;
+
+        var dataList = _reader.DataList;
+
+        for (int i = 0; i < dataList.Count; i++)
+        {
+            string tutorialId = dataList[i].tutorialId;
+
+            // 시작 인덱스 최초 1회 저장
+            if (!_chapterStartIndexData.ContainsKey(tutorialId))
+            {
+                _chapterStartIndexData[tutorialId] = i;
+            }
+
+            // 끝 인덱스는 매번 갱신하면 마지막 값이 남음
+            _chapterEndIndexData[tutorialId] = i;
+        }
     }
 
     public int GetDataListLength()
     {
-        if (_reader == null) return -1;
+        if (_reader == null || _reader.DataList == null) return -1;
         return _reader.DataList.Count;
-    }
-
-    // 튜토리얼 챕터별 길이 계산
-    private int GetChapterCalculator()
-    {
-        if (_reader == null) return -1;
-        int max = -1;
-        foreach (var data in _reader.DataList)
-        {
-            string id = data.tutorialId;
-            int n = int.Parse(id[id.Length - 1].ToString());
-            if (max < n) max = n;
-        }
-
-        return max;
-    }
-
-    // 챕터별 시작 인덱스 계산 후 값 집어넣기
-    private void SetChapterStartIndices()
-    {
-        if (_reader == null) return;
-        if (_chapterStartIndices == null) return;
-
-        for (int i = 0; i < _chapterStartIndices.Length; i++)
-        {
-            foreach (var data in _reader.DataList)
-            {
-                string id = data.tutorialId;
-                int idLastNum = int.Parse(id.Substring(id.Length-2));
-                
-                // 아직 값이 안들어가있다면
-                if (_chapterStartIndices[i] == -1)
-                {
-                    // 같은 그룹중에서
-                    if (i == idLastNum - 1)
-                    {
-                        string slide = data.slideOrder;
-                        int slideLastNum = int.Parse(slide.Substring(slide.Length-2));
-                        _chapterStartIndices[i] = slideLastNum - 1;
-                    }
-                }
-            }
-        }
     }
 
     public int GetChapterArrayLength()
     {
-        if (_chapterStartIndices == null) return -1;
-        return _chapterStartIndices.Length;
+        if (_chapterStartIndexData == null) return -1;
+        return _chapterStartIndexData.Count;
     }
 
-    // 챕터 번호를 입력하면 해당 챕터의 첫 시작 인덱스를 알려줌
-    public int GetChapterStartIndex(int index)
+    public int GetChapterStartIndex(string id)
     {
-        if (_chapterStartIndices == null) return -1;
-        return _chapterStartIndices[index];
+        if (_chapterStartIndexData == null) return -1;
+        if (!_chapterStartIndexData.ContainsKey(id)) return -1;
+
+        return _chapterStartIndexData[id];
+    }
+
+    public int GetChapterEndIndex(string id)
+    {
+        if (_chapterEndIndexData == null) return -1;
+        if (!_chapterEndIndexData.ContainsKey(id)) return -1;
+
+        return _chapterEndIndexData[id];
     }
 }

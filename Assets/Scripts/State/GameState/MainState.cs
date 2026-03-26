@@ -31,9 +31,9 @@ public class MainState : IState, IUIActionHandler
                 NextStep<LobbyState>(SceneName.LOBBY);
                 break;
             
-            case UIAction.Tutorial:
-                NextStep<TutorialState>(SceneName.TUTORIAL);
-                break;
+            // case UIAction.Tutorial:
+            //     NextStep<TutorialState>(SceneName.TUTORIAL);
+            //     break;
 
             case UIAction.Main_Quit:
 #if UNITY_EDITOR

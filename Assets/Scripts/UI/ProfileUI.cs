@@ -202,7 +202,7 @@ public class ProfileUI : MonoBehaviour
 
             gm.InitData(data);
             CalendarManager.Instance.CalcWeek(data.weekId, gm);
-            gm.Dispatch(UIAction.Tutorial);
+            gm.Dispatch(UIAction.Main_Start);
         }
 
         if (_selectedData.HasValue && _selectedData.Value.playerImage != null)
