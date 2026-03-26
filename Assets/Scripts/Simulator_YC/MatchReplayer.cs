@@ -298,8 +298,12 @@ public class MatchReplayer : MonoBehaviour
             // 애니메이션 재생 시간을 고정합니다. (기본 1초)
 
             float baseDuration = 1.0f;
+            if (log.EventType == "TRANSITION")
+            {
+                baseDuration = 0.2f; 
+            }
             float finalDuration = baseDuration / speed;
-
+            Debug.Log($"<color=magenta>[리플레이 재생]</color> 이벤트:{log.EventType} | 텍스트:'{log.LogText}' | 화면 대기시간:{finalDuration}초");
             // 다음 턴을 위해 값 갱신
             _previousRemainTime = endRemainTime;
 
@@ -343,7 +347,18 @@ public class MatchReplayer : MonoBehaviour
                 }
                 else
                 {
-                    ballRT.DOAnchorPos(targetUIPos, finalDuration * 0.6f).SetId("MatchReplay");
+                    if (log.EventType == "PassSucc" || log.EventType == "Steal")
+                    {
+                        ballRT.DOAnchorPos(targetUIPos, finalDuration * 0.6f)
+                              .SetDelay(finalDuration * 0.4f)  // 선수가 0.4초 동안 먼저 달려가게 둡니다.
+                              .SetEase(Ease.OutSine)
+                              .SetId("MatchReplay");
+                    }
+                    else
+                    {
+                        // 드리블이나 기타 상황
+                        ballRT.DOAnchorPos(targetUIPos, finalDuration * 0.6f).SetId("MatchReplay");
+                    }
                 }
             }
 
@@ -427,11 +442,15 @@ public class MatchReplayer : MonoBehaviour
     private bool IsShootEvent(string eventType)
     {
         return eventType == "GOAL" || eventType == "MISS" ||
-               eventType.Contains("Shoot") || eventType.Contains("Dunk") || eventType.Contains("BuzzerBeater");
+                eventType == "Shoot2ptSucc" || eventType == "Shoot3ptSucc" ||
+                eventType == "DunkSucc" || eventType == "BuzzerBeater" ||
+                eventType == "Shoot2ptFail" || eventType == "Shoot3ptFail";
     }
 
     private bool IsGoalEvent(string eventType)
     {
-        return eventType == "GOAL" || eventType.Contains("Succ") || eventType.Contains("BuzzerBeater");
+        return eventType == "GOAL" ||
+               eventType == "Shoot2ptSucc" || eventType == "Shoot3ptSucc" ||
+               eventType == "DunkSucc" || eventType == "BuzzerBeater";
     }
 }
