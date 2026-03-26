@@ -42,7 +42,10 @@ public class TournamentBoardPanel : MonoBehaviour
         // 타이틀 세팅
         var masterData = LeagueDataManager.Instance.GetMasterDataById(league.leagueId);
         if (_txtLeagueName != null && masterData.HasValue)
+        {
             _txtLeagueName.text = StringManager.Instance.GetString(masterData.Value.leagueNameKey);
+            StringManager.Instance.ApplyFont(_txtLeagueName);
+        }
 
         int currentRound = league.isFinished ? league.currentRoundIndex - 1 : league.currentRoundIndex;
         currentRound = Mathf.Max(0, currentRound);
@@ -53,6 +56,7 @@ public class TournamentBoardPanel : MonoBehaviour
         PopulateBracket(league, currentRound);
         bool cannotPlay = league.isFinished || league.isPlayerEliminated;
         _txtBtnAction.text = string.IsNullOrEmpty(actionText) ? (cannotPlay ? StringManager.Instance.GetString("UI_Popup_닫기") : StringManager.Instance.GetString("UI_Matchlog_경기준비")) : actionText;
+        StringManager.Instance.ApplyFont(_txtBtnAction);
 
         _btnAction.onClick.RemoveAllListeners();
         _btnAction.onClick.AddListener(() =>
@@ -210,7 +214,7 @@ public class TournamentBoardPanel : MonoBehaviour
     private void DisableAllNodes()
     {
         void DisableNodesInList(List<TournamentNode> nodes)
-        {
+        { 
             if (nodes == null) return;
             foreach (var n in nodes) n.gameObject.SetActive(false);
         }

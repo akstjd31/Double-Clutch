@@ -239,7 +239,7 @@ public class ResultState : IState
                     bool isTournamentEndForMe = currentLeague.isFinished || currentLeague.isPlayerEliminated;
 
                     // 상태에 따른 버튼 텍스트와 다음 액션 정의
-                    string btnText = isTournamentEndForMe ? "결산 확인" : "경기 준비";
+                    string btnText = isTournamentEndForMe ? StringManager.Instance.GetString("UI_Matchlog_결산확인") : StringManager.Instance.GetString("UI_Matchlog_경기준비");
                     Action nextAction = () =>
                     {
                         if (isTournamentEndForMe)

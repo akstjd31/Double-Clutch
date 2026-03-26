@@ -61,6 +61,7 @@ public class TournamentNode : MonoBehaviour
 
         // 팀 이름 렌더링
         _txtTeamName.text = GetTeamName(teamId);
+        StringManager.Instance.ApplyFont(_txtTeamName);
 
         // 플레이어 팀인지 확인
         bool isMyTeam = (teamId == StudentManager.TEAM_ID);
