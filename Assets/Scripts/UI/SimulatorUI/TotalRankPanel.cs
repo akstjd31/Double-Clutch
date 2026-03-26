@@ -47,6 +47,7 @@ public class TotalRankPanel : MonoBehaviour
             {
                 // 번역된 실제 리그 이름으로 텍스트 변경
                 _txtLeagueName.text = StringManager.Instance.GetString(masterData.Value.leagueNameKey);
+                StringManager.Instance.ApplyFont(_txtLeagueName);
             }
         }
 
