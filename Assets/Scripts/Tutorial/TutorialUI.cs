@@ -85,7 +85,7 @@ public class TutorialUI : MonoBehaviour
         _skipPanelObj.SetActive(true);
 
         var tmp = _skipPanelObj.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
-        tmp.text = $"튜토리얼을 스킵 하시겠습니까?\n튜토리얼 지원금 : {reward} G";
+        tmp.text = $"튜토리얼을 스킵 하시겠습니까?"; //\n튜토리얼 지원금 : {reward} G";
     }
 
     private void OnClickStartButton()
@@ -93,7 +93,7 @@ public class TutorialUI : MonoBehaviour
         _endPanelObj.SetActive(true);
 
         var tmp = _endPanelObj.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
-        tmp.text = $"튜토리얼 종료\n튜토리얼 지원금 : {reward} G";
+        tmp.text = $"튜토리얼 종료"; //\n튜토리얼 지원금 : {reward} G";
     }
 
     public void OnClickConfirmButton()
@@ -102,8 +102,8 @@ public class TutorialUI : MonoBehaviour
         if (gm == null) return;
 
         // 지원금 지급 후 로비 이동
-        gm.SetMoney(reward);
+        // gm.SetMoney(reward);
         // gm.SetTutorialCompleted(true);
-        gm.GoToLobby();
+        // gm.GoToLobby();
     }
 }
