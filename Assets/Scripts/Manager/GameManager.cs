@@ -12,12 +12,12 @@ public static class PrefKeys
 
 public static class SceneName
 {
-    public const string MAIN = "Test_Main";
-    public const string TUTORIAL = "Test_Tutorial";
-    public const string LOBBY = "Test_Lobby";
-    public const string LOADING = "Test_Loading";
-    public const string EVENT = "Test_Event";
-    public const string GRADUATION = "Test_Graduation";
+    public const string MAIN = "Main";
+    public const string TUTORIAL = "Tutorial";
+    public const string LOBBY = "Lobby";
+    public const string LOADING = "Loading";
+    public const string EVENT = "Event";
+    public const string GRADUATION = "Graduation";
 }
 
 public static class FilePath
