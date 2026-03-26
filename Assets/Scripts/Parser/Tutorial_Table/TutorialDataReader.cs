@@ -12,7 +12,7 @@ public class TutorialDataReader : DataReaderBase
     // ✅ ItemData처럼 List<GSTU_Cell> 한 줄을 받아서 파싱
     internal void UpdateStats(List<GSTU_Cell> list, int rowIndex)
     {
-        string slideOrder = null, tutorialImageId = null, narrationKey = null, dialogueKey = null, speakerKey = null;
+        string slideOrder = null, tutorialId = null, tutorialImageId = null, narrationKey = null, dialogueKey = null, speakerKey = null;
         bool isSkippable = false;
 
         for (int i = 0; i < list.Count; i++)
@@ -29,12 +29,18 @@ public class TutorialDataReader : DataReaderBase
                     slideOrder = val;
                     break;
 
+                case "tutorialId":
+                    tutorialId = val;
+                    break;
+
                 case "tutorialImageId":
                     tutorialImageId = val;
                     break;
+
                 case "narrationKey":
                     narrationKey = val;
                     break;
+
                 case "dialogueKey":
                     dialogueKey = val;
                     break;
@@ -50,7 +56,7 @@ public class TutorialDataReader : DataReaderBase
         }
 
 
-        DataList.Add(new TutorialData(slideOrder, tutorialImageId, narrationKey, dialogueKey, speakerKey,isSkippable
+        DataList.Add(new TutorialData(slideOrder, tutorialId, tutorialImageId, narrationKey, dialogueKey, speakerKey,isSkippable
         ));
     }
 

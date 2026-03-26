@@ -102,7 +102,7 @@ public class TutorialUI : MonoBehaviour
 
         // 지원금 지급 후 로비 이동
         gm.SetMoney(reward);
-        gm.SetTutorialCompleted(true);
+        // gm.SetTutorialCompleted(true);
         gm.GoToLobby();
     }
 }
