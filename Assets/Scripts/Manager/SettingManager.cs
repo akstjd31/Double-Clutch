@@ -4,7 +4,6 @@ using UnityEngine;
 public class SettingManager : Singleton<SettingManager>
 {
     [SerializeField] SettingSaveData _settingData;
-    const string SAVE_FILE = "SettingSave.json";
 
     [Header("외부 링크")]
     [SerializeField] private string _privacyPolicy = "https://sites.google.com/view/doubleclutch-policy/개인정보-처리방침";
@@ -121,14 +120,14 @@ public class SettingManager : Singleton<SettingManager>
     {
         if (SaveLoadManager.Instance != null)
         {
-            SaveLoadManager.Instance.Save(SAVE_FILE, _settingData);
+            SaveLoadManager.Instance.Save(FilePath.SETTING_PATH, _settingData);
             Debug.Log("설정 데이터 저장 완료");
         }
     }
 
     public void LoadSetting()
     {
-        if (SaveLoadManager.Instance.TryLoad(SAVE_FILE, out SettingSaveData data)) //저장된 데이터 로드
+        if (SaveLoadManager.Instance.TryLoad(FilePath.SETTING_PATH, out SettingSaveData data)) //저장된 데이터 로드
         {
             _settingData = data;
             Debug.Log("설정 데이터 로드 완료");

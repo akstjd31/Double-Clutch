@@ -29,7 +29,7 @@ public class ResultState : IState
         }
         int currentMatchId = 1; // 기본값 (리그가 진행 중이 아닐 경우 대비)
         var currentLeague = LeagueManager.Instance.CurrentLeague;
-        string myTeamId = StudentManager.TEAM_ID;
+        string myTeamId = PrefKeys.PLAYER_TEAM_ID;
 
         // 리그 마스터 및 보상 데이터 보관용 변수
         League_MasterData? masterData = null;

@@ -64,7 +64,7 @@ public class TournamentNode : MonoBehaviour
         StringManager.Instance.ApplyFont(_txtTeamName);
 
         // 플레이어 팀인지 확인
-        bool isMyTeam = (teamId == StudentManager.TEAM_ID);
+        bool isMyTeam = (teamId == PrefKeys.PLAYER_TEAM_ID);
 
         // 내부 텍스트 볼드 처리 (전체 라운드 슬롯 대상)
         _txtTeamName.fontStyle = isMyTeam ? FontStyles.Bold : FontStyles.Normal;
@@ -89,7 +89,7 @@ public class TournamentNode : MonoBehaviour
 
     private string GetTeamName(string teamId)
     {
-        if (teamId == StudentManager.TEAM_ID)
+        if (teamId == PrefKeys.PLAYER_TEAM_ID)
             return GameManager.Instance.SaveData.schoolName;
 
         var rivalData = LeagueDataManager.Instance.GetRivalMasterDataById(teamId);

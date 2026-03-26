@@ -251,7 +251,7 @@ public class TournamentBoardPanel : MonoBehaviour
         int uiDepth = currentRound + uiOffset;
 
         List<TournamentNode> targetList = GetUINodesByDepth(uiDepth) ?? _round1Nodes;
-        TournamentNode playerNode = targetList.Find(n => n.TeamId == StudentManager.TEAM_ID);
+        TournamentNode playerNode = targetList.Find(n => n.TeamId == PrefKeys.PLAYER_TEAM_ID);
 
         if (playerNode == null || _scrollRect == null) yield break;
 

@@ -50,7 +50,7 @@ public class TeamTierTieBreaker : ILeagueTieBreaker
 
     private teamTier GetTier(string teamId)
     {
-        if (teamId == StudentManager.TEAM_ID)
+        if (teamId == PrefKeys.PLAYER_TEAM_ID)
         {
             var levelData = LeagueDataManager.Instance.GetLeagueLevelDataById(_leagueLevelId);
             if (levelData.HasValue)

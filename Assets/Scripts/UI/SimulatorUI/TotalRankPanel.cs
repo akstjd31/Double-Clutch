@@ -50,7 +50,7 @@ public class TotalRankPanel : MonoBehaviour
             }
         }
 
-        string myTeamId = StudentManager.TEAM_ID;
+        string myTeamId = PrefKeys.PLAYER_TEAM_ID;
 
         // 순위표 생성
         foreach (var standing in league.standings)

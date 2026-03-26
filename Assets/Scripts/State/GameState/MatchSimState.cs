@@ -36,7 +36,7 @@ public class MatchSimState : IState
             return;
         }
 
-        string myTeamId = StudentManager.TEAM_ID;
+        string myTeamId = PrefKeys.PLAYER_TEAM_ID;
         string opponentTeamId = "Team_DOM_01"; // 리그 데이터가 없을 때를 대비한 기본값
 
         var currentLeague = LeagueManager.Instance.CurrentLeague;

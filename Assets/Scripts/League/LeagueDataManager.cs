@@ -181,7 +181,7 @@ public class LeagueDataManager : Singleton<LeagueDataManager>
         var ruleData = rule.Value;
 
         var priorityTeamIds = new List<string>();
-        string playerTeamId = LeagueManager.PLAYER_TEAM_ID;
+        string playerTeamId = PrefKeys.PLAYER_TEAM_ID;
 
         int seed = ruleData.weekId;
         var selector = new LeagueTeamSelector(seed);

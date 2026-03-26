@@ -28,7 +28,7 @@ public class EnemyTeamFactory : MonoBehaviour
         if (team == null || team.Members == null || team.Members[0] == null)
         {
             Debug.LogError($"[EnemyTeamFactory] {side} 팀 데이터가 Null입니다! 에러 방지용 임시 팀을 생성합니다.");
-            team = new Team(side == TeamSide.Home ? StudentManager.TEAM_ID : "Dummy_Team", side == TeamSide.Home);
+            team = new Team(side == TeamSide.Home ? PrefKeys.PLAYER_TEAM_ID : "Dummy_Team", side == TeamSide.Home);
 
             for (int i = 0; i < 5; i++)
             {

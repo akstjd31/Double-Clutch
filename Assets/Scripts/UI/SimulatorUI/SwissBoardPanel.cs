@@ -127,7 +127,7 @@ public class SwissBoardPanel : MonoBehaviour
         // 해당 라운드 진입 당시의 순위
         Dictionary<string, int> historyRankMap = GetHistoricalRanks(currentLeague, roundIndex);
 
-        string myTeamId = StudentManager.TEAM_ID;
+        string myTeamId = PrefKeys.PLAYER_TEAM_ID;
 
         // 이번 라운드의 전체 팀 목록
         List<string> orderedTeamIds = historyRankMap
@@ -178,7 +178,7 @@ public class SwissBoardPanel : MonoBehaviour
 
         SwissMatchRow row = Instantiate(_matchRowPrefab, _matchContainer);
 
-        bool isMyTeam = (teamId == StudentManager.TEAM_ID);
+        bool isMyTeam = (teamId == PrefKeys.PLAYER_TEAM_ID);
         int rank = rankMap.ContainsKey(teamId) ? rankMap[teamId] : 0;
 
         var record = GetCumulativeRecord(teamId, viewRoundIndex);

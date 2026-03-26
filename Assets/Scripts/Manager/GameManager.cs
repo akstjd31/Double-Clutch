@@ -8,27 +8,33 @@ using UnityEngine.SceneManagement;
 public static class PrefKeys
 {
     public const string MATCH_PREP_UI_INDEX = "MATCH_PREP_UI_INDEX";    // 경기 준비 단계 UI 인덱스
+    public const string PLAYER_TEAM_ID = "Player_Team";
 }
 
 public static class SceneName
 {
     public const string MAIN = "Main";
-    public const string TUTORIAL = "Tutorial";
+    public const string EVENT = "Event";
     public const string LOBBY = "Lobby";
     public const string LOADING = "Loading";
-    public const string EVENT = "Event";
+    public const string TUTORIAL = "Tutorial";
     public const string GRADUATION = "Graduation";
+    public const string SIMULATOR = "Simulator";
 }
 
 public static class FilePath
 {
+    public const string TEAM_PATH = "TeamSaveData.json";
+    public const string INFRA_PATH = "InfraSaveData.json";
     public const string PLAYER_PATH = "PlayerSaveData.json";
+    public const string LEAGUE_PATH = "LeagueSaveData.json";
+    public const string STUDENT_PATH = "StudentSaveData.json";
+    public const string SETTING_PATH = "SettingSaveData.json";
+    public const string RANDOM_EVENT_PATH = "RandomEventSaveData.json";
+    public const string GRADUATION_PATH = "GraduationAlbumSaveData.json";
+    public const string LEAGUE_RECORD_PATH = "LeagueRecordSaveData.json";
     public const string MY_STUDENT_MATCHING_PATH = "MyStudentMatchingSaveData.json";
     public const string RIVAL_STUDENT_MATCHING_PATH = "RivalStudentMatchingSaveData.json";
-    public const string INFRA_PATH = "InfraSaveData.json";
-    public const string LEAGUE_PATH = "LeagueSaveData.json";
-    public const string GRADUATION_PATH = "GraduationAlbumSaveData.json";
-    
 }
 
 public class GameManager : Singleton<GameManager>

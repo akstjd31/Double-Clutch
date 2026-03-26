@@ -101,7 +101,7 @@ public class FightingPower : MonoBehaviour
 
         if (currentLeague != null)
         {
-            string myTeamId = StudentManager.TEAM_ID;
+            string myTeamId = PrefKeys.PLAYER_TEAM_ID;
 
             // 현재 라운드의 내 매치 기록 찾기
             var myMatch = currentLeague.matchRecords.Find(m =>
@@ -221,7 +221,7 @@ public class FightingPower : MonoBehaviour
             Debug.Log($"<color=yellow>[씬 전환 직전 확인]</color> {testStd.Name} 선수를 시뮬레이터로 보냅니다! 현재 2점슛 스탯: {testStd.GetCurrentStat(potential.Stat2pt)}");
         }
 
-        GameManager.Instance.LoadMatchSceneWithData("Test_Simul", MyMatchingStudentList, RivalMatchingStudentList);
+        GameManager.Instance.LoadMatchSceneWithData(SceneName.SIMULATOR, MyMatchingStudentList, RivalMatchingStudentList);
     }
     
     // 리그 진행 상태에 따라 뒤로가기 버튼 켜기/끄기
