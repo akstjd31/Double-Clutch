@@ -496,7 +496,6 @@ public class CharacterList : MonoBehaviour
                 if (_activeSynergies.Count >= _synergyIcons.Length) break;
             }
         }
-
         
         UpdateSynergyUI();
     }
@@ -662,22 +661,5 @@ public class CharacterList : MonoBehaviour
 
         for (int i = 0; i < _positionCards.Length; i++)
             _positionCards[i] = null;
-    }
-
-    private void CheckBackButtonVisibility()
-    {
-        if (_backButtonObj == null) return;
-        if (LeagueManager.Instance == null) return;
-
-        bool isMidLeague = false;
-        var currentLeague = LeagueManager.Instance.CurrentLeague;
-
-        if (currentLeague != null && !currentLeague.isFinished)
-        {
-            if (currentLeague.currentRoundIndex > 0)
-                isMidLeague = true;
-        }
-
-        _backButtonObj.SetActive(!isMidLeague);
     }
 }
