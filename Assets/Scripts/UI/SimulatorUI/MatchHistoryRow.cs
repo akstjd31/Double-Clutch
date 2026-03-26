@@ -21,11 +21,14 @@ public class MatchHistoryRow : MonoBehaviour
     public void Init(int round, MatchResultRecord record, Action<int> onClickLog)
     {
         // 승/패 판별 (홈팀(유저) 점수 기준)
-        string result = record.HomeScore >= record.AwayScore ? "승" : "패";
+        string result = record.HomeScore >= record.AwayScore ? StringManager.Instance.GetString("UI_Match_승리") : StringManager.Instance.GetString("UI_Match_패배");
 
         // 텍스트 UI 적용
         if (_textRoundAndResult != null)
-            _textRoundAndResult.text = $"{round}라운드 {result}";
+        {
+            _textRoundAndResult.text = round+StringManager.Instance.GetString("UI_RoundBox_라운드")+" "+result;
+            StringManager.Instance.ApplyFont(_textRoundAndResult);
+        }
 
         if (_textHomeScore != null)
             _textHomeScore.text = record.HomeScore.ToString();

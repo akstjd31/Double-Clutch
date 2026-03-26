@@ -3,19 +3,28 @@ using TMPro;
 
 public class PlayerScoreRow : MonoBehaviour
 {
-    [SerializeField] private TextMeshProUGUI _textPosition; // Æ÷Áö¼Ç ÅØ½ºÆ® (C, PF, SF µî)
-    [SerializeField] private TextMeshProUGUI _textName;     // ¼±¼ö ÀÌ¸§ ÅØ½ºÆ®
-    [SerializeField] private TextMeshProUGUI _textScore;    // µæÁ¡ ÅØ½ºÆ®
+    [SerializeField] private TextMeshProUGUI _textPosition; // í¬ì§€ì…˜ í…ìŠ¤íŠ¸ (C, PF, SF ë“±)
+    [SerializeField] private TextMeshProUGUI _textName;     // ì„ ìˆ˜ ì´ë¦„ í…ìŠ¤íŠ¸
+    [SerializeField] private TextMeshProUGUI _textScore;    // ë“ì  í…ìŠ¤íŠ¸
 
     public void Init(string position, string playerName, int score)
     {
         if (_textPosition != null)
+        {
             _textPosition.text = position;
+            StringManager.Instance.ApplyFont(_textPosition);
+        }
 
         if (_textName != null)
+        {
             _textName.text = playerName;
+            StringManager.Instance.ApplyFont(_textName);
+        }
 
         if (_textScore != null)
+        {
             _textScore.text = score.ToString();
+            StringManager.Instance.ApplyFont(_textScore);
+        }
     }
 }

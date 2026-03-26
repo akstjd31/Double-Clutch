@@ -320,6 +320,8 @@ public class MatchEngine : MonoBehaviour
         // 아군(Home)일 때만 로그 텍스트, 컷인, 사운드를 적용
         if (_currentPossession == TeamSide.Home)
         {
+            StringManager.Instance.GetString("Str_Match_Log_0004");
+            StringManager.Instance.GetFormattedString("UI_Matchlog_승패", timeStr, log.PlayerName);
             log.LogText = success ? $"{timeStr} {log.PlayerName}이(가) 득점에 성공합니다!" : $"{timeStr} {log.PlayerName}의 슛이 빗나갑니다.";
 
             // 버저비터를 먼저 체크하고, 아닐 때만 덩크/3점 체크

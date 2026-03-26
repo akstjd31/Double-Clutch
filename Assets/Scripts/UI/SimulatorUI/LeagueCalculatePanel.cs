@@ -86,9 +86,10 @@ public class LeagueCalculatePanel : MonoBehaviour
             string titleFormat = StringManager.Instance.GetString("Str_League_Calc_Title");
             if (titleFormat == "Str_League_Calc_Title")
             {
-                titleFormat = "{0} 리그 결산";
+                titleFormat = "{0}"+" "+StringManager.Instance.GetString("UI_Simulator_리그결산");
             }
             _txtLeagueName.text = string.Format(titleFormat, leagueName);
+            StringManager.Instance.ApplyFont(_txtLeagueName);
         }
 
         // 우승팀 텍스트 출력
@@ -113,9 +114,10 @@ public class LeagueCalculatePanel : MonoBehaviour
             if (rankFormat == "Str_League_MyRank")
             {
                 // {0} = 팀명, {1} = 순위
-                rankFormat = "{0} 순위 :\n{1} 위";
+                rankFormat = "{0} "+StringManager.Instance.GetString("UI_Matchlog_그냥순위") +":"+"{1} "+StringManager.Instance.GetString("UI_Simulator_위");
             }
             _txtMyTeamRank.text = string.Format(rankFormat, myTeamName, myRank);
+            StringManager.Instance.ApplyFont(_txtMyTeamRank);
         }
 
         // 보상 금액 계산

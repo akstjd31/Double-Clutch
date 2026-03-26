@@ -12,6 +12,8 @@ public class TextBubbleScript : MonoBehaviour
     private void OnEnable()
     {
         _nameText.text = "";
+        StringManager.Instance.ApplyFont(_nameText);
         _printText.text = "";
+        StringManager.Instance.ApplyFont(_printText);
     }
 }
