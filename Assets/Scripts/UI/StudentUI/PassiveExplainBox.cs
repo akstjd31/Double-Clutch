@@ -46,8 +46,10 @@ public class PassiveExplainBox : MonoBehaviour
             case effectType.RateRebound:
             case effectType.MonthGoldUp:
             case effectType.MatchGoldUp:
+            case effectType.ReputationUp:
                 valueString = (_data.Value.effectValue * 100).ToString()+"%";
                 break;
+
             default:
                 valueString = (_data.Value.effectValue).ToString();
                 break;
