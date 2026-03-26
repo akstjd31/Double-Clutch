@@ -252,42 +252,54 @@ public class CalendarManager : Singleton<CalendarManager>
     public List<string> GetDescArrayByMonth(int weekId)
     {
         var descList = new List<string>();
-        int start = 0, end = 0;
-        // 1주면 계산 필요 없음
-        if (calendar.week == 1)
-        {
-            start = weekId;
-            end = weekId + MonthWeekTable.weekCounts[calendar.month - 1];
-        }
 
-        else
-        {
-            start = weekId - calendar.week;
-            end = start + MonthWeekTable.weekCounts[calendar.month - 1];
-        }
+        if (_calReader == null || _calReader.DataList == null || _calReader.DataList.Count == 0)
+            return descList;
 
-        for (int i = start; i < end; i++)
+        int currentMonthStart = weekId - calendar.week;
+        int currentMonthWeekCount = MonthWeekTable.weekCounts[calendar.month - 1];
+        int count = _calReader.DataList.Count;
+
+        for (int i = 0; i < currentMonthWeekCount; i++)
         {
-            string desc = StringManager.Instance.GetString(_calReader.DataList[i].weekDescKey);
+            int index = (currentMonthStart + i) % count;
+            if (index < 0)
+                index += count;
+
+            string desc = StringManager.Instance.GetString(_calReader.DataList[index].weekDescKey);
             descList.Add(desc);
         }
 
-
         return descList;
     }
-
     // 다음 달 1주차 ~ 마지막 주 데이터 리스트 계산
     public List<string> GetDescArrayByNextMonth(int weekId)
     {
         var descList = new List<string>();
 
-        // 남은 주 + 1
-        int start = weekId + MonthWeekTable.weekCounts[calendar.month - 1] - calendar.week;
-        int end = start + MonthWeekTable.weekCounts[calendar.month];
+        if (_calReader == null || _calReader.DataList == null || _calReader.DataList.Count == 0)
+            return descList;
+            
+        int currentMonthStart = weekId - calendar.week;
 
-        for (int i = start; i < end; i++)
+        int currentMonthWeekCount = MonthWeekTable.weekCounts[calendar.month - 1];
+
+        int nextMonth = calendar.month + 1;
+        if (nextMonth > 12)
+            nextMonth = 1;
+
+        int nextMonthWeekCount = MonthWeekTable.weekCounts[nextMonth - 1];
+
+        int start = currentMonthStart + currentMonthWeekCount;
+        int count = _calReader.DataList.Count;
+
+        for (int i = 0; i < nextMonthWeekCount; i++)
         {
-            string desc = StringManager.Instance.GetString(_calReader.DataList[i].weekDescKey);
+            int index = (start + i) % count;
+            if (index < 0)
+                index += count;
+
+            string desc = StringManager.Instance.GetString(_calReader.DataList[index].weekDescKey);
             descList.Add(desc);
         }
 

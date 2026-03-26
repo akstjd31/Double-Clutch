@@ -10,6 +10,8 @@ public class IndividualTrainingCommandPopUp : MonoBehaviour
     [SerializeField] Transform _trainingListParent;
     [SerializeField] TrainingBox _trainingBoxPrefab;
     [SerializeField] TextMeshProUGUI _nameText;
+    [SerializeField] TextMeshProUGUI _attackPoint;
+    [SerializeField] TextMeshProUGUI _defensePoint;
 
     private GenericObjectPool<TrainingBox> _pool;
     private List<TrainingBox> _boxList = new List<TrainingBox>();
@@ -60,6 +62,10 @@ public class IndividualTrainingCommandPopUp : MonoBehaviour
         StringManager manager = StringManager.Instance;
         string name = manager.GetString(_selectedStudent.Name[0]) + manager.GetString(_selectedStudent.Name[1]) + manager.GetString(_selectedStudent.Name[2]);
         _nameText.text = name + manager.GetString("UI_Popup_육성커맨드");
+
+        _attackPoint.text = _selectedStudent.Attack.ToString();
+        _defensePoint.text = _selectedStudent.Defense.ToString();
+
         manager.ApplyFont(_nameText);
     }
 

@@ -51,7 +51,9 @@ public class TournamentBoardPanel : MonoBehaviour
         if (_txtCurrentRound != null) _txtCurrentRound.text = $"{displayRound}";
         // 대진표 데이터 채우기 (16강)
         PopulateBracket(league, currentRound);
-        _txtBtnAction.text = string.IsNullOrEmpty(actionText) ? (league.isFinished ? "닫기" : "경기 준비") : actionText;
+        bool cannotPlay = league.isFinished || league.isPlayerEliminated;
+        _txtBtnAction.text = string.IsNullOrEmpty(actionText) ? (cannotPlay ? StringManager.Instance.GetString("UI_Popup_닫기") : StringManager.Instance.GetString("UI_Matchlog_경기준비")) : actionText;
+
         _btnAction.onClick.RemoveAllListeners();
         _btnAction.onClick.AddListener(() =>
         {
@@ -60,7 +62,7 @@ public class TournamentBoardPanel : MonoBehaviour
             {
                 _customAction.Invoke(); // 결산창 띄우기 실행!
             }
-            else if (!league.isFinished)
+            else if (!cannotPlay)
             {
                 GameManager.Instance.ChangeState<MatchPrepState>();
             }

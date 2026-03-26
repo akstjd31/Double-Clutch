@@ -57,19 +57,24 @@ public class LobbyUI : MonoBehaviour
         var currentLeague = LeagueManager.Instance.CurrentLeague;
         if (currentLeague != null)
         {
+            bool cannotPlay = currentLeague.isFinished || currentLeague.isPlayerEliminated;
+            string btnText = cannotPlay
+            ? StringManager.Instance.GetString("UI_Popup_닫기")
+            : StringManager.Instance.GetString("UI_Matchlog_경기준비");
+
             if (currentLeague.leagueType == "Tournament")
             {
                 // 스위스 패널이 켜져있다면 확실하게 꺼줍니다!
                 if (_swissBoardPanel != null) _swissBoardPanel.gameObject.SetActive(false);
-                if (_tournamentBoardPanel != null) _tournamentBoardPanel.OpenPanel(null, "경기 준비");
-                else GameManager.Instance.ChangeState<MatchPrepState>();
+                if (_tournamentBoardPanel != null) _tournamentBoardPanel.OpenPanel(null, btnText);
+                else if (!cannotPlay) GameManager.Instance.ChangeState<MatchPrepState>();
             }
             else
             {
                 // 토너먼트 패널이 켜져있다면 확실하게 꺼줍니다!
                 if (_tournamentBoardPanel != null) _tournamentBoardPanel.gameObject.SetActive(false);
-                if (_swissBoardPanel != null) _swissBoardPanel.OpenPanel(null, "경기 준비");
-                else GameManager.Instance.ChangeState<MatchPrepState>();
+                if (_swissBoardPanel != null) _swissBoardPanel.OpenPanel(null, btnText);
+                else if (!cannotPlay) GameManager.Instance.ChangeState<MatchPrepState>();
             }
         }
         else

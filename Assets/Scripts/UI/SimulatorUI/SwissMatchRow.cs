@@ -23,11 +23,17 @@ public class SwissMatchRow : MonoBehaviour
 
         // 순위 표기
         if (_txtRank != null)
-            _txtRank.text = rank > 0 ? $"{rank}위" : "-위";
+        {
+            _txtRank.text = rank > 0 ? StringManager.Instance.GetFormattedString("UI_Matchlog_위", rank) : "-위";
+            StringManager.Instance.ApplyFont(_txtRank);
+        }
 
         // 팀명 및 볼드 처리
         if (_txtTeamName != null)
+        {
             _txtTeamName.text = GetTeamName(teamId);
+            StringManager.Instance.ApplyFont(_txtTeamName);
+        }
 
         // 플레이어 팀 폰트 강조
         if (isPlayerTeam)
@@ -42,7 +48,12 @@ public class SwissMatchRow : MonoBehaviour
         }
 
         // 누적 승패 및 점수 표기
-        if (_txtRecord != null) _txtRecord.text = $"{win}승 {lose}패";
+        if (_txtRecord != null) 
+        {
+            _txtRecord.text = StringManager.Instance.GetFormattedString("UI_Matchlog_승패", win, lose);
+            StringManager.Instance.ApplyFont(_txtRecord);
+        }
+
         if (_txtScore != null) _txtScore.text = scoreStr;
     }
 

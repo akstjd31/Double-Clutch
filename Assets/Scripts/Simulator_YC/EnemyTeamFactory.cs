@@ -55,7 +55,7 @@ public class EnemyTeamFactory : MonoBehaviour
         // 팀 이름이 혹시 비어있으면 임시 이름 부여
         string teamName = string.IsNullOrEmpty(team.TeamNameKey) ?
                           (side == TeamSide.Home ? GameManager.Instance.SaveData.schoolName : "더미 봇 팀") :
-                          StringManager.Instance.GetString(team.TeamNameKey);
+                          team.TeamNameKey;
 
         MatchTeam matchTeam = new MatchTeam(side, teamName, archetypeId);
 

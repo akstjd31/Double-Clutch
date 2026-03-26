@@ -145,9 +145,9 @@ public class LeagueCalculatePanel : MonoBehaviour
             // UI 텍스트 적용 (오른쪽 값 영역에 "+ 000G" 형태로 출력)
             if (_txtMatchReward != null) _txtMatchReward.text = $"+ {matchReward:N0}G";
             if (_txtInfraBonus != null) _txtInfraBonus.text = $"+ {infraBonus:N0}G";
-            if (_txtSubtotalReward != null) _txtSubtotalReward.text = $"+ {subtotal:N0}G";
+            if (_txtSubtotalReward != null) _txtSubtotalReward.text = $"{subtotal:N0}G";
             if (_txtLeagueWinReward != null) _txtLeagueWinReward.text = $"+ {leagueWinReward:N0}G";
-            if (_txtTotalReward != null) _txtTotalReward.text = $"+ {totalReward:N0}G";
+            if (_txtTotalReward != null) _txtTotalReward.text = $"{totalReward:N0}G";
         }
     }
     // 팀 ID를 이름으로 변환

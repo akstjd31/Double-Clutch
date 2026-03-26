@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>
 /// CharacterList 카드 배치 및 보유 카드 리스트 관리
@@ -19,6 +20,8 @@ public class CharacterList : MonoBehaviour
     [SerializeField] private DropPosition[] _dropPositions;
     [SerializeField] private MercenaryMaker _mercenaryMaker;
 
+    [SerializeField] private Image[] _synergyIcons = new Image[10];
+
     private GenericObjectPool<PlayerCard> _playerCardPool;
 
     [SerializeField] private List<PlayerCard> _cardList = new List<PlayerCard>();
@@ -29,6 +32,9 @@ public class CharacterList : MonoBehaviour
 
     private PlayerCard _selectedCard;
     private DropPosition _selectedPosition;
+
+    private readonly HashSet<string> _tempTraitIds = new HashSet<string>();
+    private readonly List<PlayerSynergyData> _activeSynergies = new List<PlayerSynergyData>();    
 
     private int _colorIndex;
     private readonly Color[] _colors =
@@ -434,7 +440,7 @@ public class CharacterList : MonoBehaviour
     private void UpdateMatchStartUI()
     {
         bool canStart = CheckMaxPositionBatch();
-
+        CheckSynergy();
         if (_matchStartPanelObj != null)
             _matchStartPanelObj.SetActive(canStart);
 
@@ -445,6 +451,78 @@ public class CharacterList : MonoBehaviour
         {
             SaveBatchStudentData();
             PlayerPrefs.SetInt(PrefKeys.MATCH_PREP_UI_INDEX, 1);
+        }
+    }
+
+    private void CheckSynergy()
+    {        
+        if (StudentManager.Instance == null || StudentManager.Instance.GetFactory() == null) return;
+        
+        _tempTraitIds.Clear();
+        _activeSynergies.Clear();
+
+        
+        for (int i = 0; i < _positionCards.Length; i++)
+        {
+            var card = _positionCards[i];
+            if (card != null && card.Player != null && card.Player.TraitId != string.Empty)
+            {
+                _tempTraitIds.Add(card.Player.TraitData.traitId);
+            }
+        }
+        
+        if (_tempTraitIds.Count < 2)
+        {
+            ClearSynergyUI();
+            return;
+        }        
+
+        var allSynergyData = StudentManager.Instance.GetFactory().GetSynergyDataList();
+        if (allSynergyData == null)
+        {
+            Debug.LogError("SynergyDataList가 Null입니다! 데이터 로드 상태를 확인하세요.");
+            ClearSynergyUI();
+            return;
+        }
+
+        int totalCount = allSynergyData.Count;
+
+        for (int i = 0; i < totalCount; i++)
+        {
+            var synergy = allSynergyData[i];
+            if (_tempTraitIds.Contains(synergy.traitId1) && _tempTraitIds.Contains(synergy.traitId2))
+            {
+                _activeSynergies.Add(synergy);                
+                if (_activeSynergies.Count >= _synergyIcons.Length) break;
+            }
+        }
+
+        
+        UpdateSynergyUI();
+    }
+
+    private void UpdateSynergyUI()
+    {
+        for (int i = 0; i < _synergyIcons.Length; i++)
+        {
+            if (i < _activeSynergies.Count)
+            {
+                _synergyIcons[i].gameObject.SetActive(true);                
+                _synergyIcons[i].sprite = SpriteManager.Instance.GetSprite(_activeSynergies[i].synergyResource);
+            }
+            else
+            {
+                _synergyIcons[i].gameObject.SetActive(false);
+            }
+        }
+    }
+
+    private void ClearSynergyUI()
+    {
+        for (int i = 0; i < _synergyIcons.Length; i++)
+        {
+            if (_synergyIcons[i].gameObject.activeSelf)
+                _synergyIcons[i].gameObject.SetActive(false);
         }
     }
 

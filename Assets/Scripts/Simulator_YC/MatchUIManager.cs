@@ -138,7 +138,8 @@ public class MatchUIManager : MonoBehaviour
 
         //  팀 이름
         _textHomeName.text = state.HomeTeam.TeamName;
-        _textAwayName.text = state.AwayTeam.TeamName;
+        _textAwayName.text = StringManager.Instance.GetString(state.AwayTeam.TeamName);
+        StringManager.Instance.ApplyFont(_textAwayName);
     }
 
     // 중계 로그 표시 (타자기 효과 or 그냥 텍스트)
@@ -262,6 +263,22 @@ public class MatchUIManager : MonoBehaviour
     public void ShowResultPopup(string homeName, int homeScore, string awayName, int awayScore, int rewardAmount = 0, List<MatchPlayerData> players = null, Action onConfirm = null)
     {
         _onResultConfirmAction = onConfirm;
+
+        // 승패 판정 (동점은 연장전 로직상 발생하지 않음)
+        if (_textResultTitle != null)
+        {
+            if (homeScore > awayScore)
+            {
+                _textResultTitle.text = "승리";
+                _textResultTitle.color = new Color(1f, 0.8f, 0f); // 승리 시 텍스트 색상 (노란색/금색 계열)
+            }
+            else
+            {
+                _textResultTitle.text = "패배";
+                _textResultTitle.color = Color.white; // 패배 시 기본 흰색
+            }
+        }
+
         // 패널 켜기
         if (_resultPanel != null)
         {
@@ -271,23 +288,15 @@ public class MatchUIManager : MonoBehaviour
             if (_textResultHomeName != null) _textResultHomeName.text = homeName;
             if (_textResultHomeScore != null) _textResultHomeScore.text = homeScore.ToString();
 
-            if (_textResultAwayName != null) _textResultAwayName.text = awayName;
+            if (_textResultAwayName != null)
+            {
+                _textResultAwayName.text = StringManager.Instance.GetString(awayName);
+                StringManager.Instance.ApplyFont(_textResultAwayName);
+            }
+
             if (_textResultAwayScore != null) _textResultAwayScore.text = awayScore.ToString();
 
-            // 승패 판정 (동점은 연장전 로직상 발생하지 않음)
-            if (_textResultTitle != null)
-            {
-                if (homeScore > awayScore)
-                {
-                    _textResultTitle.text = "승리";
-                    _textResultTitle.color = new Color(1f, 0.8f, 0f); // 승리 시 텍스트 색상 (노란색/금색 계열)
-                }
-                else
-                {
-                    _textResultTitle.text = "패배";
-                    _textResultTitle.color = Color.white; // 패배 시 기본 흰색
-                }
-            }
+            
 
             // 지원금 세팅 (지원금 작업 완료 전까지는 0이나 임의의 값 출력)
             if (_textResultReward != null)
@@ -464,7 +473,7 @@ public class MatchUIManager : MonoBehaviour
         // 팀 이름 (주로 유저 팀을 지칭하는 경우가 많으므로 HomeTeam 기준 처리)
         // 상대팀을 칭할 경우를 대비해 {AwayTeamName} 도 예약해 둡니다.
         text = text.Replace("{TeamName}", state.HomeTeam.TeamName);
-        text = text.Replace("{AwayTeamName}", state.AwayTeam.TeamName);
+        text = text.Replace("{AwayTeamName}", StringManager.Instance.GetString(state.AwayTeam.TeamName));
 
         // 현재 쿼터
         text = text.Replace("{Quarter}", state.CurrentQuarter.ToString());
