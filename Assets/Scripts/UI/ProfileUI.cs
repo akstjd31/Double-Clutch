@@ -197,7 +197,7 @@ public class ProfileUI : MonoBehaviour
                 coachName = _playerNameField.text,
                 weekId = 8,
                 year = 0,
-                // isTutorialCompleted = false
+                tutorialCompleted = new bool[TutorialManager.Instance.GetChapterLength()]
             };
 
             gm.InitData(data);

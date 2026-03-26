@@ -17,13 +17,18 @@ public class TutorialManager : Singleton<TutorialManager>
         return _reader.DataList.Count;
     }
 
-    // 해당 튜토리얼이 몇 개로 나눠지는지?
-    // public int GetStepLength()
-    // {
-    //     if (_reader == null) return -1;
-    //     int max = 1;
-    //     foreach (var data in _reader.DataList)
-    //     {
-    //     }
-    // }
+    // 튜토리얼 챕터별 길이 계산
+    public int GetChapterLength()
+    {
+        if (_reader == null) return -1;
+        int max = -1;
+        foreach (var data in _reader.DataList)
+        {
+            string id = data.tutorialId;
+            int n = int.Parse(id[id.Length - 1].ToString());
+            if (max < n) max = n;
+        }
+
+        return max;
+    }
 }

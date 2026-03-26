@@ -655,7 +655,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 1546464312}
+    m_TransformParent: {fileID: 609830119}
     m_Modifications:
     - target: {fileID: 2124402030152151924, guid: 7a63830ffbb2f184fb5cdb6e77142317, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
@@ -986,7 +986,7 @@ GameObject:
   - component: {fileID: 609830121}
   - component: {fileID: 609830120}
   m_Layer: 5
-  m_Name: MainPanel
+  m_Name: TutorialPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1008,6 +1008,8 @@ RectTransform:
   - {fileID: 358509874}
   - {fileID: 1403246253}
   - {fileID: 266931411}
+  - {fileID: 735306088}
+  - {fileID: 443053318}
   m_Father: {fileID: 1546464312}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -1059,7 +1061,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 1546464312}
+    m_TransformParent: {fileID: 609830119}
     m_Modifications:
     - target: {fileID: 132841547694694051, guid: c5120bf8a68918e479de64080c4637c7, type: 3}
       propertyPath: m_Pivot.x
@@ -2384,8 +2386,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 609830119}
-  - {fileID: 735306088}
-  - {fileID: 443053318}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -2793,6 +2793,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 332e919c8dd50974a9dff55a8a0da2a1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TutorialManager
+  dontDestroyOnLoad: 1
   _reader: {fileID: 11400000, guid: 9b477e5168c7369469a307d1e0d613e4, type: 2}
 --- !u!4 &1813737346
 Transform:

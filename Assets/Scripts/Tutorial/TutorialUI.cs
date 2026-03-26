@@ -5,7 +5,6 @@ using System;
 
 public class TutorialUI : MonoBehaviour
 {
-    [SerializeField] private TutorialManager _tutorialMgr;
     [SerializeField] private Image _backgroundImage;
     [SerializeField] private TextMeshProUGUI _narraitionText;
     [SerializeField] private TextMeshProUGUI _nameText;
@@ -26,7 +25,6 @@ public class TutorialUI : MonoBehaviour
 
     private void Start()
     {
-        if (_tutorialMgr == null) return;
         OnClickNextButton();
 
         if (_nextButton == null) return;
@@ -53,7 +51,10 @@ public class TutorialUI : MonoBehaviour
 
     private void OnClickNextButton()
     {
-        var data = _tutorialMgr.GetData(index);
+        var tutorialMgr = TutorialManager.Instance;
+        if (tutorialMgr == null) return;
+
+        var data = tutorialMgr.GetData(index);
         if (data == null) return;
 
         var sMgr = StringManager.Instance;
@@ -65,11 +66,11 @@ public class TutorialUI : MonoBehaviour
         _nameText.text = sMgr.GetString(data.Value.speakerKey);
         _dialogueText.text = sMgr.GetString(data.Value.dialogueKey);
 
-        _pageText.text = $"{index + 1}/{_tutorialMgr.GetDataListLength()}";
+        _pageText.text = $"{index + 1}/{tutorialMgr.GetDataListLength()}";
         index++;
 
         // 마지막 슬라이드라면
-        if (_tutorialMgr.GetDataListLength() <= index)
+        if (tutorialMgr.GetDataListLength() <= index)
         {
             _skipButton.gameObject.SetActive(false);
 
