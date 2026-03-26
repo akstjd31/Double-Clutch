@@ -154,11 +154,14 @@ public class CalendarManager : Singleton<CalendarManager>
                 var m = gm.SaveData.money;
                 gm.SetMoney(m + (1000 * accSub));
             }
+
+            if (calendar.month == 3)
+                gm.ClearLeagueWinData();
         }
 
         gm.SetWeekId(weekId);
 
-        // 이벤트 페이즈면서 어떤 날인지 구분하는게 필요함. (ex. 졸업, 영입 등)
+        // 이벤트 페이즈면서 어떤 날인지 구분하는게 필요함.
         if (CheckEventDay(weekId))
         {
             if (calendar.month == 2 && calendar.week == 4)

@@ -205,6 +205,12 @@ public class GameManager : Singleton<GameManager>
         OnDataChanged?.Invoke();
     }
 
+    public void ClearLeagueWinData()
+    {
+        _saveData.leagueWinRecord.Clear();
+        OnDataChanged?.Invoke();
+    }
+
     public void SetYear(int year)
     {
         _saveData.year = year;
