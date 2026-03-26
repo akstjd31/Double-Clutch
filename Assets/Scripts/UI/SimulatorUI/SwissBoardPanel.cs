@@ -127,7 +127,7 @@ public class SwissBoardPanel : MonoBehaviour
         // 해당 라운드 진입 당시의 순위
         Dictionary<string, int> historyRankMap = GetHistoricalRanks(currentLeague, roundIndex);
 
-        string myTeamId = StudentManager.TEAM_ID;
+        string myTeamId = PrefKeys.PLAYER_TEAM_ID;
 
         // 이번 라운드의 전체 팀 목록
         List<string> orderedTeamIds = historyRankMap
@@ -178,7 +178,7 @@ public class SwissBoardPanel : MonoBehaviour
 
         SwissMatchRow row = Instantiate(_matchRowPrefab, _matchContainer);
 
-        bool isMyTeam = (teamId == StudentManager.TEAM_ID);
+        bool isMyTeam = (teamId == PrefKeys.PLAYER_TEAM_ID);
         int rank = rankMap.ContainsKey(teamId) ? rankMap[teamId] : 0;
 
         var record = GetCumulativeRecord(teamId, viewRoundIndex);
@@ -299,6 +299,7 @@ public class SwissBoardPanel : MonoBehaviour
         bool cannotPlay = currentLeague.isFinished || currentLeague.isPlayerEliminated;
         // 버튼 텍스트 세팅 수정
         _txtBtnAction.text = string.IsNullOrEmpty(_customActionText) ? (cannotPlay ? StringManager.Instance.GetString("UI_Popup_닫기") : StringManager.Instance.GetString("UI_Matchlog_경기준비")) : _customActionText;
+        StringManager.Instance.ApplyFont(_txtBtnAction);
 
         // 리그가 완전히 종료된 상태 (수정: _customAction.Invoke() 추가)
         if (cannotPlay)

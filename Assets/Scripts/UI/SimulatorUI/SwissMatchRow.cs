@@ -59,7 +59,7 @@ public class SwissMatchRow : MonoBehaviour
 
     private string GetTeamName(string teamId)
     {
-        if (teamId == StudentManager.TEAM_ID)
+        if (teamId == PrefKeys.PLAYER_TEAM_ID)
             return GameManager.Instance.SaveData.schoolName;
 
         var rivalData = LeagueDataManager.Instance.GetRivalMasterDataById(teamId);

@@ -101,7 +101,7 @@ public class LeagueCalculatePanel : MonoBehaviour
         }
 
         // 우리 팀 순위
-        string myTeamId = StudentManager.TEAM_ID;
+        string myTeamId = PrefKeys.PLAYER_TEAM_ID;
         var myStanding = league.standings.Find(s => s.teamId == myTeamId);
         string myTeamName = GameManager.Instance.SaveData.schoolName;
         int myRank = myStanding != null ? myStanding.rank : 99;
@@ -153,7 +153,7 @@ public class LeagueCalculatePanel : MonoBehaviour
     // 팀 ID를 이름으로 변환
     private string GetTeamName(string teamId)
     {
-        if (teamId == StudentManager.TEAM_ID)
+        if (teamId == PrefKeys.PLAYER_TEAM_ID)
             return GameManager.Instance.SaveData.schoolName;
 
         var rivalData = LeagueDataManager.Instance.GetRivalMasterDataById(teamId);

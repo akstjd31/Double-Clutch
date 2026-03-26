@@ -11,8 +11,6 @@ using UnityEngine;
 
 public class LeagueTeamManager : Singleton<LeagueTeamManager>
 {
-    const string SAVE_FILE = "TeamSave.json";
-
     // 리그 전 캐싱 데이터에 담긴 선수 목록  
     [SerializeField] List<string> _currentLeagueTeamIdList = new List<string>();
     [SerializeField] List<Team> _currentLeagueTeamList = new List<Team>();
@@ -37,7 +35,7 @@ public class LeagueTeamManager : Singleton<LeagueTeamManager>
         // 참가 중인 팀 리스트를 뒤져서, 유저 팀이 아닌 첫 번째 NPC 팀을 대신 던져줍니다.
         foreach (var fallbackTeam in _currentLeagueTeamList)
         {
-            if (fallbackTeam.TeamId != StudentManager.TEAM_ID)
+            if (fallbackTeam.TeamId != PrefKeys.PLAYER_TEAM_ID)
             {
                 return fallbackTeam;
             }
@@ -76,7 +74,7 @@ public class LeagueTeamManager : Singleton<LeagueTeamManager>
         foreach (var master in teamDataList)
         {           
             Team newTeam = null; 
-            if (master.teamId.Equals(LeagueManager.PLAYER_TEAM_ID))
+            if (master.teamId.Equals(PrefKeys.PLAYER_TEAM_ID))
                 newTeam = StudentManager.Instance.CurrentTeam;
             else
                 newTeam = new Team(master.teamId);
@@ -120,12 +118,12 @@ public class LeagueTeamManager : Singleton<LeagueTeamManager>
         TeamSaveData saveData = new TeamSaveData(_currentLeagueTeamList);
         
         if (SaveLoadManager.Instance != null)
-            SaveLoadManager.Instance.Save(SAVE_FILE, saveData);
+            SaveLoadManager.Instance.Save(FilePath.TEAM_PATH, saveData);
     }
 
     public void LoadGame()
     {
-        if (SaveLoadManager.Instance.TryLoad<TeamSaveData>(SAVE_FILE, out var data))
+        if (SaveLoadManager.Instance.TryLoad<TeamSaveData>(FilePath.TEAM_PATH, out var data))
         {
             // 1. 리스트 데이터 먼저 복구
             _currentLeagueTeamList = data.teamList;
@@ -151,7 +149,7 @@ public class LeagueTeamManager : Singleton<LeagueTeamManager>
             // 로드된 적군 선수들의 스탯/종족 데이터를 다시 연결(Init)해줍니다.
             foreach (var team in _currentLeagueTeamList)
             {
-                if (team.TeamId != StudentManager.TEAM_ID)
+                if (team.TeamId != PrefKeys.PLAYER_TEAM_ID)
                 {
                     foreach (var student in team.Members)
                     {

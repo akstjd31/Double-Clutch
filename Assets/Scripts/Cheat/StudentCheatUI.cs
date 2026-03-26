@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,6 +9,7 @@ public class StudentCheatUI : MonoBehaviour
     [SerializeField] private GameObject _scrollViewObj;
     [SerializeField] private GameObject _studentButtonObjPrefab;
     [SerializeField] private GameObject _statPanelObj;
+    [SerializeField] private List<Button> _stdButtonList;
     
 
     private void OnEnable()
@@ -25,7 +27,21 @@ public class StudentCheatUI : MonoBehaviour
 
             int index = i;
             newObj.GetComponentInChildren<TextMeshProUGUI>().text = stdName;
-            newObj.GetComponent<Button>().onClick.AddListener(() => OnStudentButtonClick(stdMgr.MyStudents[index]));
+
+            var btn = newObj.GetComponent<Button>();
+            btn.onClick.AddListener(() => OnStudentButtonClick(stdMgr.MyStudents[index]));
+
+            _stdButtonList.Add(btn);
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (_stdButtonList == null || _stdButtonList.Count < 1) return;
+        
+        foreach (var btn in _stdButtonList)
+        {
+            btn.onClick.RemoveAllListeners();
         }
     }
 

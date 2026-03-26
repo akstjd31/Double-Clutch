@@ -5,7 +5,6 @@ using UnityEngine;
 [System.Serializable]
 public class EventManager : Singleton<EventManager>
 {
-    private const string SAVE_FILE = "RandomEventSave.json";
     Dictionary<int, List<RandomEvent>> _saveEventList = new();
 
     #region DB
@@ -175,12 +174,12 @@ public class EventManager : Singleton<EventManager>
             });
         }
 
-        SaveLoadManager.Instance.Save(SAVE_FILE, saveData);
+        SaveLoadManager.Instance.Save(FilePath.RANDOM_EVENT_PATH, saveData);
     }
 
     public void LoadGame()
     {
-        if (SaveLoadManager.Instance.TryLoad<RandomEventSaveData>(SAVE_FILE, out var data))
+        if (SaveLoadManager.Instance.TryLoad<RandomEventSaveData>(FilePath.RANDOM_EVENT_PATH, out var data))
         {
             _candidateDictionary.Clear();
 
