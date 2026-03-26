@@ -206,6 +206,8 @@ public class ResultState : IState
 
                 Debug.Log($"[리그 우승!] 상금 {rewardData.Value.rewardGoldWin}G 및 명성 {rewardData.Value.rewardFameWin} 획득!");
             }
+            
+            _gm.SaveData.leagueWinRecord.Add(new LeagueWinRecord(currentLeague.leagueId, myStanding.rank == 1));
         }
 
         // 지원금 획득 (GameManager 안에서 Save까지 자동 진행됨)
