@@ -1,9 +1,9 @@
 using UnityEngine;
 using UnityEngine.UI;
+using Game.Constants;
 
 public class MainUI : MonoBehaviour
 {
-    private const string MAIN_SOUND_KEY = "BGM_Start";
     [SerializeField] private GameObject tutorialObj;
     [SerializeField] private Button _startButton;
 
@@ -15,9 +15,7 @@ public class MainUI : MonoBehaviour
 
     private void Start()
     {
-        if (AudioManager.Instance == null) return;
-        var mainClip = AudioManager.Instance.GetAudioClip(MAIN_SOUND_KEY);
-        AudioManager.Instance.PlaySound(mainClip);
+        PlaySound();
     }
 
     private void OnDestroy()
@@ -31,6 +29,12 @@ public class MainUI : MonoBehaviour
     {
         if (_startButton != null)
             _startButton.onClick.RemoveListener(OnClickGameStart);
+    }
+
+    private void PlaySound()
+    {
+        if (AudioManager.Instance == null) return;
+        AudioManager.Instance.PlaySound(SoundName.BGM_START);
     }
 
     private void Update()

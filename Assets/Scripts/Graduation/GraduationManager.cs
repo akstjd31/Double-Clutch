@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using static UnityEngine.GraphicsBuffer;
+using Game.Constants;
 
 public class GraduationManager : MonoBehaviour
 {
@@ -59,6 +59,17 @@ public class GraduationManager : MonoBehaviour
         //처음 학생 프로필 띄우기
         _promotionPanel.GetList();
         _promotionPanel.UpdateProfile();
+    }
+
+    private void OnEnable()
+    {
+        PlaySound();
+    }
+
+    private void PlaySound()
+    {
+        if (AudioManager.Instance == null) return;
+        AudioManager.Instance.PlaySound(SoundName.BGM_GRADUATION);
     }
 
     private void ListCreat()

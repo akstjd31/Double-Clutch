@@ -1,5 +1,6 @@
 using TinyJSON;
 using UnityEngine;
+using Game.Constants;
 
 public class SettingManager : Singleton<SettingManager>
 {

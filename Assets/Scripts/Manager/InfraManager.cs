@@ -2,6 +2,7 @@ using System;
 using AYellowpaper.SerializedCollections;
 using UnityEngine;
 using System.Collections.Generic;
+using Game.Constants;
 
 /// <summary>
 /// 리더기 호출, 데이터 관리

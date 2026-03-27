@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Game.Constants;
 
 public class CharacterRecruitPanel : MonoBehaviour
 {
@@ -12,6 +13,18 @@ public class CharacterRecruitPanel : MonoBehaviour
     private void OnEnable()
     {
         Init();
+        PlaySound(SoundName.BGM_SCOUT);
+    }
+
+    private void OnDisable()
+    {
+        PlaySound(SoundName.BGM_LOBBY_01);
+    }
+
+    private void PlaySound(string id)
+    {
+        if (AudioManager.Instance == null) return;
+        AudioManager.Instance.PlaySound(id);
     }
 
     public void Init()

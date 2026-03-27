@@ -1,4 +1,5 @@
 using UnityEngine;
+using Game.Constants;
 
 public class GraduationAlbumManager : Singleton<GraduationAlbumManager>
 {

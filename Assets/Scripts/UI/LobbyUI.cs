@@ -2,6 +2,7 @@ using UnityEngine;
 using TMPro;
 using System.Collections;
 using UnityEngine.UI;
+using Game.Constants;
 
 public class LobbyUI : MonoBehaviour
 {
@@ -50,7 +51,23 @@ public class LobbyUI : MonoBehaviour
             _matchButton.onClick.RemoveAllListeners();
             _matchButton.onClick.AddListener(OnClickMatchButton);
         }
+
+        PlaySound();
     }
+
+    private void OnDestroy()
+    {
+        if (AudioManager.Instance == null) return;
+        AudioManager.Instance.StopSound();
+    }
+
+
+    private void PlaySound()
+    {
+        if (AudioManager.Instance == null) return;
+        AudioManager.Instance.PlaySound(SoundName.BGM_LOBBY_01);
+    }
+
     // 매치 버튼을 눌렀을 때 실행될 함수
     public void OnClickMatchButton()
     {

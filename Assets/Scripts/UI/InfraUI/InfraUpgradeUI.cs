@@ -2,6 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem.XR;
 using UnityEngine.UI;
+using Game.Constants;
 
 
 public class InfraUpgradeUI : MonoBehaviour
@@ -26,21 +27,38 @@ public class InfraUpgradeUI : MonoBehaviour
     [SerializeField] private Sprite _analyticsRoom;
     [SerializeField] private Sprite _conditioningGym;
 
-
-    private void Awake()
-    {
-        
-    }
     private void OnEnable()
     {
         StringManager.OnLanguageChanged += Refresh;
     }
+
+    private void PlaySound(infraEffectType type)
+    {
+        if (type.Equals(infraEffectType.None)) return;
+        if (AudioManager.Instance == null) return;
+
+        string name = "";
+        switch (type)
+        {
+            case infraEffectType.AddTactic: name = SoundName.BGM_INFRA_02; break;
+            case infraEffectType.RestCostDiscount: name = SoundName.BGM_INFRA_06; break;
+            case infraEffectType.RewardGoldBonus: name = SoundName.BGM_INFRA_04; break;
+            case infraEffectType.TrainingBonus: name = SoundName.BGM_INFRA_05; break;
+            case infraEffectType.AddRoster: name = SoundName.BGM_INFRA_03; break;
+        }
+
+        AudioManager.Instance.PlaySound(name);
+    }
+
     private void OnDisable()
     {
         StringManager.OnLanguageChanged -= Refresh;
         _upgradeButton.onClick.RemoveAllListeners();
         if (_controller != null)
             _controller.Upgraded -= UpdateLevelText;
+
+        if (AudioManager.Instance == null) return;
+        AudioManager.Instance.PlaySound(SoundName.BGM_INFRA);
     }
 
     public void Init(InfraController controller, Infra infra)
@@ -57,6 +75,7 @@ public class InfraUpgradeUI : MonoBehaviour
         SetBackGroundImage(infra.infraEffectType);
 
         Refresh();
+        PlaySound(_infra.infraEffectType);
     }
     private void Refresh()
     {

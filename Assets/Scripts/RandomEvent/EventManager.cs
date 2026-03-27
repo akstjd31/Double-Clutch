@@ -1,6 +1,7 @@
 using NUnit.Framework;
 using System.Collections.Generic;
 using UnityEngine;
+using Game.Constants;
 
 [System.Serializable]
 public class EventManager : Singleton<EventManager>

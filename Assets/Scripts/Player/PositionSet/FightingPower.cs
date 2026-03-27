@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using Game.Constants;
 
 public class FightingPower : MonoBehaviour
 {
@@ -38,6 +39,17 @@ public class FightingPower : MonoBehaviour
     private void OnEnable()
     {
         StringManager.OnLanguageChanged += RefreshUI;
+
+        PlaySound();
+    }
+
+    private void PlaySound()
+    {
+        var aMgr = AudioManager.Instance;
+        if (aMgr == null) return;
+
+        if (!aMgr.IsSameClip(SoundName.BGM_BATTLE_SELECTION))
+            aMgr.PlaySound(SoundName.BGM_BATTLE_SELECTION);
     }
 
     private void OnDisable()
