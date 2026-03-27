@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -6,7 +7,10 @@ public class EndingManager : MonoBehaviour
     [SerializeField] EndingEventDataReader _endingEventDataReader;
     [SerializeField] ScriptDataReader _endingScriptDataReader;    
     [SerializeField] EndingRollDataReader _endingRollDataReader;
+
     [SerializeField] EndingUIController _uiController;
+    [SerializeField] EndingRollController _endingRollController;
+
     [SerializeField] Button _nextButton;
     public static EndingManager Instance;
 
@@ -61,4 +65,24 @@ public class EndingManager : MonoBehaviour
         }        
     }
 
+    private List<Student> GetEveryStudentList()
+    {
+        List<GraduationStudent> graduationList = GraduationAlbumManager.Instance.SaveData.graduationStudentList;
+        List<Student> studentList = new List<Student>();
+        for (int i = 0; i < graduationList.Count; i++)
+        {
+            List<Student> students = graduationList[0].studentList;
+
+            for (int j = 0; j < students.Count; j++)
+            {
+                studentList.Add(students[j]);
+            }
+        }
+        for (int i = 0; i < StudentManager.Instance.MyStudents.Count; i++)
+        {
+            studentList.Add(StudentManager.Instance.MyStudents[i]);
+        }        
+        studentList.Sort((a, b) => b.StudentId.CompareTo(a.StudentId));
+        return studentList;
+    }
 }
