@@ -10,7 +10,11 @@ public class TournamentNode : MonoBehaviour
 
     [Header("Visual Elements")]
     [SerializeField] private CanvasGroup _canvasGroup; // 전체를 어둡게 만들기 위한 컴포넌트
-    [SerializeField] private Image _outPipeImage;      // 다음 라운드로 이어지는 선(파이프) 이미지
+
+
+    [SerializeField] private Image _verticalPipeImage; // 위/아래로 꺾이는 세로선 
+    [SerializeField] private Image _inPipeImage;       // 노드에서 오른쪽으로 뻗는 짧은 가로선
+    [SerializeField] private Image _outPipeImage;      // 다음 라운드로 이어지는 겹치는 가로선
 
     // 승/패 점수 표시용 텍스트 (프리팹의 '승 000-000' 텍스트 연결)
     [SerializeField] private TextMeshProUGUI _txtScore;
@@ -18,8 +22,16 @@ public class TournamentNode : MonoBehaviour
     public string TeamId { get; private set; }
     public int RoundIndex { get; private set; }
 
+    public void DisableNode()
+    {
+        gameObject.SetActive(false);
+        if (_verticalPipeImage != null) _verticalPipeImage.gameObject.SetActive(false);
+        if (_inPipeImage != null) _inPipeImage.gameObject.SetActive(false);
+        if (_outPipeImage != null) _outPipeImage.gameObject.SetActive(false);
+    }
+
     // 이 슬롯이 현재 라운드인지 판별
-    public void Init(string teamId, int roundIndex, bool isCurrentRound, bool isEliminatedInThisMatch, bool isWinnerOfThisMatch, string scoreText = "")
+    public void Init(string teamId, int roundIndex, bool isCurrentRound, bool isEliminatedInThisMatch, bool isWinnerOfThisMatch, bool isAdvancedToHere = false, string scoreText = "")
     {
         TeamId = teamId;
         RoundIndex = roundIndex;
@@ -32,6 +44,10 @@ public class TournamentNode : MonoBehaviour
         }
         // 사용되는 노드이므로 활성화
         gameObject.SetActive(true);
+
+        // 경기 준비 중인 애들 선 다시 켜주기! (제가 빼먹었던 부분)
+        if (_verticalPipeImage != null) _verticalPipeImage.gameObject.SetActive(true);
+        if (_inPipeImage != null) _inPipeImage.gameObject.SetActive(true);
 
         // 점수 텍스트 반영 로직
         if (_txtScore != null)
@@ -48,6 +64,8 @@ public class TournamentNode : MonoBehaviour
                 _txtScore.text = scoreText;
             }
         }
+        Color highlightColor = new Color(1f, 0.84f, 0f); // 진출 노란색
+        Color defaultColor = Color.white;                // 기본 흰색
 
         // 아직 미정인 슬롯 ('?' 처리)
         if (teamId == "?")
@@ -76,15 +94,31 @@ public class TournamentNode : MonoBehaviour
             _canvasGroup.alpha = isEliminatedInThisMatch ? 0.4f : 1f;
         }
 
-        // 승리한 팀의 박스에서 나가는 선만 노란색으로 변경
-        if (_outPipeImage != null)
-        {
-            _outPipeImage.color = isWinnerOfThisMatch ? new Color(1f, 0.84f, 0f) : Color.white;
-        }
         // 슬롯 테두리 하이라이트 (현재 진행 중인 라운드의 내 팀 슬롯에만 한정)
         if (_outline != null)
         {
             _outline.enabled = (isMyTeam && isCurrentRound);
+        }
+        //  내 박스에서 뻗어나가는 짧은 가로선과 반쪽짜리 세로선 (안 겹침) -> 이겼으면 노랑, 졌으면 하양
+        Color myColor = isWinnerOfThisMatch ? highlightColor : defaultColor;
+        if (_verticalPipeImage != null) _verticalPipeImage.color = myColor;
+        if (_inPipeImage != null) _inPipeImage.color = myColor;
+
+        //  다음 노드로 향하는 긴 가로선 (_outPipeImage)
+        if (_outPipeImage != null)
+        {
+            if (isWinnerOfThisMatch)
+            {
+                // 이겼으면 켜고 노란색 칠하기
+                _outPipeImage.gameObject.SetActive(true);
+                _outPipeImage.color = highlightColor;
+            }
+            else if (!isEliminatedInThisMatch && !isWinnerOfThisMatch)
+            {
+                // 아직 경기 전이면 켜고 하얀색 유지
+                _outPipeImage.gameObject.SetActive(true);
+                _outPipeImage.color = defaultColor;
+            }
         }
     }
 

@@ -183,7 +183,7 @@ public class TournamentBoardPanel : MonoBehaviour
                         bool isWinner = n.TeamId == winnerId;
                         bool isEliminated = n.TeamId == loserId;
                         // Init 호출: isEliminated로 박스 밝기 조절, isWinner로 선 색상 조절
-                        n.Init(n.TeamId, match.roundIndex, false, isEliminated, isWinner, scoreString);
+                        n.Init(n.TeamId, match.roundIndex, false, isEliminated, isWinner, match.roundIndex > 0, scoreString);
                     }
                 }
 
@@ -194,7 +194,7 @@ public class TournamentBoardPanel : MonoBehaviour
                     {
                         bool isWinner = n.TeamId == winnerId;
                         bool isEliminated = n.TeamId == loserId;
-                        n.Init(n.TeamId, match.roundIndex, false, isEliminated, isWinner, scoreString);
+                        n.Init(n.TeamId, match.roundIndex, false, isEliminated, isWinner, match.roundIndex > 0, scoreString);
                     }
                 }
             }
@@ -203,11 +203,11 @@ public class TournamentBoardPanel : MonoBehaviour
             List<TournamentNode> nextNodes = GetUINodesByDepth(nextUiDepth);
             if (nextNodes != null && matchIndexInRound < nextNodes.Count)
             {
-                nextNodes[matchIndexInRound].Init(winnerId, match.roundIndex + 1, (currentRound == (match.roundIndex + 1)), false, false, "");
+                nextNodes[matchIndexInRound].Init(winnerId, match.roundIndex + 1, (currentRound == (match.roundIndex + 1)), false, false, true, "");
             }
             else if (nextUiDepth == 4 && _winnerNode != null)
             {
-                _winnerNode.Init(winnerId, match.roundIndex + 1, (currentRound == (match.roundIndex + 1)), false, true, ""); // 최종 우승 노드는 선이 나가지 않지만 밝게 유지
+                _winnerNode.Init(winnerId, match.roundIndex + 1, (currentRound == (match.roundIndex + 1)), false, true, true, ""); // 최종 우승 노드는 선이 나가지 않지만 밝게 유지
             }
         }
     }
@@ -221,13 +221,13 @@ public class TournamentBoardPanel : MonoBehaviour
         void DisableNodesInList(List<TournamentNode> nodes)
         { 
             if (nodes == null) return;
-            foreach (var n in nodes) n.gameObject.SetActive(false);
+            foreach (var n in nodes) n.DisableNode();
         }
         DisableNodesInList(_round1Nodes);
         DisableNodesInList(_round2Nodes);
         DisableNodesInList(_round3Nodes);
         DisableNodesInList(_round4Nodes);
-        if (_winnerNode != null) _winnerNode.gameObject.SetActive(false);
+        if (_winnerNode != null) _winnerNode.DisableNode();
 
     }
     // 승리한 노드의 파이프만 불을 켜주기 위한 보조 함수
