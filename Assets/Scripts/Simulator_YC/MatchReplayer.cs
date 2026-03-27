@@ -300,7 +300,7 @@ public class MatchReplayer : MonoBehaviour
             float baseDuration = 1.0f;
             if (log.EventType == "TRANSITION")
             {
-                baseDuration = 0.2f; 
+                baseDuration = 1.0f; 
             }
             float finalDuration = baseDuration / speed;
             Debug.Log($"<color=magenta>[리플레이 재생]</color> 이벤트:{log.EventType} | 텍스트:'{log.LogText}' | 화면 대기시간:{finalDuration}초");
