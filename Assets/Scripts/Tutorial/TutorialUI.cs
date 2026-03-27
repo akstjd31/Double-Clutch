@@ -44,7 +44,7 @@ public class TutorialUI : MonoBehaviour
             TutorialManager.Instance.OnStartTutorial += StartTutorialUI;
 
         // reward = InfraManager.Instance.GetCostListByEffectType(infraEffectType.TrainingBonus)[1];
-    
+
         if (CalendarManager.Instance == null) return;
 
         var gm = GameManager.Instance;
@@ -52,7 +52,7 @@ public class TutorialUI : MonoBehaviour
 
         var data = gm.SaveData;
         var tId = CalendarManager.Instance.GetTutorialId(data.weekId - 1);
-        
+
         int idx = int.Parse(tId[tId.Length - 1].ToString()) - 1;
         if (!data.tutorialCompleted[idx])
         {
@@ -88,6 +88,7 @@ public class TutorialUI : MonoBehaviour
         _child.SetActive(true);
 
         _currentTutorialData = dataList;
+
         _index = 0;
 
         RefreshUI();
@@ -102,8 +103,9 @@ public class TutorialUI : MonoBehaviour
 
         var sMgr = StringManager.Instance;
         var spriteMgr = SpriteManager.Instance;
+        var gm = GameManager.Instance;
 
-        if (sMgr == null || spriteMgr == null) return;
+        if (sMgr == null || spriteMgr == null || gm == null) return;
 
         if (_backgroundImage != null)
             _backgroundImage.sprite = spriteMgr.GetSprite(data.tutorialImageId);
@@ -115,7 +117,28 @@ public class TutorialUI : MonoBehaviour
             _nameText.text = sMgr.GetString(data.speakerKey);
 
         if (_dialogueText != null)
-            _dialogueText.text = sMgr.GetString(data.dialogueKey);
+        {
+            string dialogue = sMgr.GetString(data.dialogueKey);
+
+            // 만약 중괄호가 있을 시 포맷팅
+            var keys = TextParser.GetKeys(dialogue);
+
+            string result = dialogue;
+
+            foreach (var key in keys)
+            {
+                string value = key switch
+                {
+                    "coachName" => gm.SaveData.coachName,
+                    "schoolName" => gm.SaveData.schoolName,
+                    _ => ""
+                };
+
+                result = result.Replace("{" + key + "}", value);
+            }
+
+            _dialogueText.text = result;
+        }
 
         if (_pageText != null)
             _pageText.text = $"{_index + 1}/{_currentTutorialData.Count}";
@@ -138,6 +161,12 @@ public class TutorialUI : MonoBehaviour
         _index++;
         RefreshUI();
 
+    }
+
+    private string FormatDialogue(string dialogue)
+    {
+        if (string.IsNullOrWhiteSpace(dialogue)) return null;
+        return dialogue.Substring(dialogue.IndexOf('{'), dialogue.IndexOf('}'));
     }
 
     private void OnClickSkipButton()
