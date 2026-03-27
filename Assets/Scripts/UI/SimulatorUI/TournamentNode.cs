@@ -45,7 +45,7 @@ public class TournamentNode : MonoBehaviour
         // 사용되는 노드이므로 활성화
         gameObject.SetActive(true);
 
-        // 경기 준비 중인 애들 선 다시 켜주기! (제가 빼먹었던 부분)
+        // 경기 준비 중인 애들 선 다시 켜주기
         if (_verticalPipeImage != null) _verticalPipeImage.gameObject.SetActive(true);
         if (_inPipeImage != null) _inPipeImage.gameObject.SetActive(true);
 
@@ -65,16 +65,19 @@ public class TournamentNode : MonoBehaviour
             }
         }
         Color highlightColor = new Color(1f, 0.84f, 0f); // 진출 노란색
-        Color defaultColor = Color.white;                // 기본 흰색
-
+        Color activeColor = Color.white;                 // 매칭됨 / 경기 진행 중 (흰색)
+        Color inactiveColor = Color.black;               // 기본 미정 / 패배 (검은색)
         // 아직 미정인 슬롯 ('?' 처리)
         if (teamId == "?")
         {
             _txtTeamName.text = "?";
             _txtTeamName.fontStyle = FontStyles.Normal;
             if (_outline != null) _outline.enabled = false;
-            if (_outPipeImage != null) _outPipeImage.color = Color.white;
             if (_canvasGroup != null) _canvasGroup.alpha = 1f;
+            if (_inPipeImage != null) _inPipeImage.color = inactiveColor;
+            if (_verticalPipeImage != null) _verticalPipeImage.color = inactiveColor;
+            if (_outPipeImage != null) _outPipeImage.color = inactiveColor;
+
             return;
         }
 
@@ -99,8 +102,20 @@ public class TournamentNode : MonoBehaviour
         {
             _outline.enabled = (isMyTeam && isCurrentRound);
         }
-        //  내 박스에서 뻗어나가는 짧은 가로선과 반쪽짜리 세로선 (안 겹침) -> 이겼으면 노랑, 졌으면 하양
-        Color myColor = isWinnerOfThisMatch ? highlightColor : defaultColor;
+
+        var league = LeagueManager.Instance.CurrentLeague;
+        int currentLeagueRound = league != null ? (league.isFinished ? league.currentRoundIndex - 1 : league.currentRoundIndex) : 0;
+
+        bool isFutureRound = (roundIndex > currentLeagueRound);
+
+        //  내 박스에서 뻗어나가는 짧은 가로선과 반쪽짜리 세로선 (안 겹침) -> 이겼으면 노랑
+        Color myColor;
+        if (isWinnerOfThisMatch) myColor = highlightColor;       // 이겼으면 노란색
+        else if (isEliminatedInThisMatch) myColor = inactiveColor; // 졌으면 검은색 (비활성화 느낌)
+        else if (isFutureRound) myColor = inactiveColor;
+        else myColor = activeColor;
+
+
         if (_verticalPipeImage != null) _verticalPipeImage.color = myColor;
         if (_inPipeImage != null) _inPipeImage.color = myColor;
 
@@ -117,7 +132,7 @@ public class TournamentNode : MonoBehaviour
             {
                 // 아직 경기 전이면 켜고 하얀색 유지
                 _outPipeImage.gameObject.SetActive(true);
-                _outPipeImage.color = defaultColor;
+                _outPipeImage.color = isFutureRound ? inactiveColor : activeColor;
             }
         }
     }
