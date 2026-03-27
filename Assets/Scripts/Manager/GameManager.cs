@@ -161,9 +161,9 @@ public class GameManager : Singleton<GameManager>
         NotifyLoadingDone(); // 로드 끝난 뒤 상태 전환
     }
 
-    public void SetTutorialCompleted(bool flag)
+    public void SetTutorialCompleted(int index, bool flag)
     {
-        _saveData.isTutorialCompleted = flag;
+        _saveData.tutorialCompleted[index] = flag;
         OnDataChanged?.Invoke();
     }
 

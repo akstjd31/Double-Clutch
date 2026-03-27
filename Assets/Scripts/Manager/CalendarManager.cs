@@ -69,7 +69,6 @@ public class CalendarManager : Singleton<CalendarManager>
         var gm = GameManager.Instance;
         if (gm == null) return;
 
-        // 임시 테스트용
         var weekId = gm.SaveData.weekId;
 
         // 만약 전체 일정이 끝나게 된다면 weekId 0으로 시작(1월 1일)
@@ -97,6 +96,23 @@ public class CalendarManager : Singleton<CalendarManager>
         if (HasExistEndCutscene(nextWeekId))
         {
 
+        }
+
+        // 튜로리얼 ID 체크
+        var tId = GetTutorialId(nextWeekId - 1);
+        if (tId != null)
+        {
+            Debug.Log("튜토리얼 Id 체크 완료!");
+            var tutorialMgr = TutorialManager.Instance;
+            if (tutorialMgr == null) return;
+
+            // 아직 플레이어가 해당 튜토리얼을 수행하지 않았다면
+            int idx = int.Parse(tId[tId.Length - 1].ToString()) - 1;
+            if (!gm.SaveData.tutorialCompleted[idx])
+            {
+                tutorialMgr.StartTutorial(tId);
+            }
+            // var data = tutorialMgr.GetData(id);
         }
 
         // 5. 턴 종료 시
@@ -275,6 +291,7 @@ public class CalendarManager : Singleton<CalendarManager>
 
         return descList;
     }
+
     // 다음 달 1주차 ~ 마지막 주 데이터 리스트 계산
     public List<string> GetDescArrayByNextMonth(int weekId)
     {
@@ -314,5 +331,13 @@ public class CalendarManager : Singleton<CalendarManager>
     {
         if (_calReader == null) return null;
         return _calReader.DataList[weekId - 1].leagueId;
+    }
+
+    // 튜토리얼 ID가 적혀있다면
+    public string GetTutorialId(int index)
+    {
+        if (_calReader == null) return null;
+        if (string.IsNullOrWhiteSpace(_calReader.DataList[index].tutorialId)) return null;
+        return _calReader.DataList[index].tutorialId;
     }
 }

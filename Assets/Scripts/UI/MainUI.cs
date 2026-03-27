@@ -67,10 +67,10 @@ public class MainUI : MonoBehaviour
             return;
         }
         
-        if (!GameManager.Instance.SaveData.isTutorialCompleted)
-            GameManager.Instance.Dispatch(UIAction.Tutorial);
-        else
-            GameManager.Instance.Dispatch(UIAction.Main_Start); 
+        // if (!GameManager.Instance.SaveData.isTutorialCompleted)
+        //     GameManager.Instance.Dispatch(UIAction.Tutorial);
+        // else
+        GameManager.Instance.Dispatch(UIAction.Main_Start); 
     }
     public void OnClickQuitButton() => GameManager.Instance.Dispatch(UIAction.Main_Quit);
 }

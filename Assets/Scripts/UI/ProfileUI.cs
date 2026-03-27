@@ -199,12 +199,12 @@ public class ProfileUI : MonoBehaviour
                 coachName = _playerNameField.text,
                 weekId = 8,
                 year = 0,
-                isTutorialCompleted = false
+                tutorialCompleted = new bool[TutorialManager.Instance.GetChapterArrayLength()]
             };
 
             gm.InitData(data);
             CalendarManager.Instance.CalcWeek(data.weekId, gm);
-            gm.Dispatch(UIAction.Tutorial);
+            gm.Dispatch(UIAction.Main_Start);
         }
 
         if (_selectedData.HasValue && _selectedData.Value.playerImage != null)
