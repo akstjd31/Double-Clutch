@@ -33,13 +33,13 @@ public class StudentFactory : MonoBehaviour
     [Header("Player_SynergyDataReader(시너지 데이터)")]
     [SerializeField] Player_SynergyDataReader _synergyDataReader;
 
-    const float FIRST_GRADE_RATE = 0.6f;
-    const float SECOND_GRADE_RATE = 0.2f;
+    const float FIRST_GRADE_RATE = 0.5f;
+    const float SECOND_GRADE_RATE = 0.3f;
     const float THIRD_GRADE_RATE = 0.2f;
 
-    const float RIVAL_FIRST_GRADE_RATE = 0.34f;
-    const float RIVAL_SECOND_GRADE_RATE = 0.33f;
-    const float RIVAL_THIRD_GRADE_RATE = 0.33f;
+    const float RIVAL_FIRST_GRADE_RATE = 0.3334f;
+    const float RIVAL_SECOND_GRADE_RATE = 0.3333f;
+    const float RIVAL_THIRD_GRADE_RATE = 0.3333f;
 
 
     List<Player_StartingStateData> _startingStates = new List<Player_StartingStateData>();
