@@ -673,7 +673,10 @@ public class MatchEngine : MonoBehaviour
         dribbler.LogicPosition += dir * moveDist;
 
         // 화면 밖으로 나가지 않도록 보정
-        dribbler.LogicPosition = new Vector2(Mathf.Clamp01(dribbler.LogicPosition.x), Mathf.Clamp01(dribbler.LogicPosition.y));
+        dribbler.LogicPosition = new Vector2(
+            Mathf.Clamp01(dribbler.LogicPosition.x),
+            Mathf.Clamp(dribbler.LogicPosition.y, 0.05f, 0.95f)
+        );
         RecordLog("Dribble", dribbler);
     }
 
