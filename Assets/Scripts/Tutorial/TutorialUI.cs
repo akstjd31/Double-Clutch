@@ -44,6 +44,20 @@ public class TutorialUI : MonoBehaviour
             TutorialManager.Instance.OnStartTutorial += StartTutorialUI;
 
         // reward = InfraManager.Instance.GetCostListByEffectType(infraEffectType.TrainingBonus)[1];
+    
+        if (CalendarManager.Instance == null) return;
+
+        var gm = GameManager.Instance;
+        if (gm == null) return;
+
+        var data = gm.SaveData;
+        var tId = CalendarManager.Instance.GetTutorialId(data.weekId - 1);
+        
+        int idx = int.Parse(tId[tId.Length - 1].ToString()) - 1;
+        if (!data.tutorialCompleted[idx])
+        {
+            TutorialManager.Instance.StartTutorial(tId);
+        }
     }
 
     private void OnDestroy()
@@ -83,7 +97,6 @@ public class TutorialUI : MonoBehaviour
     {
         if (_currentTutorialData == null) return;
         if (_currentTutorialData.Count == 0) return;
-        if (_index < 0 || _index >= _currentTutorialData.Count) return;
 
         var data = _currentTutorialData[_index];
 
@@ -106,16 +119,6 @@ public class TutorialUI : MonoBehaviour
 
         if (_pageText != null)
             _pageText.text = $"{_index + 1}/{_currentTutorialData.Count}";
-
-        bool isLastPage = _index >= _currentTutorialData.Count - 1;
-
-        if (isLastPage)
-        {
-            int idx = int.Parse(data.tutorialId.Substring(data.tutorialId.Length - 2)) - 1;
-            Debug.Log(idx);
-            GameManager.Instance.SetTutorialCompleted(idx, true);
-            _child.SetActive(false);
-        }
     }
 
     private void OnClickNextButton()
@@ -123,11 +126,18 @@ public class TutorialUI : MonoBehaviour
         if (_currentTutorialData == null) return;
         if (_currentTutorialData.Count == 0) return;
 
-        if (_index < _currentTutorialData.Count - 1)
+        if (_index >= _currentTutorialData.Count - 1)
         {
-            _index++;
-            RefreshUI();
+            string tId = _currentTutorialData[_currentTutorialData.Count - 1].tutorialId;
+            int idx = int.Parse(tId.Substring(tId.Length - 2)) - 1;
+            GameManager.Instance.SetTutorialCompleted(idx, true);
+            _child.SetActive(false);
+            return;
         }
+
+        _index++;
+        RefreshUI();
+
     }
 
     private void OnClickSkipButton()

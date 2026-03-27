@@ -98,6 +98,23 @@ public class CalendarManager : Singleton<CalendarManager>
 
         }
 
+        // 튜로리얼 ID 체크
+        var tId = GetTutorialId(nextWeekId - 1);
+        if (tId != null)
+        {
+            Debug.Log("튜토리얼 Id 체크 완료!");
+            var tutorialMgr = TutorialManager.Instance;
+            if (tutorialMgr == null) return;
+
+            // 아직 플레이어가 해당 튜토리얼을 수행하지 않았다면
+            int idx = int.Parse(tId[tId.Length - 1].ToString()) - 1;
+            if (!gm.SaveData.tutorialCompleted[idx])
+            {
+                tutorialMgr.StartTutorial(tId);
+            }
+            // var data = tutorialMgr.GetData(id);
+        }
+
         // 5. 턴 종료 시
         Init();
     }
@@ -156,24 +173,6 @@ public class CalendarManager : Singleton<CalendarManager>
 
             if (calendar.month == 3)
                 gm.ClearLeagueWinData();
-        }
-
-        // 튜로리얼 ID 체크
-        if (HasTutorialId(weekId - 1))
-        {
-            Debug.Log("튜토리얼 Id 체크 완료!");
-            var tutorialMgr = TutorialManager.Instance;
-            if (tutorialMgr == null) return;
-
-            var id = _calReader.DataList[weekId].tutorialId;
-
-            // 아직 플레이어가 해당 튜토리얼을 수행하지 않았다면
-            int idx = int.Parse(id[id.Length - 1].ToString()) - 1;
-            if (!gm.SaveData.tutorialCompleted[idx])
-            {
-                tutorialMgr.StartTutorial(id);
-            }
-            // var data = tutorialMgr.GetData(id);
         }
 
         gm.SetWeekId(weekId);
@@ -335,9 +334,10 @@ public class CalendarManager : Singleton<CalendarManager>
     }
 
     // 튜토리얼 ID가 적혀있다면
-    public bool HasTutorialId(int index)
+    public string GetTutorialId(int index)
     {
-        if (_calReader == null) return false;
-        return !string.IsNullOrWhiteSpace(_calReader.DataList[index].tutorialId); 
+        if (_calReader == null) return null;
+        if (string.IsNullOrWhiteSpace(_calReader.DataList[index].tutorialId)) return null;
+        return _calReader.DataList[index].tutorialId;
     }
 }
