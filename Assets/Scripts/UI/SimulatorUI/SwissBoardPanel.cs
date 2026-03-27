@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using TMPro;
 using System;
 using System.Linq;
+using Game.Constants;
 
 public class SwissBoardPanel : MonoBehaviour
 {

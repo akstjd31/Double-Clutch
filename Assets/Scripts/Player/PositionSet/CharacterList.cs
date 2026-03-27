@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+using Game.Constants;
 
 /// <summary>
 /// CharacterList 카드 배치 및 보유 카드 리스트 관리
@@ -117,7 +118,24 @@ public class CharacterList : MonoBehaviour
                 AddOnPosition(card, _dropPositions[i]);
             }
         }
+
+        PlaySound(SoundName.BGM_BATTLE_SELECTION);
     }
+
+    private void PlaySound(string id)
+    {
+        var aMgr = AudioManager.Instance;
+        if (aMgr == null) return;
+
+        if (!aMgr.IsSameClip(id))
+            aMgr.PlaySound(id);
+    }
+
+    // public void OnClickPlaySoundLobby()
+    // {
+    //     if (AudioManager.Instance == null) return;
+    //     AudioManager.Instance.PlaySound(SoundName.BGM_LOBBY_01);
+    // }
 
     private StudentSaveData CheckSaveData()
     {

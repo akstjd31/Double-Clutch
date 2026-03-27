@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Game.Constants;
 
 /// <summary>
 /// 육성 버튼을 누르면 나오는 TrainingPanel에 부착.
@@ -27,11 +28,19 @@ public class TrainingPanel : MonoBehaviour
     private void OnEnable()
     {
         RefreshPlayerList();
+        PlaySound(SoundName.BGM_DEVELOP_01);
+    }
+
+    private void PlaySound(string id)
+    {
+        if (AudioManager.Instance == null) return;
+        AudioManager.Instance.PlaySound(id);
     }
 
     private void OnDisable()
     {
         if (_boxList == null) return;
+        PlaySound(SoundName.BGM_LOBBY_01);
     }
 
     public void RefreshPlayerList()

@@ -1,4 +1,5 @@
 using UnityEngine;
+using Game.Constants;
 
 /// <summary>
 /// 타이 브레이커 규칙

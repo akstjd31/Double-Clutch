@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Game.Constants;
 
 public class CharacterManagePanel : MonoBehaviour
 {
@@ -22,6 +23,18 @@ public class CharacterManagePanel : MonoBehaviour
     private void OnEnable()
     {
         RefreshPlayerList();
+        PlaySound(SoundName.BGM_PLAYER_01);
+    }
+
+    private void OnDisable()
+    {
+        PlaySound(SoundName.BGM_LOBBY_01);
+    }
+
+    private void PlaySound(string id)
+    {
+        if (AudioManager.Instance == null) return;
+        AudioManager.Instance.PlaySound(id);
     }
 
     public void RefreshPlayerList()

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Game.Constants;
 
 // 경기 하나의 전체 기록을 담을 통
 [Serializable]

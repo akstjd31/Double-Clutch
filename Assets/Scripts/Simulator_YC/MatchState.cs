@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using Game.Constants;
 
 public class MatchState : MonoBehaviour
 {
@@ -44,6 +45,22 @@ public class MatchState : MonoBehaviour
     private void Awake()
     {
         _uiManager = GetComponent<MatchUIManager>(); // 같은 오브젝트에 있다고 가정
+    }
+
+    private void OnEnable()
+    {
+        PlaySound();
+    }
+
+    private void OnDestroy()
+    {
+        AudioManager.Instance.StopSound();
+    }
+
+    private void PlaySound()
+    {
+        if (AudioManager.Instance == null) return;
+        AudioManager.Instance.PlaySound(SoundName.BGM_MATCHPLAY);
     }
 
     /// <summary>

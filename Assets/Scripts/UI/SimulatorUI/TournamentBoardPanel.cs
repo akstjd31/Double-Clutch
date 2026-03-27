@@ -5,6 +5,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using Game.Constants;
 
 public class TournamentBoardPanel : MonoBehaviour
 {
