@@ -298,8 +298,12 @@ public class MatchReplayer : MonoBehaviour
             // 애니메이션 재생 시간을 고정합니다. (기본 1초)
 
             float baseDuration = 1.0f;
+            if (log.EventType == "TRANSITION")
+            {
+                baseDuration = 0.2f; 
+            }
             float finalDuration = baseDuration / speed;
-
+            Debug.Log($"<color=magenta>[리플레이 재생]</color> 이벤트:{log.EventType} | 텍스트:'{log.LogText}' | 화면 대기시간:{finalDuration}초");
             // 다음 턴을 위해 값 갱신
             _previousRemainTime = endRemainTime;
 
@@ -332,7 +336,7 @@ public class MatchReplayer : MonoBehaviour
                 RectTransform ballRT = _ballUI.GetComponent<RectTransform>();
                 Vector2 targetUIPos = LogicToUIPos(log.BallPos);
 
-                if (log.EventType == "GOAL" || log.EventType == "MISS")
+                if (IsShootEvent(log.EventType))
                 {
                     Vector2 hoopUIPos = (log.TeamId == 0) ? _awayHoopUI.anchoredPosition : _homeHoopUI.anchoredPosition;
                     Vector2 shooterPos = LogicToUIPos(log.BallPos);
@@ -343,13 +347,24 @@ public class MatchReplayer : MonoBehaviour
                 }
                 else
                 {
-                    ballRT.DOAnchorPos(targetUIPos, finalDuration * 0.6f).SetId("MatchReplay");
+                    if (log.EventType == "PassSucc" || log.EventType == "Steal")
+                    {
+                        ballRT.DOAnchorPos(targetUIPos, finalDuration * 0.6f)
+                              .SetDelay(finalDuration * 0.4f)  // 선수가 0.4초 동안 먼저 달려가게 둡니다.
+                              .SetEase(Ease.OutSine)
+                              .SetId("MatchReplay");
+                    }
+                    else
+                    {
+                        // 드리블이나 기타 상황
+                        ballRT.DOAnchorPos(targetUIPos, finalDuration * 0.6f).SetId("MatchReplay");
+                    }
                 }
             }
 
             yield return new WaitForSeconds(finalDuration);
 
-            if (log.EventType == "GOAL")
+            if (IsGoalEvent(log.EventType))
             {
                 if (log.TeamId == 0) _matchState.HomeTeam.AddScore(log.ScoreAdded);
                 else _matchState.AwayTeam.AddScore(log.ScoreAdded);
@@ -399,7 +414,7 @@ public class MatchReplayer : MonoBehaviour
         for (int i = _currentLogIndex; i < _logs.Count; i++)
         {
             var log = _logs[i];
-            if (log.EventType == "GOAL")
+            if (IsGoalEvent(log.EventType))
             {
                 if (log.TeamId == 0) _matchState.HomeTeam.AddScore(log.ScoreAdded);
                 else _matchState.AwayTeam.AddScore(log.ScoreAdded);
@@ -423,5 +438,19 @@ public class MatchReplayer : MonoBehaviour
 
         // 다음 단계(하프타임 또는 경기 종료)로 즉시 넘어감
         OnReplayEnded?.Invoke();
+    }
+    private bool IsShootEvent(string eventType)
+    {
+        return eventType == "GOAL" || eventType == "MISS" ||
+                eventType == "Shoot2ptSucc" || eventType == "Shoot3ptSucc" ||
+                eventType == "DunkSucc" || eventType == "BuzzerBeater" ||
+                eventType == "Shoot2ptFail" || eventType == "Shoot3ptFail";
+    }
+
+    private bool IsGoalEvent(string eventType)
+    {
+        return eventType == "GOAL" ||
+               eventType == "Shoot2ptSucc" || eventType == "Shoot3ptSucc" ||
+               eventType == "DunkSucc" || eventType == "BuzzerBeater";
     }
 }

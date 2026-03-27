@@ -211,6 +211,10 @@ public class TournamentBoardPanel : MonoBehaviour
         }
     }
     // 모든 노드를 강력하게 비활성화하는 헬퍼 함수
+    //★ HJ
+    //각 노드를 비활성화 하면 안그러면 줄만 남기 때문에, 노드의 부모패널('Team16''Team8''Team4')을 비활성화 해야 합니다. 
+    //이긴 팀의 파이프 라인색을 변경하기 위해서는 'Out Pipe Image' 외에도 두가지 이미지('MiddlePipeLine', 'NextLine')를 더 변경해야 합니다.
+
     private void DisableAllNodes()
     {
         void DisableNodesInList(List<TournamentNode> nodes)
@@ -223,6 +227,7 @@ public class TournamentBoardPanel : MonoBehaviour
         DisableNodesInList(_round3Nodes);
         DisableNodesInList(_round4Nodes);
         if (_winnerNode != null) _winnerNode.gameObject.SetActive(false);
+
     }
     // 승리한 노드의 파이프만 불을 켜주기 위한 보조 함수
     private void UpdateWinnerPipe(int uiDepth, int originalRoundIndex, int matchIndex, string winnerId, HashSet<string> eliminatedTeams)

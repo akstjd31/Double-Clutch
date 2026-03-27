@@ -174,6 +174,7 @@ public class MatchUIManager : MonoBehaviour
 
         // UI 텍스트에 적용
         _textLogMessage.text = combinedText;
+        StringManager.Instance.ApplyFont(_textLogMessage);
     }
     // 경기가 새로 시작될 때 로그 창을 깨끗하게 비워주는 함수
     public void ClearLog()
@@ -269,13 +270,15 @@ public class MatchUIManager : MonoBehaviour
         {
             if (homeScore > awayScore)
             {
-                _textResultTitle.text = "승리";
+                _textResultTitle.text = StringManager.Instance.GetString("UI_Match_승리");
                 _textResultTitle.color = new Color(1f, 0.8f, 0f); // 승리 시 텍스트 색상 (노란색/금색 계열)
+                StringManager.Instance.ApplyFont(_textResultTitle);
             }
             else
             {
-                _textResultTitle.text = "패배";
+                _textResultTitle.text = StringManager.Instance.GetString("UI_Match_패배");
                 _textResultTitle.color = Color.white; // 패배 시 기본 흰색
+                StringManager.Instance.ApplyFont(_textResultTitle);
             }
         }
 

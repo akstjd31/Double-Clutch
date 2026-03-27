@@ -24,6 +24,7 @@ public class ProfileIcon : MonoBehaviour
     public void Unlock()
     {
         _image.sprite = _iconSprite;
+        _button.interactable = true;
     }
 
     public Button GetButton()

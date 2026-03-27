@@ -286,17 +286,15 @@ public class Student
         pendingPassiveSelection = false;
         OnPassiveUpdated();
     }
-    public bool HasPassive(string skillId)
-    {
-        return _passiveIdList.Contains(skillId);
-    }
-
     public List<Player_PassiveData> GetAvailablePassives(List<Player_PassiveData> totalPool)
     {
         List<Player_PassiveData> available = new List<Player_PassiveData>();
+
         foreach (var data in totalPool)
-        {
-            if (!HasPassive(data.skillId))
+        {            
+            bool isHere = _passiveDataList.Exists(passive => passive.effectType == data.effectType);
+
+            if (!isHere)
             {
                 available.Add(data);
             }

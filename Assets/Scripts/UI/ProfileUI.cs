@@ -7,7 +7,12 @@ using UnityEngine.UI;
 
 public class ProfileUI : MonoBehaviour
 {
-    private const int NAME_MAX = 13;
+    private const int KOREAN_NAME_MAX = 7;
+    private const int KOREAN_NAME_MIN = 1;
+    private const int ENGLISH_NAME_MAX = 10;
+    private const int ENGLISH_NAME_MIN = 2;
+    private const int JAPANESE_NAME_MAX = 7;
+    private const int JAPANESE_NAME_MIN = 1;
 
     [SerializeField] private BannedWordDataReader _reader;
     [SerializeField] private TMP_InputField _schoolNameField;
@@ -44,9 +49,10 @@ public class ProfileUI : MonoBehaviour
     [SerializeField] private Button _nextButton;
     [SerializeField] private Image _profileBoxImage;
 
-    private GenericObjectPool<ProfileIcon> _pool;
+    private GenericObjectPool<ProfileIcon> _iconPool;
+    private GenericObjectPool<GameObject> _pagePool;
     private List<ProfileIcon> _activeIcons = new List<ProfileIcon>();
-    private List<GameObject> _pages = new List<GameObject>();
+    private List<GameObject> _activePages = new List<GameObject>();
     private int _currentPageIndex = 0;
 
     [Header("Selected Info")]
@@ -55,7 +61,8 @@ public class ProfileUI : MonoBehaviour
 
     private void Awake()
     {
-        _pool = new GenericObjectPool<ProfileIcon>(_profilePrefab, this.transform);
+        _iconPool = new GenericObjectPool<ProfileIcon>(_profilePrefab, this.transform);
+        _pagePool = new GenericObjectPool<GameObject>(_pagePanelPrefab, this._pageWindow);
     }
 
     private void Start()
@@ -140,11 +147,11 @@ public class ProfileUI : MonoBehaviour
     private void ChangePage(int direction)
     {
         int nextIndex = _currentPageIndex + direction;
-        if (nextIndex < 0 || nextIndex >= _pages.Count) return;
+        if (nextIndex < 0 || nextIndex >= _activePages.Count) return;
 
-        _pages[_currentPageIndex].SetActive(false);
+        _activePages[_currentPageIndex].SetActive(false);
         _currentPageIndex = nextIndex;
-        _pages[_currentPageIndex].SetActive(true);
+        _activePages[_currentPageIndex].SetActive(true);
 
         UpdatePageButtons();
     }
@@ -152,7 +159,7 @@ public class ProfileUI : MonoBehaviour
     private void UpdatePageButtons()
     {
         if (_prevButton != null) _prevButton.interactable = (_currentPageIndex > 0);
-        if (_nextButton != null) _nextButton.interactable = (_currentPageIndex < _pages.Count - 1);
+        if (_nextButton != null) _nextButton.interactable = (_currentPageIndex < _activePages.Count - 1);
     }
 
     private void OpenPopup(GameObject popupPanel, TMP_InputField popupInputField)
@@ -220,8 +227,11 @@ public class ProfileUI : MonoBehaviour
         if (string.IsNullOrEmpty(normalized)) return false;
         bool hasKorean = Regex.IsMatch(normalized, @"[가-힣]");
         bool hasEnglish = Regex.IsMatch(normalized, @"[a-zA-Z]");
-        if (hasEnglish) return normalized.Length >= 2 && normalized.Length <= NAME_MAX;
-        if (hasKorean) return normalized.Length >= 1 && normalized.Length <= NAME_MAX;
+        bool hasJapanese = Regex.IsMatch(normalized, @"[\u3040-\u30FF\u4E00-\u9FFF]"); 
+
+        if (hasEnglish) return normalized.Length >= ENGLISH_NAME_MIN && normalized.Length <= ENGLISH_NAME_MAX;
+        if (hasKorean) return normalized.Length >= KOREAN_NAME_MIN && normalized.Length <= KOREAN_NAME_MAX;
+        if (hasJapanese) return normalized.Length >= JAPANESE_NAME_MIN && normalized.Length <= JAPANESE_NAME_MAX;
         return false;
     }
 
@@ -271,7 +281,11 @@ public class ProfileUI : MonoBehaviour
             t = "공백인 필드가 존재합니다!";
 
         else if (!IsValidNameLength(inputText))
-            t = "한글 1자 이상, 또는 영어 2자 이상으로 구성해주세요!";
+            t = $"이름 길이가 올바르지 않습니다.\n" +
+                $"아래 기준을 확인해주세요.\n" +
+                $"• 한글: {KOREAN_NAME_MIN} ~ {KOREAN_NAME_MAX}자\n" +
+                $"• 영어: {ENGLISH_NAME_MIN} ~ {ENGLISH_NAME_MAX}자\n" +
+                $"• 일본어: {JAPANESE_NAME_MIN} ~ {JAPANESE_NAME_MAX}자";
 
         else if (CheckBadWord(inputText))
             t = "비속어가 포함되어 있습니다!";
@@ -298,32 +312,40 @@ public class ProfileUI : MonoBehaviour
     public void RefreshProfileList()
     {
         // 1. 기존 아이콘 풀 회수 (Destroy 대신 사용)
-        foreach (var icon in _activeIcons) _pool.Release(icon);
+        foreach (var icon in _activeIcons) _iconPool.Release(icon);
         _activeIcons.Clear();
 
-        if (_pageWindow == null) return;
+        foreach (var page in _activePages) _pagePool.Release(page);
+        _activePages.Clear();
 
-        // 2. 페이지 패널 재사용 (Destroy 대신 SetActive 활용)
-        foreach (var page in _pages) page.SetActive(false);
+        if (_pageWindow == null) return;        
 
         int iconsPerPage = 15;
+        int totalPage = (_profileDataReader.DataList.Count + iconsPerPage - 1) / iconsPerPage;
+
+        //필요한 페이지 일괄 생성
+        for (int p = 0; p < totalPage; p++)
+        {
+            GameObject newPage = _pagePool.Get();
+            newPage.name = $"Page_{p + 1}";
+                      
+            newPage.SetActive(p == _currentPageIndex);
+            _activePages.Add(newPage);
+        }
+
         for (int i = 0; i < _profileDataReader.DataList.Count; i++)
         {
             int pageIndex = i / iconsPerPage;
 
-            // 페이지가 모자랄 때만 추가 생성
-            if (pageIndex >= _pages.Count)
-            {
-                GameObject newPage = Instantiate(_pagePanelPrefab, _pageWindow);
-                newPage.name = $"Page_{_pages.Count + 1}";
-                _pages.Add(newPage);
-            }
-
-            GameObject currentPage = _pages[pageIndex];
+            GameObject currentPage = _activePages[pageIndex];
             if (pageIndex == _currentPageIndex) currentPage.SetActive(true);
 
-            ProfileIcon icon = _pool.Get();
-            icon.transform.SetParent(currentPage.transform, false);
+            ProfileIcon icon = _iconPool.Get();
+            if (icon.transform.parent != currentPage.transform)
+            {
+                icon.transform.SetParent(currentPage.transform, false);
+            }
+            
 
             ProfileData data = _profileDataReader.DataList[i];
             icon.Init(data);
