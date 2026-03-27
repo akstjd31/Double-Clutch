@@ -6,15 +6,14 @@ public class AudioManager : Singleton<AudioManager>
 {
     [SerializeField] ResourceDataReader _reader;
     [SerializeField] AudioMixer _mixer;
-    private AudioSource _audioSource;
+    [SerializeField] private AudioSource _bgmAudioSource;
+    [SerializeField] private AudioSource _sfxAudioSource;
     private Dictionary<string, string> _pathIndex = new Dictionary<string, string>();
     private Dictionary<string, AudioClip> _audioCache = new Dictionary<string, AudioClip>();
 
     protected override void Awake()
     {
         base.Awake();
-
-        _audioSource = this.GetComponent<AudioSource>();
         InitPathTable();
     }
 
@@ -60,18 +59,22 @@ public class AudioManager : Singleton<AudioManager>
 
     public void PlaySound(AudioClip clip)
     {
-        if (_audioSource == null) return;
-        
-        _audioSource.clip = clip;
-        _audioSource.Play();
-        Debug.Log("오디오 재생!");
+        if (_bgmAudioSource == null) return;
+        _bgmAudioSource.clip = clip;
+        _bgmAudioSource.Play();
+    }
+
+    public void PlaySoundOneShot(AudioClip clip)
+    {
+        if (_sfxAudioSource == null) return;
+        _sfxAudioSource.PlayOneShot(clip);
     }
 
     public void StopSound()
     {
-        if (_audioSource == null) return;
+        if (_bgmAudioSource == null) return;
 
-        _audioSource.Stop();
+        _bgmAudioSource.Stop();
     }
 
     // 메모리 최적화를 위한 캐시 클리어.    
