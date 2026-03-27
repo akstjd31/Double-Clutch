@@ -15,6 +15,7 @@ public class SettingManager : Singleton<SettingManager>
         LoadSetting();
         ApplyFPS();
         ApplyVolum();
+        StringManager.Instance.SetLanguage(_settingData.language);
     }
 
     // 진동 기능은 여기서 호출
@@ -136,7 +137,7 @@ public class SettingManager : Singleton<SettingManager>
         {
             _settingData = new SettingSaveData();
             SetFPS(60);
-            ToggleVibration(false);
+            ToggleVibration(true);
         }
 
         ApplyFPS();

@@ -35,7 +35,7 @@ public class StringManager : Singleton<StringManager>
     protected override void Awake()
     {
         base.Awake();
-        SetLanguage(Language.Ko);
+        //SetLanguage(Language.Ko);
         InitDict();
     }
 
@@ -77,6 +77,10 @@ public class StringManager : Singleton<StringManager>
     {
         _language = language;
         Debug.Log($"[StringManager] 언어 변경: {language}");
+        if (SettingManager.Instance != null && SettingManager.Instance.SettingData != null)
+        {
+            SettingManager.Instance.SettingData.language = language;
+        }
         OnLanguageChanged?.Invoke();
     }
 
