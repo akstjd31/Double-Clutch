@@ -44,6 +44,14 @@ public class PassiveExplainBox : MonoBehaviour
             case effectType.RatePass:
             case effectType.RateSteal:
             case effectType.RateRebound:
+
+            case effectType.Growth2pt:
+            case effectType.Growth3pt:
+            case effectType.GrowthBlock:
+            case effectType.GrowthPass:
+            case effectType.GrowthRebound:
+            case effectType.GrowthSteal:
+
             case effectType.MonthGoldUp:
             case effectType.MatchGoldUp:
             case effectType.ReputationUp:
