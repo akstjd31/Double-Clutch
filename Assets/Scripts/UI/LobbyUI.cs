@@ -1,8 +1,9 @@
-using UnityEngine;
-using TMPro;
 using System.Collections;
-using UnityEngine.UI;
+using System.Collections.Generic;
 using Game.Constants;
+using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
 
 public class LobbyUI : MonoBehaviour
 {
@@ -44,6 +45,7 @@ public class LobbyUI : MonoBehaviour
 
     private void Start()
     {
+        CheckAndRecoverLeagueDesync();
         Init();
         // 매치 버튼에 이벤트 연결
         if (_matchButton != null)
@@ -212,5 +214,90 @@ public class LobbyUI : MonoBehaviour
     {
         if (CalendarManager.Instance != null)
             UpdateCalendarText(CalendarManager.Instance.GetCalendar());
+    }
+
+    //  결산창 강제종료 복구 로직 
+    private void CheckAndRecoverLeagueDesync()
+    {
+        var calMgr = CalendarManager.Instance;
+        if (calMgr == null) return;
+
+        // 달력은 '리그'인데, 실제 리그 데이터는 '종료'된 모순 상태인지 확인
+        if (calMgr.CurrentGetPhaseType() == phaseType.League)
+        {
+            var currentLeague = LeagueManager.Instance.CurrentLeague;
+            if (currentLeague != null && (currentLeague.isFinished || currentLeague.isPlayerEliminated))
+            {
+                Debug.LogWarning("[LobbyUI] 결산 전 강제종료 감지. 누락된 주차 넘김 및 페널티 정산을 마저 수행합니다.");
+
+                // ResultState에서 못하고 꺼진 '출전 페널티' 마저 적용
+                ApplyLeagueEndConditionDropToAllPlayers();
+
+                // 임시 로그 및 포지션 초기화
+                if (LeagueRecordManager.Instance != null)
+                    LeagueRecordManager.Instance.ClearLeagueRecords();
+
+                if (StudentManager.Instance != null && StudentManager.Instance.MyStudents != null)
+                {
+                    foreach (var student in StudentManager.Instance.MyStudents)
+                        student.SetMatchPosition(Position.None);
+                }
+
+                // 데이터 저장 (매칭 UI 초기화)
+                var emptyData = new StudentSaveData();
+                if (SaveLoadManager.Instance != null)
+                    SaveLoadManager.Instance.Save<StudentSaveData>(FilePath.MY_STUDENT_MATCHING_PATH, emptyData);
+
+                // 달력을 다음 주로 넘기기
+                calMgr.IsEndPhase = true;
+                calMgr.NextTurn();
+            }
+        }
+    }
+
+    private void ApplyLeagueEndConditionDropToAllPlayers()
+    {
+        if (LeagueRecordManager.Instance == null || StudentManager.Instance == null) return;
+
+        var currentLeague = LeagueManager.Instance.CurrentLeague;
+        int totalRounds = currentLeague != null ? currentLeague.currentRoundIndex + 1 : 4;
+
+        HashSet<int> participatedIds = new HashSet<int>();
+
+        for (int i = 1; i <= totalRounds; i++)
+        {
+            var record = LeagueRecordManager.Instance.GetMatchRecord(i);
+            if (record != null && record.HomePlayerIds != null)
+            {
+                foreach (int id in record.HomePlayerIds)
+                {
+                    if (id < 10000) participatedIds.Add(id); // 용병 제외
+                }
+            }
+        }
+
+        foreach (int id in participatedIds)
+        {
+            Student realStudent = StudentManager.Instance.FindStudentById(id);
+            if (realStudent != null)
+            {
+                if (realStudent.Condition <= 0 && realStudent.State == StudentState.None)
+                {
+                    int rate = UnityEngine.Random.Range(0, 100);
+                    if (rate < 60)
+                    {
+                        realStudent.ChangeState(StudentState.OverWorked);
+                        Debug.Log($"[리그 종료 후유증 복구] {realStudent.Name[0]} 학생이 과로 상태가 되었습니다.");
+                    }
+                    else
+                    {
+                        realStudent.ChangeState(StudentState.Injured);
+                        Debug.Log($"[리그 종료 후유증 복구] {realStudent.Name[0]} 학생이 부상 상태가 되었습니다.");
+                    }
+                }
+                realStudent.ChangeCondition(-30);
+            }
+        }
+        StudentManager.Instance.SaveGame();
     }
 }
