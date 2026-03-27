@@ -156,19 +156,19 @@ public class MatchUIManager : MonoBehaviour
             _logHistory.RemoveAt(0);
         }
 
-        // 텍스트 결합 (최신 로그는 흰색으로 강조, 이전 로그는 회색으로 처리)
+        // 텍스트 결합 
         string combinedText = "";
         for (int i = 0; i < _logHistory.Count; i++)
         {
             if (i == _logHistory.Count - 1)
             {
                 // 방금 들어온 최신 로그
-                combinedText += $"<color=#888888>{_logHistory[i]}</color>";
+                combinedText += $"<color=#000000>{_logHistory[i]}</color>";
             }
             else
             {
                 // 이미 지나간 이전 로그들
-                combinedText += $"<color=#888888>{_logHistory[i]}</color>\n";
+                combinedText += $"<color=#000000>{_logHistory[i]}</color>\n";
             }
         }
 

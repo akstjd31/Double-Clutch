@@ -300,7 +300,7 @@ public class MatchReplayer : MonoBehaviour
             float baseDuration = 1.0f;
             if (log.EventType == "TRANSITION")
             {
-                baseDuration = 0.2f; 
+                baseDuration = 1.0f; 
             }
             float finalDuration = baseDuration / speed;
             Debug.Log($"<color=magenta>[리플레이 재생]</color> 이벤트:{log.EventType} | 텍스트:'{log.LogText}' | 화면 대기시간:{finalDuration}초");
@@ -308,7 +308,7 @@ public class MatchReplayer : MonoBehaviour
             _previousRemainTime = endRemainTime;
 
             // 로그 텍스트는 즉시 띄우기
-            if (_uiManager != null)
+            if (_uiManager != null && !log.IsCutIn)
             {
                 _uiManager.UpdateLogText(log.LogText);
             }
@@ -375,6 +375,7 @@ public class MatchReplayer : MonoBehaviour
                     if (log.IsCutIn)
                     {
                         _uiManager.ShowCutInEffect(log.CutInType, log.CutInResourceKey, speed);
+                        _uiManager.UpdateLogText(log.LogText);
                         yield return new WaitForSeconds(1.5f / speed);
                     }
                 }
