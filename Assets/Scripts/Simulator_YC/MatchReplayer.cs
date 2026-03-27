@@ -308,7 +308,7 @@ public class MatchReplayer : MonoBehaviour
             _previousRemainTime = endRemainTime;
 
             // 로그 텍스트는 즉시 띄우기
-            if (_uiManager != null)
+            if (_uiManager != null && !log.IsCutIn)
             {
                 _uiManager.UpdateLogText(log.LogText);
             }
@@ -375,6 +375,7 @@ public class MatchReplayer : MonoBehaviour
                     if (log.IsCutIn)
                     {
                         _uiManager.ShowCutInEffect(log.CutInType, log.CutInResourceKey, speed);
+                        _uiManager.UpdateLogText(log.LogText);
                         yield return new WaitForSeconds(1.5f / speed);
                     }
                 }
