@@ -411,11 +411,6 @@ public class MatchEngine : MonoBehaviour
                 // 슛을 시도했는데 마침 0초가 됨 -> 버저비터 찬스! (마지막 매개변수 true 전달)
                 DoShoot(_ballHolder, attackTeam, defendTeam, distToHoop, hoopPos, true, attackTactics, defendTactics);
             }
-            else
-            {
-                // 패스나 드리블 중에 시간이 끝남 -> 공격 무산 및 쿼터 종료
-                RecordLog("공격이 무산되며 쿼터가 종료됩니다.", "TIME_OVER");
-            }
         }
         else
         {
@@ -497,9 +492,10 @@ public class MatchEngine : MonoBehaviour
                 string finalText = StringManager.Instance != null ? StringManager.Instance.GetString(config.textTemplate) : config.textTemplate;
                 finalText = finalText.Replace("{PlayerName}", log.PlayerName);
                 finalText = finalText.Replace("{TeamName}", attackTeam.TeamName);
-                string quarterString = _simQuarter > 4 ? $"연장 {_simQuarter - 4}" : _simQuarter.ToString();
+                string quarterString = _simQuarter > 4
+                    ? (StringManager.Instance != null ? StringManager.Instance.GetFormattedString("Str_Match_Overtime", _simQuarter - 4) : $"연장 {_simQuarter - 4}")
+                    : _simQuarter.ToString();
                 finalText = finalText.Replace("{Quarter}", quarterString);
-
                 log.LogText = $"{timeStr} {finalText}";
 
                 // 사운드 연동
@@ -521,8 +517,16 @@ public class MatchEngine : MonoBehaviour
             }
             else
             {
-                // config 누락시 안전장치
-                log.LogText = success ? $"{timeStr} {log.PlayerName}이(가) 득점에 성공합니다!" : $"{timeStr} {log.PlayerName}의 슛이 빗나갑니다.";
+                if (StringManager.Instance != null)
+                {
+                    log.LogText = success
+                        ? StringManager.Instance.GetFormattedString("Str_Match_Fallback_Succ", timeStr, log.PlayerName)
+                        : StringManager.Instance.GetFormattedString("Str_Match_Fallback_Fail", timeStr, log.PlayerName);
+                }
+                else
+                {
+                    log.LogText = success ? $"{timeStr} {log.PlayerName}이(가) 득점에 성공합니다!" : $"{timeStr} {log.PlayerName}의 슛이 빗나갑니다.";
+                }
                 log.IsCutIn = false;
             }
         }
@@ -717,7 +721,9 @@ public class MatchEngine : MonoBehaviour
         if (target != null) finalText = finalText.Replace("{TargetName}", MakeName(target.PlayerName)); // 패스 대상 이름 치환
 
         // 5쿼터 이상이면 '연장 1', 아니면 원래 숫자 유지
-        string quarterString = _simQuarter > 4 ? $"연장 {_simQuarter - 4}" : _simQuarter.ToString();
+        string quarterString = _simQuarter > 4
+            ? (StringManager.Instance != null ? StringManager.Instance.GetFormattedString("Str_Match_Overtime", _simQuarter - 4) : $"연장 {_simQuarter - 4}")
+            : _simQuarter.ToString();
         finalText = finalText.Replace("{Quarter}", quarterString);
 
         MatchLogData log = new MatchLogData();
