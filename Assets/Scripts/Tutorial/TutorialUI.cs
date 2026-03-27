@@ -19,9 +19,8 @@ public class TutorialUI : MonoBehaviour
     [SerializeField] private GameObject _endPanelObj;
 
     private int _index;
+    private int _reward;
     [SerializeField] private List<TutorialData> _currentTutorialData;
-
-    // private int reward;
 
     private void Awake()
     {
@@ -43,7 +42,7 @@ public class TutorialUI : MonoBehaviour
         if (TutorialManager.Instance != null)
             TutorialManager.Instance.OnStartTutorial += StartTutorialUI;
 
-        // reward = InfraManager.Instance.GetCostListByEffectType(infraEffectType.TrainingBonus)[1];
+        _reward = InfraManager.Instance.GetCostListByEffectType(infraEffectType.TrainingBonus)[1];
 
         if (CalendarManager.Instance == null) return;
 
@@ -86,6 +85,9 @@ public class TutorialUI : MonoBehaviour
         if (dataList == null || dataList.Count == 0) return;
 
         _child.SetActive(true);
+
+        _skipPanelObj.SetActive(false);
+        _endPanelObj.SetActive(false);
 
         _currentTutorialData = dataList;
 
@@ -151,10 +153,7 @@ public class TutorialUI : MonoBehaviour
 
         if (_index >= _currentTutorialData.Count - 1)
         {
-            string tId = _currentTutorialData[_currentTutorialData.Count - 1].tutorialId;
-            int idx = int.Parse(tId.Substring(tId.Length - 2)) - 1;
-            GameManager.Instance.SetTutorialCompleted(idx, true);
-            _child.SetActive(false);
+            TutorialEnd();
             return;
         }
 
@@ -163,10 +162,19 @@ public class TutorialUI : MonoBehaviour
 
     }
 
-    private string FormatDialogue(string dialogue)
+    private void TutorialEnd()
     {
-        if (string.IsNullOrWhiteSpace(dialogue)) return null;
-        return dialogue.Substring(dialogue.IndexOf('{'), dialogue.IndexOf('}'));
+        string tId = _currentTutorialData[_currentTutorialData.Count - 1].tutorialId;
+        int idx = int.Parse(tId.Substring(tId.Length - 2)) - 1;
+
+        var gm = GameManager.Instance;
+        if (gm == null) return;
+        
+        gm.SetTutorialCompleted(idx, true);
+        if (idx >= gm.SaveData.tutorialCompleted.Length - 1)
+            gm.SetMoney(gm.SaveData.money + _reward);
+
+        _child.SetActive(false);
     }
 
     private void OnClickSkipButton()
@@ -196,9 +204,6 @@ public class TutorialUI : MonoBehaviour
         var gm = GameManager.Instance;
         if (gm == null) return;
 
-        // 지원금 지급 후 로비 이동
-        // gm.SetMoney(reward);
-        // gm.SetTutorialCompleted(true);
-        // gm.GoToLobby();
+        TutorialEnd();
     }
 }
