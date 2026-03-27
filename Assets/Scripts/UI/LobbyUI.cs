@@ -194,6 +194,12 @@ public class LobbyUI : MonoBehaviour
         if (GameManager.Instance == null) return;
     }
 
+    public void PlayConfirmSound()
+    {
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlaySoundOneShot(SoundName.SE_BUTTON_SELECT);
+    }
+
     public void SetButtonActivate(Calendar calendar)
     {
         var type = CalendarManager.Instance.CurrentGetPhaseType();

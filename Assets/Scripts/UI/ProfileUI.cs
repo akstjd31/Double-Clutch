@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Game.Constants;
 
 public class ProfileUI : MonoBehaviour
 {
@@ -187,12 +188,9 @@ public class ProfileUI : MonoBehaviour
 
     public void OnClickConfirmButton()
     {
-        // if (string.IsNullOrWhiteSpace(_schoolNameField.text) || string.IsNullOrWhiteSpace(_playerNameField.text))
-        // {
-        //     _warningTextObj.SetActive(true);
-        //     _warningText.text = "공백인 필드가 존재합니다!";
-        //     return;
-        // }
+        if (AudioManager.Instance == null) return;
+        AudioManager.Instance.PlaySoundOneShot(SoundName.SE_BUTTON_SELECT);
+
         var gm = GameManager.Instance;
 
         if (!IsValidInput(_schoolNameField.text, _warningText) || !IsValidInput(_playerNameField.text, _warningText)) return;
@@ -217,7 +215,7 @@ public class ProfileUI : MonoBehaviour
             gm.SetCurrentProfileIcon(_selectedData.Value.playerImage);
             _LobbyProfileIcon?.Refresh();
         }
-
+        
         this.gameObject.SetActive(false);
     }
 

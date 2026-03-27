@@ -1,6 +1,7 @@
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using Game.Constants;
 
 public class InfraReconfirmUI : MonoBehaviour
 {
@@ -15,6 +16,9 @@ public class InfraReconfirmUI : MonoBehaviour
         
         _okButton.onClick.AddListener(delegate 
         {
+            if (AudioManager.Instance == null) return;
+            AudioManager.Instance.PlaySoundOneShot(SoundName.SE_BUTTON_SELECT);
+
             iController.Upgrade();
             this.gameObject.SetActive(false);
         });

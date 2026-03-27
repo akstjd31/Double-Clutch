@@ -53,7 +53,7 @@ public class InfraUpgradeUI : MonoBehaviour
     private void OnDisable()
     {
         StringManager.OnLanguageChanged -= Refresh;
-        _upgradeButton.onClick.RemoveAllListeners();
+        
         if (_controller != null)
             _controller.Upgraded -= UpdateLevelText;
 
@@ -69,7 +69,10 @@ public class InfraUpgradeUI : MonoBehaviour
         _controller = controller;
         _infra = infra;
 
+        _upgradeButton.onClick.RemoveAllListeners();
+        _upgradeButton.onClick.AddListener(OnClickUpgradeButton);
         _upgradeButton.interactable = !(_infra.currentLevel >= _infra.maxLevel);
+
         _controller.Upgraded += UpdateLevelText;
 
         SetBackGroundImage(infra.infraEffectType);
@@ -111,6 +114,8 @@ public class InfraUpgradeUI : MonoBehaviour
     public void OnClickUpgradeButton()
     {
         if (_controller == null) return;
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlaySoundOneShot(SoundName.SE_BUTTON_SELECT);
 
         if (_controller.HasEnoughUpgradeCost())
         {
