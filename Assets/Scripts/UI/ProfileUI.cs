@@ -7,7 +7,12 @@ using UnityEngine.UI;
 
 public class ProfileUI : MonoBehaviour
 {
-    private const int NAME_MAX = 13;
+    private const int KOREAN_NAME_MAX = 7;
+    private const int KOREAN_NAME_MIN = 1;
+    private const int ENGLISH_NAME_MAX = 10;
+    private const int ENGLISH_NAME_MIN = 2;
+    private const int JAPANESE_NAME_MAX = 7;
+    private const int JAPANESE_NAME_MIN = 1;
 
     [SerializeField] private BannedWordDataReader _reader;
     [SerializeField] private TMP_InputField _schoolNameField;
@@ -222,8 +227,11 @@ public class ProfileUI : MonoBehaviour
         if (string.IsNullOrEmpty(normalized)) return false;
         bool hasKorean = Regex.IsMatch(normalized, @"[가-힣]");
         bool hasEnglish = Regex.IsMatch(normalized, @"[a-zA-Z]");
-        if (hasEnglish) return normalized.Length >= 2 && normalized.Length <= NAME_MAX;
-        if (hasKorean) return normalized.Length >= 1 && normalized.Length <= NAME_MAX;
+        bool hasJapanese = Regex.IsMatch(normalized, @"[\u3040-\u30FF\u4E00-\u9FFF]"); 
+
+        if (hasEnglish) return normalized.Length >= ENGLISH_NAME_MIN && normalized.Length <= ENGLISH_NAME_MAX;
+        if (hasKorean) return normalized.Length >= KOREAN_NAME_MIN && normalized.Length <= KOREAN_NAME_MAX;
+        if (hasJapanese) return normalized.Length >= JAPANESE_NAME_MIN && normalized.Length <= JAPANESE_NAME_MAX;
         return false;
     }
 
@@ -273,7 +281,11 @@ public class ProfileUI : MonoBehaviour
             t = "공백인 필드가 존재합니다!";
 
         else if (!IsValidNameLength(inputText))
-            t = "한글 1자 이상, 또는 영어 2자 이상으로 구성해주세요!";
+            t = $"이름 길이가 올바르지 않습니다.\n" +
+                $"아래 기준을 확인해주세요.\n" +
+                $"• 한글: {KOREAN_NAME_MIN} ~ {KOREAN_NAME_MAX}자\n" +
+                $"• 영어: {ENGLISH_NAME_MIN} ~ {ENGLISH_NAME_MAX}자\n" +
+                $"• 일본어: {JAPANESE_NAME_MIN} ~ {JAPANESE_NAME_MAX}자";
 
         else if (CheckBadWord(inputText))
             t = "비속어가 포함되어 있습니다!";
