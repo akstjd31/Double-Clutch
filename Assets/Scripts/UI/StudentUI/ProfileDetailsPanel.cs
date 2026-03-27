@@ -44,6 +44,22 @@ public class ProfileDetailsPanel : MonoBehaviour
 
         _positionDropdown.value = PositionIntoValue(student.Position);
         _nameText.text = name;
+        if(manager.CurrentLanguage == Language.En)
+        {
+            _nameText.alignment = TextAlignmentOptions.Left;
+            _nameText.fontSize = 38;
+        }
+        if (manager.CurrentLanguage == Language.Ja)
+        {
+            _nameText.alignment = TextAlignmentOptions.Left;
+            _nameText.fontSize = 40;
+        }
+        if (manager.CurrentLanguage == Language.Ko)
+        {
+            _nameText.alignment = TextAlignmentOptions.Center;
+            _nameText.fontSize = 54;
+        }
+
         _gradeText.text = manager.GetString(SetName(student.Grade));
         _attackText.text = student.Attack.ToString();
         _defenseText.text = student.Defense.ToString();
@@ -68,7 +84,23 @@ public class ProfileDetailsPanel : MonoBehaviour
 
     private void Refresh()
     {
+        StringManager manager = StringManager.Instance;
         if (_student == null) return;
+        if (manager.CurrentLanguage == Language.En)
+        {
+            _nameText.alignment = TextAlignmentOptions.Left;
+            _nameText.fontSize = 38;
+        }
+        if (manager.CurrentLanguage == Language.Ja)
+        {
+            _nameText.alignment = TextAlignmentOptions.Left;
+            _nameText.fontSize = 40;
+        }
+        if (manager.CurrentLanguage == Language.Ko)
+        {
+            _nameText.alignment = TextAlignmentOptions.Center;
+            _nameText.fontSize = 54;
+        }
         StringManager.Instance.GetString(_student.PersonalityData.personalityName, _personalityText);
         StringManager.Instance.GetString(_student.TraitData.traitName, _traitText);
         StringManager.Instance.GetString(SetName(_student.Grade), _gradeText);

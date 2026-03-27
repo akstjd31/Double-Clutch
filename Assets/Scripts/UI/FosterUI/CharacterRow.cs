@@ -103,6 +103,19 @@ public class CharacterRow : MonoBehaviour
     {
         StringManager manager = StringManager.Instance;
         _name.text = manager.GetString(_target.Name[0]) + manager.GetString(_target.Name[1]) + manager.GetString(_target.Name[2]);
+        if(manager.CurrentLanguage == Language.Ko)
+        {
+            _name.fontSize = 32;
+        }
+        if (manager.CurrentLanguage == Language.En)
+        {
+            _name.fontSize = 24;
+        }
+        if (manager.CurrentLanguage == Language.Ja)
+        {
+            _name.fontSize = 24;
+        }
+
         manager.ApplyFont(_name);
 
         _attack.text = _target.AttackChange != 0 ? $"+{_target.AttackChange}" : "-";

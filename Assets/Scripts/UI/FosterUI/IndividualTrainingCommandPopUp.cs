@@ -61,7 +61,21 @@ public class IndividualTrainingCommandPopUp : MonoBehaviour
 
         StringManager manager = StringManager.Instance;
         string name = manager.GetString(_selectedStudent.Name[0]) + manager.GetString(_selectedStudent.Name[1]) + manager.GetString(_selectedStudent.Name[2]);
-        _nameText.text = name + manager.GetString("UI_Popup_육성커맨드");
+        _nameText.text = name +" "+manager.GetString("UI_Popup_육성커맨드");
+        if (StringManager.Instance.CurrentLanguage == Language.Ko)
+        {
+            _nameText.fontSize = 56;
+        }
+        if (StringManager.Instance.CurrentLanguage == Language.En)
+        {
+            _nameText.text = name + "\n" + manager.GetString("UI_Popup_육성커맨드");
+            _nameText.fontSize = 48;
+        }
+        if (StringManager.Instance.CurrentLanguage == Language.Ja)
+        {
+            _nameText.text = name + "\n" + manager.GetString("UI_Popup_육성커맨드");
+            _nameText.fontSize = 48;
+        }
 
         _attackPoint.text = _selectedStudent.Attack.ToString();
         _defensePoint.text = _selectedStudent.Defense.ToString();
@@ -73,8 +87,23 @@ public class IndividualTrainingCommandPopUp : MonoBehaviour
     {
         StringManager manager = StringManager.Instance;
         string name = manager.GetString(_selectedStudent.Name[0]) + manager.GetString(_selectedStudent.Name[1]) + manager.GetString(_selectedStudent.Name[2]);
-        _nameText.text = name + manager.GetString("UI_Popup_육성커맨드");
+        _nameText.text = name+" "+manager.GetString("UI_Popup_육성커맨드");
         manager.ApplyFont(_nameText);
+        if (StringManager.Instance.CurrentLanguage == Language.Ko)
+        {
+            _nameText.fontSize = 56;
+        }
+        if (StringManager.Instance.CurrentLanguage == Language.En)
+        {
+            _nameText.text = name + "\n" + manager.GetString("UI_Popup_육성커맨드");
+            _nameText.fontSize = 48;
+        }
+        if (StringManager.Instance.CurrentLanguage == Language.Ja)
+        {
+            _nameText.text = name + "\n" + manager.GetString("UI_Popup_육성커맨드");
+            _nameText.fontSize = 48;
+        }
+
     }
 
     private void CreateBox(ITraining command)

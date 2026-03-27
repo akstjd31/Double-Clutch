@@ -78,11 +78,35 @@ public class TrainingCharacterBox : MonoBehaviour
 
             if (_student.CurrentTraining is IndividualTraining || _student.CurrentTraining is TeamTraining)
             {
+                if (StringManager.Instance.CurrentLanguage == Language.Ko)
+                {
+                    _stateText.fontSize = 32;
+                }
+                if (StringManager.Instance.CurrentLanguage == Language.En)
+                {
+                    _stateText.fontSize = 32;
+                }
+                if (StringManager.Instance.CurrentLanguage == Language.Ja)
+                {
+                    _stateText.fontSize = 24;
+                }
                 _stateText.color = _trainingColor;
                 manager.ApplyFont(_stateText);
             }
             else
             {
+                if (StringManager.Instance.CurrentLanguage == Language.Ko)
+                {
+                    _stateText.fontSize = 32;
+                }
+                if (StringManager.Instance.CurrentLanguage == Language.En)
+                {
+                    _stateText.fontSize = 32;
+                }
+                if (StringManager.Instance.CurrentLanguage == Language.Ja)
+                {
+                    _stateText.fontSize = 24;
+                }
                 _stateText.color= _restColor;
                 manager.ApplyFont(_stateText);
             }
