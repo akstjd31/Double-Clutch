@@ -281,10 +281,11 @@ public class ResultState : IState
         if (LeagueManager.Instance.CurrentLeague != null && LeagueManager.Instance.CurrentLeague.isFinished)
         {
             ApplyLeagueEndConditionDrop(LeagueManager.Instance.CurrentLeague.currentRoundIndex + 1);
-            if (LeagueRecordManager.Instance != null)
-            {
-                LeagueRecordManager.Instance.ClearLeagueRecords();
-            }
+            // 저장 타이밍으로 인한 버그로 생각되는 부분이 있어 주석 처리
+            //if (LeagueRecordManager.Instance != null)
+            //{
+            //    LeagueRecordManager.Instance.ClearLeagueRecords();
+            //}
         }
         MatchState matchState = UnityEngine.Object.FindFirstObjectByType<MatchState>();
         if (matchState != null && matchState.HomeTeam != null)

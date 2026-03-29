@@ -205,6 +205,11 @@ public class LeagueDataManager : Singleton<LeagueDataManager>
         if (string.IsNullOrEmpty(leagueId)) return null;
         if (rule == null) return null;
 
+        if (LeagueRecordManager.Instance != null)
+        {
+            LeagueRecordManager.Instance.ClearLeagueRecords();
+        }
+
         var masterData = GetMasterDataById(leagueId);
         if (masterData == null)
         {
@@ -485,6 +490,10 @@ public LeagueSaveData LoadLeague()
     /// </summary>
     public LeagueSaveData CreateAndSaveLeagueWithPrevTeams(string newLeagueId)
     {
+        if (LeagueRecordManager.Instance != null)
+        {
+            LeagueRecordManager.Instance.ClearLeagueRecords();
+        }
         // 직전 리그 데이터 불러오기
         var prevLeague = LoadLeague();
         if (prevLeague == null || prevLeague.teams == null || prevLeague.teams.Count == 0)

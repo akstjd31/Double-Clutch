@@ -234,8 +234,9 @@ public class LobbyUI : MonoBehaviour
                 ApplyLeagueEndConditionDropToAllPlayers();
 
                 // 임시 로그 및 포지션 초기화
-                if (LeagueRecordManager.Instance != null)
-                    LeagueRecordManager.Instance.ClearLeagueRecords();
+                // 저장 타이밍으로 인한 버그로 생각되는 부분이 있어 주석 처리
+                //if (LeagueRecordManager.Instance != null)
+                //    LeagueRecordManager.Instance.ClearLeagueRecords();
 
                 if (StudentManager.Instance != null && StudentManager.Instance.MyStudents != null)
                 {
