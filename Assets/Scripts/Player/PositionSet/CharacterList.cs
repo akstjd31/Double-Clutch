@@ -168,9 +168,6 @@ public class CharacterList : MonoBehaviour
             case 1:
                 // 배치 완료, 시작 전 상태
                 if (_matchStartPanelObj != null)
-                    if (AudioManager.Instance != null)
-                        AudioManager.Instance.PlaySound(SoundName.SE_MATCH_START);
-                        
                     _matchStartPanelObj.SetActive(true);
                 break;
 
@@ -197,6 +194,7 @@ public class CharacterList : MonoBehaviour
     public void OnClickPosition(DropPosition dPos)
     {
         if (dPos == null) return;
+        _matchStartPanelObj.SetActive(false);
 
         if (_selectedPosition == dPos)
         {
@@ -464,12 +462,6 @@ public class CharacterList : MonoBehaviour
         CheckSynergy();
         if (_matchStartPanelObj != null)
         {
-            if (canStart)
-            {
-                if (AudioManager.Instance != null)
-                    AudioManager.Instance.PlaySound(SoundName.SE_MATCH_START);
-            }
-
             _matchStartPanelObj.SetActive(canStart);
         }
             
