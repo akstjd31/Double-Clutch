@@ -6,18 +6,18 @@ using UnityEngine.UI;
 using static UnityEngine.GraphicsBuffer;
 
 /// <summary>
-/// ï¿½Îºï¿½ È­ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ UI È°ï¿½ï¿½È­ ï¿½ï¿½ï¿½Â¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½ ï¿½Ì±ï¿½ï¿½ï¿½ ï¿½Å´ï¿½ï¿½ï¿½
-/// È°ï¿½ï¿½È­ï¿½ï¿½ ï¿½ï¿½ï¿½Ã¿ï¿½ Init È£ï¿½ï¿½ï¿½ ï¿½Ğ»ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ê¿ï¿½
+/// ?¥ê? ????? ???? UI ???? ???¢¬? ??????? ?? ????? ?????
+/// ?????? ????? Init ???? ?¬İ? ???? ???? ???
 /// </summary>
 public class StudentUIManager : MonoBehaviour
 {
     public static StudentUIManager Instance;
-    [Header("ì„ ìˆ˜ ê´€ë ¨ UI")]
+    [Header("¼±¼ö °ü·Ã UI")]
     [SerializeField] ProfileDetailsPanel _profileDetailsPanel;
     [SerializeField] PassiveExplainBox _passiveExplainBox;
     [SerializeField] Button _backBotton;
 
-    [Header("ìœ¡ì„± ê´€ë ¨ UI")]
+    [Header("À°¼º °ü·Ã UI")]
     [SerializeField] TrainingPanel _trainingPanel;
     [SerializeField] IndividualTrainingCommandPopUp _individualTrainingCommandPopUp;
     [SerializeField] TeamTrainingCommandPopUp _teamTrainingCommandPopUp;
@@ -31,7 +31,7 @@ public class StudentUIManager : MonoBehaviour
     [SerializeField] TextMeshProUGUI _startFosterButtonCount;
     [SerializeField] GameObject _costWarningPopUp;
 
-    [Header("ì˜ì… & ë°©ì¶œ ê´€ë ¨ UI")]
+    [Header("¿µÀÔ & ¹æÃâ °ü·Ã UI")]
     [SerializeField] CharacterRecruitPanel _characterRecruitPanel;
     [SerializeField] RecruitWarningPopUp _recruitWarningPopUp;
     [SerializeField] RecruitConfirmPopUp _recruitConfirmPopUp;
@@ -57,13 +57,13 @@ public class StudentUIManager : MonoBehaviour
             OpenRecruitPanel();
     }
 
-    public void OnCharacterBoxClick(CharacterBox box) //Ä³ï¿½ï¿½ï¿½ï¿½ ï¿½Ú½ï¿½ ï¿½ï¿½Æ° ï¿½ï¿½Å¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ È£ï¿½ï¿½
+    public void OnCharacterBoxClick(CharacterBox box) //©¦???? ??? ??? ????????? ???
     {
         _profileDetailsPanel.gameObject.SetActive(true);
         _profileDetailsPanel.Init(box.Target);        
     }
 
-    public void OnPassiveBoxMouseOverStart(Player_PassiveData? data) //ï¿½Ğ½Ãºï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ú½ï¿½ï¿½ï¿½ OnPointerEnterï¿½ï¿½ï¿½ï¿½ È£ï¿½ï¿½
+    public void OnPassiveBoxMouseOverStart(Player_PassiveData? data) //?¬ß?? ?????? ????? OnPointerEnter???? ???
     {        
         if (!data.HasValue)
         {
@@ -79,23 +79,23 @@ public class StudentUIManager : MonoBehaviour
         _passiveExplainBox.Init(data.Value);
     }
 
-    public void OnPassiveBoxMouseOverEnd() //ï¿½Ğ½Ãºï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ú½ï¿½ OnPointerExitï¿½ï¿½ï¿½ï¿½ È£ï¿½ï¿½
+    public void OnPassiveBoxMouseOverEnd() //?¬ß?? ?????? ??? OnPointerExit???? ???
     {
         _passiveExplainBox.gameObject.SetActive(false);        
     }
 
-    public void OnTrainingButtonClick() //ï¿½Îºï¿½ È­ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ° ï¿½ï¿½Å¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ È£ï¿½ï¿½
+    public void OnTrainingButtonClick() //?¥ê? ????? ??????? ????????? ???
     {
-        // ï¿½×½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ó½ï¿½ ï¿½Ö¼ï¿½
+        // ?????? ???? ??? ???
         _trainingPanel.gameObject.SetActive(true);
 
         FosterManager.Instance.UpdateScheduleState();
 
-        // ï¿½Ó½Ã·ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡(MatchPrep)ï¿½ï¿½ ï¿½Ù·ï¿½ ï¿½Ñ¾î°¡ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+        // ??¡À? ???? ???(MatchPrep)?? ??? ????? ????
         // GameManager.Instance.ChangeState<MatchPrepState>();
     }
 
-    public void OnTrainingCharacterBoxClick(Student target) //ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ï¿½Ú½ï¿½ ï¿½ï¿½Å¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ È£ï¿½ï¿½
+    public void OnTrainingCharacterBoxClick(Student target) //?¡À???? ??? ????????? ???
     {
         _individualTrainingCommandPopUp.gameObject.SetActive(true);
         _individualTrainingCommandPopUp.Init(target);
@@ -112,18 +112,18 @@ public class StudentUIManager : MonoBehaviour
         _trainingPanel.RefreshAllBoxesState();
     }
 
-    public void OnTeamTrainingButtonClick() //ï¿½Ü¼ï¿½ È°ï¿½ï¿½È­ï¿½ï¿½ ï¿½Î½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Øµï¿½ OK
+    public void OnTeamTrainingButtonClick() //??? ?????? ?¥í????? ????? ??? OK
     {
         _teamTrainingCommandPopUp.gameObject.SetActive(true);
     }
 
-    public void OpenStateWarningPopUp_Individual(Student target) //ï¿½Ç·ï¿½, ï¿½Î»ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Æ·ï¿½ ï¿½Ò´ï¿½ï¿½ ï¿½Ë¾ï¿½ È£ï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½ ï¿½Æ·ï¿½ ï¿½ï¿½ï¿½ï¿½)
+    public void OpenStateWarningPopUp_Individual(Student target) //???, ?¥ë? ???????? ??? ???? ??? ????(???? ??? ????)
     {
         _stateWarningPopUp_Individual.gameObject.SetActive(true);
         _stateWarningPopUp_Individual.Init(target);
     }
 
-    //public void OpenStateWarningPopUp_Team()//ï¿½Ç·ï¿½, ï¿½Î»ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Æ·ï¿½ ï¿½Ò´ï¿½ï¿½ ï¿½Ë¾ï¿½ È£ï¿½ï¿½ï¿½(ï¿½ï¿½ ï¿½Æ·ï¿½ ï¿½ï¿½ï¿½ï¿½)
+    //public void OpenStateWarningPopUp_Team()//???, ?¥ë? ???????? ??? ???? ??? ????(?? ??? ????)
     //{
     //    _stateWarningPopUp_Team.gameObject.SetActive(true);
     //}
@@ -136,6 +136,7 @@ public class StudentUIManager : MonoBehaviour
 
     public void OpenConditionWarningPopUp(List<Student> targets, int cost)
     {
+        PlayWarningSound();
         _conditionWarningPopUp.gameObject.SetActive(true);
         _conditionWarningPopUp.Init(targets, cost);
     }    
@@ -148,6 +149,7 @@ public class StudentUIManager : MonoBehaviour
 
     public void OpenCostWarningPopUp()
     {
+        PlayWarningSound();
         _costWarningPopUp.SetActive(true);
     }
 
@@ -165,7 +167,7 @@ public class StudentUIManager : MonoBehaviour
         _weeklyTrainingReportPopUp.Init(students);
     }
 
-    public void OpenRecruitPanel() //ì˜ì… ì‹œì‘í•˜ë ¤ë©´ ì´ê±° í˜¸ì¶œ!
+    public void OpenRecruitPanel() //¿µÀÔ ½ÃÀÛÇÏ·Á¸é ÀÌ°Å È£Ãâ!
     {
         _characterRecruitPanel.gameObject.SetActive(true);
         //_characterRecruitPanel.Init();
@@ -191,12 +193,14 @@ public class StudentUIManager : MonoBehaviour
 
     public void OpenOutWarningPopUp(int number)
     {
+        PlayWarningSound();
         _outWarningPopUp.gameObject.SetActive(true);
         _outWarningPopUp.Init(number);
     }
 
     public void OpenCantOutWarningPopUp()
     {
+        PlayWarningSound();
         _cantOutWarningPopUp.gameObject.SetActive(true);        
     }
     public void OpenOutConfirmPopUp(int number)
@@ -205,7 +209,7 @@ public class StudentUIManager : MonoBehaviour
         _outConfirmPopUp.Init(number);
     }
     
-    public void OpenProfilePopUp(Student student)// 2ì´ˆ ëˆ„ë¥´ë©´ í˜¸ì¶œë  í•¨ìˆ˜
+    public void OpenProfilePopUp(Student student)// 2ÃÊ ´©¸£¸é È£ÃâµÉ ÇÔ¼ö
     {
         if (_characterProfilePopUp != null)
         {
@@ -230,5 +234,9 @@ public class StudentUIManager : MonoBehaviour
         _passiveProfileBox.gameObject.SetActive(false);
     }
 
-
+    private void PlayWarningSound()
+    {
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlaySoundOneShot(SoundName.UI_WARNING_01);
+    }
 }

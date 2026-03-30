@@ -208,8 +208,8 @@ public class ProfileUI : MonoBehaviour
 
     public void OnClickConfirmButton()
     {
-        if (AudioManager.Instance == null) return;
-        AudioManager.Instance.PlaySoundOneShot(SoundName.SE_BUTTON_SELECT);
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlaySoundOneShot(SoundName.SE_BUTTON_SELECT);
 
         var gm = GameManager.Instance;
 
@@ -310,9 +310,13 @@ public class ProfileUI : MonoBehaviour
         
         if (t != null)
         {
+            if (AudioManager.Instance != null)
+                AudioManager.Instance.PlaySoundOneShot(SoundName.UI_WARNING_01);
+
             if (GameManager.Instance.SaveData == null)
             {
                 _warningTextObj.SetActive(true);
+
                 targetWarningText.text = t;
             }
             else
