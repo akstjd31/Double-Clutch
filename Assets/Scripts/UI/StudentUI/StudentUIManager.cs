@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Game.Constants;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -157,11 +158,12 @@ public class StudentUIManager : MonoBehaviour
 
     public void OpenWeeklyTrainingReportPopUp(List<Student> students)
     {
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlaySoundOneShot(SoundName.SE_REPORT);
+            
         _weeklyTrainingReportPopUp.gameObject.SetActive(true);
         _weeklyTrainingReportPopUp.Init(students);
     }
-
-
 
     public void OpenRecruitPanel() //영입 시작하려면 이거 호출!
     {

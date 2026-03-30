@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-
+using Game.Constants;
 using UnityEngine;
 using static UnityEngine.Rendering.DebugUI;
 
@@ -199,6 +199,9 @@ public class EventController : MonoBehaviour
         //대본 순서대로 화면에 출력
         if (_screenPlayDic.ContainsKey(_nextId))
         {
+            if (AudioManager.Instance != null)
+                AudioManager.Instance.PlaySoundOneShot(SoundName.SE_TEXT_SCROLL);
+
             switch (_screenPlayDic[_nextId].textType)
             {
                 case textType.Choice:

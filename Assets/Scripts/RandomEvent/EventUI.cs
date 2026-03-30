@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Game.Constants;
 using TMPro;
 using UnityEngine;
 
@@ -205,6 +206,20 @@ public class EventUI : MonoBehaviour
 
     public void UpdateEventResult(potential potentialChangeType, int potentialChangeValue, string resultScriptKey, string reactionPortraitId, string currentState, string statusChange)
     {
+        string nm = "";
+
+        if (reactionPortraitId.Contains("Normal"))
+            nm = SoundName.SE_NONE;
+        
+        else if (reactionPortraitId.Contains("Sad"))
+            nm = SoundName.SE_FAIL;
+        
+        else
+            nm = SoundName.SE_GREAT;
+        
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlaySoundOneShot(nm);        
+
         #region 스텟한글변환
         string transText = "";
         switch (potentialChangeType)
