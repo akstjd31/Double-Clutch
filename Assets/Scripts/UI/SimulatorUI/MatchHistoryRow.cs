@@ -35,10 +35,16 @@ public class MatchHistoryRow : MonoBehaviour
             _textHomeScore.text = record.HomeScore.ToString();
 
         if (_textHomeTeam != null)
-            _textHomeTeam.text = record.HomeTeamName;
+        {
+            _textHomeTeam.text = StringManager.Instance.GetString(record.HomeTeamName);
+            StringManager.Instance.ApplyFont(_textHomeTeam);
+        }
 
         if (_textAwayTeam != null)
-            _textAwayTeam.text = record.AwayTeamName;
+        {
+            _textHomeTeam.text = StringManager.Instance.GetString(record.AwayTeamName);
+            StringManager.Instance.ApplyFont(_textAwayTeam);
+        }
 
         if (_textAwayScore != null)
             _textAwayScore.text = record.AwayScore.ToString();

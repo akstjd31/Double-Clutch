@@ -31,6 +31,26 @@ public class TournamentBoardPanel : MonoBehaviour
     private Action _customAction;
     private string _customActionText;
 
+    private void OnEnable()
+    {
+        StringManager.OnLanguageChanged += Refresh;
+    }
+
+    private void OnDisable()
+    {
+        StringManager.OnLanguageChanged -=Refresh;
+    }
+
+    public void Refresh()
+    {
+        var league = LeagueManager.Instance.CurrentLeague;
+        var masterData = LeagueDataManager.Instance.GetMasterDataById(league.leagueId);
+        if (_txtLeagueName != null && masterData.HasValue)
+        {
+            _txtLeagueName.text = StringManager.Instance.GetString(masterData.Value.leagueNameKey);
+            StringManager.Instance.ApplyFont(_txtLeagueName);
+        }
+    }
     public void OpenPanel(Action onActionClick = null, string actionText = null)
     {
         gameObject.SetActive(true);

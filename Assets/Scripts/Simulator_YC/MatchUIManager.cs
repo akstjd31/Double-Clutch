@@ -628,6 +628,7 @@ public class MatchUIManager : MonoBehaviour
 
         btn.gameObject.SetActive(true);
         txt.text = StringManager.Instance.GetString(choiceTextKey);
+        StringManager.Instance.ApplyFont(txt);
 
         btn.onClick.RemoveAllListeners();
         btn.onClick.AddListener(() =>
