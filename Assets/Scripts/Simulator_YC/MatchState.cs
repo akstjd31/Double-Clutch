@@ -52,7 +52,7 @@ public class MatchState : MonoBehaviour
         PlaySound();
     }
 
-    private void OnDestroy()
+    private void OnDisable()
     {
         AudioManager.Instance.StopSound();
     }

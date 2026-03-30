@@ -17,6 +17,8 @@ public class TutorialUI : MonoBehaviour
     [SerializeField] private Button _startButton;
     [SerializeField] private GameObject _skipPanelObj;
     [SerializeField] private GameObject _endPanelObj;
+    [SerializeField] private GameObject _explainBoxObj;
+    private bool _firstTutorial;
 
     private int _index;
     private int _reward;
@@ -85,6 +87,11 @@ public class TutorialUI : MonoBehaviour
         var dataList = tutorialMgr.GetData(id);
         if (dataList == null || dataList.Count == 0) return;
 
+        int n = int.Parse(id.Substring(id.Length - 2));
+        if (n == 1)
+            _firstTutorial = true;
+        
+
         _child.SetActive(true);
 
         _skipPanelObj.SetActive(false);
@@ -103,6 +110,14 @@ public class TutorialUI : MonoBehaviour
         if (_currentTutorialData.Count == 0) return;
 
         var data = _currentTutorialData[_index];
+
+        if (_firstTutorial)
+        {
+            if (_index == 2 || _index == 3)
+                _explainBoxObj.SetActive(true);
+            else
+                _explainBoxObj.SetActive(false);
+        }
 
         var sMgr = StringManager.Instance;
         var spriteMgr = SpriteManager.Instance;
