@@ -8,10 +8,8 @@ public class EndingUIController : MonoBehaviour
     [SerializeField] Image _characterImage;
     [SerializeField] EndingTextBox _endingTextBox;
     [SerializeField] CanvasGroup _fadePanel;
+    [SerializeField] GameObject _andYouPanel;
     CanvasGroup _characterCanvasGroup;
-
-    [Header("페이드 인/아웃 연출 소요시간")]
-    [SerializeField] float _fadeTime = 0.5f;
 
     public bool IsFading { get; private set; } = false;
 
@@ -60,6 +58,28 @@ public class EndingUIController : MonoBehaviour
         _endingTextBox.SetText(contentKey);
     }
 
+    public void PlayAndYouSequence()
+    {
+        StartCoroutine(AndYouRoutine());
+    }
+
+    private IEnumerator AndYouRoutine()
+    {        
+        _andYouPanel.SetActive(true);
+        _fadePanel.alpha = 1f;
+        _fadePanel.blocksRaycasts = true;
+
+        
+        yield return StartCoroutine(FadeRoutine(true));
+        
+        yield return new WaitForSeconds(EndingManager.Instance.AndYouTime);
+        
+        yield return StartCoroutine(FadeRoutine(false));
+
+
+        GameManager.Instance.GoToLobby();
+    }
+
     public void FadeIn()
     {
         if (_fadeRoutine != null)
@@ -81,7 +101,7 @@ public class EndingUIController : MonoBehaviour
     private IEnumerator FadeRoutine(bool fadeIn)
     {
         IsFading = true;
-        float duration = _fadeTime;
+        float duration = EndingManager.Instance.FadeTime;
         float timer = 0f;
 
         
@@ -98,7 +118,7 @@ public class EndingUIController : MonoBehaviour
         }
         
         _fadePanel.alpha = endAlpha;        
-        _fadePanel.blocksRaycasts = (endAlpha == 1f);
+        _fadePanel.blocksRaycasts = false;
 
         IsFading = false;
         _fadeRoutine = null;

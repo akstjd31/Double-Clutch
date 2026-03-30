@@ -117,6 +117,12 @@ public class GameManager : Singleton<GameManager>
 
         _sm.ChangeState<LoadingState>();
     }
+    public void GoToEnding()
+    {
+        SetNextFlow("Event", _sm.Get<LobbyState>());
+
+        _sm.ChangeState<LoadingState>();
+    }
 
     private IEnumerator LoadNextScene_Coroutine()
     {
