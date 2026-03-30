@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Game.Constants;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -27,7 +28,12 @@ public class LogHistoryPanel : MonoBehaviour
 
     private void Awake()
     {
-        if (_btnClose != null) _btnClose.onClick.AddListener(() => gameObject.SetActive(false));
+        if (_btnClose != null) _btnClose.onClick.AddListener(() =>
+        {
+            PlayConfirmSound();
+            gameObject.SetActive(false);
+        });
+        
         if (_btnPrev != null) _btnPrev.onClick.AddListener(OnClickPrevQuarter);
         if (_btnNext != null) _btnNext.onClick.AddListener(OnClickNextQuarter);
     }
@@ -58,11 +64,13 @@ public class LogHistoryPanel : MonoBehaviour
 
     private void OnClickPrevQuarter()
     {
+        PlayConfirmSound();
         if (_currentQuarter > 1) { _currentQuarter--; UpdateLogView(); }
     }
 
     private void OnClickNextQuarter()
     {
+        PlayConfirmSound();
         if (_currentQuarter < _maxQuarter) { _currentQuarter++; UpdateLogView(); }
     }
 
@@ -126,4 +134,10 @@ public class LogHistoryPanel : MonoBehaviour
         _textLogContent.text = sb.ToString();
     }
 
+
+    private void PlayConfirmSound()
+    {
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlaySoundOneShot(SoundName.SE_BUTTON_SELECT);
+    }
 }
