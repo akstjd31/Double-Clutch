@@ -14,6 +14,7 @@ public class OutWarningPopUp : MonoBehaviour
 
     public void Init(int number)
     {
-        _warningText.text = $"¼±¼ö {number} ¸íÀ» Ãß°¡·Î ¹æÃâÇÏ¼Å¾ß ÇÕ´Ï´Ù.";
+        _warningText.text = StringManager.Instance.GetFormattedString("UI_Release_ì¶”ê°€ë°©ì¶œíŒì—…",number);
+        StringManager.Instance.ApplyFont(_warningText);
     }
 }

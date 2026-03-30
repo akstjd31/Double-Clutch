@@ -129,10 +129,16 @@ public class TutorialUI : MonoBehaviour
             _backgroundImage.sprite = spriteMgr.GetSprite(data.tutorialImageId);
 
         if (_narraitionText != null)
+        {
             _narraitionText.text = sMgr.GetString(data.narrationKey);
+            sMgr.ApplyFont(_narraitionText);
+        }
 
         if (_nameText != null)
+        {
             _nameText.text = sMgr.GetString(data.speakerKey);
+            sMgr.ApplyFont(_nameText);
+        }
 
         if (_dialogueText != null)
         {
@@ -156,10 +162,15 @@ public class TutorialUI : MonoBehaviour
             }
 
             _dialogueText.text = result;
+            sMgr.ApplyFont(_dialogueText);
         }
 
         if (_pageText != null)
+        {
             _pageText.text = $"{_index + 1}/{_currentTutorialData.Count}";
+            sMgr.ApplyFont(_pageText);
+        }
+
     }
 
     private void OnClickNextButton()

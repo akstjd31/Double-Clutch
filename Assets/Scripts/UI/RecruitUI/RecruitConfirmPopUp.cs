@@ -8,6 +8,7 @@ public class RecruitConfirmPopUp : MonoBehaviour
 
     public void Init(int number)
     {
-        _confirmText.text = $"¼±¼ö¸¦ {number} ¸í ¿µÀÔÇÏ½Ã°Ú½À´Ï±î?";
+        _confirmText.text = StringManager.Instance.GetFormattedString("UI_Recruit_ì˜ì…íŒì—…",number);
+        StringManager.Instance.ApplyFont(_confirmText);
     }
 }

@@ -8,6 +8,7 @@ public class OutConfirmPopUp : MonoBehaviour
 
     public void Init(int number)
     {
-        _confirmText.text = $"¼±¼ö¸¦ {number} ¸í ¹æÃâÇÏ½Ã°Ú½À´Ï±î?";
+        _confirmText.text = StringManager.Instance.GetFormattedString("UI_Release_ë°©ì¶œíŒì—…", number);
+        StringManager.Instance.ApplyFont(_confirmText);
     }
 }
