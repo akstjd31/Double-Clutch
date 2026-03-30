@@ -99,22 +99,26 @@ public class CalendarManager : Singleton<CalendarManager>
 
         }
 
-        // 튜로리얼 ID 체크
-        var tId = GetTutorialId(nextWeekId - 1);
-        if (tId != null)
+        // 튜로리얼 ID 체크 (첫 년도에만)
+        if (gm.SaveData.year == 1)
         {
-            Debug.Log("튜토리얼 Id 체크 완료!");
-            var tutorialMgr = TutorialManager.Instance;
-            if (tutorialMgr == null) return;
-
-            // 아직 플레이어가 해당 튜토리얼을 수행하지 않았다면
-            int idx = int.Parse(tId[tId.Length - 1].ToString()) - 1;
-            if (!gm.SaveData.tutorialCompleted[idx])
+            var tId = GetTutorialId(nextWeekId - 1);
+            if (tId != null)
             {
-                tutorialMgr.StartTutorial(tId);
+                Debug.Log("튜토리얼 Id 체크 완료!");
+                var tutorialMgr = TutorialManager.Instance;
+                if (tutorialMgr == null) return;
+
+                // 아직 플레이어가 해당 튜토리얼을 수행하지 않았다면
+                int idx = int.Parse(tId[tId.Length - 1].ToString()) - 1;
+                if (!gm.SaveData.tutorialCompleted[idx])
+                {
+                    tutorialMgr.StartTutorial(tId);
+                }
+                // var data = tutorialMgr.GetData(id);
             }
-            // var data = tutorialMgr.GetData(id);
         }
+
 
         if (weekId == 1)
         {
@@ -319,7 +323,7 @@ public class CalendarManager : Singleton<CalendarManager>
 
         if (_calReader == null || _calReader.DataList == null || _calReader.DataList.Count == 0)
             return descList;
-            
+
         int currentMonthStart = weekId - calendar.week;
 
         int currentMonthWeekCount = MonthWeekTable.weekCounts[calendar.month - 1];
