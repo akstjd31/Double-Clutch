@@ -19,12 +19,19 @@ public class StatTriangle : MaskableGraphic
     {
         vh.Clear();
 
+        vh.Clear();
+
         float size = Mathf.Min(rectTransform.rect.width, rectTransform.rect.height) * 0.5f;
 
-        // 1. 각 꼭짓점 좌표 계산
-        Vector2 posA = new Vector2(0, size * Scoring / MaxStatValue);
-        Vector2 posB = (Vector2)(Quaternion.Euler(0, 0, 120) * new Vector3(0, size * Support / MaxStatValue, 0));
-        Vector2 posC = (Vector2)(Quaternion.Euler(0, 0, 240) * new Vector3(0, size * Disruption / MaxStatValue, 0));
+        // Mathf.Clamp를 사용하여 0 ~ MaxStatValue 사이로 고정
+        float sA = Mathf.Clamp(Scoring, 0, MaxStatValue);
+        float sB = Mathf.Clamp(Support, 0, MaxStatValue);
+        float sC = Mathf.Clamp(Disruption, 0, MaxStatValue);
+
+        // 제한된 값으로 좌표 계산
+        Vector2 posA = new Vector2(0, size * sA / MaxStatValue);
+        Vector2 posB = (Vector2)(Quaternion.Euler(0, 0, 120) * new Vector3(0, size * sB / MaxStatValue, 0));
+        Vector2 posC = (Vector2)(Quaternion.Euler(0, 0, 240) * new Vector3(0, size * sC / MaxStatValue, 0));
 
         // 2. 배경 삼각형 면 그리기 (기본 색상)
         AddTriangleMesh(vh, posA, posB, posC, color);
