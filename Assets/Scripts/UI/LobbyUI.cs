@@ -208,6 +208,12 @@ public class LobbyUI : MonoBehaviour
             AudioManager.Instance.PlaySoundOneShot(SoundName.SE_BUTTON_CANCEL);
     }
 
+    public void PlayAlbumInSound()
+    {
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlaySoundOneShot(SoundName.SE_ALBUM_IN);
+    }
+
     public void SetButtonActivate(Calendar calendar)
     {
         var type = CalendarManager.Instance.CurrentGetPhaseType();

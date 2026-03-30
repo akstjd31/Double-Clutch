@@ -2,6 +2,7 @@ using UnityEngine;
 using TMPro;
 using System.Collections.Generic;
 using UnityEngine.UI;
+using Game.Constants;
 
 /// <summary>
 /// 졸업 앨범 UI
