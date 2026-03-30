@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
 using System.Reflection;
+using Game.Constants;
 
 public class MatchReplayer : MonoBehaviour
 {
@@ -366,6 +367,9 @@ public class MatchReplayer : MonoBehaviour
 
             if (IsGoalEvent(log.EventType))
             {
+                if (AudioManager.Instance != null)
+                    AudioManager.Instance.PlaySoundOneShot(SoundName.SE_GOAL);
+
                 if (log.TeamId == 0) _matchState.HomeTeam.AddScore(log.ScoreAdded);
                 else _matchState.AwayTeam.AddScore(log.ScoreAdded);
 

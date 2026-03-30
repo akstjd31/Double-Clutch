@@ -178,9 +178,6 @@ public class MatchState : MonoBehaviour
 
     private void EndQuarter()
     {
-        if (AudioManager.Instance != null)
-            AudioManager.Instance.PlaySoundOneShot(SoundName.SE_GOAL);
-
         AddLog($"--- {_currentQuarter} Quarter Ended ---");
 
         if (_currentQuarter < MAX_QUARTER)

@@ -45,6 +45,8 @@ public class LeagueCalculatePanel : MonoBehaviour
         _btnConfirm.onClick.RemoveAllListeners();
         _btnConfirm.onClick.AddListener(() =>
         {
+            PlayConfirmSound();
+
             gameObject.SetActive(false);
             _onConfirmAction?.Invoke();
         });
@@ -52,7 +54,11 @@ public class LeagueCalculatePanel : MonoBehaviour
         if (_btnTotalRank != null)
         {
             _btnTotalRank.onClick.RemoveAllListeners();
-            _btnTotalRank.onClick.AddListener(() => _totalRankPanel.OpenPanel());
+            _btnTotalRank.onClick.AddListener(() =>
+            {
+                PlayConfirmSound();
+                _totalRankPanel.OpenPanel();
+            });
         }
         // 대회 대진표 버튼 클릭 이벤트
         if (_btnShowBracket != null)
@@ -60,6 +66,7 @@ public class LeagueCalculatePanel : MonoBehaviour
             _btnShowBracket.onClick.RemoveAllListeners();
             _btnShowBracket.onClick.AddListener(() =>
             {
+                PlayConfirmSound();
                 // 현재 진행 중인(또는 방금 끝난) 리그 데이터를 가져옴
                 var currentLeague = LeagueManager.Instance.CurrentLeague;
 
@@ -214,5 +221,11 @@ public class LeagueCalculatePanel : MonoBehaviour
                 _logHistoryPanel.OpenPanel(clickedRound);
             });
         }
+    }
+
+    private void PlayConfirmSound()
+    {
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlaySoundOneShot(SoundName.SE_BUTTON_SELECT);
     }
 }

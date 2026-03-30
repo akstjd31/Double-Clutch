@@ -452,6 +452,8 @@ public class MatchUIManager : MonoBehaviour
             _btnNext.onClick.RemoveAllListeners();
             _btnNext.onClick.AddListener(() =>
             {
+                PlayConfirmSound();
+
                 if (lineData.nextId == 0) ShowScriptLine(lineData.currentId + 1);
                 else ShowScriptLine(lineData.nextId);
             });
@@ -630,6 +632,8 @@ public class MatchUIManager : MonoBehaviour
         btn.onClick.RemoveAllListeners();
         btn.onClick.AddListener(() =>
         {
+            PlayConfirmSound();
+
             // 선택지에 따른 효과를 즉시 적용
             MatchState matchState = UnityEngine.Object.FindFirstObjectByType<MatchState>();
             matchState.ApplyHalfTimeEffectDirectly(stat, statChange, pos, posChange);
@@ -654,6 +658,8 @@ public class MatchUIManager : MonoBehaviour
             Debug.LogWarning("[MatchUIManager] MatchReplayer가 연결되지 않았습니다.");
             return;
         }
+
+        PlayConfirmSound();
 
         // 다음 배속 단계로 넘어감 (마지막 단계면 다시 0번 인덱스로)
         _currentSpeedIndex++;
@@ -699,16 +705,21 @@ public class MatchUIManager : MonoBehaviour
     // 버튼의 OnClick에 연결할 스킵 버튼 전용 함수
     public void OnClickSkipButton()
     {
+        PlayConfirmSound();
+
         if (_replayer != null)
         {
             _replayer.SkipReplay();
         }
     }
+
     // [게임메뉴] 버튼을 눌렀을 때 호출할 함수
     public void OnClickGameMenuButton()
     {
         if (_settingPanel != null)
         {
+            PlayConfirmSound();
+
             _settingPanel.SetActive(true);
 
             // 세팅 창이 켜졌을 때 게임을 일시정지
@@ -732,6 +743,9 @@ public class MatchUIManager : MonoBehaviour
     {
         if (_quarterEndPanel != null)
         {
+            if (AudioManager.Instance != null)
+                AudioManager.Instance.PlaySoundOneShot(SoundName.SE_GOAL);
+
             _quarterEndPanel.SetActive(true);
             IsQuarterEndConfirmed = false; // 플래그 초기화
         }
@@ -745,6 +759,7 @@ public class MatchUIManager : MonoBehaviour
     // [확인] 버튼을 눌렀을 때 호출될 함수
     public void OnClickQuarterEndConfirm()
     {
+        PlayConfirmSound();
         IsQuarterEndConfirmed = true; // 확인 완료 플래그 켜기
 
         if (_quarterEndPanel != null)
@@ -752,9 +767,11 @@ public class MatchUIManager : MonoBehaviour
             _quarterEndPanel.SetActive(false); // 팝업 닫기
         }
     }
+
     // 버튼 클릭 함수
     public void OnClickResultConfirmButton()
     {
+        PlayConfirmSound();
         // 메인 결과 패널 닫기
         if (_resultPanel != null)
         {
@@ -813,5 +830,11 @@ public class MatchUIManager : MonoBehaviour
         StringManager manager = StringManager.Instance;
         string name = manager.GetString(nameKey[0]) + manager.GetString(nameKey[1]) + manager.GetString(nameKey[2]);
         return name;
+    }
+
+    private void PlayConfirmSound()
+    {
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlaySoundOneShot(SoundName.SE_BUTTON_SELECT);
     }
 }

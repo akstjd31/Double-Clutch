@@ -162,8 +162,6 @@ public class HeadlessMatchSimulator : MonoBehaviour
 
         if (success)
         {
-            // AudioManager.Instance.PlaySoundOneShot(SoundName.SE_GOAL);
-
             attackTeam.SimulatedScore += score;
             shooter.Score += score;
             SwitchPossession(false);

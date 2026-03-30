@@ -308,6 +308,9 @@ public class SwissBoardPanel : MonoBehaviour
             _btnAction.interactable = true;
             _btnAction.onClick.AddListener(() =>
             {
+                if (AudioManager.Instance != null)
+                    AudioManager.Instance.PlaySoundOneShot(SoundName.SE_BUTTON_SELECT);
+
                 gameObject.SetActive(false);
                 if (_customAction != null) _customAction.Invoke();
             });
