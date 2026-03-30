@@ -1,4 +1,5 @@
 using DG.Tweening.Core.Easing;
+using Game.Constants;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -136,35 +137,42 @@ public class SettingPanel : MonoBehaviour
 
     private void OnFPS30Changed(bool isOn)
     {
+        PlayConfirmSound();
         if (isOn) SettingManager.Instance.SetFPS(30);
     }
     private void OnFPS60Changed(bool isOn)
     {
+        PlayConfirmSound();
         if (isOn) SettingManager.Instance.SetFPS(60);
     }
 
     private void OnKoreanToggleChanged(bool isOn)
     {
+        PlayConfirmSound();
         if (isOn) StringManager.Instance.SetLanguage(Language.Ko);
     }
 
     private void OnEnglishToggleChanged(bool isOn)
     {
+        PlayConfirmSound();
         if (isOn) StringManager.Instance.SetLanguage(Language.En);
     }
 
     private void OnJapanToggleChanged(bool isOn)
     {
+        PlayConfirmSound();
         if (isOn) StringManager.Instance.SetLanguage(Language.Ja);
     }
 
     private void OpenPrivacyPolicy()
     {
+        PlayConfirmSound();
         SettingManager.Instance.OpenPrivacyPolicy();
     }
 
     private void OpenUserPolicy()
     {
+        PlayConfirmSound();
         SettingManager.Instance.OpenUserPolicy();
     }
 
@@ -172,7 +180,15 @@ public class SettingPanel : MonoBehaviour
 
     public void OnQuitSetting()
     {
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlaySoundOneShot(SoundName.SE_BUTTON_CANCEL);
+
         SettingManager.Instance.OnQuitSetting();
     }
 
+    private void PlayConfirmSound()
+    {
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlaySoundOneShot(SoundName.SE_BUTTON_SELECT);
+    }
 }
