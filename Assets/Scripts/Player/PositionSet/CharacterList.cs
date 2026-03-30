@@ -168,6 +168,9 @@ public class CharacterList : MonoBehaviour
             case 1:
                 // 배치 완료, 시작 전 상태
                 if (_matchStartPanelObj != null)
+                    if (AudioManager.Instance != null)
+                        AudioManager.Instance.PlaySound(SoundName.SE_MATCH_START);
+                        
                     _matchStartPanelObj.SetActive(true);
                 break;
 
@@ -460,7 +463,16 @@ public class CharacterList : MonoBehaviour
         bool canStart = CheckMaxPositionBatch();
         CheckSynergy();
         if (_matchStartPanelObj != null)
+        {
+            if (canStart)
+            {
+                if (AudioManager.Instance != null)
+                    AudioManager.Instance.PlaySound(SoundName.SE_MATCH_START);
+            }
+
             _matchStartPanelObj.SetActive(canStart);
+        }
+            
 
         if (_backButtonObj != null)
             _backButtonObj.SetActive(canStart);
