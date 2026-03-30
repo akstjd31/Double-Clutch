@@ -50,6 +50,7 @@ public static class SoundName
     public const string BGM_MATCHPLAY = "BGM_MatchPlay";
     public const string BGM_GRADUATION = "BGM_Graduation";
     public const string BGM_SCOUT = "BGM_Scout";
+    public const string BGM_ENDING = "BGM_Ending";
 
     // ===== SE =====
     public const string SE_BUTTON_SELECT = "SE_Button_Select";

@@ -1,4 +1,5 @@
 using System.Collections;
+using Game.Constants;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -43,7 +44,10 @@ public class EndingUIController : MonoBehaviour
         if (_currentBgmKey != bgmKey)
         {
             _currentBgmKey = bgmKey;
+            
             //새 BGM 재생
+            if (AudioManager.Instance != null)
+                AudioManager.Instance.PlaySoundOneShot(SoundName.SE_MATCH_WIN);
         }
     }
     public void PlaySFX(string sfxKey)
@@ -52,7 +56,10 @@ public class EndingUIController : MonoBehaviour
         {            
             return;
         }
+
         //효과음 재생
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlaySound(SoundName.BGM_ENDING);
     }
 
     public void SetCharacterSpeaking(bool isSpeaking)
