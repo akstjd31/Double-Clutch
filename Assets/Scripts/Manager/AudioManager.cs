@@ -80,9 +80,12 @@ public class AudioManager : Singleton<AudioManager>
         return _bgmAudioSource.clip.Equals(clip);
     }
 
-    public void PlaySoundOneShot(AudioClip clip)
+    public void PlaySoundOneShot(string resourceId)
     {
         if (_sfxAudioSource == null) return;
+        if (string.IsNullOrWhiteSpace(resourceId)) return;
+
+        var clip = GetAudioClip(resourceId);
         _sfxAudioSource.PlayOneShot(clip);
     }
 
