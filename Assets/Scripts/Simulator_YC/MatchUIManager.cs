@@ -1,4 +1,5 @@
 using DG.Tweening;
+using Game.Constants;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -239,6 +240,9 @@ public class MatchUIManager : MonoBehaviour
 
     private IEnumerator CoPlayCutInAnim(float speed)
     {
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlaySoundOneShot(SoundName.SE_CUTIN);
+
         _cutInPanel.SetActive(true);
         _cutInPanel.transform.localScale = Vector3.zero;
 
