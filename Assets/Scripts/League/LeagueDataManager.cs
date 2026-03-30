@@ -540,4 +540,5 @@ public LeagueSaveData LoadLeague()
     }
     public LeagueFactory GetFactory() => _leagueFactory;
 
+    public int GetEndingRequireNumber() => _leagueFactory.GetMasterDataList().Count;
 }
