@@ -51,6 +51,7 @@ public class TutorialUI : MonoBehaviour
 
         var data = gm.SaveData;
         var tId = CalendarManager.Instance.GetTutorialId(data.weekId - 1);
+        if (tId == null) return;
 
         int idx = int.Parse(tId[tId.Length - 1].ToString()) - 1;
         if (!data.tutorialCompleted[idx])

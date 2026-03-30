@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using Game.Constants;
 
 public struct MatchPlayerData
 {
@@ -17,6 +18,9 @@ public class NormalResultPanel : MonoBehaviour
     public void OpenPanel(List<MatchPlayerData> players)
     {
         this.gameObject.SetActive(true);
+
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlaySoundOneShot(SoundName.SE_MATCH_WIN);
 
         // 데이터가 제대로 넘어왔는지 콘솔 창에 확인
         if (players == null)
