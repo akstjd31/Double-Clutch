@@ -22,6 +22,8 @@ public class CheatPanelUI : MonoBehaviour
     [SerializeField] private Button _confirmButton;
     [SerializeField] private Button _backButton;
 
+    [SerializeField] private Button _endingConfirmButton;
+
     private CheatButton _currentCheatButton;
 
     private void OnEnable()
@@ -40,6 +42,8 @@ public class CheatPanelUI : MonoBehaviour
 
         _backButton.onClick.AddListener(OnClickBackButton);
         _confirmButton.onClick.RemoveAllListeners();
+        _endingConfirmButton.onClick.RemoveAllListeners();
+        _endingConfirmButton.onClick.AddListener(GameManager.Instance.GoToEnding);
     }
 
     private void OnDisable()
@@ -57,6 +61,8 @@ public class CheatPanelUI : MonoBehaviour
 
         if (_backButton != null)
             _backButton.onClick.RemoveAllListeners();
+        if (_endingConfirmButton != null)
+            _endingConfirmButton.onClick.RemoveAllListeners();
     }
 
     public void OnClickButton(CheatButton cheatBtn)
