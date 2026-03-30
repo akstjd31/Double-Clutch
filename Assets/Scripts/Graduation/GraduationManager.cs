@@ -110,6 +110,10 @@ public class GraduationManager : MonoBehaviour
 
         // 누적된 명예 계산
         gameMgr.SetHonor(saveData.honor + saveData.totalWinHonor);
+
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlaySoundOneShot(SoundName.SE_FAME);
+            
         gameMgr.ClearTotalWinHonorData();
     }
 

@@ -194,18 +194,29 @@ public class ResultState : IState
         {
             // 순위표에서 내 팀 찾기
             var myStanding = currentLeague.standings.Find(s => s.teamId == myTeamId);
+            string soundNm = "";
 
             // 내가 1등(우승)이라면
             if (myStanding != null && myStanding.rank == 1)
             {
+                soundNm = SoundName.SE_MATCH_WIN;
+
                 // 우승 상금을 최종 획득 골드에 합산
                 finalRewardAmount += rewardData.Value.rewardGoldWin;
 
                 // 리그 우승 명성치 누적
                 _gm.SetTotalWinHonor(_gm.SaveData.totalWinHonor + rewardFameWin);
 
+                if (AudioManager.Instance != null)
+                    AudioManager.Instance.PlaySoundOneShot(SoundName.SE_FAME);
+
                 Debug.Log($"[리그 우승!] 상금 {rewardData.Value.rewardGoldWin}G 및 명성 {rewardData.Value.rewardFameWin} 획득!");
             }
+            else
+                soundNm = SoundName.SE_CROWD_BOO;
+
+            if (AudioManager.Instance != null)
+                AudioManager.Instance.PlaySoundOneShot(soundNm);
             
             _gm.SaveData.leagueWinRecord.Add(new LeagueWinRecord(currentLeague.leagueId, myStanding.rank == 1));
         }

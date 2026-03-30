@@ -322,6 +322,9 @@ public class MatchUIManager : MonoBehaviour
     }
     public void StartHalftimeEvent(string scriptId)
     {
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlaySoundOneShot(SoundName.SE_EVENT_TRIGGER);
+
         _currentScriptId = scriptId;
         _currentLineId = 1; // 스크립트의 첫 번째 줄(currentId = 1)부터 시작
         IsEventFinished = false;

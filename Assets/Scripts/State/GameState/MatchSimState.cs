@@ -100,6 +100,9 @@ public class MatchSimState : IState
             int currentMatchId = GameManager.Instance.SaveData.weekId;
             LeagueRecordManager.Instance.SaveMatchRecord(currentMatchId, _state, _engine.FullMatchLogs);
 
+            if (AudioManager.Instance != null)
+                AudioManager.Instance.PlaySoundOneShot(SoundName.SE_MATCH_END);
+
             _gm.StartCoroutine(CoGoToResult());
         };
 
