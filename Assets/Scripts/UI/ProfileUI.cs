@@ -121,8 +121,8 @@ public class ProfileUI : MonoBehaviour
             _playerSelectButton?.onClick.AddListener(() => OpenPopup(_coachModifyPanel, _coachPopupInputField));
             _confirmSchoolButton?.onClick.AddListener(OnClickConfirmSchool);
             _confirmCoachButton?.onClick.AddListener(OnClickConfirmCoach);
-            _cancelSchoolButton?.onClick.AddListener(() => _schoolModifyPanel.SetActive(false));
-            _cancelCoachButton?.onClick.AddListener(() => _coachModifyPanel.SetActive(false));
+            _cancelSchoolButton?.onClick.AddListener(OnClickSchoolNameCancelButton);
+            _cancelCoachButton?.onClick.AddListener(OnClickCoachNameCancelButton);
 
             RefreshProfileList();
         }
@@ -155,6 +155,26 @@ public class ProfileUI : MonoBehaviour
         _activePages[_currentPageIndex].SetActive(true);
 
         UpdatePageButtons();
+    }
+
+    private void OnClickSchoolNameCancelButton()
+    {
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlaySoundOneShot(SoundName.SE_BUTTON_CANCEL);
+        }
+
+        _schoolModifyPanel.SetActive(false);
+    }
+
+    private void OnClickCoachNameCancelButton()
+    {
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlaySoundOneShot(SoundName.SE_BUTTON_CANCEL);
+        }
+
+        _coachModifyPanel.SetActive(false);
     }
 
     private void UpdatePageButtons()
