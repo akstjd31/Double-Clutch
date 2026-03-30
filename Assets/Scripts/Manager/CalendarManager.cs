@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Xml.Schema;
 using UnityEngine;
 using UnityEngine.PlayerLoop;
@@ -113,6 +114,17 @@ public class CalendarManager : Singleton<CalendarManager>
                 tutorialMgr.StartTutorial(tId);
             }
             // var data = tutorialMgr.GetData(id);
+        }
+
+        if (weekId == 1)
+        {
+            var winRecord = GameManager.Instance.SaveData.leagueWinRecord;
+            int requireCount = LeagueDataManager.Instance.GetEndingRequireNumber();
+            
+            if (winRecord.Count == requireCount && winRecord.All(record => record.hasWon))
+            {
+                GameManager.Instance.GoToEnding();
+            }
         }
 
         // 5. 턴 종료 시
