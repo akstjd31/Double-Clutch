@@ -185,7 +185,7 @@ public class CalendarManager : Singleton<CalendarManager>
         if (IsFundingDay())
         {
             // 튜토리얼 바로 직후 스케줄은 돈 지급 X
-            if (!(gm.SaveData.year == 0 && calendar.month == 3))
+            if (!(gm.SaveData.year == 1 && calendar.month == 3))
             {
                 var m = gm.SaveData.money;
                 gm.SetMoney(m + (1000 * accSub));

@@ -12,9 +12,9 @@ public class InfraController : MonoBehaviour
     private Button button;
     [SerializeField] private infraEffectType _infraEffectType;
     [SerializeField] private List<int> _needCost;
-    
+
     [SerializeField] private Infra infra;
-    
+
     public event Action<int> Upgraded;
     private bool initComplete = false;                     // 초기 세팅이 완료되었는지 여부 확인
     private Coroutine _warningCoroutine;
@@ -27,8 +27,8 @@ public class InfraController : MonoBehaviour
         if (button == null) return;
         button.onClick.AddListener(OnClickInfraButton);
     }
-    
-    private void OnEnable() 
+
+    private void OnEnable()
     {
         Init();
     }
@@ -57,12 +57,12 @@ public class InfraController : MonoBehaviour
 
         // 저장된 데이터 유무에 따른 불러오는 방식
         if (saveData == null)
-        {        
+        {
             infra = new Infra
             (
                 name: data.Value.desc,
                 desc: infraMgr.GetInfraDescByEffectType(_infraEffectType),
-                nameKey: data.Value.infraNameKey,  
+                nameKey: data.Value.infraNameKey,
                 descKey: data.Value.infraDescKey,
                 maxLevel: infraMgr.GetMaxLevelByEffectType(_infraEffectType),
                 groupId: data.Value.group
@@ -80,7 +80,7 @@ public class InfraController : MonoBehaviour
         Debug.Log($"[{infra.name}] 기초 세팅 완료!");
         infraMgr.SetInfra(infra);
         initComplete = true;
-    }     
+    }
 
     private void OnClickInfraButton()
     {
@@ -95,19 +95,35 @@ public class InfraController : MonoBehaviour
     {
         var gameMgr = GameManager.Instance;
         if (gameMgr == null) return;
+        if (infra == null) return;
 
-        gameMgr.SetMoney(gameMgr.SaveData.money - GetCostByNextLevel());
+        // 최대 레벨 체크
+        if (infra.currentLevel >= infra.maxLevel)
+        {
+            Debug.Log("이미 최대 레벨입니다.");
+            return;
+        }
 
+        // 비용 체크
+        int cost = GetCostByNextLevel();
+        if (gameMgr.SaveData.money < cost)
+        {
+            Debug.Log("돈이 부족합니다.");
+            return;
+        }
+
+        // 돈 차감
+        gameMgr.SetMoney(gameMgr.SaveData.money - cost);
+
+        // 레벨 업
         infra.currentLevel++;
         Upgraded?.Invoke(infra.currentLevel);
 
-        if (InfraManager.Instance == null) return;
-        InfraManager.Instance.UpdateInfraLevel(infra);
+        if (InfraManager.Instance != null)
+            InfraManager.Instance.UpdateInfraLevel(infra);
 
-        if (infra.infraEffectType == infraEffectType.AddTactic)
-        {
+        if (infra.infraEffectType == infraEffectType.AddTactic && StudentManager.Instance != null)
             StudentManager.Instance.OnInfraUpdated();
-        }
     }
 
     public int GetCurrentInfraEffectValue()
@@ -115,22 +131,23 @@ public class InfraController : MonoBehaviour
         if (infra.infraEffectValue == null) return -1;
         return infra.infraEffectValue[infra.currentLevel];
     }
-    
+
     public int GetCostByNextLevel()
     {
-        if (_needCost == null) return -1;
-        if (infra.currentLevel + 1 < infra.maxLevel)
-            return _needCost[infra.currentLevel + 1];
-        
-        return _needCost[infra.maxLevel];
+        if (_needCost == null || infra == null) return -1;
+
+        int nextLevel = infra.currentLevel + 1;
+        if (nextLevel < 0 || nextLevel >= _needCost.Count) return -1;
+
+        return _needCost[nextLevel];
     }
 
     // 업그레이드 할 정도의 비용이 있는지?
     public bool HasEnoughUpgradeCost()
     {
         if (GameManager.Instance == null) return false;
-        
+
         var money = GameManager.Instance.SaveData.money;
-        return money >= GetCostByNextLevel(); 
+        return money >= GetCostByNextLevel();
     }
 }
