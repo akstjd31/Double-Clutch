@@ -28,6 +28,9 @@ public class EndingManager : MonoBehaviour
 
     private int _currentIndex = 0;
     private ScriptData _currentScript;
+    private List<Student> _studentRollIndex = new List<Student>();
+    public List<Student> StudentRollIndex => _studentRollIndex;
+    
 
     private void Awake()
     {
@@ -98,29 +101,32 @@ public class EndingManager : MonoBehaviour
         }        
     }
 
-    private List<Student> GetEveryStudentList()
+    private Dictionary<Student, int> GetEveryStudentList() //학생, 기수로 이루어진 딕셔너리 반환
     {
-        List<GraduationStudent> graduationList = new List<GraduationStudent>();
+        _studentRollIndex.Clear();
+        List<GraduationStudent> graduationList = new List<GraduationStudent>();        
         if (GraduationAlbumManager.Instance != null && GraduationAlbumManager.Instance.SaveData != null)
         {
             graduationList.AddRange(GraduationAlbumManager.Instance.SaveData.graduationStudentList);
         }
 
-        List<Student> studentList = new List<Student>();
-        for (int i = 0; i < graduationList.Count; i++)
+        Dictionary<Student, int> studentDict = new Dictionary<Student, int>();
+        for (int i = 0; i < graduationList.Count; i++) //졸업생은 학생 / 기수 매칭
         {
             List<Student> students = graduationList[i].studentList;
 
             for (int j = 0; j < students.Count; j++)
             {
-                studentList.Add(students[j]);
+                studentDict.Add(students[j], graduationList[i].graduatingClass);
+                _studentRollIndex.Add(students[j]);
             }
-        }
+        } //재학생은 기수 -1로 매칭
         for (int i = 0; i < StudentManager.Instance.MyStudents.Count; i++)
         {
-            studentList.Add(StudentManager.Instance.MyStudents[i]);
-        }        
-        studentList.Sort((a, b) => a.StudentId.CompareTo(b.StudentId));
-        return studentList;
+            studentDict.Add(StudentManager.Instance.MyStudents[i], -1);
+            _studentRollIndex.Add(StudentManager.Instance.MyStudents[i]);
+        }
+        _studentRollIndex.Sort((a, b) => a.StudentId.CompareTo(b.StudentId));
+        return studentDict;
     }
 }

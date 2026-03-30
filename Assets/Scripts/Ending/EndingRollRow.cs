@@ -4,10 +4,14 @@ using UnityEngine;
 
 public class EndingRollRow : MonoBehaviour
 {
-    [SerializeField] TextMeshProUGUI _typeText;
     [SerializeField] TextMeshProUGUI _nameText;
+    [SerializeField] TextMeshProUGUI _positionText;
+    [SerializeField] TextMeshProUGUI _typeText;
+    
 
     string _typeKey;
+    int _classNum;
+    string _position;
     string _nameKey;
     string[] _nameKeys;
 
@@ -22,6 +26,7 @@ public class EndingRollRow : MonoBehaviour
     }
     public void Init(string typeKey, string nameKey) //스태프용
     {
+        _positionText.gameObject.SetActive(false);
         _typeKey = typeKey;
         _nameKey = nameKey;
         _nameKeys = null;
@@ -35,37 +40,50 @@ public class EndingRollRow : MonoBehaviour
         stringManager.ApplyFont(_nameText);
     }
 
-    public void Init(string typeKey, string[] nameKey) //학생용
+    public void Init(int classNum, string position, string[] nameKey) //학생용
     {
-        _typeKey = typeKey;
+        _typeKey = null;
         _nameKey = null;
+        _classNum = classNum;
         _nameKeys = nameKey;
+        _position = position;
 
         StringManager stringManager = StringManager.Instance;
 
-        _typeText.text = stringManager.GetString(typeKey);
-        _nameText.text = stringManager.GetString(nameKey[0]) + stringManager.GetString(nameKey[1]) + stringManager.GetString(nameKey[2]);
-        stringManager.ApplyFont(_typeText);
-        stringManager.ApplyFont(_nameText);
-    }
-    public void Init(string content) //소제목, 빈칸 용(나중에 스트링 테이블 해주기)
-    {
-        _typeText.gameObject.SetActive(false);
-
-        if (!string.IsNullOrEmpty(content))
+        if (classNum == -1)
         {
-            _nameText.text = content;            
+            _typeText.text = stringManager.GetString("Str_End_Player_02");
         }
         else
         {
-            _nameText.gameObject.SetActive(false);
+            _typeText.text = classNum.ToString()+stringManager.GetString("Str_End_Player_01");
+        }
+
+        _positionText.text = position;
+        _nameText.text = stringManager.GetString(nameKey[0]) + stringManager.GetString(nameKey[1]) + stringManager.GetString(nameKey[2]);
+        stringManager.ApplyFont(_typeText);        
+        stringManager.ApplyFont(_nameText);
+    }
+    public void Init(string content) //소제목용(나중에 스트링 테이블 해주기)
+    {
+        _typeText.gameObject.SetActive(false);
+        _nameText.gameObject.SetActive(false);
+
+        if (!string.IsNullOrEmpty(content))
+        {
+            _positionText.text = content;            
+        }
+        else
+        {
+            _positionText.gameObject.SetActive(false);
         }
     }
 
-    public void Init()
+    public void Init() //빈칸용
     {
         _typeText.text = string.Empty;
         _nameText.text = string.Empty;
+        _positionText.text = string.Empty;
     }
 
     private void Refresh()
@@ -76,7 +94,7 @@ public class EndingRollRow : MonoBehaviour
         }
         else
         {
-            Init(_typeKey, _nameKeys);
+            Init(_classNum, _position,_nameKeys);
         }
     }
 }

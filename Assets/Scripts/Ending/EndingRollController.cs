@@ -26,7 +26,7 @@ public class EndingRollController : MonoBehaviour
         _rowPool = new GenericObjectPool<EndingRollRow>(_rowPrefab, _rowParent, 10, 20);        
     }    
     
-    public void Init(List<Student> everyStudents, List<EndingRollData> staffs)
+    public void Init(Dictionary<Student, int> everyStudents, List<EndingRollData> staffs)
     {
         foreach (var row in _activeRowList)
         {
@@ -37,7 +37,9 @@ public class EndingRollController : MonoBehaviour
         MakeBlankCredit();
         for (int i = 0; i < everyStudents.Count; i++)
         {
-            MakeEndingCredit(everyStudents[i]);
+
+            int classNum =  everyStudents[EndingManager.Instance.StudentRollIndex[i]];
+            MakeEndingCredit(EndingManager.Instance.StudentRollIndex[i], classNum);
         }
         MakeBlankCredit();
         MakeBlankCredit();
@@ -49,10 +51,10 @@ public class EndingRollController : MonoBehaviour
         }
     }    
 
-    private void MakeEndingCredit(Student student)
+    private void MakeEndingCredit(Student student, int classNum)
     {
         EndingRollRow newRow = _rowPool.Get();
-        newRow.Init(string.Empty, student.Name);
+        newRow.Init(classNum, student.Position.ToString(), student.Name);        
         _activeRowList.Add(newRow);
     }
     private void MakeEndingCredit(EndingRollData data)
