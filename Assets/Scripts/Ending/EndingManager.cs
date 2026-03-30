@@ -51,6 +51,8 @@ public class EndingManager : MonoBehaviour
         _uiController.SetCharacterImage(_currentScript.portrait);
         _uiController.SetCharacterSpeaking(_currentScript.speaking);
         _uiController.SetText(_currentScript.name, _currentScript.text);
+        _uiController.PlayBGM(_currentScript.bgm);
+        _uiController.PlaySFX(_currentScript.sfx);
     }
 
     private void PlayEndingRoll()

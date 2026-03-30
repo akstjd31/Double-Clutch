@@ -118,19 +118,27 @@ public class CalendarManager : Singleton<CalendarManager>
 
         if (weekId == 1)
         {
-            var winRecord = GameManager.Instance.SaveData.leagueWinRecord;
-            int requireCount = LeagueDataManager.Instance.GetEndingRequireNumber();
-            
-            if (winRecord.Count == requireCount && winRecord.All(record => record.hasWon))
-            {
-                GameManager.Instance.GoToEnding();
-            }
+            CheckEnding();
         }
 
         // 5. 턴 종료 시
         Init();
     }
+    private void CheckEnding()
+    {
+        GameManager manager = GameManager.Instance;
+        if (manager.SaveData.hasEnding == true)
+        {
+            return;
+        }
+        var winRecord = manager.SaveData.leagueWinRecord;
+        int requireCount = LeagueDataManager.Instance.GetEndingRequireNumber();
 
+        if (winRecord.Count == requireCount && winRecord.All(record => record.hasWon))
+        {
+            manager.GoToEnding();
+        }
+    }
     private void Init()
     {
         IsEndPhase = false;

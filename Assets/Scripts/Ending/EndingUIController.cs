@@ -22,7 +22,7 @@ public class EndingUIController : MonoBehaviour
 
     string _currentBackgroundKey = string.Empty;
     string _currentCharacterKey = string.Empty;
-
+    string _currentBgmKey = string.Empty;    
 
     public void SetBackgroundImage(string imageKey)
     {
@@ -30,6 +30,29 @@ public class EndingUIController : MonoBehaviour
         {
             _backgroundImage.sprite = SpriteManager.Instance.GetSprite(imageKey);
         }        
+    }
+
+    public void PlayBGM(string bgmKey)
+    {
+        if (string.IsNullOrEmpty(bgmKey))
+        {
+            _currentBgmKey = bgmKey;
+            return;
+        }
+
+        if (_currentBgmKey != bgmKey)
+        {
+            _currentBgmKey = bgmKey;
+            //새 BGM 재생
+        }
+    }
+    public void PlaySFX(string sfxKey)
+    {
+        if (string.IsNullOrEmpty(sfxKey))
+        {            
+            return;
+        }
+        //효과음 재생
     }
 
     public void SetCharacterSpeaking(bool isSpeaking)
@@ -71,12 +94,14 @@ public class EndingUIController : MonoBehaviour
 
         
         yield return StartCoroutine(FadeRoutine(true));
-        
+
+        GameManager.Instance.SetEnding();
         yield return new WaitForSeconds(EndingManager.Instance.AndYouTime);
         
+
         yield return StartCoroutine(FadeRoutine(false));
 
-
+        
         GameManager.Instance.GoToLobby();
     }
 

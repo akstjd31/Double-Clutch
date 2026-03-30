@@ -17,6 +17,7 @@ public class PlayerSaveData : SaveBase
     public bool isGraduationPending;
     public List<GraduationRecord> graduationRecord = new List<GraduationRecord>();
     public List<LeagueWinRecord> leagueWinRecord = new List<LeagueWinRecord>();
+    public bool hasEnding; //엔딩 봤는지 여부
 }
 
 /// <summary>

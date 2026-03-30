@@ -198,7 +198,11 @@ public class GameManager : Singleton<GameManager>
         OnDataChanged?.Invoke();
     }
     
-    
+    public void SetEnding()
+    {
+        _saveData.hasEnding = true;
+        OnDataChanged?.Invoke();
+    }
     public void ChangeState<T>() where T : class, IState
     {
         _sm.ChangeState<T>();
