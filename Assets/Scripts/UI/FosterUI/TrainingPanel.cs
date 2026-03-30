@@ -63,8 +63,8 @@ public class TrainingPanel : MonoBehaviour
             btn.onClick.AddListener(delegate
             {
                 if (AudioManager.Instance != null)
-                    AudioManager.Instance.PlaySoundOneShot(SoundName.BGM_BATTLE_SELECTION);
-                    
+                    AudioManager.Instance.PlaySoundOneShot(SoundName.SE_BUTTON_SELECT);
+
                 OnClickBackAndHomeButtonSetActive(false);
             });
             
