@@ -70,11 +70,15 @@ public class MainUI : MonoBehaviour
             tutorialObj.SetActive(true);
             return;
         }
-        
-        // if (!GameManager.Instance.SaveData.isTutorialCompleted)
-        //     GameManager.Instance.Dispatch(UIAction.Tutorial);
-        // else
+
+        PlayConfirmSound();
         GameManager.Instance.Dispatch(UIAction.Main_Start); 
     }
     public void OnClickQuitButton() => GameManager.Instance.Dispatch(UIAction.Main_Quit);
+
+    public void PlayConfirmSound()
+    {
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlaySoundOneShot(SoundName.SE_BUTTON_SELECT);
+    }
 }
