@@ -36,6 +36,11 @@ public class TrainingCharacterBox : MonoBehaviour
         StringManager.OnLanguageChanged -= SetStudentState;
     }
 
+    public void RefreshPositionMark()
+    {
+        _positionImage.sprite = SpriteManager.Instance.GetPositionSprite(_student.Position);
+    }
+
     public void Init(Student student)
     {
         _student = student;
@@ -43,7 +48,7 @@ public class TrainingCharacterBox : MonoBehaviour
         SpriteManager spriteManager = SpriteManager.Instance;
         _studentImage.sprite = spriteManager.GetSprite(_student.VisualData.portraitResource);
         _positionImage.sprite = spriteManager.GetPositionSprite(_student.Position);
-        _positionImage.sprite = SpriteManager.Instance.GetSprite(_student.TraitData.traitResource);
+        _traitImage.sprite = SpriteManager.Instance.GetSprite(_student.TraitData.traitResource);
 
 
         StringManager manager = StringManager.Instance;

@@ -72,6 +72,14 @@ public class TrainingPanel : MonoBehaviour
         }
     }
 
+    public void RefreshPositionMark()
+    {
+        foreach(var box in _boxList)
+        {
+            box.RefreshPositionMark();
+        }
+    }
+
     public void RefreshAllBoxesState()
     {
         for (int i = 0; i < _boxList.Count; i++)
