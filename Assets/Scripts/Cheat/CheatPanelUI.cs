@@ -1,3 +1,4 @@
+using Game.Constants;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -43,7 +44,13 @@ public class CheatPanelUI : MonoBehaviour
         _backButton.onClick.AddListener(OnClickBackButton);
         _confirmButton.onClick.RemoveAllListeners();
         _endingConfirmButton.onClick.RemoveAllListeners();
-        _endingConfirmButton.onClick.AddListener(GameManager.Instance.GoToEnding);
+        _endingConfirmButton.onClick.AddListener(delegate
+        {
+            if (AudioManager.Instance != null)
+                AudioManager.Instance.PlaySoundOneShot(SoundName.SE_BUTTON_SELECT);
+                
+            GameManager.Instance.GoToEnding();
+        });
     }
 
     private void OnDisable()
@@ -107,6 +114,9 @@ public class CheatPanelUI : MonoBehaviour
     {
         if (string.IsNullOrWhiteSpace(_inputField.text)) return;
         if (!int.TryParse(_inputField.text, out var num)) return;
+
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlaySoundOneShot(SoundName.SE_BUTTON_SELECT);
         
         var gameMgr = GameManager.Instance;
         if (gameMgr == null) return;

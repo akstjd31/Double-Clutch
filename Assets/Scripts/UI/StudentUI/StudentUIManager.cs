@@ -59,6 +59,7 @@ public class StudentUIManager : MonoBehaviour
 
     public void OnCharacterBoxClick(CharacterBox box) //©¦???? ??? ??? ????????? ???
     {
+        PlayConfirmSound();
         _profileDetailsPanel.gameObject.SetActive(true);
         _profileDetailsPanel.Init(box.Target);        
     }
@@ -103,6 +104,7 @@ public class StudentUIManager : MonoBehaviour
 
     public void OnTrainingBoxClick()
     {
+        PlayConfirmSound();
         _individualTrainingCommandPopUp.gameObject.SetActive(false);
         _teamTrainingCommandPopUp.gameObject.SetActive(false);
     }
@@ -114,6 +116,7 @@ public class StudentUIManager : MonoBehaviour
 
     public void OnTeamTrainingButtonClick() //??? ?????? ?¥í????? ????? ??? OK
     {
+        PlayConfirmSound();
         _teamTrainingCommandPopUp.gameObject.SetActive(true);
     }
 
@@ -155,6 +158,7 @@ public class StudentUIManager : MonoBehaviour
 
     public void OnConfirmButtonClick()
     {
+        PlayConfirmSound();
         FosterManager.Instance.StartFoster();
     }
 
@@ -238,5 +242,11 @@ public class StudentUIManager : MonoBehaviour
     {
         if (AudioManager.Instance != null)
             AudioManager.Instance.PlaySoundOneShot(SoundName.UI_WARNING_01);
+    }
+
+    private void PlayConfirmSound()
+    {
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlaySoundOneShot(SoundName.SE_BUTTON_SELECT);
     }
 }

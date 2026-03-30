@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Game.Constants;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -79,6 +80,9 @@ public class PassiveCheatUI : MonoBehaviour
     private void OnClickApplyPassive()
     {
         if (_selectedIndex == -1 || _student == null) return;
+
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlaySoundOneShot(SoundName.SE_BUTTON_SELECT);
 
         // 드롭다운에서 선택된 패시브 데이터 가져오기
         Player_PassiveData selectedData = _allPassiveDataList[_dropdown.value];

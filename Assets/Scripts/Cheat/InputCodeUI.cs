@@ -1,6 +1,7 @@
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using Game.Constants;
 
 /// <summary>
 /// 치트를 위해 만들어진 코드 입력 창 UI
@@ -22,10 +23,12 @@ public class InputCodeUI : MonoBehaviour
         _btn.onClick.RemoveAllListeners();
     }
 
-
     public void OnClickConfirmButton()
     {
         if (GameManager.Instance == null) return;
+
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlaySoundOneShot(SoundName.SE_BUTTON_SELECT);
 
         if (_inputField.text != "")
         {

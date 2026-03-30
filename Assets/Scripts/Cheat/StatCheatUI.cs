@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using Game.Constants;
 
 public class StatCheatUI : MonoBehaviour
 {
@@ -44,6 +45,9 @@ public class StatCheatUI : MonoBehaviour
         if (_2ptFields == null || _2ptFields.Length < 2) return;
         if (_3ptFields == null || _3ptFields.Length < 2) return;
         if (_conditionField == null) return;
+
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlaySoundOneShot(SoundName.SE_BUTTON_SELECT);
 
         if (string.IsNullOrWhiteSpace(_2ptFields[0].text) || string.IsNullOrWhiteSpace(_2ptFields[1].text)) return;
         
