@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using Game.Constants;
 
 
 public class GradutaionPanel : MonoBehaviour
@@ -29,6 +30,9 @@ public class GradutaionPanel : MonoBehaviour
 
     public void OnclickNextButton()
     {
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlaySoundOneShot(SoundName.SE_BUTTON_SELECT);
+
         if (_graduationManager.IsGraduationSkip)
         {
             gameObject.SetActive(false);

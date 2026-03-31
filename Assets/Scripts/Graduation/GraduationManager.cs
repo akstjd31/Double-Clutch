@@ -68,8 +68,8 @@ public class GraduationManager : MonoBehaviour
 
     private void PlaySound()
     {
-        if (AudioManager.Instance == null) return;
-        AudioManager.Instance.PlaySound(SoundName.BGM_GRADUATION);
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlaySound(SoundName.BGM_GRADUATION);
     }
 
     private void ListCreat()
@@ -160,5 +160,11 @@ public class GraduationManager : MonoBehaviour
 
         CalendarManager.Instance.NextTurn();
         GameManager.Instance.GoToLobby();
+    }
+
+    public void PlayCancelSound()
+    {
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlaySoundOneShot(SoundName.SE_BUTTON_CANCEL);
     }
 }

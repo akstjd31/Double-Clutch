@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Game.Constants;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -106,6 +107,7 @@ public class PromotionPanel : MonoBehaviour
 
     public void OnClickNextButton()
     {
+        PlayConfirmSound();
         if (_promotionStudentList.Count == 0)
         {
             Debug.Log("진급 학생 없음");
@@ -133,11 +135,13 @@ public class PromotionPanel : MonoBehaviour
 
     public void OnClickAfterChoice()
     {
+        PlayConfirmSound();
         _afterChoice.SetActive(false);
     }
 
     public void OnClickNextStudent()
     {
+        PlayConfirmSound();
         _afterChoice.SetActive(false);
 
         if (_graduationManager.Turn == _promotionStudentList.Count)
@@ -145,5 +149,11 @@ public class PromotionPanel : MonoBehaviour
             _beforeGuideBox.SetActive(false);
         }
         UpdateProfile();
+    }
+
+    private void PlayConfirmSound()
+    {
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlaySoundOneShot(SoundName.SE_BUTTON_SELECT);
     }
 }
