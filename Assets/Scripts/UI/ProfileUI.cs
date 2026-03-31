@@ -221,7 +221,7 @@ public class ProfileUI : MonoBehaviour
                 schoolName = _schoolNameField.text,
                 coachName = _playerNameField.text,
                 weekId = 8,
-                year = 0,
+                year = 1,
                 tutorialCompleted = new bool[TutorialManager.Instance.GetChapterArrayLength()]
             };
 

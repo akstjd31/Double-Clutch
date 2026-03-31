@@ -124,6 +124,15 @@ public class CalendarManager : Singleton<CalendarManager>
         {
             CheckEnding();
         }
+        else if (weekId == 7)
+        {
+            gm.GoToGraduation();
+        }
+        else if (weekId == 8)
+        {
+            var y = gm.SaveData.year;
+            gm.SetYear(y + 1);
+        }
 
         // 5. 턴 종료 시
         Init();
@@ -152,13 +161,6 @@ public class CalendarManager : Singleton<CalendarManager>
     {
         if (gm == null) return;
         var data = _calReader.DataList[weekId - 1];
-
-        if (weekId == 8) // 3월 1일이라면 년차 추가
-        {
-            // 영입이 3월 1일 기준으로 진행되기 떄문에 연차++ 작업을 이떄 해줌
-            var y = gm.SaveData.year;
-            gm.SetYear(y + 1);
-        }
 
         // 1. 특수 이동 유무 확인
         if (data.isSpecialWeek)
@@ -200,13 +202,6 @@ public class CalendarManager : Singleton<CalendarManager>
         }
 
         gm.SetWeekId(weekId);
-
-        // 이벤트 페이즈면서 어떤 날인지 구분하는게 필요함.
-        if (CheckEventDay(weekId))
-        {
-            if (calendar.month == 2 && calendar.week == 4)
-                gm.GoToGraduation();
-        }
 
         var leagueDataMgr = LeagueDataManager.Instance;
         if (leagueDataMgr != null && !CheckEventDay(weekId))
