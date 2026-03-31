@@ -66,7 +66,7 @@ public class TeamTraining : ITraining
                         {
                             continue;
                         }
-                        int bonus = _target.GetStat(pot).GrowthRate + InfraManager.Instance.GetInfraEffectValueByEffectType(infraEffectType.TrainingBonus) + (int)(_target.GetFosterPassiveValue(pot) * 100);
+                        int bonus = _target.GetStat(pot).GrowthRate + InfraManager.Instance.GetInfraEffectValueByEffectType(infraEffectType.TrainingBonus) + (int)(_target.GetFosterPassiveValue(pot));
                         int growth = _data.allGain + (_data.allGain * bonus / 100);
 
                         _target.GetStat(pot).GrowAndReturn(growth);
@@ -75,13 +75,13 @@ public class TeamTraining : ITraining
                     break;
                 case 2: //전술 훈련 : 포지션 별 주/부 스탯을 각각 수치만큼 증가
                     potential mainPot = FosterManager.Instance.GetPositionMapping(this._target).mainPotential;
-                    int mainBonus = _target.GetStat(mainPot).GrowthRate + InfraManager.Instance.GetInfraEffectValueByEffectType(infraEffectType.TrainingBonus) + (int)(_target.GetFosterPassiveValue(mainPot) * 100);
+                    int mainBonus = _target.GetStat(mainPot).GrowthRate + InfraManager.Instance.GetInfraEffectValueByEffectType(infraEffectType.TrainingBonus) + (int)(_target.GetFosterPassiveValue(mainPot));
                     int mainGrowth = _data.mainGain + (_data.mainGain * mainBonus / 100);
                     _target.GetStat(mainPot).GrowAndReturn(mainGrowth);
                     _target.AddChangedPotential(mainPot);
 
                     potential subPot = FosterManager.Instance.GetPositionMapping(this._target).subPotential;
-                    int subBonus = _target.GetStat(subPot).GrowthRate + InfraManager.Instance.GetInfraEffectValueByEffectType(infraEffectType.TrainingBonus) + (int)(_target.GetFosterPassiveValue(subPot) * 100);
+                    int subBonus = _target.GetStat(subPot).GrowthRate + InfraManager.Instance.GetInfraEffectValueByEffectType(infraEffectType.TrainingBonus) + (int)(_target.GetFosterPassiveValue(subPot));
                     int subGrowth = _data.subGain + (_data.subGain * subBonus / 100);
                     _target.GetStat(subPot).GrowAndReturn(subGrowth);
                     _target.AddChangedPotential(subPot);
