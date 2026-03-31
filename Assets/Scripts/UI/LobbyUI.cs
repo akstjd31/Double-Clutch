@@ -55,6 +55,19 @@ public class LobbyUI : MonoBehaviour
         }
 
         PlaySound();
+
+        var gm = GameManager.Instance;
+        if (gm == null) return;
+        int weekId = gm.SaveData.weekId;
+
+        if (weekId == 8)
+        {
+            gm.GoToGraduation();
+        }
+        else if (weekId == 1)
+        {
+            CalendarManager.Instance.CheckEnding(weekId);
+        }
     }
 
     private void OnDestroy()

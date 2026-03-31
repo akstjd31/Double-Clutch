@@ -120,7 +120,7 @@ public class CalendarManager : Singleton<CalendarManager>
 
         if (weekId == 1)
         {
-            CheckEnding();
+            CheckEnding(weekId);
         }
         else if (weekId == 8)
         {
@@ -129,7 +129,7 @@ public class CalendarManager : Singleton<CalendarManager>
         }
     }
 
-    private void CheckEnding()
+    public void CheckEnding(int weekId)
     {
         GameManager manager = GameManager.Instance;
         if (manager.SaveData.hasEnding == true)
@@ -145,7 +145,7 @@ public class CalendarManager : Singleton<CalendarManager>
             return;
         }
 
-        NextTurn();
+        CalcWeek(weekId, manager);
     }
 
     public void CalcWeek(int weekId, GameManager gm)
@@ -171,6 +171,11 @@ public class CalendarManager : Singleton<CalendarManager>
             weekId = data.targetidDefault;
         }
 
+        if (weekId == 8)
+        {
+            gm.GoToGraduation();
+        }
+
         data = _calReader.DataList[weekId - 1];
 
         // 만약 시즌아웃을 당했다면 현재 달과 타겟 달 차이를 비교하여 누적시킨 지원금을 추가로 받는다.
@@ -178,11 +183,6 @@ public class CalendarManager : Singleton<CalendarManager>
 
         calendar.month = data.month;
         calendar.week = data.weekNo;
-
-        if (weekId == 7)
-        {
-            gm.GoToGraduation();
-        }
 
         if (IsFundingDay())
         {
