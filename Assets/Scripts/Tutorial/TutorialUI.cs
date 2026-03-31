@@ -12,6 +12,7 @@ public class TutorialUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _nameText;
     [SerializeField] private TextMeshProUGUI _dialogueText;
     [SerializeField] private TextMeshProUGUI _pageText;
+    [SerializeField] private TextMeshProUGUI _isSkipText;
     [SerializeField] private Button _nextButton;
     [SerializeField] private Button _skipButton;
     [SerializeField] private Button _startButton;
@@ -180,6 +181,11 @@ public class TutorialUI : MonoBehaviour
         {
             _pageText.text = $"{_index + 1}/{_currentTutorialData.Count}";
             sMgr.ApplyFont(_pageText);
+        }
+        if (_skipPanelObj != null) 
+        {
+            _isSkipText.text = StringManager.Instance.GetString("UI_Tutorial_스킵팝업");
+            sMgr.ApplyFont (_isSkipText);
         }
 
     }

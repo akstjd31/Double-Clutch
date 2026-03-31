@@ -247,7 +247,7 @@ public class PassiveBox : MonoBehaviour
                 _skillImage[i].sprite = SpriteManager.Instance.GetSprite(_selectSkillList[i].passiveResource);
 
                 _detailText[i] = StringManager.Instance.GetString(_selectSkillList[i].passiveDesc);
-                _detailText[i] = _detailText[i].Replace("{effectValue}", _selectSkillList[i].effectValue.ToString());
+                _detailText[i] = _detailText[i].Replace("{effectValue}", _selectSkillList[i].effectValue.ToString());                
             }
             _needGuideRefresh = true;
         }

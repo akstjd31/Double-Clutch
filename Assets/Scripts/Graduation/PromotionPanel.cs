@@ -41,6 +41,7 @@ public class PromotionPanel : MonoBehaviour
         if (_needGuideRefresh)
         {
             _guideBoxName.text = _getPromotionName;
+            StringManager.Instance.ApplyFont(_guideBoxName);
             _needGuideRefresh = false;
         }
     }
@@ -77,7 +78,9 @@ public class PromotionPanel : MonoBehaviour
             _getPromotionName = StringManager.Instance.GetString("UI_Promotion_진급팝업");
             var keys = TextParser.GetKeys(_getPromotionName);
             _getPromotionName = _getPromotionName.Replace("{" + keys[0] +"}", name);
+            
             _guideBoxName.text = _getPromotionName;
+            StringManager.Instance.ApplyFont(_guideBoxName);
             _needGuideRefresh = true;
         }
         else if (_isSkillChoise == true)
@@ -86,6 +89,7 @@ public class PromotionPanel : MonoBehaviour
         }
 
         _name.text = name;
+        StringManager.Instance.ApplyFont(_name);
         _image.sprite = SpriteManager.Instance.GetSprite(_currentStudent.VisualData.playerImageResource);
         string gradeText = StringManager.Instance.GetString("UI_Promotion_진급");
         var key =  TextParser.GetKeys(gradeText);

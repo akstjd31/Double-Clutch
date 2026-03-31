@@ -33,7 +33,8 @@ public class TotalRankRow : MonoBehaviour
         {
             if (_textTeamName != null)
             {
-                _textTeamName.text = GameManager.Instance.SaveData.schoolName;
+                _textTeamName.text = GameManager.Instance.SaveData.schoolName+"\n"+StringManager.Instance.GetString("UI_Start_고등학교");
+                StringManager.Instance.ApplyFont(_textTeamName);
                 _textTeamName.fontStyle = FontStyles.Bold;
             }
             if (_textRank != null) _textRank.fontStyle = FontStyles.Bold;

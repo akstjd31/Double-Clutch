@@ -33,6 +33,19 @@ public class EventUI : MonoBehaviour
 
     //Color initColor;
 
+    private void OnEnable()
+    {
+        StringManager.OnLanguageChanged += Refresh;
+    }
+    private void OnDisable()
+    {
+        StringManager.OnLanguageChanged -=Refresh;
+    }
+
+    private void Refresh()
+    {
+
+    }
     public void UIStart()
     {
         //_isFirstText = true;
@@ -187,6 +200,30 @@ public class EventUI : MonoBehaviour
         _choicePanel.SetActive(true);
 
         //텍스트 출력하기
+        if (StringManager.Instance.CurrentLanguage == Language.Ko)
+        {
+            _choiceText[0].enableAutoSizing = false;
+            _choiceText[0].enableAutoSizing = false;
+            _choiceText[0].enableAutoSizing = false;
+            _choiceText[0].fontSize = 50;
+            _choiceText[1].fontSize = 50;
+            _choiceText[2].fontSize = 50;
+        }
+        if (StringManager.Instance.CurrentLanguage == Language.En)  
+        {
+            _choiceText[0].enableAutoSizing = true;
+            _choiceText[0].enableAutoSizing = true;
+            _choiceText[0].enableAutoSizing = true;
+        }
+        if (StringManager.Instance.CurrentLanguage == Language.Ja)
+        {
+            _choiceText[0].enableAutoSizing = false;
+            _choiceText[0].enableAutoSizing = false;
+            _choiceText[0].enableAutoSizing = false;
+            _choiceText[0].fontSize = 40;
+            _choiceText[1].fontSize = 40;
+            _choiceText[2].fontSize = 40;
+        }
         _choiceText[0].text = text1;
         StringManager.Instance.ApplyFont(_choiceText[0]);
         _choiceText[1].text = text2;
