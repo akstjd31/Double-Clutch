@@ -126,14 +126,18 @@ public class GameManager : Singleton<GameManager>
 
     private IEnumerator LoadNextScene_Coroutine()
     {
-        var target = NextSceneName;
+        //var target = NextSceneName;
+        //
+        //var op = SceneManager.LoadSceneAsync(target, LoadSceneMode.Single);
+        //op.allowSceneActivation = true;
+        //
+        //yield return op; // 씬 로드 완료까지 대기
+        //
+        //NotifyLoadingDone(); // 로드 끝난 뒤 상태 전환
 
-        var op = SceneManager.LoadSceneAsync(target, LoadSceneMode.Single);
-        op.allowSceneActivation = true;
+        yield return new WaitUntil(() => SceneManager.GetActiveScene().name == NextSceneName);
 
-        yield return op; // 씬 로드 완료까지 대기
-
-        NotifyLoadingDone(); // 로드 끝난 뒤 상태 전환
+        NotifyLoadingDone();
     }
 
     public void SetTutorialCompleted(int index, bool flag)
