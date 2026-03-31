@@ -14,18 +14,14 @@ public class InfraReconfirmUI : MonoBehaviour
 
         if (_okButton == null) return;
         
+        _okButton.onClick.RemoveAllListeners();
         _okButton.onClick.AddListener(delegate 
         {
             if (AudioManager.Instance == null) return;
             AudioManager.Instance.PlaySoundOneShot(SoundName.SE_BUTTON_SELECT);
 
-            iController.Upgrade();
+            iController?.Upgrade();
             this.gameObject.SetActive(false);
         });
-    }
-
-    private void OnDisable()
-    {
-        _okButton.onClick.RemoveAllListeners();
     }
 }

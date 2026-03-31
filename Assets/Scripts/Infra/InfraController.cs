@@ -117,6 +117,7 @@ public class InfraController : MonoBehaviour
 
         // 레벨 업
         infra.currentLevel++;
+        Debug.Log($"업그레이드 후 레벨: {infra.currentLevel}");
         Upgraded?.Invoke(infra.currentLevel);
 
         if (InfraManager.Instance != null)

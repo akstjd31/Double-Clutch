@@ -123,7 +123,6 @@ public class InfraUpgradeUI : MonoBehaviour
             _reconfirmUI.Init(_controller);
         }
         else
-
         {
             _warningUI.gameObject.SetActive(true);
             _warningUI.Init(_controller);
