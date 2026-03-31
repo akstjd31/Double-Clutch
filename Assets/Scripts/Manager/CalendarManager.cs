@@ -91,7 +91,6 @@ public class CalendarManager : Singleton<CalendarManager>
         }
 
         // 3. 페이즈 체크
-        if (!CheckPhaseType(nextWeekId)) return;
 
         // 4. 종료 컷신 체크
         if (HasExistEndCutscene(nextWeekId))
@@ -119,24 +118,17 @@ public class CalendarManager : Singleton<CalendarManager>
             }
         }
 
-
         if (weekId == 1)
         {
             CheckEnding();
-        }
-        else if (weekId == 7)
-        {
-            gm.GoToGraduation();
         }
         else if (weekId == 8)
         {
             var y = gm.SaveData.year;
             gm.SetYear(y + 1);
         }
-
-        // 5. 턴 종료 시
-        Init();
     }
+
     private void CheckEnding()
     {
         GameManager manager = GameManager.Instance;
@@ -150,12 +142,10 @@ public class CalendarManager : Singleton<CalendarManager>
         if (winRecord.Count == requireCount && winRecord.All(record => record.hasWon))
         {
             manager.GoToEnding();
+            return;
         }
-    }
-    
-    private void Init()
-    {
-        IsEndPhase = false;
+
+        NextTurn();
     }
 
     public void CalcWeek(int weekId, GameManager gm)
@@ -188,6 +178,11 @@ public class CalendarManager : Singleton<CalendarManager>
 
         calendar.month = data.month;
         calendar.week = data.weekNo;
+
+        if (weekId == 7)
+        {
+            gm.GoToGraduation();
+        }
 
         if (IsFundingDay())
         {
@@ -265,21 +260,6 @@ public class CalendarManager : Singleton<CalendarManager>
     public bool HasExistStartCutscene(int weekId) => _calReader.DataList[weekId - 1].startCutscene.Equals("");
 
     public bool HasExistEndCutscene(int weekId) => _calReader.DataList[weekId - 1].endCutscene.Equals("");
-    public bool CheckPhaseType(int weekId)
-    {
-        if (_calReader == null) return false;
-
-        switch (_calReader.DataList[weekId - 1].phase)
-        {
-            case phaseType.League:
-
-                return true;
-
-                // 경우에 따라 작성 (이벤트일떄) phaseType.Event ..
-        }
-
-        return IsEndPhase;
-    }
 
     public Calendar GetCalendar() => this.calendar;
     public phaseType CurrentGetPhaseType()
