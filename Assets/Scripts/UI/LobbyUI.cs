@@ -117,7 +117,8 @@ public class LobbyUI : MonoBehaviour
 
         // 앨범 데이터 유무로 앨범 버튼 활성화 유무 결정
         if (GraduationAlbumManager.Instance == null) return;
-        _graduationAlbumButton.interactable = GraduationAlbumManager.Instance.HasData();
+        if (GraduationAlbumManager.Instance.HasData())
+            _graduationAlbumButton.interactable = true;
     }
 
     private void OnDisable()

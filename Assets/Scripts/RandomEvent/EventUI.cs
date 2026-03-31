@@ -215,10 +215,7 @@ public class EventUI : MonoBehaviour
             nm = SoundName.SE_FAIL;
         
         else
-            nm = SoundName.SE_GREAT;
-        
-        if (AudioManager.Instance != null)
-            AudioManager.Instance.PlaySoundOneShot(nm);        
+            nm = SoundName.SE_GREAT;       
 
         #region 스텟한글변환
         string transText = "";
@@ -281,11 +278,14 @@ public class EventUI : MonoBehaviour
         //패널 띄우기
         _resultPanel.SetActive(true);
 
-        UpdateState(currentState, statusChange);//상태변경
+        UpdateState(currentState, statusChange, nm);//상태변경
     }
 
-    public void UpdateState(string currentState, string statusChange)
+    public void UpdateState(string currentState, string statusChange, string soundName)
     {
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlaySoundOneShot(soundName); 
+
         var rect = _state.rectTransform;
         var pos = rect.anchoredPosition;
         pos.y = Random.Range(-45f, 45f);

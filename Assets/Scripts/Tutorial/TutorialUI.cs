@@ -88,7 +88,7 @@ public class TutorialUI : MonoBehaviour
         if (dataList == null || dataList.Count == 0) return;
 
         int n = int.Parse(id.Substring(id.Length - 2));
-        _firstTutorial = n == 1 ? true : false;
+        _firstTutorial = n == 1;
         
         _child.SetActive(true);
 
