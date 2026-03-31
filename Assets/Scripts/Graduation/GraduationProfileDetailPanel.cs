@@ -12,26 +12,37 @@ public class GraduationProfileDetailPanel : MonoBehaviour
 
     [SerializeField] private TextMeshProUGUI[] _passiveName = new TextMeshProUGUI[3];
     [SerializeField] private Player_PassiveData _passiveData;
+    private Student _student;
     private void OnEnable()
     {
+        StringManager.OnLanguageChanged += Refresh;
         for(int i = 0;  i < _passiveName.Length; i++)
         {
             _passiveName[i].text = "";
         }
     }
 
+    private void OnDisable()
+    {
+        StringManager.OnLanguageChanged -= Refresh;
+    }
+
     public void Profile(Student student)
     {
+        _student = student;
+
         StringManager manager = StringManager.Instance;
         //프로필 패널 활성화
         string name = manager.GetString(student.Name[0]) + manager.GetString(student.Name[1]) + manager.GetString(student.Name[2]);
 
         gameObject.SetActive(true);
         _name.text = name;
+        manager.ApplyFont(_name);
         _image.sprite = SpriteManager.Instance.GetSprite(student.VisualData.playerImageResource);
         _attackPoint.text = student.Attack.ToString();
         _defensePoint.text = student.Defense.ToString();
         _personality.text = StringManager.Instance.GetString(student.PersonalityData.personalityName);
+        manager.ApplyFont(_personality);
 
         for (int i = 0; i < student.PassiveId.Count; i++)
         {
@@ -46,6 +57,12 @@ public class GraduationProfileDetailPanel : MonoBehaviour
             }
 
             _passiveName[i].text = skillName;
+            StringManager.Instance.ApplyFont(_passiveName[i]);
         }
+    }
+    
+    private void Refresh()
+    {
+        Profile(_student);
     }
 }

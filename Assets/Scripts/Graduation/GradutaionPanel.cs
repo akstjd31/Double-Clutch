@@ -16,16 +16,28 @@ public class GradutaionPanel : MonoBehaviour
         GraduationText();
     }
 
+    private void OnEnable()
+    {
+        StringManager.OnLanguageChanged += GraduationText;
+    }
+
+    private void OnDisable()
+    {
+        StringManager.OnLanguageChanged -= GraduationText;
+    }
+
     private void GraduationText()
     {
+        StringManager stringManager = StringManager.Instance;
         if (_graduationManager.IsGraduationSkip)
         {
-            _graduationText.text = "2월이 되었습니다.";
+            _graduationText.text = stringManager.GetString("UI_Graduation_졸업식팝업2");
         }
         else
         {
-            _graduationText.text = "2월이 되었습니다. \n 졸업식을 시작하겠습니다.";
+            _graduationText.text = stringManager.GetString("UI_Graduation_졸업식팝업") + "\n" + stringManager.GetString("UI_Graduation_졸업식팝업2");
         }
+        stringManager.ApplyFont(_graduationText);
     }
 
     public void OnclickNextButton()

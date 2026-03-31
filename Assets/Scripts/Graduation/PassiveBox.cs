@@ -1,3 +1,4 @@
+using NUnit.Framework;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -49,10 +50,21 @@ public class PassiveBox : MonoBehaviour
             for (int i = 0; i < _selectSkillList.Count; i++)
             {
                 _skillDetail[i].text = _detailText[i];
+                StringManager.Instance.ApplyFont(_skillDetail[i]);
             }
             _needGuideRefresh = false;
         }
         
+    }
+
+    private void OnEnable()
+    {
+        StringManager.OnLanguageChanged += RefreshUI;
+    }
+
+    private void OnDisable()
+    {
+        StringManager.OnLanguageChanged -= RefreshUI;
     }
 
     //private void OnEnable()
@@ -99,10 +111,11 @@ public class PassiveBox : MonoBehaviour
             for (int i = 0; i < _selectSkillList.Count; i++)
             {
                 _skillName[i].text = StringManager.Instance.GetString(_selectSkillList[i].skillName);
+                StringManager.Instance.ApplyFont(_skillName[i]);
                 _skillImage[i].sprite = SpriteManager.Instance.GetSprite(_selectSkillList[i].passiveResource);
 
                 _detailText[i] = StringManager.Instance.GetString(_selectSkillList[i].passiveDesc);
-                _detailText[i] = _detailText[i].Replace("{effectValue}", _selectSkillList[i].effectValue.ToString());
+                _detailText[i] = _detailText[i].Replace("{effectValue}", _selectSkillList[i].effectValue.ToString());                
             }
             _needGuideRefresh = true;
         }
@@ -153,8 +166,10 @@ public class PassiveBox : MonoBehaviour
                     continue;
                 }
 
-                _skillName[i].text = StringManager.Instance.GetString(selectedSkill.skillName);                    
+                _skillName[i].text = StringManager.Instance.GetString(selectedSkill.skillName);
+                StringManager.Instance.ApplyFont(_skillName[i]);
                 _skillDetail[i].text = StringManager.Instance.GetString(selectedSkill.passiveDesc);
+                StringManager.Instance.ApplyFont(_skillDetail[i]);
                 _skillImage[i].sprite = SpriteManager.Instance.GetSprite(selectedSkill.passiveResource);
 
                 _selectSkillList.Add(selectedSkill);
@@ -218,5 +233,23 @@ public class PassiveBox : MonoBehaviour
 
         _graduationManager.PromotionPanel.IsSkillChoise = true;
         Debug.Log($"스킬 선택 상태{_graduationManager.PromotionPanel.IsSkillChoise}");
+    }
+
+    private void RefreshUI()
+    {
+        if (_selectSkillSave.TryGetValue(_graduationManager.PromotionStudentList[_graduationManager.Turn], out var list))
+        {
+            _selectSkillList = new List<Player_PassiveData>(list);
+            for (int i = 0; i < _selectSkillList.Count; i++)
+            {
+                _skillName[i].text = StringManager.Instance.GetString(_selectSkillList[i].skillName);
+                StringManager.Instance.ApplyFont(_skillName[i]);
+                _skillImage[i].sprite = SpriteManager.Instance.GetSprite(_selectSkillList[i].passiveResource);
+
+                _detailText[i] = StringManager.Instance.GetString(_selectSkillList[i].passiveDesc);
+                _detailText[i] = _detailText[i].Replace("{effectValue}", _selectSkillList[i].effectValue.ToString());
+            }
+            _needGuideRefresh = true;
+        }
     }
 }

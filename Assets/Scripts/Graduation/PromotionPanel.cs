@@ -75,8 +75,8 @@ public class PromotionPanel : MonoBehaviour
         if (_isSkillChoise == false)
         {
             _getPromotionName = StringManager.Instance.GetString("UI_Promotion_진급팝업");
-
-            _getPromotionName = _getPromotionName.Replace("{N}", name);
+            var keys = TextParser.GetKeys(_getPromotionName);
+            _getPromotionName = _getPromotionName.Replace("{" + keys[0] +"}", name);
             _guideBoxName.text = _getPromotionName;
             _needGuideRefresh = true;
         }
@@ -87,13 +87,17 @@ public class PromotionPanel : MonoBehaviour
 
         _name.text = name;
         _image.sprite = SpriteManager.Instance.GetSprite(_currentStudent.VisualData.playerImageResource);
-        _gradeUp.text = $"{_currentStudent.Grade-1}학년 → {_currentStudent.Grade}학년";
+        string gradeText = StringManager.Instance.GetString("UI_Promotion_진급");
+        var key =  TextParser.GetKeys(gradeText);
+        _gradeUp.text = gradeText.Replace("{"+key[0]+"}", (_currentStudent.Grade - 1).ToString()).Replace("{" + key[1] + "}", (_currentStudent.Grade).ToString());
+        StringManager.Instance.ApplyFont(_gradeUp);
 
         for (int i = 0; i < 3; i++)
         {
             if(i < _currentStudent.PassiveId.Count)
             {
-                _passiveNameText[i].text = StringManager.Instance.GetString(_currentStudent.Passive[i].skillName); 
+                _passiveNameText[i].text = StringManager.Instance.GetString(_currentStudent.Passive[i].skillName);
+                StringManager.Instance.ApplyFont(_passiveNameText[i]);
             }
             else
             {
