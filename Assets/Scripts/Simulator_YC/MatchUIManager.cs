@@ -138,7 +138,8 @@ public class MatchUIManager : MonoBehaviour
         _textAwayScore.text = state.AwayTeam.Score.ToString();
 
         //  팀 이름
-        _textHomeName.text = state.HomeTeam.TeamName;
+        _textHomeName.text = state.HomeTeam.TeamName+"\n"+StringManager.Instance.GetString("UI_Start_고등학교");
+        StringManager.Instance.ApplyFont(_textHomeName);
         _textAwayName.text = StringManager.Instance.GetString(state.AwayTeam.TeamName);
         StringManager.Instance.ApplyFont(_textAwayName);
     }
