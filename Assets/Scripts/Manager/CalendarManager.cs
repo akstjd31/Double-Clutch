@@ -39,6 +39,7 @@ public static class MonthWeekTable
 
 public class CalendarManager : Singleton<CalendarManager>
 {
+    private const int SALARY = 50000;
     public event Action<Calendar> OnWeekChanged;
     [SerializeField] private Calendar_TableDataReader _calReader;
     Calendar calendar;
@@ -190,7 +191,7 @@ public class CalendarManager : Singleton<CalendarManager>
             if (!(gm.SaveData.year == 1 && calendar.month == 3))
             {
                 var m = gm.SaveData.money;
-                gm.SetMoney(m + (1000 * accSub));
+                gm.SetMoney(m + (SALARY * accSub));
             }
 
             if (calendar.month == 3)
