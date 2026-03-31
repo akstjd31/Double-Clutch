@@ -72,9 +72,9 @@ public class CalendarManager : Singleton<CalendarManager>
 
         var weekId = gm.SaveData.weekId;
 
-        // 만약 전체 일정이 끝나게 된다면 weekId 0으로 시작(1월 1일)
-        if (weekId >= _calReader.DataList.Count)
-            weekId = 0;
+        // 만약 전체 일정이 끝나게 된다면 weekId 1으로 시작(1월 1일)
+        if (weekId > _calReader.DataList.Count)
+            weekId = 1;
 
         // 1. 주차 시작(주차 계산)
         CalcWeek(weekId, gm);
