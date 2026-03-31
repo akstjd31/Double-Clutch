@@ -265,15 +265,15 @@ public class EventUI : MonoBehaviour
                 break;
             case potential.Stat2pt:
             case potential.Stat3pt:
-                transText = "득점";
+                transText = StringManager.Instance.GetString("UI_Player_득점");
                 break;
             case potential.StatPass:
             case potential.StatRebound:
-                transText = "지원";
+                transText = StringManager.Instance.GetString("UI_Player_지원");
                 break;
             case potential.StatSteal:
             case potential.StatBlock:
-                transText = "저지";
+                transText = StringManager.Instance.GetString("UI_Player_저지");
                 break;
         }
         #endregion
