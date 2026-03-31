@@ -42,7 +42,7 @@ public class MatchHistoryRow : MonoBehaviour
 
         if (_textAwayTeam != null)
         {
-            _textHomeTeam.text = StringManager.Instance.GetString(record.AwayTeamName);
+            _textAwayTeam.text = StringManager.Instance.GetString(record.AwayTeamName);
             StringManager.Instance.ApplyFont(_textAwayTeam);
         }
 
