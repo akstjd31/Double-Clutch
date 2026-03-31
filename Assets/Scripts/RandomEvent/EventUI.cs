@@ -188,8 +188,11 @@ public class EventUI : MonoBehaviour
 
         //텍스트 출력하기
         _choiceText[0].text = text1;
+        StringManager.Instance.ApplyFont(_choiceText[0]);
         _choiceText[1].text = text2;
+        StringManager.Instance.ApplyFont(_choiceText[1]);
         _choiceText[2].text = text3;
+        StringManager.Instance.ApplyFont(_choiceText[2]);
     }
 
     private void ResultInit()
