@@ -35,19 +35,7 @@ public class CharacterList : MonoBehaviour
     private DropPosition _selectedPosition;
 
     private readonly HashSet<string> _tempTraitIds = new HashSet<string>();
-    private readonly List<PlayerSynergyData> _activeSynergies = new List<PlayerSynergyData>();    
-
-    private int _colorIndex;
-    private readonly Color[] _colors =
-    {
-        Color.red,
-        new Color(1f, 0.5f, 0f),
-        Color.yellow,
-        Color.green,
-        Color.blue,
-        new Color(0.3f, 0f, 0.5f),
-        new Color(0.56f, 0f, 1f)
-    };
+    private readonly List<PlayerSynergyData> _activeSynergies = new List<PlayerSynergyData>();
 
     private void Awake()
     {
@@ -58,7 +46,6 @@ public class CharacterList : MonoBehaviour
     private void OnEnable()
     {
         EnsureArrays();
-        //CheckBackButtonVisibility();
 
         var data = CheckSaveData();
 
@@ -118,6 +105,9 @@ public class CharacterList : MonoBehaviour
                 AddOnPosition(card, _dropPositions[i]);
             }
         }
+
+        ReFresh();
+        Canvas.ForceUpdateCanvases();
 
         PlaySound(SoundName.BGM_BATTLE_SELECTION);
     }
@@ -263,13 +253,6 @@ public class CharacterList : MonoBehaviour
             _selectedCard.SetSelected(false);
 
         _selectedCard = null;
-    }
-
-    public Color GetNextColor()
-    {
-        Color c = _colors[_colorIndex];
-        _colorIndex = (_colorIndex + 1) % _colors.Length;
-        return c;
     }
 
     public void ReFresh()
@@ -464,7 +447,7 @@ public class CharacterList : MonoBehaviour
         {
             _matchStartPanelObj.SetActive(canStart);
         }
-            
+
 
         if (_backButtonObj != null)
             _backButtonObj.SetActive(canStart);
@@ -477,13 +460,13 @@ public class CharacterList : MonoBehaviour
     }
 
     private void CheckSynergy()
-    {        
+    {
         if (StudentManager.Instance == null || StudentManager.Instance.GetFactory() == null) return;
-        
+
         _tempTraitIds.Clear();
         _activeSynergies.Clear();
 
-        
+
         for (int i = 0; i < _positionCards.Length; i++)
         {
             var card = _positionCards[i];
@@ -492,12 +475,12 @@ public class CharacterList : MonoBehaviour
                 _tempTraitIds.Add(card.Player.TraitData.traitId);
             }
         }
-        
+
         if (_tempTraitIds.Count < 2)
         {
             ClearSynergyUI();
             return;
-        }        
+        }
 
         var allSynergyData = StudentManager.Instance.GetFactory().GetSynergyDataList();
         if (allSynergyData == null)
@@ -514,11 +497,11 @@ public class CharacterList : MonoBehaviour
             var synergy = allSynergyData[i];
             if (_tempTraitIds.Contains(synergy.traitId1) && _tempTraitIds.Contains(synergy.traitId2))
             {
-                _activeSynergies.Add(synergy);                
+                _activeSynergies.Add(synergy);
                 if (_activeSynergies.Count >= _synergyIcons.Length) break;
             }
         }
-        
+
         UpdateSynergyUI();
     }
 
@@ -528,7 +511,7 @@ public class CharacterList : MonoBehaviour
         {
             if (i < _activeSynergies.Count)
             {
-                _synergyIcons[i].gameObject.SetActive(true);                
+                _synergyIcons[i].gameObject.SetActive(true);
                 _synergyIcons[i].sprite = SpriteManager.Instance.GetSprite(_activeSynergies[i].synergyResource);
             }
             else
