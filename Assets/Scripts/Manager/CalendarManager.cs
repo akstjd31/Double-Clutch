@@ -152,6 +152,7 @@ public class CalendarManager : Singleton<CalendarManager>
             manager.GoToEnding();
         }
     }
+    
     private void Init()
     {
         IsEndPhase = false;

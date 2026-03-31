@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Game.Constants;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -69,6 +70,9 @@ public class EndingManager : MonoBehaviour
 
     public void OnNextButtonClick()
     {
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlaySoundOneShot(SoundName.SE_BUTTON_SELECT);
+
         if (_currentIndex == -1)
         {
             return;
