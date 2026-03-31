@@ -840,7 +840,7 @@ public class MatchEngine : MonoBehaviour
         }
     }
 
-    private Vector2 GetPreferredPosition(MatchPlayer player, bool isAttacking, TeamSide side)
+    private Vector2 GetPreferredPosition(MatchPlayer player, bool isAttacking, TeamSide side, bool isInitialSetup = false)
     {
         float x = 0.5f;
         float y = 0.5f;
@@ -867,11 +867,60 @@ public class MatchEngine : MonoBehaviour
             {
                 var preset = _positionPresetReader.DataList[targetIndex];
 
-                bool isFirstZone = UnityEngine.Random.value > 0.5f;
-                float minX = isFirstZone ? preset.offenseXMin : preset.offenseXMin2;
-                float maxX = isFirstZone ? preset.offenseXMax : preset.offenseXMax2;
+                // 좌우 구분이 없는 포지션 (PG, PF, C 등 -> Min과 Min2 값이 동일한 경우)
+                if (Mathf.Approximately(preset.offenseXMin, preset.offenseXMin2) && Mathf.Approximately(preset.offenseXMax, preset.offenseXMax2))
+                {
+                    x = UnityEngine.Random.Range(preset.offenseXMin, preset.offenseXMax);
+                }
+                // 처음 포지션을 잡을 때 (공수 교대 직후 등)
+                else if (isInitialSetup)
+                {
+                    bool isFirstZone = UnityEngine.Random.value > 0.5f;
+                    float minX = isFirstZone ? preset.offenseXMin : preset.offenseXMin2;
+                    float maxX = isFirstZone ? preset.offenseXMax : preset.offenseXMax2;
+                    x = UnityEngine.Random.Range(minX, maxX);
+                }
+                // 경기 중 오프볼 이동할 때 -> P_LtoC, P_CtoC 확률 적용 (SG, SF)
+                else
+                {
+                    float centerMin = preset.offenseXMax;
+                    float centerMax = preset.offenseXMin2;
+                    float currentX = player.LogicPosition.x;
 
-                x = UnityEngine.Random.Range(minX, maxX);
+                    // 현재 구역 판별 (0: Left, 1: Center, 2: Right)
+                    int currentZone = 1;
+                    if (currentX <= centerMin) currentZone = 0;
+                    else if (currentX >= centerMax) currentZone = 2;
+
+                    int targetZone = currentZone;
+
+                    float a = preset.P_LtoC;
+                    float b = preset.P_CtoC;
+                    float rand = UnityEngine.Random.value;
+
+                    if (currentZone == 0) // 현재 왼쪽
+                    {
+                        if (rand < a) targetZone = 1; // Center로 이동
+                    }
+                    else if (currentZone == 2) // 현재 오른쪽
+                    {
+                        if (rand < a) targetZone = 1; // Center로 이동
+                    }
+                    else // 현재 중앙 (Center)
+                    {
+                        if (rand > b) // Center에 머물지 않고 이동한다면
+                        {
+                            // 반반 확률로 왼쪽 또는 오른쪽으로 이동!
+                            targetZone = (UnityEngine.Random.value > 0.5f) ? 0 : 2;
+                        }
+                    }
+
+                    // 결정된 타겟 구역 안에서 랜덤 좌표 픽
+                    if (targetZone == 0) x = UnityEngine.Random.Range(preset.offenseXMin, preset.offenseXMax);
+                    else if (targetZone == 2) x = UnityEngine.Random.Range(preset.offenseXMin2, preset.offenseXMax2);
+                    else x = UnityEngine.Random.Range(centerMin, centerMax);
+                }
+
                 y = UnityEngine.Random.Range(preset.offenseYMin, preset.offenseYMax);
                 isDataFound = true;
             }

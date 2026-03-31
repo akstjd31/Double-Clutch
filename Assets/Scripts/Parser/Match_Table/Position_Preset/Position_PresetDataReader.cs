@@ -16,7 +16,7 @@ public class Position_PresetDataReader : DataReaderBase
         Position positionType = default;
         changeType changeType = default;
         float offenseXMin = 0, offenseXMax = 0, offenseXMin2 = 0, offenseXMax2 = 0, offenseYMin = 0, offenseYMax = 0;
-
+        float pLtoC = 0f, pCtoC = 0f;
         for (int i = 0; i < list.Count; i++)
         {
             string col = list[i].columnId;   // ✅ "weekId", "desc" 등 (시트 2행 헤더)
@@ -64,10 +64,16 @@ public class Position_PresetDataReader : DataReaderBase
                 case "offenseYMax":
                     float.TryParse(val, out offenseYMax);
                     break;
+                case "P_LtoC":
+                    float.TryParse(val, out pLtoC);
+                    break;
+                case "P_CtoC":
+                    float.TryParse(val, out pCtoC);
+                    break;
             }
         }
 
-        DataList.Add(new Position_PresetData(presetId, positionType, changeType, offenseXMin, offenseXMax, offenseXMin2, offenseXMax2, offenseYMin, offenseYMax
+        DataList.Add(new Position_PresetData(presetId, positionType, changeType, offenseXMin, offenseXMax, offenseXMin2, offenseXMax2, offenseYMin, offenseYMax, pLtoC, pCtoC
         ));
     }
 
