@@ -29,7 +29,20 @@ public class TutorialUI : MonoBehaviour
         _index = 0;
         _currentTutorialData = null;
     }
+    private void OnEnable()
+    {
+        StringManager.OnLanguageChanged += RefreshUI;
+    }
 
+    private void OnDisable()
+    {
+        StringManager.OnLanguageChanged -= RefreshUI;
+    }
+
+    private void Refresh()
+    {
+        RefreshUI();
+    }
     private void Start()
     {
         if (_nextButton != null)
@@ -210,7 +223,10 @@ public class TutorialUI : MonoBehaviour
 
         var tmp = _skipPanelObj.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
         if (tmp != null)
-            tmp.text = "튜토리얼을 스킵 하시겠습니까?";
+        {
+            tmp.text = StringManager.Instance.GetString("UI_Tutorial_스킵팝업");
+            StringManager.Instance.ApplyFont(tmp);
+        }
     }
 
     private void OnClickStartButton()
