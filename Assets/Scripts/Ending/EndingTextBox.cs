@@ -35,19 +35,19 @@ public class EndingTextBox : MonoBehaviour
     }
 
     public void SetText(string contentKey)
-    {        
+    {
         _currentContentKey = contentKey;
 
-        StringManager stringManager =  StringManager.Instance;
-        
-        _contentText.text = stringManager.GetString(_currentContentKey);
-        
+        StringManager stringManager = StringManager.Instance;
+        string script = stringManager.GetString(_currentContentKey).Replace("{ME}", GameManager.Instance.SaveData.coachName).Replace("{year}", GameManager.Instance.SaveData.year.ToString());        
+        _contentText.text = script;
+
         stringManager.ApplyFont(_contentText);
     }
 
     private void Refresh()
     {
         SetName(_currentNameKey);
-        SetText(_currentContentKey);
+        SetText(_currentContentKey);        
     }
 }
