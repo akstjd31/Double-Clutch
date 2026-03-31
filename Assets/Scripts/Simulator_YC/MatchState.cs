@@ -101,8 +101,7 @@ public class MatchState : MonoBehaviour
                 }
             }
         }
-
-        AddLog($"<color=orange>=== 하프타임 전술 지시 적용 완료! ===</color>");
+        AddLog($"<color=orange>==="+StringManager.Instance.GetString("Str_Match_Log_Start") +"===</color>");
     }
 
     // 잠재력 Enum을 MatchStat Enum으로 변환해주는 헬퍼 함수
@@ -244,6 +243,6 @@ public class MatchState : MonoBehaviour
             CurrentHalftimeScriptId = defaultEvent.scriptId ?? "Script_Halftime_001"; // 만족하는 게 없으면 기본 이벤트
         }
 
-        AddLog($"[시스템] 하프타임 이벤트 결정됨 (Script ID: {CurrentHalftimeScriptId})");
+        //AddLog($"[시스템] 하프타임 이벤트 결정됨 (Script ID: {CurrentHalftimeScriptId})");
     }
 }

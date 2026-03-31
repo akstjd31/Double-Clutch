@@ -92,8 +92,8 @@ public class LogHistoryPanel : MonoBehaviour
                 }
             }
         }
-        if (_textRoundTitle != null) _textRoundTitle.text = $"{_currentRound}";
-        if (_textQuarter != null) _textQuarter.text = $"{_currentQuarter}";
+        if (_textRoundTitle != null) _textRoundTitle.text = $"{_currentRound}"+StringManager.Instance.GetString("UI_Matchlog_라운드경기로그");
+        if (_textQuarter != null) _textQuarter.text = $"{_currentQuarter}"+StringManager.Instance.GetString("UI_Matchlog_쿼터");
 
         if (_textLogContent == null) return;
 

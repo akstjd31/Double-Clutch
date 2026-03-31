@@ -22,6 +22,15 @@ public class TournamentNode : MonoBehaviour
     public string TeamId { get; private set; }
     public int RoundIndex { get; private set; }
 
+
+    private void OnEnable()
+    {
+        StringManager.OnLanguageChanged += Refresh;
+    }
+    private void OnDisable()
+    {
+        StringManager.OnLanguageChanged -=Refresh;
+    }
     public void DisableNode()
     {
         gameObject.SetActive(false);
@@ -147,5 +156,11 @@ public class TournamentNode : MonoBehaviour
             return StringManager.Instance.GetString(rivalData.Value.teamNameKey);
 
         return teamId;
+    }
+
+    private void Refresh()
+    {
+        _txtTeamName.text = GetTeamName(TeamId);
+        StringManager.Instance.ApplyFont(_txtTeamName);
     }
 }

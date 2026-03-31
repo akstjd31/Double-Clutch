@@ -27,10 +27,9 @@ public class TournamentBoardPanel : MonoBehaviour
     [Header("Bottom Actions")]
     [SerializeField] private Button _btnAction;
     [SerializeField] private TextMeshProUGUI _txtBtnAction;
-
     private Action _customAction;
-    private string _customActionText;
 
+    private string _customActionText;
     private void OnEnable()
     {
         StringManager.OnLanguageChanged += Refresh;
@@ -41,15 +40,9 @@ public class TournamentBoardPanel : MonoBehaviour
         StringManager.OnLanguageChanged -=Refresh;
     }
 
-    public void Refresh()
+    private void Refresh()
     {
-        var league = LeagueManager.Instance.CurrentLeague;
-        var masterData = LeagueDataManager.Instance.GetMasterDataById(league.leagueId);
-        if (_txtLeagueName != null && masterData.HasValue)
-        {
-            _txtLeagueName.text = StringManager.Instance.GetString(masterData.Value.leagueNameKey);
-            StringManager.Instance.ApplyFont(_txtLeagueName);
-        }
+        OpenPanel();
     }
     public void OpenPanel(Action onActionClick = null, string actionText = null)
     {

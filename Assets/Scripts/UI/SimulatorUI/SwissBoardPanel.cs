@@ -30,6 +30,18 @@ public class SwissBoardPanel : MonoBehaviour
     private Action _customAction;
     private string _customActionText;
 
+    private void OnEnable()
+    {
+        StringManager.OnLanguageChanged += Refresh;
+    }
+    private void OnDisable()
+    {
+        StringManager.OnLanguageChanged -= Refresh;
+    }
+    private void Refresh()
+    {
+        OpenPanel();
+    }
     public void OpenPanel(Action onActionClick = null, string actionText = null)
     {
         gameObject.SetActive(true);
