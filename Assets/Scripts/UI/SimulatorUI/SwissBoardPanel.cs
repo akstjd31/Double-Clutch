@@ -18,6 +18,7 @@ public class SwissBoardPanel : MonoBehaviour
     private List<SwissRoundTab> _tabs = new List<SwissRoundTab>();
 
     [Header("Match List UI")]
+    [SerializeField] private ScrollRect _scrollRect;
     [SerializeField] private Transform _matchContainer;
     [SerializeField] private SwissMatchRow _matchRowPrefab;
 
@@ -156,6 +157,11 @@ public class SwissBoardPanel : MonoBehaviour
         foreach (string teamId in orderedTeamIds)
         {
             CreateRankingRow(teamId, roundIndex, historyRankMap);
+        }
+        Canvas.ForceUpdateCanvases();
+        if (_scrollRect != null)
+        {
+            _scrollRect.verticalNormalizedPosition = 1f; // 스크롤바 위치를 1(맨 위)로 강제 고정
         }
     }
 
