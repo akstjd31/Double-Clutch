@@ -108,7 +108,7 @@ public class EndingUIController : MonoBehaviour
 
         yield return StartCoroutine(FadeRoutine(false));
 
-        
+        CalendarManager.Instance.NextTurn();
         GameManager.Instance.GoToLobby();
     }
 
