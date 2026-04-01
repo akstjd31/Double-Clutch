@@ -480,7 +480,7 @@ public class MatchEngine : MonoBehaviour
         log.PlayerName = MakeName(shooter.PlayerName);
         log.EventType = eventCode;
         log.IsSuccess = success;
-        log.ScoreAdded = config != null ? config.scAdd : (success ? score : 0);
+        log.ScoreAdded = success ? score : 0;
 
         // 슛 결과 텍스트 (시간 + 내용)
         log.BallPos = shooter.LogicPosition;
