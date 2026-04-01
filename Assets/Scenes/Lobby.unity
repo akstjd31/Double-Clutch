@@ -357,7 +357,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uC120\uC218 \uC774\uBBF8\uC9C0"
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 7c31c93ef95dbfa4987915b09bcc0e1d, type: 2}
   m_sharedMaterial: {fileID: -2959792390391746788, guid: 7c31c93ef95dbfa4987915b09bcc0e1d, type: 2}
@@ -33356,6 +33356,7 @@ GameObject:
   - component: {fileID: 1711883229}
   - component: {fileID: 1711883231}
   - component: {fileID: 1711883232}
+  - component: {fileID: 1711883233}
   m_Layer: 5
   m_Name: Text
   m_TagString: Untagged
@@ -33481,6 +33482,22 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &1711883233
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1711883228}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b9b4230a7e0d3b4c87f052c108a7d7a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LocalizedText
+  _stringKey: "UI_Btn_\uD648"
+  _koMultiplier: 1
+  _enMultiplier: 1
+  _jaMultiplier: 1
 --- !u!1 &1739336320
 GameObject:
   m_ObjectHideFlags: 0
@@ -35301,6 +35318,27 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1921010252}
   m_CullTransparentMesh: 1
+--- !u!1 &1926670357 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3973530180816588200, guid: 829528eb50eff0b4d881c5dca2b334f8, type: 3}
+  m_PrefabInstance: {fileID: 2112216164}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1926670358
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1926670357}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b9b4230a7e0d3b4c87f052c108a7d7a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LocalizedText
+  _stringKey: "UI_Btn_\uD648"
+  _koMultiplier: 1
+  _enMultiplier: 1
+  _jaMultiplier: 1
 --- !u!1 &1927070456
 GameObject:
   m_ObjectHideFlags: 0
@@ -39328,7 +39366,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3973530180816588200, guid: 829528eb50eff0b4d881c5dca2b334f8, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1926670358}
   m_SourcePrefab: {fileID: 100100000, guid: 829528eb50eff0b4d881c5dca2b334f8, type: 3}
 --- !u!224 &2112216165 stripped
 RectTransform:

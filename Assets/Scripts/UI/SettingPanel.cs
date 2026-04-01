@@ -30,6 +30,7 @@ public class SettingPanel : MonoBehaviour
     [Header("기타 버튼")]
     [SerializeField] Button _userPolicyButton;
     [SerializeField] Button _privacyPolicyButton;
+    [SerializeField] Button _makerList;
 
     private void Start()
     {
@@ -55,6 +56,7 @@ public class SettingPanel : MonoBehaviour
 
         _userPolicyButton.onClick.RemoveAllListeners();
         _privacyPolicyButton.onClick.RemoveAllListeners();
+        _makerList.onClick.RemoveAllListeners();
 
         //------------------------------------------------------------
         // 구독 연결
@@ -81,6 +83,7 @@ public class SettingPanel : MonoBehaviour
 
         _userPolicyButton.onClick.AddListener(OpenUserPolicy);
         _privacyPolicyButton.onClick.AddListener(OpenPrivacyPolicy);
+        _makerList.onClick.AddListener(OpenMakerList);
     }
 
     private void OnEnable()
@@ -176,6 +179,11 @@ public class SettingPanel : MonoBehaviour
         SettingManager.Instance.OpenUserPolicy();
     }
 
+    private void OpenMakerList()
+    {
+        PlayConfirmSound();
+        SettingManager.Instance.OpenMakerList();
+    }
 
 
     public void OnQuitSetting()
