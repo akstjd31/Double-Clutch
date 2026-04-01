@@ -50,7 +50,7 @@ public class IndividualTraining : ITraining
             _target.GetStat(_data.subPotential).GrowAndReturn(subGrowth);
             _target.AddChangedPotential(_data.subPotential);
         }
-
+        _target.SetHasIndividualTraining(true);
         _target.ChangeCondition(-(Random.Range(_data.conditionCostMin, _data.conditionCostMax)));
         _target.OnStatChanged();
         _target.ResetTrainingSchedule();

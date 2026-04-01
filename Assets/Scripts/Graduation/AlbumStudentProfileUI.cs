@@ -20,6 +20,7 @@ public class AlbumStudentProfileUI : MonoBehaviour
     public void SetName(string name)
     {
         _profileName.text = name;
+        StringManager.Instance.ApplyFont(_profileName);
     }
 
     public Button GetButton() => _profileButton;
