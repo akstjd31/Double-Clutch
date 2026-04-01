@@ -15,11 +15,13 @@ public class LoadingController : MonoBehaviour
 
     private IEnumerator LoadingTimer()
     {
-
         float minTime = 2f;
         float timer = 0f;
 
-        var op = SceneManager.LoadSceneAsync(GameManager.Instance.NextSceneName);
+        string nextSceneName = GameManager.Instance.NextSceneName;
+        Debug.Log($"다음 씬 호출: {nextSceneName}");
+
+        var op = SceneManager.LoadSceneAsync(nextSceneName);
         op.allowSceneActivation = false;
 
         while (timer < minTime || op.progress < 0.9f)
@@ -32,8 +34,20 @@ public class LoadingController : MonoBehaviour
             yield return null;
         }
 
+        // 씬 로드 완료 이벤트 등록
+        SceneManager.sceneLoaded += OnSceneLoaded;
         op.allowSceneActivation = true;
+    }
 
-        GameManager.Instance.LoadNextScene();
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+
+        Debug.Log($"씬 로드 완료: {scene.name}");
+
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.NotifyLoadingDone();
+        }
     }
 }

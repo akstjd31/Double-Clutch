@@ -90,13 +90,14 @@ public class GameManager : Singleton<GameManager>
     {
         NextSceneName = sceneName;
         NextStateAfterLoading = nextState;
+
+        Debug.Log($"다음 씬: {NextSceneName}, 다음 상태: {NextStateAfterLoading}");
     }
 
     // LoadingScene에서 호출
     public void NotifyLoadingDone()
     {
-        if (NextStateAfterLoading != null)
-            _sm.ChangeState(NextStateAfterLoading);
+        _sm.ChangeState(NextStateAfterLoading);
     }
 
     public void LoadNextScene()
@@ -104,12 +105,12 @@ public class GameManager : Singleton<GameManager>
         StartCoroutine(LoadNextScene_Coroutine());
     }
 
-    public void GoToGraduation()
-    {
-        SetNextFlow(SceneName.GRADUATION, _sm.Get<GraduationState>());
-
-        _sm.ChangeState<LoadingState>();
-    }
+public void GoToGraduation()
+{
+    var nextState = _sm.Get<GraduationState>();
+    SetNextFlow(SceneName.GRADUATION, nextState);
+    _sm.ChangeState<LoadingState>();
+}
 
     public void GoToLobby()
     {
@@ -135,6 +136,7 @@ public class GameManager : Singleton<GameManager>
         //
         //NotifyLoadingDone(); // 로드 끝난 뒤 상태 전환
 
+        Debug.Log($"현재 씬: {SceneManager.GetActiveScene().name}, 다음 씬: {NextSceneName}");
         yield return new WaitUntil(() => SceneManager.GetActiveScene().name == NextSceneName);
 
         NotifyLoadingDone();
