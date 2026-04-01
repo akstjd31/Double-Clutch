@@ -80,6 +80,12 @@ public class FightingPower : MonoBehaviour
         _myTotalFightingPower = 0;
         if (_myMatchingStudentList.Count > 0 && _myMatchingStudentList != null)
         {
+            var positionOrder = new List<Position> { Position.PG, Position.SG, Position.SF, Position.PF, Position.C };
+            _myMatchingStudentList.Sort((a, b) => {
+                int indexA = positionOrder.IndexOf(a.MatchPosition);
+                int indexB = positionOrder.IndexOf(b.MatchPosition);
+                return indexA.CompareTo(indexB);
+            });
             for (int i = 0; i < Mathf.Min(_myMatchingStudentList.Count, _fightingList.Length); i++)
             {
                 var s = _myMatchingStudentList[i];
