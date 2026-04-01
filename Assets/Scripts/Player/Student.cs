@@ -49,7 +49,7 @@ public class Student
     [SerializeField] private Position _matchPosition;
     ITraining _currentTraining;
     [SerializeField] int _totalFame = 0;     // 누적 명성치
-    
+    [SerializeField] bool _hasIndividualTraining = false;
 
 
 
@@ -82,6 +82,7 @@ public class Student
     public List<potential> ChangedPotentials => _changedPotentials;
     public int TotalFame => _totalFame;
 
+    public bool HasIndividualTraining => _hasIndividualTraining;
     [SerializeField] public bool pendingPassiveSelection = false;
     public void ResetTrainingSchedule()
     {
@@ -92,6 +93,10 @@ public class Student
         _currentTraining = training;
     }
 
+    public void SetHasIndividualTraining(bool isOn)
+    {
+        _hasIndividualTraining = isOn;
+    }
     public float GetFosterPassiveValue(potential pot)
     {
         switch(pot)

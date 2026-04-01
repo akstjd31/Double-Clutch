@@ -127,6 +127,7 @@ public class FosterManager : MonoBehaviour
         foreach (var student in StudentManager.Instance.MyStudents)
         {
             student.PrepareStatChange();
+            student.SetHasIndividualTraining(false);
         }
         if (_teamSchedule != null)
         {
