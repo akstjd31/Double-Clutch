@@ -325,7 +325,10 @@ public class ProfileUI : MonoBehaviour
             else
             {
                 if (_warningCoroutine == null)
+                {
                     _warningCoroutine = StartCoroutine(PrintWarningTextPopup(targetWarningText, t));
+                    StringManager.Instance.ApplyFont(targetWarningText);
+                }
             }
             return false;
         }
