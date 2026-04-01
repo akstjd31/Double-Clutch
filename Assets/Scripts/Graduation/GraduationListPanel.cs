@@ -99,7 +99,7 @@ public class GraduationListPanel : MonoBehaviour
 
         string getHonor = StringManager.Instance.GetString("UI_Graduation_졸업팝업2");
         
-        getHonor = getHonor.Replace("{0}", $"{_graduationManager.TotalHonor}");
+        getHonor = getHonor.Replace("{N}", $"{_graduationManager.TotalHonor}");
 
         _totalHonorText.text = getHonor;
     }

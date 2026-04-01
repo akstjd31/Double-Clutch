@@ -14,6 +14,9 @@ public class CharacterRecruitPanel : MonoBehaviour
     {
         Init();
         PlaySound(SoundName.BGM_SCOUT);
+
+        if (GameManager.Instance == null) return;
+        GameManager.Instance.SetGraduationPending(false);
     }
 
     private void OnDisable()

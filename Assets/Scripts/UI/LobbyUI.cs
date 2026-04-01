@@ -140,7 +140,6 @@ public class LobbyUI : MonoBehaviour
 
         if (weekId == 8)
         {
-            gm.SetGraduationPending(true);
             gm.GoToGraduation();
             return;
         }

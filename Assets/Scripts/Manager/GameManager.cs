@@ -72,7 +72,7 @@ public class GameManager : Singleton<GameManager>
     protected override void OnDestroy()
     {
         base.OnDestroy();
-        
+
         OnDataChanged -= SavePlayerData;
     }
 
@@ -105,12 +105,12 @@ public class GameManager : Singleton<GameManager>
         StartCoroutine(LoadNextScene_Coroutine());
     }
 
-public void GoToGraduation()
-{
-    var nextState = _sm.Get<GraduationState>();
-    SetNextFlow(SceneName.GRADUATION, nextState);
-    _sm.ChangeState<LoadingState>();
-}
+    public void GoToGraduation()
+    {
+        var nextState = _sm.Get<GraduationState>();
+        SetNextFlow(SceneName.GRADUATION, nextState);
+        _sm.ChangeState<LoadingState>();
+    }
 
     public void GoToLobby()
     {
@@ -153,7 +153,7 @@ public void GoToGraduation()
         _saveData.coachName = name;
         OnDataChanged?.Invoke();
     }
-    
+
     public void SetSchoolName(string name)
     {
         _saveData.schoolName = name;
@@ -203,7 +203,7 @@ public void GoToGraduation()
         _saveData.year = year;
         OnDataChanged?.Invoke();
     }
-    
+
     public void SetEnding()
     {
         _saveData.hasEnding = true;
@@ -213,7 +213,7 @@ public void GoToGraduation()
     {
         _sm.ChangeState<T>();
     }
-    
+
     public void LoadMatchSceneWithData(string sceneName, List<Student> homeRoster, List<Student> awayRoster)
     {
         // 상태 머신에서 MatchSimState를 미리 꺼내서 데이터를 주입
@@ -225,7 +225,7 @@ public void GoToGraduation()
         _sm.ChangeState<LoadingState>();
     }
 
-    
+
     public int GetGraduationCount(string visualId)//프로필 해금을 위한 졸업생 종족(비주얼) 카운트.
     {
         // 리스트에서 ID가 일치하는 첫 번째 요소를 찾고, 없으면 null 반환

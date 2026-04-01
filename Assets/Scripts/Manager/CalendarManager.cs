@@ -160,7 +160,6 @@ public class CalendarManager : Singleton<CalendarManager>
 
         if (weekId == 8)
         {
-            gm.SetGraduationPending(true);
             gm.GoToGraduation();
             return;
         }
