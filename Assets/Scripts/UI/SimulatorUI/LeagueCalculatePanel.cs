@@ -126,6 +126,7 @@ public class LeagueCalculatePanel : MonoBehaviour
         if (_txtWinnerTeamName != null)
         {
             _txtWinnerTeamName.text = winnerName;
+            StringManager.Instance.ApplyFont(_txtWinnerTeamName);
         }
 
         // 우리 팀 순위

@@ -282,6 +282,7 @@ public class EventUI : MonoBehaviour
         if (potentialChangeValue < 0)
         {
             _stat.text = transText + "↓";
+            StringManager.Instance.ApplyFont(_stat);
             _stat.color = new Color(0.9f, 0.3f, 0.3f, 1f);
 
         }
@@ -292,6 +293,7 @@ public class EventUI : MonoBehaviour
         else
         {
             _stat.text = transText + "↑";
+            StringManager.Instance.ApplyFont( _stat);
             _stat.color = new Color(0.2f, 0.8f, 0.4f, 1f);
         }
         //득점지원저지 위치
@@ -314,6 +316,7 @@ public class EventUI : MonoBehaviour
 
         //결과 텍스트 출력
         _resultText.text = resultScriptKey;
+        StringManager.Instance.ApplyFont(_resultText);
 
         //패널 띄우기
         _resultPanel.SetActive(true);
@@ -343,12 +346,14 @@ public class EventUI : MonoBehaviour
             //이전 상태가 없었으면
             if (statusChange == StudentState.OverWorked.ToString())
             {
-                _state.text = "과로 획득";
+                _state.text = StringManager.Instance.GetString("Str_UI_과로획득");
+                StringManager.Instance.ApplyFont(_state);
                 _state.color = new Color(0.9f, 0.3f, 0.3f, 1f);
             }
             else if (statusChange == StudentState.Injured.ToString())
             {
-                _state.text = "부상 획득";
+                _state.text = StringManager.Instance.GetString("Str_UI_부상획득");
+                StringManager.Instance.ApplyFont(_state);
                 _state.color = new Color(0.9f, 0.3f, 0.3f, 1f);
             }
         }

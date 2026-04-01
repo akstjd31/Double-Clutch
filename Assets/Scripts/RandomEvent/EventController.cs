@@ -13,6 +13,7 @@ public class EventController : MonoBehaviour
     [SerializeField] private EventUI _eventUI;
     [SerializeField] private EventString _eventString;
     [SerializeField] private EventSelector _eventSelector;
+    [SerializeField] private GameObject _settingPanel;
 
     private EventManager _eventManager;
 
@@ -96,6 +97,7 @@ public class EventController : MonoBehaviour
             _eventPanel.SetActive(false);
             return;
         }
+        _settingPanel.SetActive(false);
         //큐 순서대로 이벤트 진행
         //이벤트 아이디 가져오기
         _eventId = _eventSelector.ScreenplayIdList.Dequeue();
@@ -338,6 +340,7 @@ public class EventController : MonoBehaviour
             _eventPanel.SetActive(true);
             StartEvent();
         }
+        _settingPanel.SetActive(true);
         _eventManager.SaveGame();
     }
 
