@@ -9,6 +9,7 @@ public class PassiveBox : MonoBehaviour
     [SerializeField] private GraduationManager _graduationManager;
 
     [SerializeField] private TextMeshProUGUI[] _skillName = new TextMeshProUGUI[3];
+    [SerializeField] private Image[] _skillGradeImage = new Image[3];
     [SerializeField] private Image[] _skillImage = new Image[3];
     [SerializeField] private TextMeshProUGUI[] _skillDetail = new TextMeshProUGUI[3];
     [SerializeField] private Button[] _buttons = new Button[3];
@@ -93,6 +94,7 @@ public class PassiveBox : MonoBehaviour
             {
                 _skillName[i].text = "";
                 _skillDetail[i].text = "";
+                _skillGradeImage[i].sprite = null;
                 _skillImage[i].sprite = null;
                 _buttons[i].interactable = false;
                 _buttons[i].targetGraphic.color = _buttons[i].colors.disabledColor;
@@ -112,6 +114,17 @@ public class PassiveBox : MonoBehaviour
             {
                 _skillName[i].text = StringManager.Instance.GetString(_selectSkillList[i].skillName);
                 StringManager.Instance.ApplyFont(_skillName[i]);
+
+                string passiveframeResourceId = null;
+                foreach (var dataList in _passiveGradeDataReader.DataList)
+                {
+                    if (dataList.gradeId.Equals(_selectSkillList[i].grade))
+                        passiveframeResourceId = dataList.passiveFrameResource;
+                }
+
+                if (passiveframeResourceId != null)
+                    _skillGradeImage[i].sprite = SpriteManager.Instance.GetSprite(passiveframeResourceId);
+
                 _skillImage[i].sprite = SpriteManager.Instance.GetSprite(_selectSkillList[i].passiveResource);
 
                 _detailText[i] = StringManager.Instance.GetString(_selectSkillList[i].passiveDesc);
@@ -172,6 +185,16 @@ public class PassiveBox : MonoBehaviour
                 StringManager.Instance.ApplyFont(_skillDetail[i]);
                 _skillImage[i].sprite = SpriteManager.Instance.GetSprite(selectedSkill.passiveResource);
 
+                string passiveframeResourceId = null;
+                foreach (var dataList in _passiveGradeDataReader.DataList)
+                {
+                    if (dataList.gradeId.Equals(selectedSkill.grade))
+                        passiveframeResourceId = dataList.passiveFrameResource;
+                }
+
+                if (passiveframeResourceId != null)
+                    _skillGradeImage[i].sprite = SpriteManager.Instance.GetSprite(passiveframeResourceId);
+
                 _selectSkillList.Add(selectedSkill);
                 Debug.Log($"{selectedSkill}추가");
 
@@ -213,6 +236,8 @@ public class PassiveBox : MonoBehaviour
             {
                 _buttons[i].interactable = true;
                 _buttons[i].GetComponent<Image>().color = new Color(1f,1f,1f);
+                _skillName[i].color = new Color(1f, 1f, 1f);
+                _skillGradeImage[i].color = new Color(1f, 1f, 1f);
                 _skillImage[i].color = new Color(1f, 1f, 1f);
                 _outlines[i].enabled = true;
 
@@ -224,6 +249,8 @@ public class PassiveBox : MonoBehaviour
             else
             {
                 _buttons[i].GetComponent<Image>().color = new Color(0.4f, 0.4f, 0.4f);
+                _skillName[i].color = new Color(0.4f, 0.4f, 0.4f);
+                _skillGradeImage[i].color = new Color(0.4f, 0.4f, 0.4f);
                 _skillImage[i].color = new Color(0.4f, 0.4f, 0.4f);
                 _outlines[i].enabled = false;
 
