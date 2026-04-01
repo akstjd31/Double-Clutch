@@ -323,10 +323,14 @@ public class MatchReplayer : MonoBehaviour
 
 
 
-            if (!string.IsNullOrEmpty(log.SfxType) && _audioSource != null)
+            if (!string.IsNullOrEmpty(log.SfxType))
             {
-                if (log.SfxType == "CHEER" && _sfxCheer != null) _audioSource.PlayOneShot(_sfxCheer);
-                else if (log.SfxType == "CLAP" && _sfxClap != null) _audioSource.PlayOneShot(_sfxClap);
+                if (log.SfxType == "CHEER" && _audioSource != null && _sfxCheer != null)
+                    _audioSource.PlayOneShot(_sfxCheer);
+                else if (log.SfxType == "CLAP" && _audioSource != null && _sfxClap != null)
+                    _audioSource.PlayOneShot(_sfxClap);
+                else if (AudioManager.Instance != null)
+                    AudioManager.Instance.PlaySoundOneShot(log.SfxType);
             }
 
             MoveAllCircles(_matchState.HomeTeam, log.HomePositions, finalDuration);
@@ -367,9 +371,6 @@ public class MatchReplayer : MonoBehaviour
 
             if (IsGoalEvent(log.EventType))
             {
-                if (AudioManager.Instance != null)
-                    AudioManager.Instance.PlaySoundOneShot(SoundName.SE_GOAL);
-
                 if (log.TeamId == 0) _matchState.HomeTeam.AddScore(log.ScoreAdded);
                 else _matchState.AwayTeam.AddScore(log.ScoreAdded);
 
