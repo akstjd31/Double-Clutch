@@ -348,7 +348,7 @@ public class MatchReplayer : MonoBehaviour
                 }
                 else
                 {
-                    if (log.EventType == "PassSucc" || log.EventType == "Steal")
+                    if (log.EventType == "PassSucc" || log.EventType == "Steal" || log.EventType == "PassFail")
                     {
                         ballRT.DOAnchorPos(targetUIPos, finalDuration * 0.6f)
                               .SetDelay(finalDuration * 0.4f)  // 선수가 0.4초 동안 먼저 달려가게 둡니다.

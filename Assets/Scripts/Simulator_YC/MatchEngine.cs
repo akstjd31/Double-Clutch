@@ -21,7 +21,6 @@ public class MatchEngine : MonoBehaviour
     private const float MAX_MOVE_PER_TICK = 1f / 3f; // 기획서 5.3: 틱당 최대 이동거리
     private bool _isTransitionTurn = false;
     private bool _isInboundTurn = false;
-    private bool _isFastBreakTurn = false;
 
     [Header("Data Readers")]
     [SerializeField] private Event_ConfigDataReader _eventConfigReader;
@@ -315,7 +314,6 @@ public class MatchEngine : MonoBehaviour
                 // 모든 연출이 끝났으므로 다음 일반 턴을 위해 제한 해제
                 _isTransitionTurn = false;
                 _isInboundTurn = false;
-                _isFastBreakTurn = false;
                 return;
             }
             else
@@ -392,14 +390,6 @@ public class MatchEngine : MonoBehaviour
 
         int action = MatchCalculator.DecideAction(_ballHolder, distToHoop, attackTactics, attackTeam, defendTeam, passInterceptDist, _simTime);
 
-        bool forcePassSuccess = false;
-        if (_isFastBreakTurn)
-        {
-            action = 1; // 무조건 패스 선택
-            forcePassSuccess = true;
-            _isFastBreakTurn = false; // 플래그 소모
-        }
-
         Debug.Log($"<color=cyan>[턴 진행]</color> 시간:{_simTime:F1} | 볼홀더:{MakeName(_ballHolder.PlayerName)} | 선택행동:{action} (0:슛, 1:패스, 2:드리블)");
         float timeCost = UnityEngine.Random.Range(1f, 5f);
         _simTime -= timeCost;
@@ -429,7 +419,7 @@ public class MatchEngine : MonoBehaviour
             switch (action)
             {
                 case 0: DoShoot(_ballHolder, attackTeam, defendTeam, distToHoop, hoopPos, false, attackTactics, defendTactics); break;
-                case 1: DoPass(_ballHolder, attackTeam, defendTeam, attackTactics, defendTactics, forcePassSuccess); break;
+                case 1: DoPass(_ballHolder, attackTeam, defendTeam, attackTactics, defendTactics); break;
                 case 2: DoDribble(_ballHolder, attackTeam, defendTeam, hoopPos, attackTactics, defendTactics); break;
             }
         }
@@ -606,12 +596,11 @@ public class MatchEngine : MonoBehaviour
             if (defendTeam.Roster.Contains(rebounder))
             {
                 SwitchPossession(false);
-                _isFastBreakTurn = true;
             }
         }
     }
 
-    private void DoPass(MatchPlayer passer, MatchTeam attackTeam, MatchTeam defendTeam, TeamTactics attackTactics, TeamTactics defendTactics, bool forceSuccess = false)
+    private void DoPass(MatchPlayer passer, MatchTeam attackTeam, MatchTeam defendTeam, TeamTactics attackTactics, TeamTactics defendTactics)
     {
         MatchPlayer bestReceiver = null;
         float maxPassScore = -999f;
@@ -657,7 +646,7 @@ public class MatchEngine : MonoBehaviour
         if (bestReceiver == null) return;
 
         MatchPlayer interceptor = null;
-        bool success = forceSuccess || MatchCalculator.CalculatePassSuccess(passer, bestReceiver, attackTeam, defendTeam, attackTactics, defendTactics, passInterceptDist, out interceptor);
+        bool success = MatchCalculator.CalculatePassSuccess(passer, bestReceiver, attackTeam, defendTeam, attackTactics, defendTactics, passInterceptDist, out interceptor);
 
         // 로그 기록 전 공 소유자 갱신
         if (success)
@@ -670,9 +659,17 @@ public class MatchEngine : MonoBehaviour
         else
         {
             _ballHolder = interceptor;
-            RecordLog("Steal", interceptor);
+            // 공격팀이 우리 팀(Home)일 때 뺏겼다면 -> PassFail
+            if (attackTeam.Side == TeamSide.Home)
+            {
+                RecordLog("PassFail", passer, interceptor);
+            }
+            // 공격팀이 적군(Away)일 때 우리가 뺏었다면 -> 스틸 성공
+            else
+            {
+                RecordLog("Steal", interceptor, passer);
+            }
             SwitchPossession(false);
-            _isFastBreakTurn = true;
         }
     }
 
@@ -766,12 +763,24 @@ public class MatchEngine : MonoBehaviour
             log.CutInType = "";
             log.SfxType = "";
         }
-
-        // 패스일 경우 actor를 멈추게 하고, 그 외엔 _ballHolder를 멈추게 함
-        MatchPlayer playerToStandStill = (actor != null) ? actor : _ballHolder;
+        List<MatchPlayer> stopPlayers = new List<MatchPlayer>();
+        if (eventCode == "PassSucc")
+        {
+            if (actor != null) stopPlayers.Add(actor); // 패스 성공: 패서 1명만 정지
+        }
+        else if (eventCode == "Steal" || eventCode == "PassFail")
+        {
+            // 스틸/턴오버: 패스한 사람(actor)과 스틸한 사람(target) 2명 모두 정지
+            if (actor != null) stopPlayers.Add(actor);
+            if (target != null) stopPlayers.Add(target);
+        }
+        else
+        {
+            if (_ballHolder != null) stopPlayers.Add(_ballHolder); // 그 외(슛, 드리블): 볼홀더 정지
+        }
 
         // 선수들을 먼저 이동시킵니다.
-        SavePositionsToLog(log, playerToStandStill);
+        SavePositionsToLog(log, stopPlayers.ToArray());
 
         // 선수들이 다 이동한 '이후'에 공의 위치를 갱신합니다.
         // 패스 성공 시, 공은 패스받는 target의 '이동이 끝난 새로운 위치'로 갑니다.
@@ -806,10 +815,10 @@ public class MatchEngine : MonoBehaviour
     }
 
     // 10명의 선수를 살짝 이동시키고 좌표를 배열에 담는 함수
-    private void SavePositionsToLog(MatchLogData log, MatchPlayer playerToStandStill)
+    private void SavePositionsToLog(MatchLogData log, params MatchPlayer[] excludedPlayers)
     {
-        MoveOffBallPlayers(_homeTeam, playerToStandStill);
-        MoveOffBallPlayers(_awayTeam, playerToStandStill);
+        MoveOffBallPlayers(_homeTeam, excludedPlayers);
+        MoveOffBallPlayers(_awayTeam, excludedPlayers);
 
         for (int i = 0; i < 5; i++)
         {
@@ -825,14 +834,22 @@ public class MatchEngine : MonoBehaviour
             player.LogicPosition = defensePos;
         }
     }
-    private void MoveOffBallPlayers(MatchTeam team, MatchPlayer playerToStandStill)
+    private void MoveOffBallPlayers(MatchTeam team, params MatchPlayer[] excludedPlayers)
     {
         if (_isTransitionTurn) return;
         bool isAttacking = (team.Side == _currentPossession);
 
         foreach (var p in team.Roster)
         {
-            if (p == playerToStandStill) continue;
+            bool isExcluded = false;
+            if (excludedPlayers != null)
+            {
+                foreach (var ex in excludedPlayers)
+                {
+                    if (p == ex) { isExcluded = true; break; }
+                }
+            }
+            if (isExcluded) continue;
 
             Vector2 targetPos = GetPreferredPosition(p, isAttacking, team.Side);
 
