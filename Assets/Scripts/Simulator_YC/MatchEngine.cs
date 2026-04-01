@@ -21,6 +21,7 @@ public class MatchEngine : MonoBehaviour
     private const float MAX_MOVE_PER_TICK = 1f / 3f; // 기획서 5.3: 틱당 최대 이동거리
     private bool _isTransitionTurn = false;
     private bool _isInboundTurn = false;
+    private bool _isFastBreakTurn = false;
 
     [Header("Data Readers")]
     [SerializeField] private Event_ConfigDataReader _eventConfigReader;
@@ -314,6 +315,7 @@ public class MatchEngine : MonoBehaviour
                 // 모든 연출이 끝났으므로 다음 일반 턴을 위해 제한 해제
                 _isTransitionTurn = false;
                 _isInboundTurn = false;
+                _isFastBreakTurn = false;
                 return;
             }
             else
@@ -389,6 +391,15 @@ public class MatchEngine : MonoBehaviour
         TeamTactics defendTactics = MatchDataProxy.Instance.GetTactics(defendTeam.TeamColorId);
 
         int action = MatchCalculator.DecideAction(_ballHolder, distToHoop, attackTactics, attackTeam, defendTeam, passInterceptDist, _simTime);
+
+        bool forcePassSuccess = false;
+        if (_isFastBreakTurn)
+        {
+            action = 1; // 무조건 패스 선택
+            forcePassSuccess = true;
+            _isFastBreakTurn = false; // 플래그 소모
+        }
+
         Debug.Log($"<color=cyan>[턴 진행]</color> 시간:{_simTime:F1} | 볼홀더:{MakeName(_ballHolder.PlayerName)} | 선택행동:{action} (0:슛, 1:패스, 2:드리블)");
         float timeCost = UnityEngine.Random.Range(1f, 5f);
         _simTime -= timeCost;
@@ -418,7 +429,7 @@ public class MatchEngine : MonoBehaviour
             switch (action)
             {
                 case 0: DoShoot(_ballHolder, attackTeam, defendTeam, distToHoop, hoopPos, false, attackTactics, defendTactics); break;
-                case 1: DoPass(_ballHolder, attackTeam, defendTeam, attackTactics, defendTactics); break;
+                case 1: DoPass(_ballHolder, attackTeam, defendTeam, attackTactics, defendTactics, forcePassSuccess); break;
                 case 2: DoDribble(_ballHolder, attackTeam, defendTeam, hoopPos, attackTactics, defendTactics); break;
             }
         }
@@ -595,11 +606,12 @@ public class MatchEngine : MonoBehaviour
             if (defendTeam.Roster.Contains(rebounder))
             {
                 SwitchPossession(false);
+                _isFastBreakTurn = true;
             }
         }
     }
 
-    private void DoPass(MatchPlayer passer, MatchTeam attackTeam, MatchTeam defendTeam, TeamTactics attackTactics, TeamTactics defendTactics)
+    private void DoPass(MatchPlayer passer, MatchTeam attackTeam, MatchTeam defendTeam, TeamTactics attackTactics, TeamTactics defendTactics, bool forceSuccess = false)
     {
         MatchPlayer bestReceiver = null;
         float maxPassScore = -999f;
@@ -644,8 +656,8 @@ public class MatchEngine : MonoBehaviour
 
         if (bestReceiver == null) return;
 
-        MatchPlayer interceptor;
-        bool success = MatchCalculator.CalculatePassSuccess(passer, bestReceiver, attackTeam, defendTeam, attackTactics, defendTactics, passInterceptDist, out interceptor);
+        MatchPlayer interceptor = null;
+        bool success = forceSuccess || MatchCalculator.CalculatePassSuccess(passer, bestReceiver, attackTeam, defendTeam, attackTactics, defendTactics, passInterceptDist, out interceptor);
 
         // 로그 기록 전 공 소유자 갱신
         if (success)
@@ -660,6 +672,7 @@ public class MatchEngine : MonoBehaviour
             _ballHolder = interceptor;
             RecordLog("Steal", interceptor);
             SwitchPossession(false);
+            _isFastBreakTurn = true;
         }
     }
 
