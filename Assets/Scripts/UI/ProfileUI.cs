@@ -327,10 +327,8 @@ public class ProfileUI : MonoBehaviour
                 if (_warningCoroutine == null)
                     _warningCoroutine = StartCoroutine(PrintWarningTextPopup(targetWarningText, t));
             }
-            StringManager.Instance.ApplyFont(targetWarningText);
             return false;
         }
-        StringManager.Instance.ApplyFont(targetWarningText);
         return true;
     }
 
@@ -396,7 +394,10 @@ public class ProfileUI : MonoBehaviour
 
             _activeIcons.Add(icon);
         }
-
+        _schoolInputFieldText.text = StringManager.Instance.GetString("UI_Start_학교이름");
+        StringManager.Instance.ApplyFont(_schoolInputFieldText);
+        _coachInputFieldText.text = StringManager.Instance.GetString("UI_Start_감독이름");
+        StringManager.Instance.ApplyFont(_coachInputFieldText);
         UpdatePageButtons();
     }
 
