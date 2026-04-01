@@ -229,7 +229,7 @@ public class EventController : MonoBehaviour
                 case textType.End:
                     {
                         //텍스트는 출력, 버튼 누르면 결과 팝업 떠야 함.
-                        script = _eventString.KoScreenPlay[_screenPlayDic[_nextId].textKey];
+                        script = _stringTable[_screenPlayDic[_nextId].textKey];
                         _eventUI.UpdateText(_currentSpeakerName, script, direction, true, _visualId);
 
                         //캐릭터 능력치 변동 적용
@@ -331,6 +331,7 @@ public class EventController : MonoBehaviour
         //학생 있으면 다음 학생 진행
         Debug.Log($"패널 닫기");
         _eventPanel.SetActive(false);
+        _settingPanel.SetActive(true);
 
         if (_eventSelector.ScreenplayIdList.Count > 0)
         { 
@@ -340,7 +341,6 @@ public class EventController : MonoBehaviour
             _eventPanel.SetActive(true);
             StartEvent();
         }
-        _settingPanel.SetActive(true);
         _eventManager.SaveGame();
     }
 
