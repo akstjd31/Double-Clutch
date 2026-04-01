@@ -47,7 +47,7 @@ public class EndingUIController : MonoBehaviour
             
             //새 BGM 재생
             if (AudioManager.Instance != null)
-                AudioManager.Instance.PlaySoundOneShot(SoundName.SE_MATCH_WIN);
+                AudioManager.Instance.PlaySound(_currentBgmKey);
         }
     }
     public void PlaySFX(string sfxKey)
@@ -59,7 +59,7 @@ public class EndingUIController : MonoBehaviour
 
         //효과음 재생
         if (AudioManager.Instance != null)
-            AudioManager.Instance.PlaySound(SoundName.BGM_ENDING);
+            AudioManager.Instance.PlaySoundOneShot(sfxKey);
     }
 
     public void SetCharacterSpeaking(bool isSpeaking)
