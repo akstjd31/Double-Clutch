@@ -241,8 +241,19 @@ public class CalendarManager : Singleton<CalendarManager>
 
         if (IsFundingDay())
         {
-            // 튜토리얼 바로 직후 스케줄은 돈 지급 X
-            if (!(gm.SaveData.year == 1 && calendar.month == 3))
+            var myData = gm.SaveData;
+            bool flag = false;
+            foreach (var hasComplete in myData.tutorialCompleted)
+            {
+                if (!hasComplete)
+                {
+                    flag = true;
+                    break;
+                }
+            }
+
+            // 튜토리얼 완료 여부 (아직 완료가 안되어있다면 첫 달이라는 얘기)
+            if (!flag)
             {
                 int money = gm.SaveData.money;
                 gm.SetMoney(money + (SALARY * accSub));
