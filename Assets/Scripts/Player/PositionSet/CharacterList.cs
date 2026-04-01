@@ -375,6 +375,11 @@ public class CharacterList : MonoBehaviour
         int idx = GetSlotIndex(dPos);
         if (idx < 0) return false;
 
+        if (card.Player != null)
+        {
+            card.Player.SetMatchPosition(dPos.GetPosition());
+        }
+
         int alreadyIdx = IndexOfCard(card);
         if (alreadyIdx >= 0 && alreadyIdx != idx)
         {
