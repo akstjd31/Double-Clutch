@@ -37,7 +37,8 @@ public class GraduationAlbumUI : MonoBehaviour
             if (i < _classParent.childCount) continue;
 
             var newObj = Instantiate(_classButtonPrefab, _classParent);
-            newObj.GetComponentInChildren<TextMeshProUGUI>().text = $"{i + 1}기";
+            newObj.GetComponentInChildren<TextMeshProUGUI>().text = StringManager.Instance.GetFormattedString("Str_졸업앨범_기", i + 1);
+            StringManager.Instance.ApplyFont(newObj.GetComponentInChildren<TextMeshProUGUI>());
 
             int index = i;
             var btn = newObj.GetComponent<Button>();
