@@ -140,15 +140,8 @@ public class LobbyUI : MonoBehaviour
 
         if (weekId == 8)
         {
-            Debug.Log("3213123121");
             gm.SetGraduationPending(true);
             gm.GoToGraduation();
-            return;
-        }
-
-        if (weekId == 9)
-        {
-            gm.SetYear(gm.SaveData.year + 1);
             return;
         }
     }

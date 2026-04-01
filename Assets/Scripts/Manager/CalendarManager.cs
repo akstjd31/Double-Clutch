@@ -167,8 +167,19 @@ public class CalendarManager : Singleton<CalendarManager>
 
         if (weekId == 9)
         {
-            int currentYear = gm.SaveData.year;
-            gm.SetYear(currentYear + 1);
+            var data = gm.SaveData;
+            bool flag = false;
+            foreach (var hasComplete in data.tutorialCompleted)
+            {
+                if (!hasComplete)
+                {
+                    flag = true;
+                    break;
+                }
+            }
+
+            if (!flag)
+                gm.SetYear(data.year + 1);
             return;
         }
     }
