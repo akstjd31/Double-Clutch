@@ -34,7 +34,7 @@ public class CharacterList : MonoBehaviour
     private PlayerCard _selectedCard;
     private DropPosition _selectedPosition;
 
-    private readonly HashSet<string> _tempTraitIds = new HashSet<string>();
+    private readonly Dictionary<string, int> _traitCountMap = new Dictionary<string, int>();
     private readonly List<PlayerSynergyData> _activeSynergies = new List<PlayerSynergyData>();
 
     private void Awake()
@@ -375,6 +375,11 @@ public class CharacterList : MonoBehaviour
         int idx = GetSlotIndex(dPos);
         if (idx < 0) return false;
 
+        if (card.Player != null)
+        {
+            card.Player.SetMatchPosition(dPos.GetPosition());
+        }
+
         int alreadyIdx = IndexOfCard(card);
         if (alreadyIdx >= 0 && alreadyIdx != idx)
         {
@@ -463,39 +468,49 @@ public class CharacterList : MonoBehaviour
     {
         if (StudentManager.Instance == null || StudentManager.Instance.GetFactory() == null) return;
 
-        _tempTraitIds.Clear();
+        _traitCountMap.Clear();
         _activeSynergies.Clear();
 
-
+        // 1. 배치된 카드들로부터 특성별 개수를 카운트함
         for (int i = 0; i < _positionCards.Length; i++)
         {
             var card = _positionCards[i];
-            if (card != null && card.Player != null && card.Player.TraitId != string.Empty)
+            if (card != null && card.Player != null && !string.IsNullOrEmpty(card.Player.TraitData.traitId))
             {
-                _tempTraitIds.Add(card.Player.TraitData.traitId);
+                string tid = card.Player.TraitData.traitId;
+                if (_traitCountMap.ContainsKey(tid))
+                    _traitCountMap[tid]++;
+                else
+                    _traitCountMap[tid] = 1;
             }
         }
 
-        if (_tempTraitIds.Count < 2)
-        {
-            ClearSynergyUI();
-            return;
-        }
-
         var allSynergyData = StudentManager.Instance.GetFactory().GetSynergyDataList();
-        if (allSynergyData == null)
-        {
-            Debug.LogError("SynergyDataList가 Null입니다! 데이터 로드 상태를 확인하세요.");
-            ClearSynergyUI();
-            return;
-        }
+        if (allSynergyData == null) return;
 
-        int totalCount = allSynergyData.Count;
-
-        for (int i = 0; i < totalCount; i++)
+        // 2. 시너지 조건 검사
+        foreach (var synergy in allSynergyData)
         {
-            var synergy = allSynergyData[i];
-            if (_tempTraitIds.Contains(synergy.traitId1) && _tempTraitIds.Contains(synergy.traitId2))
+            bool isMet = false;
+
+            if (synergy.traitId1 == synergy.traitId2)
+            {
+                // 동일한 특성 2개가 필요한 경우 (A + A)
+                if (_traitCountMap.TryGetValue(synergy.traitId1, out int count) && count >= 2)
+                {
+                    isMet = true;
+                }
+            }
+            else
+            {
+                // 서로 다른 특성 2개가 필요한 경우 (A + B)
+                if (_traitCountMap.ContainsKey(synergy.traitId1) && _traitCountMap.ContainsKey(synergy.traitId2))
+                {
+                    isMet = true;
+                }
+            }
+
+            if (isMet)
             {
                 _activeSynergies.Add(synergy);
                 if (_activeSynergies.Count >= _synergyIcons.Length) break;

@@ -38,7 +38,9 @@ public class GraduationManager : MonoBehaviour
         if (_myStudents == null)
         {
             Debug.Log("학생 리스트없음");
+            return;
         }
+
         if (GameManager.Instance.SaveData.isGraduationPending)
         {
             // 학년 이미 증가된 상태 - ListCreat() 생략

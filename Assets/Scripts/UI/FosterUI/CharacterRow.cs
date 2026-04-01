@@ -18,6 +18,8 @@ public class CharacterRow : MonoBehaviour
     [SerializeField] TextMeshProUGUI _guardTag2;
     [SerializeField] TextMeshProUGUI _condition;
     [SerializeField] TextMeshProUGUI _state;
+    [SerializeField] RectTransform _attackBox;
+    [SerializeField] RectTransform _defenceBox;
 
     private Student _target;
     private void OnEnable()
@@ -136,5 +138,7 @@ public class CharacterRow : MonoBehaviour
         manager.ApplyFont(_state);
         manager.ApplyFont(_condition);
         SetTag(_target);
+        LayoutRebuilder.ForceRebuildLayoutImmediate(_attackBox);
+        LayoutRebuilder.ForceRebuildLayoutImmediate(_defenceBox);
     }
 }

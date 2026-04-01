@@ -492,11 +492,11 @@ public class MatchUIManager : MonoBehaviour
         text = text.Replace("{Quarter}", state.CurrentQuarter.ToString());
 
         // 출전 중인 유저(Home) 팀 선수의 이름으로 치환
-        if (text.Contains("{PG}")) text = text.Replace("{PG}", MakeName(state.HomeTeam.GetPlayerByPosition(Position.PG)?.PlayerName) ?? "가드");
-        if (text.Contains("{SG}")) text = text.Replace("{SG}", MakeName(state.HomeTeam.GetPlayerByPosition(Position.SG)?.PlayerName) ?? "가드");
-        if (text.Contains("{SF}")) text = text.Replace("{SF}", MakeName(state.HomeTeam.GetPlayerByPosition(Position.SF)?.PlayerName) ?? "포워드");
-        if (text.Contains("{PF}")) text = text.Replace("{PF}", MakeName(state.HomeTeam.GetPlayerByPosition(Position.PF)?.PlayerName) ?? "포워드");
-        if (text.Contains("{C}")) text = text.Replace("{C}", MakeName(state.HomeTeam.GetPlayerByPosition(Position.C)?.PlayerName) ?? "센터");
+        if (text.Contains("{PG}")) text = text.Replace("{PG}", MakeName(FindMyStudentByPosition(Position.PG)?.Name) ?? "가드");
+        if (text.Contains("{SG}")) text = text.Replace("{SG}", MakeName(FindMyStudentByPosition(Position.SG)?.Name) ?? "가드");
+        if (text.Contains("{SF}")) text = text.Replace("{SF}", MakeName(FindMyStudentByPosition(Position.SF)?.Name) ?? "포워드");
+        if (text.Contains("{PF}")) text = text.Replace("{PF}", MakeName(FindMyStudentByPosition(Position.PF)?.Name) ?? "포워드");
+        if (text.Contains("{C}")) text = text.Replace("{C}", MakeName(FindMyStudentByPosition(Position.C)?.Name) ?? "센터");
 
         return text;
     }
@@ -504,23 +504,21 @@ public class MatchUIManager : MonoBehaviour
     private string ReplaceImageVariables(string key)
     {
         if (string.IsNullOrEmpty(key)) return key;
-
-        var currentMembers = StudentManager.Instance.CurrentTeam.Members;
+        
         string[] tags = { "PG", "SG", "SF", "PF", "C" };
         Position[] positions = { Position.PG, Position.SG, Position.SF, Position.PF, Position.C };
-
+        string imageKey = null;
         for (int i = 0; i < tags.Length; i++)
         {
             if (key.Contains(tags[i]))
-            {
-                // Find 대신 FirstOrDefault를 사용 (배열, 리스트 모두 대응 가능)
-                var student = currentMembers.FirstOrDefault(s => s.MatchPosition == positions[i]);
+            {                
+                var student = FindMyStudentByPosition(positions[i]);
 
-                string visualId = (student != null) ? student.VisualData.playerImageResource : "";
-                key = key.Replace(tags[i], visualId);
+                string visualId = (student != null) ? student.VisualData.playerImageResource : "";                
+                imageKey = visualId;
             }
         }
-        return key;
+        return imageKey;
     }
 
     // 테이블의 문자열 키를 기반으로 UI 이미지를 켜고 끄는 헬퍼 함수
@@ -540,6 +538,10 @@ public class MatchUIManager : MonoBehaviour
             {
                 _imgStandingLeft.gameObject.SetActive(true);
                 _imgStandingLeft.sprite = SpriteManager.Instance.GetSprite(ReplaceImageVariables(lineData.standingLeft));
+                if (_imgStandingLeft.sprite == null)
+                {
+                    _imgStandingLeft.gameObject.SetActive(false);
+                }
                 _imgStandingLeft.color = (lineData.speakDirection == "Left") ? Color.white : Color.gray;
             }
         }
@@ -555,6 +557,12 @@ public class MatchUIManager : MonoBehaviour
             {
                 _imgStandingMiddle.gameObject.SetActive(true);
                  _imgStandingMiddle.sprite = SpriteManager.Instance.GetSprite(ReplaceImageVariables(lineData.standingMiddle));
+
+                if (_imgStandingMiddle.sprite == null)
+                {
+                    _imgStandingMiddle.gameObject.SetActive(false);
+                }
+
                 // 중앙(Center/Middle) 화자일 때 밝게, 아니면 어둡게
                 _imgStandingMiddle.color = (lineData.speakDirection == "Center" || lineData.speakDirection == "Middle") ? Color.white : Color.gray;
             }
@@ -571,6 +579,10 @@ public class MatchUIManager : MonoBehaviour
             {
                 _imgStandingRight.gameObject.SetActive(true);
                  _imgStandingRight.sprite = SpriteManager.Instance.GetSprite(ReplaceImageVariables(lineData.standingRight));
+                if (_imgStandingRight.sprite == null)
+                {
+                    _imgStandingRight.gameObject.SetActive(false);
+                }
                 _imgStandingRight.color = (lineData.speakDirection == "Right") ? Color.white : Color.gray;
             }
         }
@@ -797,6 +809,7 @@ public class MatchUIManager : MonoBehaviour
             _leagueCalculatePanel.Init(round, onConfirm);
         }
     }
+
     // ResultState에서 대진표를 부를 때 사용
     public void ShowSwissBoardPanel(Action onActionClick = null, string actionText = null)
     {
@@ -838,5 +851,18 @@ public class MatchUIManager : MonoBehaviour
     {
         if (AudioManager.Instance != null)
             AudioManager.Instance.PlaySoundOneShot(SoundName.SE_BUTTON_SELECT);
+    }
+
+    private Student FindMyStudentByPosition(Position pos)
+    {
+        var members = StudentManager.Instance.CurrentTeam.Members;
+        for (int i = 0; i < members.Length; i++)
+        {
+            if (members[i] != null && members[i].MatchPosition == pos)
+            {
+                return members[i];
+            }
+        }
+        return null;
     }
 }
