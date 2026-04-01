@@ -70,9 +70,6 @@ public class EndingManager : MonoBehaviour
 
     public void OnNextButtonClick()
     {
-        if (AudioManager.Instance != null)
-            AudioManager.Instance.PlaySoundOneShot(SoundName.SE_BUTTON_SELECT);
-
         if (_currentIndex == -1)
         {
             return;
@@ -90,6 +87,9 @@ public class EndingManager : MonoBehaviour
         }
         _currentIndex++;        
         PlayEndingEvent();
+
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlaySoundOneShot(SoundName.SE_BUTTON_SELECT);
     }
 
     private void CheckFade()
