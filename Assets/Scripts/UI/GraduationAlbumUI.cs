@@ -44,8 +44,10 @@ public class GraduationAlbumUI : MonoBehaviour
             var btn = newObj.GetComponent<Button>();
             btn.onClick.RemoveAllListeners();
             btn.onClick.AddListener(() => OnClickClassButton(index + 1));
-            StringManager.OnLanguageChanged += UpdateLanguageTexts;
         }
+        StringManager.OnLanguageChanged += UpdateLanguageTexts;
+
+        UpdateLanguageTexts();
     }
 
     private void OnDisable()
