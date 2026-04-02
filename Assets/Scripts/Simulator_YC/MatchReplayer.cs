@@ -323,7 +323,7 @@ public class MatchReplayer : MonoBehaviour
 
 
 
-            if (!string.IsNullOrEmpty(log.SfxType))
+            System.Action playSoundAction = () =>
             {
                 if (log.SfxType == "CHEER" && _audioSource != null && _sfxCheer != null)
                     _audioSource.PlayOneShot(_sfxCheer);
@@ -331,6 +331,14 @@ public class MatchReplayer : MonoBehaviour
                     _audioSource.PlayOneShot(_sfxClap);
                 else if (AudioManager.Instance != null)
                     AudioManager.Instance.PlaySoundOneShot(log.SfxType);
+            };
+
+            bool isShoot = IsShootEvent(log.EventType);
+
+            // 패스, 스틸, 드리블 등은 행동 시작과 동시에 즉시 사운드 재생
+            if (!isShoot && !string.IsNullOrEmpty(log.SfxType))
+            {
+                playSoundAction();
             }
 
             MoveAllCircles(_matchState.HomeTeam, log.HomePositions, finalDuration);
@@ -368,6 +376,11 @@ public class MatchReplayer : MonoBehaviour
             }
 
             yield return new WaitForSeconds(finalDuration);
+
+            if (isShoot && !string.IsNullOrEmpty(log.SfxType))
+            {
+                playSoundAction();
+            }
 
             if (IsGoalEvent(log.EventType))
             {
