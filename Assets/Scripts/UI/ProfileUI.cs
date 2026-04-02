@@ -393,6 +393,7 @@ public class ProfileUI : MonoBehaviour
             {
                 icon.OnOffOutLine(false);
                 icon.GetButton().interactable = false;
+                icon.GetButton().onClick.RemoveAllListeners();
             }
 
             _activeIcons.Add(icon);
