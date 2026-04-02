@@ -111,6 +111,17 @@ public class GraduationAlbumUI : MonoBehaviour
         if (StringManager.Instance == null) return;
 
         int i = 0;
+
+        // 앨범 초기화
+        foreach (var album in _albumStudentProfiles)
+        {
+            album.GetButton().onClick.RemoveAllListeners();
+            album.GetButton().interactable = false;
+
+            album.SetName("");
+            album.SetSprite(null);
+        }
+
         for (; i < gList.studentList.Count; i++)
         {
             var sprite = SpriteManager.Instance.GetSprite(gList.studentList[i].VisualData.portraitResource);
@@ -125,15 +136,10 @@ public class GraduationAlbumUI : MonoBehaviour
             if (_charProfilePopupObj != null)
             {
                 int index = i;
-                _albumStudentProfiles[index].GetButton().onClick.RemoveAllListeners();
+                
                 _albumStudentProfiles[index].GetButton().onClick.AddListener(() => OnClickProfileBox(gList.studentList[index]));
+                _albumStudentProfiles[index].GetButton().interactable = true;
             }
-        }
-
-        // 남은 빈 프로필 처리
-        for (; i < _albumStudentProfiles.Length; i++)
-        {
-            _albumStudentProfiles[i].SetName("");
         }
     }
 

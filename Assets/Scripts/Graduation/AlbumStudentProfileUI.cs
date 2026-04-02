@@ -23,5 +23,11 @@ public class AlbumStudentProfileUI : MonoBehaviour
         StringManager.Instance.ApplyFont(_profileName);
     }
 
+    public void Clear()
+    {
+        _profileImage = null;
+        _profileName = null;
+    }
+
     public Button GetButton() => _profileButton;
 }
