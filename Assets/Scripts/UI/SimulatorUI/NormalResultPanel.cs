@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using Game.Constants;
+using TMPro;
 
 public struct MatchPlayerData
 {
@@ -13,6 +14,7 @@ public class NormalResultPanel : MonoBehaviour
     [Header("UI 연결")]
     [SerializeField] private Transform _scoreContainer; // 아까 만든 Scroll View의 'Content'를 연결
     [SerializeField] private PlayerScoreRow _scoreRowPrefab; // 만들어둔 1줄짜리 프리팹 연결
+    [SerializeField] private TextMeshProUGUI _resultText;
 
     // 패널이 열릴 때 호출할 함수
     public void OpenPanel(List<MatchPlayerData> players)
@@ -20,7 +22,12 @@ public class NormalResultPanel : MonoBehaviour
         this.gameObject.SetActive(true);
 
         if (AudioManager.Instance != null)
-            AudioManager.Instance.PlaySoundOneShot(SoundName.SE_MATCH_WIN);
+        {
+            if (_resultText.text.Contains("승리"))
+                AudioManager.Instance.PlaySoundOneShot(SoundName.SE_MATCH_WIN);
+            else
+                AudioManager.Instance.PlaySoundOneShot(SoundName.SE_CROWD_BOO);
+        }
 
         // 데이터가 제대로 넘어왔는지 콘솔 창에 확인
         if (players == null)
