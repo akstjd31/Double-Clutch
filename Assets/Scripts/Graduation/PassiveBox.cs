@@ -128,7 +128,7 @@ public class PassiveBox : MonoBehaviour
                 _skillImage[i].sprite = SpriteManager.Instance.GetSprite(_selectSkillList[i].passiveResource);
 
                 _detailText[i] = StringManager.Instance.GetString(_selectSkillList[i].passiveDesc);
-                _detailText[i] = _detailText[i].Replace("{effectValue}", _selectSkillList[i].effectValue.ToString());                
+                _detailText[i] = _detailText[i].Replace("{effectValue}", GetValueText(_selectSkillList[i]));                
             }
             _needGuideRefresh = true;
         }
@@ -183,7 +183,7 @@ public class PassiveBox : MonoBehaviour
                 StringManager.Instance.ApplyFont(_skillName[i]);
 
                 _detailText[i] = StringManager.Instance.GetString(selectedSkill.passiveDesc);
-                _detailText[i] = _detailText[i].Replace("{effectValue}", selectedSkill.effectValue.ToString());
+                _detailText[i] = _detailText[i].Replace("{effectValue}", GetValueText(selectedSkill));
 
                 _skillDetail[i].text = _detailText[i];
                 StringManager.Instance.ApplyFont(_skillDetail[i]);
@@ -279,9 +279,44 @@ public class PassiveBox : MonoBehaviour
                 _skillImage[i].sprite = SpriteManager.Instance.GetSprite(_selectSkillList[i].passiveResource);
 
                 _detailText[i] = StringManager.Instance.GetString(_selectSkillList[i].passiveDesc);
-                _detailText[i] = _detailText[i].Replace("{effectValue}", _selectSkillList[i].effectValue.ToString());                
+                _detailText[i] = _detailText[i].Replace("{effectValue}", GetValueText(_selectSkillList[i]));                
             }
             _needGuideRefresh = true;
         }
+    }
+
+    private string GetValueText(Player_PassiveData? data)
+    {
+        string valueString = string.Empty;
+        switch (data.Value.effectType)
+        {
+            case effectType.None:
+                break;
+            case effectType.Rate2pt:
+            case effectType.Rate3pt:
+            case effectType.RateBlock:
+            case effectType.RatePass:
+            case effectType.RateSteal:
+            case effectType.RateRebound:
+
+            //case effectType.Growth2pt:
+            //case effectType.Growth3pt:
+            //case effectType.GrowthBlock:
+            //case effectType.GrowthPass:
+            //case effectType.GrowthRebound:
+            //case effectType.GrowthSteal:
+
+            case effectType.MonthGoldUp:
+            case effectType.MatchGoldUp:
+            case effectType.ReputationUp:
+                valueString = (data.Value.effectValue * 100).ToString() + "%";
+                break;
+
+            default:
+                valueString = (data.Value.effectValue).ToString();
+                break;
+        }
+
+        return valueString;
     }
 }
