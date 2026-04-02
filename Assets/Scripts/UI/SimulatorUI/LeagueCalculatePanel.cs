@@ -37,6 +37,14 @@ public class LeagueCalculatePanel : MonoBehaviour
 
     private Action _onConfirmAction;
 
+    private void OnEnable()
+    {
+        StringManager.OnLanguageChanged += UpdateCalculateData;
+    }
+    private void OnDisable()
+    {
+        StringManager.OnLanguageChanged -= UpdateCalculateData;
+    }
     public void Init(int currentRound, Action onConfirm)
     {
         _onConfirmAction = onConfirm;
