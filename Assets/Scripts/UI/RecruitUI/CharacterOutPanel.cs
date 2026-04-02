@@ -1,3 +1,4 @@
+using Game.Constants;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -20,10 +21,21 @@ public class CharacterOutPanel : MonoBehaviour
     }
 
     public void Init()
-    {
+    {        
         RefreshBoxList();
 
         _outConfirmButton.onClick.AddListener(ConfirmOut);
+    }
+
+    private void OnDisable()
+    {
+        PlaySound(SoundName.BGM_LOBBY_01);
+    }
+
+    private void PlaySound(string id)
+    {
+        if (AudioManager.Instance == null) return;
+        AudioManager.Instance.PlaySound(id);
     }
 
     public void RefreshBoxList()
@@ -70,7 +82,7 @@ public class CharacterOutPanel : MonoBehaviour
             StudentUIManager.Instance.OpenOutConfirmPopUp(_selectCount);
         }
 
-    }
+    }    
 
     // 버튼 클릭 시 방출
     public void OnConfirmOutButtonClick()
