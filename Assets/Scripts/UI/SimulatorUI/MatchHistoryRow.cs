@@ -3,6 +3,7 @@ using TMPro;
 using UnityEngine.UI;
 using System;
 using Game.Constants;
+using Unity.VisualScripting;
 
 public class MatchHistoryRow : MonoBehaviour
 {
@@ -18,9 +19,27 @@ public class MatchHistoryRow : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _textAwayTeam;     // 상대 팀 이름 (예: 라이벌 고등학교)
     [SerializeField] private TextMeshProUGUI _textAwayScore;    // 상대 팀 점수 (예: 4567)
 
+    private int _round;
+    private MatchResultRecord _record;
+    private Action<int> _onClickLog;
+    private void OnEnable()
+    {
+        StringManager.OnLanguageChanged += Refresh;
+    }
+    private void OnDisable()
+    {
+        StringManager.OnLanguageChanged -= Refresh;
+    }
 
+    private void Refresh()
+    {
+        Init(_round,_record,_onClickLog);
+    }
     public void Init(int round, MatchResultRecord record, Action<int> onClickLog)
     {
+        _round = round;
+        _record = record;
+        _onClickLog = onClickLog;
         // 승/패 판별 (홈팀(유저) 점수 기준)
         string result = record.HomeScore >= record.AwayScore ? StringManager.Instance.GetString("UI_Match_승리") : StringManager.Instance.GetString("UI_Match_패배");
 

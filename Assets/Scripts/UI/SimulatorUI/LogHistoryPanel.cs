@@ -89,11 +89,21 @@ public class LogHistoryPanel : MonoBehaviour
                 {
                     // StringManager를 통해 번역된 실제 리그 이름 가져오기
                     _textLeagueName.text = StringManager.Instance.GetString(masterData.Value.leagueNameKey);
+                    StringManager.Instance.ApplyFont(_textLeagueName);
                 }
             }
         }
-        if (_textRoundTitle != null) _textRoundTitle.text = $"{_currentRound}"+StringManager.Instance.GetString("UI_Matchlog_라운드경기로그");
-        if (_textQuarter != null) _textQuarter.text = $"{_currentQuarter}"+StringManager.Instance.GetString("UI_Matchlog_쿼터");
+        if (_textRoundTitle != null)
+        {
+            _textRoundTitle.text = $"{_currentRound}" + StringManager.Instance.GetString("UI_Matchlog_라운드경기로그");
+            StringManager.Instance.ApplyFont( _textRoundTitle);
+        }
+
+        if (_textQuarter != null)
+        {
+            _textQuarter.text = $"{_currentQuarter}" + StringManager.Instance.GetString("UI_Matchlog_쿼터");
+            StringManager.Instance.ApplyFont(_textQuarter);
+        }
 
         if (_textLogContent == null) return;
 
