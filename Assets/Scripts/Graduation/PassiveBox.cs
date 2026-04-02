@@ -46,7 +46,7 @@ public class PassiveBox : MonoBehaviour
 
     private void LateUpdate()
     {
-        if(_needGuideRefresh)
+        if (_needGuideRefresh)
         {
             for (int i = 0; i < _selectSkillList.Count; i++)
             {
@@ -55,7 +55,7 @@ public class PassiveBox : MonoBehaviour
             }
             _needGuideRefresh = false;
         }
-        
+
     }
 
     private void OnEnable()
@@ -128,7 +128,7 @@ public class PassiveBox : MonoBehaviour
                 _skillImage[i].sprite = SpriteManager.Instance.GetSprite(_selectSkillList[i].passiveResource);
 
                 _detailText[i] = StringManager.Instance.GetString(_selectSkillList[i].passiveDesc);
-                _detailText[i] = _detailText[i].Replace("{effectValue}", GetValueText(_selectSkillList[i]));                
+                _detailText[i] = _detailText[i].Replace("{effectValue}", GetValueText(_selectSkillList[i]));
             }
             _needGuideRefresh = true;
         }
@@ -146,7 +146,7 @@ public class PassiveBox : MonoBehaviour
                 if (!gradePool.ContainsKey(passive.grade))
                 {
                     gradePool[passive.grade] = new List<Player_PassiveData>();
-                }                    
+                }
                 gradePool[passive.grade].Add(passive);
             }
 
@@ -158,7 +158,7 @@ public class PassiveBox : MonoBehaviour
                     ButtonInit();
                     return;
                 }
-                int weightedRandom = GetWeightedRandomGrade();                
+                int weightedRandom = GetWeightedRandomGrade();
 
                 Player_PassiveData selectedSkill;
 
@@ -174,7 +174,7 @@ public class PassiveBox : MonoBehaviour
                     selectedSkill = _passiveDataList[randomN];
                 }
 
-                if(i > _skillName.Length)
+                if (i > _skillName.Length)
                 {
                     continue;
                 }
@@ -202,11 +202,13 @@ public class PassiveBox : MonoBehaviour
 
                 _selectSkillList.Add(selectedSkill);
                 Debug.Log($"{selectedSkill}추가");
-
+                effectType currentType = selectedSkill.effectType;
+                _passiveDataList.RemoveAll(p => p.effectType == currentType);
+                
                 _passiveDataList.Remove(selectedSkill);
-                if (gradePool.ContainsKey(selectedSkill.grade))
+                foreach (var key in gradePool.Keys)
                 {
-                    gradePool[selectedSkill.grade].Remove(selectedSkill);
+                    gradePool[key].RemoveAll(p => p.effectType == currentType);
                 }
             }
             _selectSkillSave[_graduationManager.PromotionStudentList[_graduationManager.Turn]] = new List<Player_PassiveData>(_selectSkillList);
@@ -240,7 +242,7 @@ public class PassiveBox : MonoBehaviour
             if (button == _buttons[i])
             {
                 _buttons[i].interactable = true;
-                _buttons[i].GetComponent<Image>().color = new Color(1f,1f,1f);
+                _buttons[i].GetComponent<Image>().color = new Color(1f, 1f, 1f);
                 _skillName[i].color = new Color(1f, 1f, 1f);
                 _skillGradeImage[i].color = new Color(1f, 1f, 1f);
                 _skillImage[i].color = new Color(1f, 1f, 1f);
@@ -279,7 +281,7 @@ public class PassiveBox : MonoBehaviour
                 _skillImage[i].sprite = SpriteManager.Instance.GetSprite(_selectSkillList[i].passiveResource);
 
                 _detailText[i] = StringManager.Instance.GetString(_selectSkillList[i].passiveDesc);
-                _detailText[i] = _detailText[i].Replace("{effectValue}", GetValueText(_selectSkillList[i]));                
+                _detailText[i] = _detailText[i].Replace("{effectValue}", GetValueText(_selectSkillList[i]));
             }
             _needGuideRefresh = true;
         }
