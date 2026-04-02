@@ -111,7 +111,7 @@ public class GraduationManager : MonoBehaviour
         if (saveData == null) return;
 
         // 누적된 명예 계산
-        gameMgr.SetHonor(saveData.honor + saveData.totalWinHonor);
+        _totalHonor += saveData.totalWinHonor;
 
         if (AudioManager.Instance != null)
             AudioManager.Instance.PlaySoundOneShot(SoundName.SE_FAME);
@@ -123,15 +123,14 @@ public class GraduationManager : MonoBehaviour
     {
         if (gameMgr == null) return;
 
-        int totalHonor = 0;
         for (int i = 0; i < _graduationStudentList.Count; i++)
         {
-            totalHonor += _graduationStudentList[i].TotalFame;
+            _totalHonor += _graduationStudentList[i].TotalFame;
             gameMgr.AddGraduationCount(_graduationStudentList[i].VisualId);
         }
 
         // 졸업한 선수의 누적 명예를 다 더해서 실제로 데이터에 갱신시키기
-        gameMgr.SetHonor(gameMgr.SaveData.honor + totalHonor);
+        gameMgr.SetHonor(gameMgr.SaveData.honor + _totalHonor);
         StudentManager.Instance.SaveGame();
 
         if (!_isGraduationSkip)
