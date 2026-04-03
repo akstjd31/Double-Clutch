@@ -42,11 +42,11 @@ Double-Clutch는 감독이 되어 팀을 직접 운영하는 농구 경영 시�
 
 ```
 ┌─────────────────────────────────────────────┐
-│                  Game State                  │
+│                  Game State                 │
 │  Main → Lobby → Event → Match → Result ...  │
 └────────────────────┬────────────────────────┘
                      │
-        ┌────────────┼
+        ┌────────────┛
         ▼            ▼            
    Manager Layer   Data Layer
    (Singleton) (ScriptableObject)
