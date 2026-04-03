@@ -398,19 +398,37 @@ public class MatchEngine : MonoBehaviour
         {
             _simTime = 0; // 시간 마이너스 방지
 
-            bool isOT3EndTied = (_simQuarter == 7 && _homeTeam.SimulatedScore == _awayTeam.SimulatedScore);
-
-            if (isOT3EndTied)
+            if (_simQuarter == 7)
             {
-                Debug.LogWarning($"[시스템] 연장 3쿼터 무승부 도달! {_ballHolder.PlayerName}의 강제 버저비터 발동!");
-                // 강제 버저비터 슛 실행
-                DoShoot(_ballHolder, attackTeam, defendTeam, distToHoop, hoopPos, true, attackTactics, defendTactics, true);
+                int scoreGap = attackTeam.SimulatedScore - defendTeam.SimulatedScore; // (내 점수 - 상대 점수)
+
+                if (scoreGap == 0)
+                {
+                    // 이미 동점: 무승부로 끝나면 튕기므로 시스템 강제 골 발동
+                    Debug.LogWarning($"[시스템] 연장 3쿼터 무승부 도달! {MakeName(_ballHolder.PlayerName)}의 강제 버저비터 발동!");
+                    DoShoot(_ballHolder, attackTeam, defendTeam, distToHoop, hoopPos, true, attackTactics, defendTactics, true);
+                }
+                else if (action == 0)
+                {
+                    // 슛을 쏘려던 상황
+                    int expectedScore = (distToHoop > 0.35f) ? 3 : 2;
+
+                    if (scoreGap + expectedScore == 0)
+                    {
+                        // 들어가봤자 '동점': 현실성을 위해 버저비터 시도를 막음 (시간초과 패배)
+                        Debug.LogWarning($"[시스템] OT3 슛({expectedScore}점)이 들어가도 동점입니다. 버저비터를 막고 경기를 종료합니다.");
+                    }
+                    else
+                    {
+                        // 지고 있는데 쏘면 역전! OR 이미 이기고 있는데 쐐기골 시도 -> 정상적인 버저비터 시도!
+                        DoShoot(_ballHolder, attackTeam, defendTeam, distToHoop, hoopPos, true, attackTactics, defendTactics, false);
+                    }
+                }
             }
 
             else if (action == 0)
             {
-                // 슛을 시도했는데 마침 0초가 됨 -> 버저비터 찬스! (마지막 매개변수 true 전달)
-                DoShoot(_ballHolder, attackTeam, defendTeam, distToHoop, hoopPos, true, attackTactics, defendTactics);
+                DoShoot(_ballHolder, attackTeam, defendTeam, distToHoop, hoopPos, true, attackTactics, defendTactics, false);
             }
         }
         else
