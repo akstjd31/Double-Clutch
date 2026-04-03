@@ -75,7 +75,7 @@ public class EndingRollController : MonoBehaviour
         _activeRowList.Add(newRow);
     }
 
-    
+
 
     public void StartRoll(float duration)
     {
@@ -86,24 +86,24 @@ public class EndingRollController : MonoBehaviour
 
         RectTransform viewport = _rowParent.parent as RectTransform;
         float viewHeight = viewport.rect.height;
-        float contentHeight = _background.sizeDelta.y;
 
+       
+        float contentHeight = _rowParent.rect.height;
         
         float startY = -viewHeight;
 
-        float targetY = contentHeight + viewHeight;
+      
+        float targetY = contentHeight;
 
         _rowParent.anchoredPosition = new Vector2(0, startY);
 
-        // 트윈 실행
+        
         _rollTween = _rowParent.DOAnchorPosY(targetY, duration)
             .SetEase(Ease.Linear)
-            .OnComplete(() => { EndingManager.Instance.PlayAndYou(); });
+            .OnComplete(() =>
+            {                
+                DOVirtual.DelayedCall(EndingManager.Instance.BeforeAndYouTime, () => EndingManager.Instance.PlayAndYou());
+            });
     }
 
-    // 배속 기능 예시 (화면 누르고 있을 때 호출)
-    public void SetSpeed(float multiplier)
-    {
-        if (_rollTween != null) _rollTween.timeScale = multiplier;
-    }
 }
