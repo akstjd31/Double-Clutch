@@ -21,16 +21,16 @@ public class WeeklyTrainingReportPopUp : MonoBehaviour
 
     public void RefreshCharacterRowList(List<Student> students)
     {
-        foreach (var box in _characterRowList) //±âÁ¸¿¡ »ç¿ëÇÏ´ø ¹Ú½ºµéÀ» Ç®·Î ¹İ³³
+        foreach (var box in _characterRowList) //ê¸°ì¡´ì— ì‚¬ìš©í•˜ë˜ ë°•ìŠ¤ë“¤ì„ í’€ë¡œ ë°˜ë‚©
         {
             _characterRowPool.Release(box);
         }
-        _characterRowList.Clear(); //¸®½ºÆ®µµ Å¬¸®¾î
+        _characterRowList.Clear(); //ë¦¬ìŠ¤íŠ¸ë„ í´ë¦¬ì–´
         
         for (int i = 0; i < students.Count; i++)
         {
-            CharacterRow newRow = _characterRowPool.Get(); //¹Ú½º Ã¤¿ì±â            
-            newRow.Init(students[i]); //¹Ú½º¿¡ ¼±¼ö Á¤º¸ ÁÖÀÔ            
+            CharacterRow newRow = _characterRowPool.Get(); //ë°•ìŠ¤ ì±„ìš°ê¸°            
+            newRow.Init(students[i]); //ë°•ìŠ¤ì— ì„ ìˆ˜ ì •ë³´ ì£¼ì…            
 
             _characterRowList.Add(newRow);
             Debug.Log("CharacterRow Initiate!");
