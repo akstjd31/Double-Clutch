@@ -31,11 +31,9 @@ Double-Clutch는 감독이 되어 팀을 직접 운영하는 농구 경영 시�
 
 - **Engine**: Unity 6000.2.10f1
 - **Render Pipeline**: Universal Render Pipeline (URP 17.2.0)
-- **UI**: TextMeshPro, UI Toolkit
-- **Input**: Unity Input System 1.14.2
-- **Asset Management**: Addressable Assets
+- **UI**: TextMeshPro
 - **Data**: Google Sheets → ScriptableObject 자동 파싱 (GoogleSheetsToUnity)
-- **Animation**: Unity 2D Animation + Aseprite 지원
+- **Animation**: Unity 2D Animation + DotWeen
 - **저장**: JSON 기반 SaveLoad 시스템
 
 ---
@@ -48,10 +46,10 @@ Double-Clutch는 감독이 되어 팀을 직접 운영하는 농구 경영 시�
 │  Main → Lobby → Event → Match → Result ...  │
 └────────────────────┬────────────────────────┘
                      │
-        ┌────────────┼────────────┐
-        ▼            ▼            ▼
-   Manager Layer  Command Bus  Data Layer
-   (Singleton)   (CommandBus)  (ScriptableObject)
+        ┌────────────┼
+        ▼            ▼            
+   Manager Layer   Data Layer
+   (Singleton) (ScriptableObject)
         │
    ┌────┴──────────────────────────┐
    │ GameManager  CalendarManager  │
@@ -64,7 +62,7 @@ Double-Clutch는 감독이 되어 팀을 직접 운영하는 농구 경영 시�
 |---|---|
 | **State Machine** | 게임 흐름 전체를 상태(State)로 관리 (Lobby, MatchPrep, MatchSim, Graduation ...) |
 | **Manager** | 전역 싱글톤 매니저들이 각 도메인 담당 |
-| **Command Pattern** | UI 액션을 CommandBus로 디스패치해 UI-로직 분리 |
+| **Command Pattern** | 농구 경기 시뮬레이션에서 슛, 패스 등 플레이 액션을 Command로 관리해 실행 흐름과 UI 의존성 분리 |
 | **Parser** | Google Sheets 데이터를 Inspector 버튼 1클릭으로 ScriptableObject에 동기화 |
 | **StringManager** | Observer 패턴 기반 다국어 처리, 언어 변경 시 모든 UI 자동 갱신 |
 
