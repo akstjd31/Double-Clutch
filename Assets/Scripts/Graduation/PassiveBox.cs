@@ -365,8 +365,8 @@ public class PassiveBox : MonoBehaviour
         {
             ApplySkillListToUI(savedSkillList);
 
-            _selectSkill = LoadSavedSelectedSkill(studentKey).Value;
-            if (_selectSkill != null)
+            _selectSkill = LoadSavedSelectedSkill(studentKey);
+            if (_selectSkill.HasValue)
             {
                 ApplySelectedVisual(_selectSkill.Value);
                 _graduationManager.PromotionPanel.IsSkillChoise = true;
