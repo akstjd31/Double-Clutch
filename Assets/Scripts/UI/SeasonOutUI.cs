@@ -13,6 +13,7 @@ public class SeasonOutUI : MonoBehaviour
         if (!string.IsNullOrWhiteSpace(_text.text)) return;
 
         _text.text = StringManager.Instance.GetString("Str_시즌아웃");
+        StringManager.Instance.ApplyFont(_text);
 
         if (_button == null) return;
         _button.onClick.RemoveAllListeners();
