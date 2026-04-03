@@ -42,7 +42,7 @@ public class PassiveSkillSelectPanel : MonoBehaviour
             gameObject.SetActive(false);
 
             //선택한 스킬 추가
-            student.SetPassive(_passiveBox.SelectSkill);
+            student.SetPassive(_passiveBox.SelectSkill.Value);
             _graduationManager.PromotionPanel.UpdateProfile();
 
             _graduationManager.Turn++;

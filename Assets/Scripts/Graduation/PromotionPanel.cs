@@ -44,7 +44,7 @@ public class PromotionPanel : MonoBehaviour
         }
 
         UpdateProfile();
-        _passiveBox.GetSkillList(_currentStudent);
+        _passiveBox.GetSkillList(_currentStudent, _currentStudent.StudentId);
     }
 
     private void LateUpdate()
@@ -144,7 +144,7 @@ public class PromotionPanel : MonoBehaviour
 
         var student = _promotionStudentList[_graduationManager.Turn];
         _passiveSkillSelectPanel.SetActive(true);
-        _passiveBox.GetSkillList(_currentStudent);
+        _passiveBox.GetSkillList(_currentStudent, _currentStudent.StudentId);
         //스킬 선택 상태 초기화
         _isSkillChoise = false;
         Debug.Log($"스킬 선택 상태{_isSkillChoise}/{IsSkillChoise}");

@@ -28,6 +28,7 @@ namespace Game.Constants
         public const string RANDOM_EVENT_PATH = "RandomEventSaveData.json";
         public const string GRADUATION_PATH = "GraduationAlbumSaveData.json";
         public const string LEAGUE_RECORD_PATH = "LeagueRecordSaveData.json";
+        public const string PASSIVE_BOX_SAVE_PATH = "PassiveBoxSaveData.json";
         public const string MY_STUDENT_MATCHING_PATH = "MyStudentMatchingSaveData.json";
         public const string RIVAL_STUDENT_MATCHING_PATH = "RivalStudentMatchingSaveData.json";
     }
