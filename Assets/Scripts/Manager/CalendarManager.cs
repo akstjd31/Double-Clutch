@@ -227,36 +227,51 @@ public class CalendarManager : Singleton<CalendarManager>
 
         data = _calReader.DataList[weekId - 1];
 
-        // 시즌아웃 시 달 차이만큼 지원금 누적
-        int accSub = data.hasSeasonOut
-            ? (data.month - calendar.month + 12) % 12
-            : 1;
+        // 이동 전 달/주차 저장
+        int prevMonth = calendar.month;
+        int prevWeek = calendar.week;
 
-        calendar.month = data.month;
-        calendar.week = data.weekNo;
+        // 이동 후 달/주차
+        int newMonth = data.month;
+        int newWeek = data.weekNo;
 
-        if (IsFundingDay())
+        // 튜토리얼 미완료 여부 확인
+        bool hasIncompleteTutorial = false;
+        var myData = gm.SaveData;
+        if (myData != null && myData.tutorialCompleted != null)
         {
-            var myData = gm.SaveData;
-            bool flag = false;
-            foreach (var hasComplete in myData.tutorialCompleted)
+            foreach (var completed in myData.tutorialCompleted)
             {
-                if (!hasComplete)
+                if (!completed)
                 {
-                    flag = true;
+                    hasIncompleteTutorial = true;
                     break;
                 }
             }
+        }
 
-            // 튜토리얼 완료 여부 (아직 완료가 안되어있다면 첫 달이라는 얘기)
-            if (!flag)
+        // 몇 개월이 지났는지 계산
+        int monthDiff = (newMonth - prevMonth + 12) % 12;
+
+        // 실제 캘린더 반영
+        calendar.month = newMonth;
+        calendar.week = newWeek;
+
+        // 달이 넘어갔다면, 넘어간 개월 수만큼 지원금 지급
+        if (!hasIncompleteTutorial && monthDiff > 0)
+        {
+            gm.SetMoney(gm.SaveData.money + (SALARY * monthDiff));
+
+            // 지나간 달 중 3월이 포함되었는지 확인
+            for (int i = 1; i <= monthDiff; i++)
             {
-                int money = gm.SaveData.money;
-                gm.SetMoney(money + (SALARY * accSub));
+                int crossedMonth = ((prevMonth - 1 + i) % 12) + 1;
+                if (crossedMonth == 3)
+                {
+                    gm.ClearLeagueWinData();
+                    break;
+                }
             }
-
-            if (calendar.month == 3)
-                gm.ClearLeagueWinData();
         }
 
         gm.SetWeekId(weekId);
