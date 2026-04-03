@@ -7,7 +7,7 @@ public class SeasonOutUI : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI _text;
     [SerializeField] private Button _button;
-    private void OnEnable()
+    public void Init()
     {
         if (_text == null) return;
         if (StringManager.Instance == null) return;
@@ -15,10 +15,6 @@ public class SeasonOutUI : MonoBehaviour
 
         _text.text = StringManager.Instance.GetString("Str_시즌아웃");
         StringManager.Instance.ApplyFont(_text);
-
-        if (_button == null) return;
-        _button.onClick.RemoveAllListeners();
-        _button.onClick.AddListener(OnClickConfirmButton);
     }
 
     // 클릭 시 현재 주차 스킵

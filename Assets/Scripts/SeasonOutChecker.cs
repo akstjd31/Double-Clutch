@@ -8,5 +8,7 @@ public class SeasonOutChecker : MonoBehaviour
     {
         if (_popupObj == null) return;
         _popupObj.SetActive(active);
+
+        _popupObj.GetComponent<SeasonOutUI>().Init();
     }
 }
