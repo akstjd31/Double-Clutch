@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor;
 using UnityEngine;
 
 public struct Calendar
@@ -260,7 +261,10 @@ public class CalendarManager : Singleton<CalendarManager>
         // 달이 넘어갔다면, 넘어간 개월 수만큼 지원금 지급
         if (!hasIncompleteTutorial && monthDiff > 0)
         {
-            gm.SetMoney(gm.SaveData.money + (SALARY * monthDiff));
+            float bonusRate =  GetPassiveMoneyBonus();
+            int totalSalary = Mathf.RoundToInt((SALARY * (1f + bonusRate)) * monthDiff);
+            
+            gm.SetMoney(gm.SaveData.money + totalSalary);
 
             // 지나간 달 중 3월이 포함되었는지 확인
             for (int i = 1; i <= monthDiff; i++)
@@ -323,6 +327,15 @@ public class CalendarManager : Singleton<CalendarManager>
         OnWeekChanged?.Invoke(calendar);
     }
 
+    private float GetPassiveMoneyBonus()
+    {
+        float bonus = 0;
+        foreach(var student in StudentManager.Instance.MyStudents)
+        {
+            bonus += student.GetMonthGoldPassiveValue();
+        }
+        return bonus;
+    }
     public bool IsFundingDay() => calendar.week == 1;
 
     public bool CheckEventDay(int weekId)
