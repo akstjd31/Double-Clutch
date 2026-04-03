@@ -14,3 +14,10 @@ public class PassiveBoxSkillEntry
     public List<string> passiveIds = new List<string>();    // 선택된 3개의 패시브 ID 리스트
     public string selectedPassiveId;                        // 선택된 패시브 ID
 }
+
+[Serializable]
+public class PromotionProgressSaveData : SaveBase
+{
+    public int currentTurn = 0;
+    public bool isPromotionFinished = false;
+}

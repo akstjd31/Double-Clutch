@@ -6,6 +6,7 @@ using UnityEngine.UI;
 
 public class PromotionPanel : MonoBehaviour
 {
+    private PromotionProgressSaveData _saveData;
     [SerializeField] private GraduationManager _graduationManager;
     [SerializeField] private GameObject _passiveSkillSelectPanel;
     [SerializeField] private PassiveBox _passiveBox;
@@ -40,7 +41,16 @@ public class PromotionPanel : MonoBehaviour
         {
             Debug.Log("진급 대상자가 없습니다. 진급UI 세팅을 건너뛰고 메인으로 이동합니다.");
             _graduationManager.NextScene();
-            return; 
+            return;
+        }
+
+        LoadPromotionProgress();
+
+        if (_graduationManager.Turn >= _promotionStudentList.Count)
+        {
+            Debug.Log("진급이 이미 끝난 상태입니다.");
+            _graduationManager.NextScene();
+            return;
         }
 
         UpdateProfile();
@@ -65,7 +75,7 @@ public class PromotionPanel : MonoBehaviour
     public void UpdateProfile()
     {
         StringManager manager = StringManager.Instance;
-        
+
 
         if (_graduationManager.Turn >= _promotionStudentList.Count)
         {
@@ -76,7 +86,7 @@ public class PromotionPanel : MonoBehaviour
 
         for (int i = 0; i < _graduationManager.MyStudents.Count; i++)
         {
-            if(studentNum == _graduationManager.MyStudents[i].StudentId)
+            if (studentNum == _graduationManager.MyStudents[i].StudentId)
             {
                 _currentStudent = _graduationManager.MyStudents[i];
             }
@@ -88,8 +98,8 @@ public class PromotionPanel : MonoBehaviour
         {
             _getPromotionName = StringManager.Instance.GetString("UI_Promotion_진급팝업");
             var keys = TextParser.GetKeys(_getPromotionName);
-            _getPromotionName = _getPromotionName.Replace("{" + keys[0] +"}", name);
-            
+            _getPromotionName = _getPromotionName.Replace("{" + keys[0] + "}", name);
+
             _guideBoxName.text = _getPromotionName;
             StringManager.Instance.ApplyFont(_guideBoxName);
             _needGuideRefresh = true;
@@ -103,13 +113,13 @@ public class PromotionPanel : MonoBehaviour
         StringManager.Instance.ApplyFont(_name);
         _image.sprite = SpriteManager.Instance.GetSprite(_currentStudent.VisualData.playerImageResource);
         string gradeText = StringManager.Instance.GetString("UI_Promotion_진급");
-        var key =  TextParser.GetKeys(gradeText);
-        _gradeUp.text = gradeText.Replace("{"+key[0]+"}", (_currentStudent.Grade - 1).ToString()).Replace("{" + key[1] + "}", (_currentStudent.Grade).ToString());
+        var key = TextParser.GetKeys(gradeText);
+        _gradeUp.text = gradeText.Replace("{" + key[0] + "}", (_currentStudent.Grade - 1).ToString()).Replace("{" + key[1] + "}", (_currentStudent.Grade).ToString());
         StringManager.Instance.ApplyFont(_gradeUp);
 
         for (int i = 0; i < 3; i++)
         {
-            if(i < _currentStudent.PassiveId.Count)
+            if (i < _currentStudent.PassiveId.Count)
             {
                 _passiveNameText[i].text = StringManager.Instance.GetString(_currentStudent.Passive[i].skillName);
                 StringManager.Instance.ApplyFont(_passiveNameText[i]);
@@ -163,16 +173,51 @@ public class PromotionPanel : MonoBehaviour
         PlayConfirmSound();
         _afterChoice.SetActive(false);
 
-        if (_graduationManager.Turn == _promotionStudentList.Count)
+        _graduationManager.Turn++;
+        SavePromotionProgress();
+
+        if (_graduationManager.Turn >= _promotionStudentList.Count)
         {
             _beforeGuideBox.SetActive(false);
+            ClearPromotionProgress(); // 끝났으면 진행 저장 초기화
+            _graduationManager.NextScene();
+            return;
         }
+
         UpdateProfile();
+        _passiveBox.GetSkillList(_currentStudent, _currentStudent.StudentId);
     }
 
     private void PlayConfirmSound()
     {
         if (AudioManager.Instance != null)
             AudioManager.Instance.PlaySoundOneShot(SoundName.SE_BUTTON_SELECT);
+    }
+
+    private void LoadPromotionProgress()
+    {
+        if (!SaveLoadManager.Instance.TryLoad(FilePath.PROMOTION_PROGRESS_SAVE_PATH, out _saveData) || _saveData == null)
+        {
+            _saveData = new PromotionProgressSaveData();
+        }
+
+        _graduationManager.Turn = _saveData.currentTurn;
+    }
+
+    private void SavePromotionProgress()
+    {
+        if (_saveData == null)
+            _saveData = new PromotionProgressSaveData();
+
+        _saveData.currentTurn = _graduationManager.Turn;
+        _saveData.isPromotionFinished = (_promotionStudentList != null && _graduationManager.Turn >= _promotionStudentList.Count);
+
+        SaveLoadManager.Instance.Save(FilePath.PROMOTION_PROGRESS_SAVE_PATH, _saveData);
+    }
+
+    public void ClearPromotionProgress()
+    {
+        _saveData = new PromotionProgressSaveData();
+        SaveLoadManager.Instance.Save(FilePath.PROMOTION_PROGRESS_SAVE_PATH, _saveData);
     }
 }
