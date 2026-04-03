@@ -32,6 +32,17 @@ public class PromotionPanel : MonoBehaviour
 
     private void Start()
     {
+        // 혹시 리스트가 들어오지 않았을 경우를 대비해 갱신
+        GetList();
+
+        //  진급할 학생이 한 명도 없다면 (전원 3학년 졸업)
+        if (_promotionStudentList == null || _promotionStudentList.Count == 0)
+        {
+            Debug.Log("진급 대상자가 없습니다. 진급UI 세팅을 건너뛰고 메인으로 이동합니다.");
+            _graduationManager.NextScene();
+            return; 
+        }
+
         UpdateProfile();
         _passiveBox.GetSkillList(_currentStudent);
     }
