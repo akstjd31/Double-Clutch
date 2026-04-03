@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using TMPro;
 using System;
 using System.Linq;
+using Game.Constants;
 
 public class SwissBoardPanel : MonoBehaviour
 {
@@ -17,6 +18,7 @@ public class SwissBoardPanel : MonoBehaviour
     private List<SwissRoundTab> _tabs = new List<SwissRoundTab>();
 
     [Header("Match List UI")]
+    [SerializeField] private ScrollRect _scrollRect;
     [SerializeField] private Transform _matchContainer;
     [SerializeField] private SwissMatchRow _matchRowPrefab;
 
@@ -28,6 +30,18 @@ public class SwissBoardPanel : MonoBehaviour
     private Action _customAction;
     private string _customActionText;
 
+    private void OnEnable()
+    {
+        StringManager.OnLanguageChanged += Refresh;
+    }
+    private void OnDisable()
+    {
+        StringManager.OnLanguageChanged -= Refresh;
+    }
+    private void Refresh()
+    {
+        OpenPanel();
+    }
     public void OpenPanel(Action onActionClick = null, string actionText = null)
     {
         gameObject.SetActive(true);
@@ -42,6 +56,7 @@ public class SwissBoardPanel : MonoBehaviour
         if (_txtLeagueName != null && masterData.HasValue)
         {
             _txtLeagueName.text = StringManager.Instance.GetString(masterData.Value.leagueNameKey);
+            StringManager.Instance.ApplyFont(_txtLeagueName);
         }
 
         // 자동으로 현재 진행해야 할 라운드 탭으로 진입
@@ -97,7 +112,9 @@ public class SwissBoardPanel : MonoBehaviour
         // 라운드 타이틀 텍스트 갱신 (탭 누를 때마다 변경)
         if (_txtRoundTitle != null)
         {
-            _txtRoundTitle.text = $"스위스 {roundIndex + 1}라운드 대진표";
+            _txtRoundTitle.text = StringManager.Instance.GetFormattedString("UI_Matchlog_스위스", (roundIndex + 1));
+            StringManager.Instance.ApplyFont(_txtRoundTitle);
+                                  //$"스위스 {roundIndex + 1}라운드 대진표";
         }
 
         // 탭 시각적 선택 상태 갱신
@@ -124,7 +141,7 @@ public class SwissBoardPanel : MonoBehaviour
         // 해당 라운드 진입 당시의 순위
         Dictionary<string, int> historyRankMap = GetHistoricalRanks(currentLeague, roundIndex);
 
-        string myTeamId = StudentManager.TEAM_ID;
+        string myTeamId = PrefKeys.PLAYER_TEAM_ID;
 
         // 이번 라운드의 전체 팀 목록
         List<string> orderedTeamIds = historyRankMap
@@ -153,6 +170,11 @@ public class SwissBoardPanel : MonoBehaviour
         {
             CreateRankingRow(teamId, roundIndex, historyRankMap);
         }
+        Canvas.ForceUpdateCanvases();
+        if (_scrollRect != null)
+        {
+            _scrollRect.verticalNormalizedPosition = 1f; // 스크롤바 위치를 1(맨 위)로 강제 고정
+        }
     }
 
     private string GetOpponentTeamId(LeagueSaveData league, int roundIndex, string myTeamId)
@@ -175,7 +197,7 @@ public class SwissBoardPanel : MonoBehaviour
 
         SwissMatchRow row = Instantiate(_matchRowPrefab, _matchContainer);
 
-        bool isMyTeam = (teamId == StudentManager.TEAM_ID);
+        bool isMyTeam = (teamId == PrefKeys.PLAYER_TEAM_ID);
         int rank = rankMap.ContainsKey(teamId) ? rankMap[teamId] : 0;
 
         var record = GetCumulativeRecord(teamId, viewRoundIndex);
@@ -293,15 +315,20 @@ public class SwissBoardPanel : MonoBehaviour
         var currentLeague = LeagueManager.Instance.CurrentLeague;
         _btnAction.onClick.RemoveAllListeners();
 
+        bool cannotPlay = currentLeague.isFinished || currentLeague.isPlayerEliminated;
         // 버튼 텍스트 세팅 수정
-        _txtBtnAction.text = string.IsNullOrEmpty(_customActionText) ? (currentLeague.isFinished ? "닫기" : "경기 준비") : _customActionText;
+        _txtBtnAction.text = string.IsNullOrEmpty(_customActionText) ? (cannotPlay ? StringManager.Instance.GetString("UI_Popup_닫기") : StringManager.Instance.GetString("UI_Matchlog_경기준비")) : _customActionText;
+        StringManager.Instance.ApplyFont(_txtBtnAction);
 
         // 리그가 완전히 종료된 상태 (수정: _customAction.Invoke() 추가)
-        if (currentLeague.isFinished)
+        if (cannotPlay)
         {
             _btnAction.interactable = true;
             _btnAction.onClick.AddListener(() =>
             {
+                if (AudioManager.Instance != null)
+                    AudioManager.Instance.PlaySoundOneShot(SoundName.SE_BUTTON_SELECT);
+
                 gameObject.SetActive(false);
                 if (_customAction != null) _customAction.Invoke();
             });
@@ -314,6 +341,9 @@ public class SwissBoardPanel : MonoBehaviour
             _btnAction.interactable = true;
             _btnAction.onClick.AddListener(() =>
             {
+                if (AudioManager.Instance != null)
+                    AudioManager.Instance.PlaySoundOneShot(SoundName.SE_BUTTON_SELECT);
+                    
                 gameObject.SetActive(false);
                 if (_customAction != null)
                 {

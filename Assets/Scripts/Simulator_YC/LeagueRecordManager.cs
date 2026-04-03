@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Game.Constants;
 
 // 경기 하나의 전체 기록을 담을 통
 [Serializable]
@@ -25,9 +26,6 @@ public class LeagueRecordSaveData : SaveBase
 public class LeagueRecordManager : MonoBehaviour
 {
     public static LeagueRecordManager Instance;
-
-    // 저장용 파일 이름 정의
-    private const string SAVE_FILE = "LeagueRecordSave.json";
 
     // 경기 ID(또는 라운드 번호)를 키값으로 하여 경기 기록을 저장하는 딕셔너리
     private Dictionary<int, MatchResultRecord> _leagueRecords = new Dictionary<int, MatchResultRecord>();
@@ -116,14 +114,14 @@ public class LeagueRecordManager : MonoBehaviour
         LeagueRecordSaveData saveData = new LeagueRecordSaveData();
         saveData.recordList = new List<MatchResultRecord>(_leagueRecords.Values);
 
-        SaveLoadManager.Instance.Save(SAVE_FILE, saveData);
+        SaveLoadManager.Instance.Save(FilePath.LEAGUE_RECORD_PATH, saveData);
     }
 
     public void LoadGame()
     {
         if (SaveLoadManager.Instance == null) return;
 
-        if (SaveLoadManager.Instance.TryLoad<LeagueRecordSaveData>(SAVE_FILE, out var data))
+        if (SaveLoadManager.Instance.TryLoad<LeagueRecordSaveData>(FilePath.LEAGUE_RECORD_PATH, out var data))
         {
             _leagueRecords.Clear();
             foreach (var record in data.recordList)

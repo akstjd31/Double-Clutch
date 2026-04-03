@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Game.Constants;
 
 public class SwissPairingGenerator : ILeaguePairingGenerator
 {
@@ -30,7 +31,7 @@ public class SwissPairingGenerator : ILeaguePairingGenerator
             string teamB = sortedTeams[i + 1];
 
             // UI 표기와 편의성을 위해 플레이어 팀은 무조건 Home(왼쪽)으로 고정
-            if (teamB == LeagueManager.PLAYER_TEAM_ID)
+            if (teamB == PrefKeys.PLAYER_TEAM_ID)
             {
                 string temp = teamA;
                 teamA = teamB;

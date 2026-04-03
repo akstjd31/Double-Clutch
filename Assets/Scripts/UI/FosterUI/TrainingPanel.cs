@@ -1,21 +1,24 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UIElements;
+using UnityEngine.UI;
+using Game.Constants;
 
 /// <summary>
-/// À°¼º ¹öÆ°À» ´©¸£¸é ³ª¿À´Â TrainingPanel¿¡ ºÎÂø.
-/// ¼±¼ö ¸ñ·ÏÀ» °¡Á®¿Í ¼±¼ö ¼ö¸¸Å­ ¹öÆ° »ý¼ºÇÏ´Â ¿ªÇÒ
+/// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Æ°ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ TrainingPanelï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
+/// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Å­ ï¿½ï¿½Æ° ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ï¿½
 /// </summary>
 
 public class TrainingPanel : MonoBehaviour
 {
+    [SerializeField] private GameObject _backButton;
+    [SerializeField] private GameObject _homeButton;
     [SerializeField] TrainingCharacterBox _trainingCharacterBoxPrefab;
     [SerializeField] Transform _trainingCharacterBoxParent;    
 
-    GenericObjectPool<TrainingCharacterBox> _trainingBoxPool; //Æ®·¹ÀÌ´× ¹Ú½º ¿ÀºêÁ§Æ® Ç®
+    GenericObjectPool<TrainingCharacterBox> _trainingBoxPool; //Æ®ï¿½ï¿½ï¿½Ì´ï¿½ ï¿½Ú½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® Ç®
 
-    List<TrainingCharacterBox> _boxList = new List<TrainingCharacterBox>(); //¿ÀºêÁ§Æ® ¹Ý³³¿ë °ü¸® ¸®½ºÆ®
+    List<TrainingCharacterBox> _boxList = new List<TrainingCharacterBox>(); //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½Ý³ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Æ®
 
     private void Awake()
     {
@@ -25,6 +28,19 @@ public class TrainingPanel : MonoBehaviour
     private void OnEnable()
     {
         RefreshPlayerList();
+        PlaySound(SoundName.BGM_DEVELOP_01);
+    }
+
+    private void PlaySound(string id)
+    {
+        if (AudioManager.Instance == null) return;
+        AudioManager.Instance.PlaySound(id);
+    }
+
+    private void OnDisable()
+    {
+        if (_boxList == null) return;
+        PlaySound(SoundName.BGM_LOBBY_01);
     }
 
     public void RefreshPlayerList()
@@ -36,14 +52,31 @@ public class TrainingPanel : MonoBehaviour
 
         _boxList.Clear();
         
-        var students = StudentManager.Instance.MyStudents;// º¸À¯ÇÑ ¼±¼ö ¼ö¸¸Å­ Ç®¿¡¼­ °¡Á®¿Í¼­ »ý¼º (Ç®¿¡ ¾øÀ¸¸é ³»Àå ¿ÀºêÁ§Æ® Ç®ÀÌ ÀÚµ¿ »ý¼º)
+        var students = StudentManager.Instance.MyStudents;// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Å­ Ç®ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í¼ï¿½ ï¿½ï¿½ï¿½ï¿½ (Ç®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® Ç®ï¿½ï¿½ ï¿½Úµï¿½ ï¿½ï¿½ï¿½ï¿½)
         for (int i = 0; i < students.Count; i++)
         {            
-            TrainingCharacterBox newBox = _trainingBoxPool.Get(); //¹Ú½º Ã¤¿ì±â
+            TrainingCharacterBox newBox = _trainingBoxPool.Get(); //ï¿½Ú½ï¿½ Ã¤ï¿½ï¿½ï¿½
             newBox.transform.SetAsLastSibling();
-            newBox.Init(students[i]); //¹Ú½º¿¡ ¼±¼ö Á¤º¸ ÁÖÀÔ            
+            newBox.Init(students[i]); //ï¿½Ú½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½   
+
+            var btn = newBox.GetComponent<Button>();
+            btn.onClick.AddListener(delegate
+            {
+                if (AudioManager.Instance != null)
+                    AudioManager.Instance.PlaySoundOneShot(SoundName.SE_BUTTON_SELECT);
+
+                OnClickBackAndHomeButtonSetActive(false);
+            });
             
             _boxList.Add(newBox);
+        }
+    }
+
+    public void RefreshPositionMark()
+    {
+        foreach(var box in _boxList)
+        {
+            box.RefreshPositionMark();
         }
     }
 
@@ -56,5 +89,11 @@ public class TrainingPanel : MonoBehaviour
                 _boxList[i].SetStudentState();
             }
         }
+    }
+    
+    public void OnClickBackAndHomeButtonSetActive(bool active)
+    {
+        _backButton.SetActive(active);
+        _homeButton.SetActive(active);
     }
 }

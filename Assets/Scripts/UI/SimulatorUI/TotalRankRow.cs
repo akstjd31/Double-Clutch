@@ -14,9 +14,17 @@ public class TotalRankRow : MonoBehaviour
     // 데이터 주입 함수
     public void Init(LeagueStandingData data, bool isMyTeam)
     {
-        if (_textRank != null) _textRank.text = $"{data.rank}위";
+        if (_textRank != null) 
+        {
+            _textRank.text = data.rank+StringManager.Instance.GetString("UI_Simulator_위");
+            StringManager.Instance.ApplyFont(_textRank);
+        }
 
-        if (_textRecord != null) _textRecord.text = $"{data.win}승 {data.lose}패";
+        if (_textRecord != null) 
+        {
+            _textRecord.text = StringManager.Instance.GetFormattedString("UI_Matchlog_승패", data.win, data.lose);
+            StringManager.Instance.ApplyFont( _textRecord);
+        } 
 
         if (_textGoalDiff != null) _textGoalDiff.text = data.goalDiff.ToString();
 
@@ -25,7 +33,8 @@ public class TotalRankRow : MonoBehaviour
         {
             if (_textTeamName != null)
             {
-                _textTeamName.text = GameManager.Instance.SaveData.schoolName;
+                _textTeamName.text = GameManager.Instance.SaveData.schoolName+"\n"+StringManager.Instance.GetString("UI_Start_고등학교");
+                StringManager.Instance.ApplyFont(_textTeamName);
                 _textTeamName.fontStyle = FontStyles.Bold;
             }
             if (_textRank != null) _textRank.fontStyle = FontStyles.Bold;
@@ -42,6 +51,7 @@ public class TotalRankRow : MonoBehaviour
                 if (rivalData != null)
                 {
                     _textTeamName.text = StringManager.Instance.GetString(rivalData.Value.teamNameKey);
+                    StringManager.Instance.ApplyFont(_textTeamName);
                 }
                 else
                 {

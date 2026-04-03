@@ -2,6 +2,8 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using System;
+using Game.Constants;
+using Unity.VisualScripting;
 
 public class MatchHistoryRow : MonoBehaviour
 {
@@ -17,31 +19,64 @@ public class MatchHistoryRow : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _textAwayTeam;     // 상대 팀 이름 (예: 라이벌 고등학교)
     [SerializeField] private TextMeshProUGUI _textAwayScore;    // 상대 팀 점수 (예: 4567)
 
+    private int _round;
+    private MatchResultRecord _record;
+    private Action<int> _onClickLog;
+    private void OnEnable()
+    {
+        StringManager.OnLanguageChanged += Refresh;
+    }
+    private void OnDisable()
+    {
+        StringManager.OnLanguageChanged -= Refresh;
+    }
 
+    private void Refresh()
+    {
+        Init(_round,_record,_onClickLog);
+    }
     public void Init(int round, MatchResultRecord record, Action<int> onClickLog)
     {
+        _round = round;
+        _record = record;
+        _onClickLog = onClickLog;
         // 승/패 판별 (홈팀(유저) 점수 기준)
-        string result = record.HomeScore >= record.AwayScore ? "승" : "패";
+        string result = record.HomeScore >= record.AwayScore ? StringManager.Instance.GetString("UI_Match_승리") : StringManager.Instance.GetString("UI_Match_패배");
 
         // 텍스트 UI 적용
         if (_textRoundAndResult != null)
-            _textRoundAndResult.text = $"{round}라운드 {result}";
+        {
+            _textRoundAndResult.text = round+StringManager.Instance.GetString("UI_RoundBox_라운드")+" "+result;
+            StringManager.Instance.ApplyFont(_textRoundAndResult);
+        }
 
         if (_textHomeScore != null)
             _textHomeScore.text = record.HomeScore.ToString();
 
         if (_textHomeTeam != null)
-            _textHomeTeam.text = record.HomeTeamName;
+        {
+            _textHomeTeam.text = StringManager.Instance.GetString(record.HomeTeamName);
+            StringManager.Instance.ApplyFont(_textHomeTeam);
+        }
 
         if (_textAwayTeam != null)
-            _textAwayTeam.text = record.AwayTeamName;
+        {
+            _textAwayTeam.text = StringManager.Instance.GetString(record.AwayTeamName);
+            StringManager.Instance.ApplyFont(_textAwayTeam);
+        }
 
         if (_textAwayScore != null)
             _textAwayScore.text = record.AwayScore.ToString();
 
         // 이 줄의 로그 버튼을 누르면 자신의 라운드 번호를 들고 로그 패널을 열도록 연결
         _btnLogCheck.onClick.RemoveAllListeners();
-        _btnLogCheck.onClick.AddListener(() => onClickLog?.Invoke(round));
+        _btnLogCheck.onClick.AddListener(() =>
+        {
+            if (AudioManager.Instance != null)
+                AudioManager.Instance.PlaySoundOneShot(SoundName.SE_BUTTON_SELECT);
+                
+            onClickLog?.Invoke(round);
+        });
         
     }
 }

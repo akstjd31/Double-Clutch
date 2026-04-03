@@ -17,10 +17,10 @@ public class TrainingCharacterBox : MonoBehaviour
 
     [SerializeField] Slider _conditionSlider;
 
-    private Color _restColor = new Color(0, 223, 112);
-    private Color _trainingColor = new Color(0, 93, 232);
-    private Color _overworkColor = new Color(255, 174, 0);
-    private Color _injuredColor = new Color(204, 0, 0);
+    private Color _restColor = new Color32(0, 223, 112, 255);
+    private Color _trainingColor = new Color32(0, 93, 232, 255);
+    private Color _overworkColor = new Color32(255, 174, 0, 255);
+    private Color _injuredColor = new Color32(204, 0, 0, 255);
 
     Student _student;
 
@@ -36,6 +36,11 @@ public class TrainingCharacterBox : MonoBehaviour
         StringManager.OnLanguageChanged -= SetStudentState;
     }
 
+    public void RefreshPositionMark()
+    {
+        _positionImage.sprite = SpriteManager.Instance.GetPositionSprite(_student.Position);
+    }
+
     public void Init(Student student)
     {
         _student = student;
@@ -43,7 +48,7 @@ public class TrainingCharacterBox : MonoBehaviour
         SpriteManager spriteManager = SpriteManager.Instance;
         _studentImage.sprite = spriteManager.GetSprite(_student.VisualData.portraitResource);
         _positionImage.sprite = spriteManager.GetPositionSprite(_student.Position);
-        _positionImage.sprite = SpriteManager.Instance.GetSprite(_student.TraitData.traitResource);
+        _traitImage.sprite = SpriteManager.Instance.GetSprite(_student.TraitData.traitResource);
 
 
         StringManager manager = StringManager.Instance;
@@ -63,10 +68,14 @@ public class TrainingCharacterBox : MonoBehaviour
     public void SetStudentState()
     {
         StringManager manager = StringManager.Instance;
+        string name = manager.GetString(_student.Name[0]) + manager.GetString(_student.Name[1]) + manager.GetString(_student.Name[2]);
+        _nameText.text = name;
+        manager.ApplyFont(_nameText);
         if (_student == null) return;
         var cv = _stateBackGround.GetComponent<CanvasGroup>();
         cv.alpha = 0f;
         _stateText.text = "";
+        _stateText.color = Color.white;
         if (_student.CurrentTraining != null)
         {
             cv.alpha = 1f;
@@ -74,11 +83,37 @@ public class TrainingCharacterBox : MonoBehaviour
 
             if (_student.CurrentTraining is IndividualTraining || _student.CurrentTraining is TeamTraining)
             {
+                if (StringManager.Instance.CurrentLanguage == Language.Ko)
+                {
+                    _stateText.fontSize = 32;
+                }
+                if (StringManager.Instance.CurrentLanguage == Language.En)
+                {
+                    _stateText.fontSize = 32;
+                }
+                if (StringManager.Instance.CurrentLanguage == Language.Ja)
+                {
+                    _stateText.fontSize = 24;
+                }
                 _stateText.color = _trainingColor;
+                manager.ApplyFont(_stateText);
             }
             else
             {
+                if (StringManager.Instance.CurrentLanguage == Language.Ko)
+                {
+                    _stateText.fontSize = 32;
+                }
+                if (StringManager.Instance.CurrentLanguage == Language.En)
+                {
+                    _stateText.fontSize = 32;
+                }
+                if (StringManager.Instance.CurrentLanguage == Language.Ja)
+                {
+                    _stateText.fontSize = 24;
+                }
                 _stateText.color= _restColor;
+                manager.ApplyFont(_stateText);
             }
 
             return;
@@ -88,16 +123,17 @@ public class TrainingCharacterBox : MonoBehaviour
             cv.alpha = 1f;
             _stateText.text = manager.GetString("UI_Player_과로");            
             _stateText.color = _overworkColor;
+            manager.ApplyFont(_stateText);
             return;
         }
         if (_student.State == StudentState.Injured)
         {
             cv.alpha = 1f;
             _stateText.text = manager.GetString("UI_Player_부상");            
+            manager.ApplyFont(_stateText);
             _stateText.color = _injuredColor;
             return;
         }
-        manager.ApplyFont(_stateText);
     }
     
     public float NormalizeConditionValue(int condition)

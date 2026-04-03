@@ -5,6 +5,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using Game.Constants;
 
 public class TournamentBoardPanel : MonoBehaviour
 {
@@ -26,10 +27,23 @@ public class TournamentBoardPanel : MonoBehaviour
     [Header("Bottom Actions")]
     [SerializeField] private Button _btnAction;
     [SerializeField] private TextMeshProUGUI _txtBtnAction;
-
     private Action _customAction;
-    private string _customActionText;
 
+    private string _customActionText;
+    private void OnEnable()
+    {
+        StringManager.OnLanguageChanged += Refresh;
+    }
+
+    private void OnDisable()
+    {
+        StringManager.OnLanguageChanged -=Refresh;
+    }
+
+    private void Refresh()
+    {
+        OpenPanel();
+    }
     public void OpenPanel(Action onActionClick = null, string actionText = null)
     {
         gameObject.SetActive(true);
@@ -42,7 +56,10 @@ public class TournamentBoardPanel : MonoBehaviour
         // 타이틀 세팅
         var masterData = LeagueDataManager.Instance.GetMasterDataById(league.leagueId);
         if (_txtLeagueName != null && masterData.HasValue)
+        {
             _txtLeagueName.text = StringManager.Instance.GetString(masterData.Value.leagueNameKey);
+            StringManager.Instance.ApplyFont(_txtLeagueName);
+        }
 
         int currentRound = league.isFinished ? league.currentRoundIndex - 1 : league.currentRoundIndex;
         currentRound = Mathf.Max(0, currentRound);
@@ -51,7 +68,10 @@ public class TournamentBoardPanel : MonoBehaviour
         if (_txtCurrentRound != null) _txtCurrentRound.text = $"{displayRound}";
         // 대진표 데이터 채우기 (16강)
         PopulateBracket(league, currentRound);
-        _txtBtnAction.text = string.IsNullOrEmpty(actionText) ? (league.isFinished ? "닫기" : "경기 준비") : actionText;
+        bool cannotPlay = league.isFinished || league.isPlayerEliminated;
+        _txtBtnAction.text = string.IsNullOrEmpty(actionText) ? (cannotPlay ? StringManager.Instance.GetString("UI_Popup_닫기") : StringManager.Instance.GetString("UI_Matchlog_경기준비")) : actionText;
+        StringManager.Instance.ApplyFont(_txtBtnAction);
+
         _btnAction.onClick.RemoveAllListeners();
         _btnAction.onClick.AddListener(() =>
         {
@@ -60,7 +80,7 @@ public class TournamentBoardPanel : MonoBehaviour
             {
                 _customAction.Invoke(); // 결산창 띄우기 실행!
             }
-            else if (!league.isFinished)
+            else if (!cannotPlay)
             {
                 GameManager.Instance.ChangeState<MatchPrepState>();
             }
@@ -176,7 +196,7 @@ public class TournamentBoardPanel : MonoBehaviour
                         bool isWinner = n.TeamId == winnerId;
                         bool isEliminated = n.TeamId == loserId;
                         // Init 호출: isEliminated로 박스 밝기 조절, isWinner로 선 색상 조절
-                        n.Init(n.TeamId, match.roundIndex, false, isEliminated, isWinner, scoreString);
+                        n.Init(n.TeamId, match.roundIndex, false, isEliminated, isWinner, match.roundIndex > 0, scoreString);
                     }
                 }
 
@@ -187,7 +207,7 @@ public class TournamentBoardPanel : MonoBehaviour
                     {
                         bool isWinner = n.TeamId == winnerId;
                         bool isEliminated = n.TeamId == loserId;
-                        n.Init(n.TeamId, match.roundIndex, false, isEliminated, isWinner, scoreString);
+                        n.Init(n.TeamId, match.roundIndex, false, isEliminated, isWinner, match.roundIndex > 0, scoreString);
                     }
                 }
             }
@@ -196,27 +216,32 @@ public class TournamentBoardPanel : MonoBehaviour
             List<TournamentNode> nextNodes = GetUINodesByDepth(nextUiDepth);
             if (nextNodes != null && matchIndexInRound < nextNodes.Count)
             {
-                nextNodes[matchIndexInRound].Init(winnerId, match.roundIndex + 1, (currentRound == (match.roundIndex + 1)), false, false, "");
+                nextNodes[matchIndexInRound].Init(winnerId, match.roundIndex + 1, (currentRound == (match.roundIndex + 1)), false, false, true, "");
             }
             else if (nextUiDepth == 4 && _winnerNode != null)
             {
-                _winnerNode.Init(winnerId, match.roundIndex + 1, (currentRound == (match.roundIndex + 1)), false, true, ""); // 최종 우승 노드는 선이 나가지 않지만 밝게 유지
+                _winnerNode.Init(winnerId, match.roundIndex + 1, (currentRound == (match.roundIndex + 1)), false, true, true, ""); // 최종 우승 노드는 선이 나가지 않지만 밝게 유지
             }
         }
     }
     // 모든 노드를 강력하게 비활성화하는 헬퍼 함수
+    //★ HJ
+    //각 노드를 비활성화 하면 안그러면 줄만 남기 때문에, 노드의 부모패널('Team16''Team8''Team4')을 비활성화 해야 합니다. 
+    //이긴 팀의 파이프 라인색을 변경하기 위해서는 'Out Pipe Image' 외에도 두가지 이미지('MiddlePipeLine', 'NextLine')를 더 변경해야 합니다.
+
     private void DisableAllNodes()
     {
         void DisableNodesInList(List<TournamentNode> nodes)
-        {
+        { 
             if (nodes == null) return;
-            foreach (var n in nodes) n.gameObject.SetActive(false);
+            foreach (var n in nodes) n.DisableNode();
         }
         DisableNodesInList(_round1Nodes);
         DisableNodesInList(_round2Nodes);
         DisableNodesInList(_round3Nodes);
         DisableNodesInList(_round4Nodes);
-        if (_winnerNode != null) _winnerNode.gameObject.SetActive(false);
+        if (_winnerNode != null) _winnerNode.DisableNode();
+
     }
     // 승리한 노드의 파이프만 불을 켜주기 위한 보조 함수
     private void UpdateWinnerPipe(int uiDepth, int originalRoundIndex, int matchIndex, string winnerId, HashSet<string> eliminatedTeams)
@@ -245,7 +270,7 @@ public class TournamentBoardPanel : MonoBehaviour
         int uiDepth = currentRound + uiOffset;
 
         List<TournamentNode> targetList = GetUINodesByDepth(uiDepth) ?? _round1Nodes;
-        TournamentNode playerNode = targetList.Find(n => n.TeamId == StudentManager.TEAM_ID);
+        TournamentNode playerNode = targetList.Find(n => n.TeamId == PrefKeys.PLAYER_TEAM_ID);
 
         if (playerNode == null || _scrollRect == null) yield break;
 

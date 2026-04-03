@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using Game.Constants;
 
 public class FightingPower : MonoBehaviour
 {
@@ -20,6 +21,8 @@ public class FightingPower : MonoBehaviour
     // 뒤로가기 버튼
     [SerializeField] private GameObject _backButtonObj;
 
+    private MatchTeam _generatedAwayTeam;
+
     int _myTotalFightingPower = 0;
     int _rivalTotalFightingPower = 0;
 
@@ -31,6 +34,27 @@ public class FightingPower : MonoBehaviour
     public void OnClickSetUIIndex()
     {
         PlayerPrefs.SetInt(PrefKeys.MATCH_PREP_UI_INDEX, 0);
+    }
+
+    private void OnEnable()
+    {
+        StringManager.OnLanguageChanged += RefreshUI;
+
+        PlaySound();
+    }
+
+    private void PlaySound()
+    {
+        var aMgr = AudioManager.Instance;
+        if (aMgr == null) return;
+
+        if (!aMgr.IsSameClip(SoundName.BGM_BATTLE_SELECTION))
+            aMgr.PlaySound(SoundName.BGM_BATTLE_SELECTION);
+    }
+
+    private void OnDisable()
+    {
+        StringManager.OnLanguageChanged -= RefreshUI;
     }
 
     public void Init()
@@ -56,6 +80,12 @@ public class FightingPower : MonoBehaviour
         _myTotalFightingPower = 0;
         if (_myMatchingStudentList.Count > 0 && _myMatchingStudentList != null)
         {
+            var positionOrder = new List<Position> { Position.PG, Position.SG, Position.SF, Position.PF, Position.C };
+            _myMatchingStudentList.Sort((a, b) => {
+                int indexA = positionOrder.IndexOf(a.MatchPosition);
+                int indexB = positionOrder.IndexOf(b.MatchPosition);
+                return indexA.CompareTo(indexB);
+            });
             for (int i = 0; i < Mathf.Min(_myMatchingStudentList.Count, _fightingList.Length); i++)
             {
                 var s = _myMatchingStudentList[i];
@@ -89,7 +119,7 @@ public class FightingPower : MonoBehaviour
 
         if (currentLeague != null)
         {
-            string myTeamId = StudentManager.TEAM_ID;
+            string myTeamId = PrefKeys.PLAYER_TEAM_ID;
 
             // 현재 라운드의 내 매치 기록 찾기
             var myMatch = currentLeague.matchRecords.Find(m =>
@@ -104,7 +134,7 @@ public class FightingPower : MonoBehaviour
         }
 
         MatchTeam homeTeam = EnemyTeamFactory.Instance.ConvertToTeam(TeamSide.Home, StudentManager.Instance.CurrentTeam);
-        MatchTeam generatedAwayTeam = EnemyTeamFactory.Instance.ConvertToTeam(TeamSide.Away, LeagueTeamManager.Instance.GetTeamById(opponentTeamId));
+        _generatedAwayTeam = EnemyTeamFactory.Instance.ConvertToTeam(TeamSide.Away, LeagueTeamManager.Instance.GetTeamById(opponentTeamId));
         if (_rivalMatchingStudentList == null || _rivalMatchingStudentList.Count == 0)
         {
             _rivalMatchingStudentList = new List<Student>();
@@ -127,54 +157,9 @@ public class FightingPower : MonoBehaviour
                 }
             }
         }
-        //if (generatedAwayTeam == null)
-        //{
-        //    Debug.LogError("적 팀 생성 실패");
-        //    return;
-        //}
-        //Debug.Log($"[생성 확인] 상대 1번 선수 2점슛 스탯: {generatedAwayTeam.Roster[0].GetStat(MatchStatType.TwoPoint)}");
 
-        //if (_rivalMatchingStudentList != null && _rivalMatchingStudentList.Count > 0)
-        //{
-        //    for (int i = 0; i < _rivalMatchingStudentList.Count; i++)
-        //    {
-        //        var r = _rivalMatchingStudentList[i];
-        //        r.RebuildStatDict();
-        //        _rivalList[i].Init(r);
-        //        _rivalTotalFightingPower += (r.Attack + r.Defense);
-        //    }
-        //}
-        //else
-        //{
-        //    for (int i = 0; i < _rivalList.Length; i++)
-        //    {
-        //        MatchPlayer mp = generatedAwayTeam.Roster[i];
-        //        Student rivalStudent = new Student();
-
-        //        rivalStudent.SetName(mp.PlayerName[0], mp.PlayerName[1], mp.PlayerName[2]);
-        //        rivalStudent.SetPosition(mp.MainPosition);
-
-        //        var mappedStats = new List<Stat>
-        //{
-        //    new Stat(potential.Stat2pt, mp.GetStat(MatchStatType.TwoPoint), 99, 1),
-        //    new Stat(potential.Stat3pt, mp.GetStat(MatchStatType.ThreePoint), 99, 1),
-        //    new Stat(potential.StatPass, mp.GetStat(MatchStatType.Pass), 99, 1),
-        //    new Stat(potential.StatBlock, mp.GetStat(MatchStatType.Block), 99, 1),
-        //    new Stat(potential.StatSteal, mp.GetStat(MatchStatType.Steal), 99, 1),
-        //    new Stat(potential.StatRebound, mp.GetStat(MatchStatType.Rebound), 99, 1)
-        //};
-
-        //        rivalStudent.SetStat(mappedStats);
-        //        rivalStudent.OnStatChanged();
-
-        //        _rivalList[i].Init(rivalStudent);
-        //        _rivalMatchingStudentList.Add(rivalStudent);
-
-        //        _rivalTotalFightingPower += (rivalStudent.Attack + rivalStudent.Defense);
-        //    }
-        //}
-
-        _rivalSchoolName.text = generatedAwayTeam.TeamName;
+        _rivalSchoolName.text = StringManager.Instance.GetString(_generatedAwayTeam.TeamName);
+        StringManager.Instance.ApplyFont(_rivalSchoolName);
         _rivalFightingPowerText.text = _rivalTotalFightingPower.ToString();
         SetText();
     }
@@ -184,18 +169,6 @@ public class FightingPower : MonoBehaviour
         _mySchoolName.text = GameManager.Instance.SaveData.schoolName;
         _myFightingPowerText.text = _myTotalFightingPower.ToString();
     }
-
-    //public void SaveRivalMachingStudentData()
-    //{
-    //    if (_rivalMatchingStudentList.Count < 1 || _rivalMatchingStudentList == null) return;
-
-    //    int rivalCnt = _rivalMatchingStudentList.Count;
-
-    //    var rivalData = new StudentSaveData(rivalCnt, _rivalMatchingStudentList);
-
-    //    if (SaveLoadManager.Instance == null) return;
-    //    SaveLoadManager.Instance.Save(FilePath.RIVAL_STUDENT_MATCHING_PATH, rivalData);
-    //}
 
     public void OnClickStartMatch()
     {
@@ -208,7 +181,7 @@ public class FightingPower : MonoBehaviour
             Debug.Log($"<color=yellow>[씬 전환 직전 확인]</color> {testStd.Name} 선수를 시뮬레이터로 보냅니다! 현재 2점슛 스탯: {testStd.GetCurrentStat(potential.Stat2pt)}");
         }
 
-        GameManager.Instance.LoadMatchSceneWithData("Test_Simul", MyMatchingStudentList, RivalMatchingStudentList);
+        GameManager.Instance.LoadMatchSceneWithData(SceneName.SIMULATOR, MyMatchingStudentList, RivalMatchingStudentList);
     }
     
     // 리그 진행 상태에 따라 뒤로가기 버튼 켜기/끄기
@@ -231,5 +204,11 @@ public class FightingPower : MonoBehaviour
 
         // 리그 중간(isMidLeague == true)이면 버튼을 숨기고(false), 첫 경기거나 리그 중이 아니면 버튼을 보입니다(true).
         _backButtonObj.SetActive(!isMidLeague);
+    }
+
+    private void RefreshUI()
+    {
+        _rivalSchoolName.text = StringManager.Instance.GetString(_generatedAwayTeam.TeamName);
+        StringManager.Instance.ApplyFont(_rivalSchoolName);
     }
 }

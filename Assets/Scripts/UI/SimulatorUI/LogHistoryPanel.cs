@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Game.Constants;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -27,7 +28,12 @@ public class LogHistoryPanel : MonoBehaviour
 
     private void Awake()
     {
-        if (_btnClose != null) _btnClose.onClick.AddListener(() => gameObject.SetActive(false));
+        if (_btnClose != null) _btnClose.onClick.AddListener(() =>
+        {
+            PlayConfirmSound();
+            gameObject.SetActive(false);
+        });
+        
         if (_btnPrev != null) _btnPrev.onClick.AddListener(OnClickPrevQuarter);
         if (_btnNext != null) _btnNext.onClick.AddListener(OnClickNextQuarter);
     }
@@ -58,11 +64,13 @@ public class LogHistoryPanel : MonoBehaviour
 
     private void OnClickPrevQuarter()
     {
+        PlayConfirmSound();
         if (_currentQuarter > 1) { _currentQuarter--; UpdateLogView(); }
     }
 
     private void OnClickNextQuarter()
     {
+        PlayConfirmSound();
         if (_currentQuarter < _maxQuarter) { _currentQuarter++; UpdateLogView(); }
     }
 
@@ -81,11 +89,21 @@ public class LogHistoryPanel : MonoBehaviour
                 {
                     // StringManager를 통해 번역된 실제 리그 이름 가져오기
                     _textLeagueName.text = StringManager.Instance.GetString(masterData.Value.leagueNameKey);
+                    StringManager.Instance.ApplyFont(_textLeagueName);
                 }
             }
         }
-        if (_textRoundTitle != null) _textRoundTitle.text = $"{_currentRound}";
-        if (_textQuarter != null) _textQuarter.text = $"{_currentQuarter}";
+        if (_textRoundTitle != null)
+        {
+            _textRoundTitle.text = $"{_currentRound}" + StringManager.Instance.GetString("UI_Matchlog_라운드경기로그");
+            StringManager.Instance.ApplyFont( _textRoundTitle);
+        }
+
+        if (_textQuarter != null)
+        {
+            _textQuarter.text = $"{_currentQuarter}" + StringManager.Instance.GetString("UI_Matchlog_쿼터");
+            StringManager.Instance.ApplyFont(_textQuarter);
+        }
 
         if (_textLogContent == null) return;
 
@@ -126,4 +144,10 @@ public class LogHistoryPanel : MonoBehaviour
         _textLogContent.text = sb.ToString();
     }
 
+
+    private void PlayConfirmSound()
+    {
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlaySoundOneShot(SoundName.SE_BUTTON_SELECT);
+    }
 }

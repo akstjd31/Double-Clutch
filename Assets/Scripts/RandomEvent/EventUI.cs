@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Game.Constants;
 using TMPro;
 using UnityEngine;
 
@@ -32,6 +33,19 @@ public class EventUI : MonoBehaviour
 
     //Color initColor;
 
+    private void OnEnable()
+    {
+        StringManager.OnLanguageChanged += Refresh;
+    }
+    private void OnDisable()
+    {
+        StringManager.OnLanguageChanged -=Refresh;
+    }
+
+    private void Refresh()
+    {
+
+    }
     public void UIStart()
     {
         //_isFirstText = true;
@@ -186,9 +200,36 @@ public class EventUI : MonoBehaviour
         _choicePanel.SetActive(true);
 
         //텍스트 출력하기
+        if (StringManager.Instance.CurrentLanguage == Language.Ko)
+        {
+            _choiceText[0].enableAutoSizing = false;
+            _choiceText[0].enableAutoSizing = false;
+            _choiceText[0].enableAutoSizing = false;
+            _choiceText[0].fontSize = 50;
+            _choiceText[1].fontSize = 50;
+            _choiceText[2].fontSize = 50;
+        }
+        if (StringManager.Instance.CurrentLanguage == Language.En)  
+        {
+            _choiceText[0].enableAutoSizing = true;
+            _choiceText[0].enableAutoSizing = true;
+            _choiceText[0].enableAutoSizing = true;
+        }
+        if (StringManager.Instance.CurrentLanguage == Language.Ja)
+        {
+            _choiceText[0].enableAutoSizing = false;
+            _choiceText[0].enableAutoSizing = false;
+            _choiceText[0].enableAutoSizing = false;
+            _choiceText[0].fontSize = 40;
+            _choiceText[1].fontSize = 40;
+            _choiceText[2].fontSize = 40;
+        }
         _choiceText[0].text = text1;
+        StringManager.Instance.ApplyFont(_choiceText[0]);
         _choiceText[1].text = text2;
+        StringManager.Instance.ApplyFont(_choiceText[1]);
         _choiceText[2].text = text3;
+        StringManager.Instance.ApplyFont(_choiceText[2]);
     }
 
     private void ResultInit()
@@ -205,6 +246,17 @@ public class EventUI : MonoBehaviour
 
     public void UpdateEventResult(potential potentialChangeType, int potentialChangeValue, string resultScriptKey, string reactionPortraitId, string currentState, string statusChange)
     {
+        string nm = "";
+
+        if (reactionPortraitId.Contains("Normal"))
+            nm = SoundName.SE_NONE;
+        
+        else if (reactionPortraitId.Contains("Sad"))
+            nm = SoundName.SE_FAIL;
+        
+        else
+            nm = SoundName.SE_GREAT;       
+
         #region 스텟한글변환
         string transText = "";
         switch (potentialChangeType)
@@ -213,15 +265,15 @@ public class EventUI : MonoBehaviour
                 break;
             case potential.Stat2pt:
             case potential.Stat3pt:
-                transText = "득점";
+                transText = StringManager.Instance.GetString("UI_Player_득점");
                 break;
             case potential.StatPass:
             case potential.StatRebound:
-                transText = "지원";
+                transText = StringManager.Instance.GetString("UI_Player_지원");
                 break;
             case potential.StatSteal:
             case potential.StatBlock:
-                transText = "저지";
+                transText = StringManager.Instance.GetString("UI_Player_저지");
                 break;
         }
         #endregion
@@ -230,6 +282,7 @@ public class EventUI : MonoBehaviour
         if (potentialChangeValue < 0)
         {
             _stat.text = transText + "↓";
+            StringManager.Instance.ApplyFont(_stat);
             _stat.color = new Color(0.9f, 0.3f, 0.3f, 1f);
 
         }
@@ -240,6 +293,7 @@ public class EventUI : MonoBehaviour
         else
         {
             _stat.text = transText + "↑";
+            StringManager.Instance.ApplyFont( _stat);
             _stat.color = new Color(0.2f, 0.8f, 0.4f, 1f);
         }
         //득점지원저지 위치
@@ -262,15 +316,19 @@ public class EventUI : MonoBehaviour
 
         //결과 텍스트 출력
         _resultText.text = resultScriptKey;
+        StringManager.Instance.ApplyFont(_resultText);
 
         //패널 띄우기
         _resultPanel.SetActive(true);
 
-        UpdateState(currentState, statusChange);//상태변경
+        UpdateState(currentState, statusChange, nm);//상태변경
     }
 
-    public void UpdateState(string currentState, string statusChange)
+    public void UpdateState(string currentState, string statusChange, string soundName)
     {
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlaySoundOneShot(soundName); 
+
         var rect = _state.rectTransform;
         var pos = rect.anchoredPosition;
         pos.y = Random.Range(-45f, 45f);
@@ -288,12 +346,14 @@ public class EventUI : MonoBehaviour
             //이전 상태가 없었으면
             if (statusChange == StudentState.OverWorked.ToString())
             {
-                _state.text = "과로 획득";
+                _state.text = StringManager.Instance.GetString("Str_UI_과로획득");
+                StringManager.Instance.ApplyFont(_state);
                 _state.color = new Color(0.9f, 0.3f, 0.3f, 1f);
             }
             else if (statusChange == StudentState.Injured.ToString())
             {
-                _state.text = "부상 획득";
+                _state.text = StringManager.Instance.GetString("Str_UI_부상획득");
+                StringManager.Instance.ApplyFont(_state);
                 _state.color = new Color(0.9f, 0.3f, 0.3f, 1f);
             }
         }

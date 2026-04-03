@@ -34,7 +34,7 @@ public class MatchDataProxy : MonoBehaviour
 
     [Header("Balance Settings")]
     [SerializeField] private int W_Shot_Base = 1;     // 101: 슛 기본 가중치
-    [SerializeField] private int W_Pass_Base = 1;     // 102: 패스 기본 가중치
+    [SerializeField] private float W_Pass_Base = 1;     // 102: 패스 기본 가중치
     [SerializeField] private int W_Dribble_Base = 1;  // 103: 드리블 기본 가중치
     [SerializeField] private float Pen_Dist_Hoop = 0.5f; // 104: 골대 거리 페널티 계수
     [SerializeField] private float Pen_Def_Block = 1f;   // 105: 수비 블록 페널티 계수
@@ -47,15 +47,48 @@ public class MatchDataProxy : MonoBehaviour
     [SerializeField] private float W_Steal_Base = 1f;
     [SerializeField] private float W_Dribble_Bonus = 1.5f;
     [SerializeField] private float W_Dist_Bonus = 1.2f;
+    [SerializeField] private float R_Reb_Ball = 0.35f;
+    [SerializeField] private float R_Reb_Cand = 0.35f;
+    [SerializeField] private float C_gamma = 1.87f;
 
     [Header("Data Readers")]
     [SerializeField] private Team_ArchetypeDataReader _archetypeReader;
+    [SerializeField] private Balance_DataReader _balanceReader;
     private void Awake()
     {
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
+        ApplyBalanceData();
     }
+    public void ApplyBalanceData()
+    {
+        if (_balanceReader == null || _balanceReader.DataList == null) return;
 
+        foreach (var data in _balanceReader.DataList)
+        {
+            switch (data.weightId)
+            {
+                case "W_Shot_Base": W_Shot_Base = (int)data.value; break;
+                case "W_Pass_Base": W_Pass_Base = data.value; break;
+                case "W_Dribble_Base": W_Dribble_Base = (int)data.value; break;
+                case "Pen_Dist_Hoop": Pen_Dist_Hoop = data.value; break;
+                case "Pen_Def_Block": Pen_Def_Block = data.value; break;
+                case "Pen_Def_Steal": Pen_Def_Steal = data.value; break;
+                case "W_Default": W_Default = (int)data.value; break;
+                case "Pen_Intercept_Dist": Pen_Intercept_Dist = data.value; break;
+                case "Min_Shoot_Score": Min_Shoot_Score = data.value; break;
+                case "Def_Block_Dist": Def_Block_Dist = data.value; break;
+                case "W_Block_Base": W_Block_Base = data.value; break;
+                case "W_Steal_Base": W_Steal_Base = data.value; break;
+                case "W_Dribble_Bonus": W_Dribble_Bonus = data.value; break;
+                case "W_Dist_Bonus": W_Dist_Bonus = data.value; break;
+                case "R_Reb_Ball": R_Reb_Ball = data.value; break;
+                case "R_Reb_Cand": R_Reb_Cand = data.value; break;
+                case "C_gamma": C_gamma = data.value; break;
+            }
+        }
+        Debug.Log("[MatchDataProxy] 밸런스 엑셀 데이터 연동 완료!");
+    }
     public float GetBalance(string key)
     {
         switch (key)
@@ -74,6 +107,9 @@ public class MatchDataProxy : MonoBehaviour
             case "W_Steal_Base": return W_Steal_Base;
             case "W_Dribble_Bonus": return W_Dribble_Bonus;
             case "W_Dist_Bonus": return W_Dist_Bonus;
+            case "R_Reb_Ball": return R_Reb_Ball;
+            case "R_Reb_Cand": return R_Reb_Cand;
+            case "C_gamma": return C_gamma;
             default:
                 Debug.LogError($"[MatchDataProxy] 알 수 없는 키값: {key}");
                 return 0f;

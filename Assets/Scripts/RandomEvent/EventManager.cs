@@ -1,11 +1,11 @@
 using NUnit.Framework;
 using System.Collections.Generic;
 using UnityEngine;
+using Game.Constants;
 
 [System.Serializable]
 public class EventManager : Singleton<EventManager>
 {
-    private const string SAVE_FILE = "RandomEventSave.json";
     Dictionary<int, List<RandomEvent>> _saveEventList = new();
 
     #region DB
@@ -41,20 +41,8 @@ public class EventManager : Singleton<EventManager>
     {
         _myStudents = StudentManager.Instance.MyStudents;
 
-        if(_candidateDictionary.Count > 0)
-        {
-            _debugList_candidateDictionary = new List<int>(_candidateDictionary.Keys);
-
-            foreach (var p in _candidateDictionary)
-            {
-                int studentId = p.Key;
-                _randomEvents.AddRange(p.Value);
-            }
-            return;
-        }
 
         var data = _dataModelReader.DataList;
-        _candidateDictionary.Clear();
 
 
         //학생들 전체 검사
@@ -175,12 +163,13 @@ public class EventManager : Singleton<EventManager>
             });
         }
 
-        SaveLoadManager.Instance.Save(SAVE_FILE, saveData);
+        SaveLoadManager.Instance.Save(FilePath.RANDOM_EVENT_PATH, saveData);
     }
 
     public void LoadGame()
     {
-        if (SaveLoadManager.Instance.TryLoad<RandomEventSaveData>(SAVE_FILE, out var data))
+        _candidateDictionary.Clear();
+        if (SaveLoadManager.Instance.TryLoad<RandomEventSaveData>(FilePath.RANDOM_EVENT_PATH, out var data))
         {
             _candidateDictionary.Clear();
 

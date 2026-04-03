@@ -34,7 +34,7 @@ public class ProfileDetailsPanel : MonoBehaviour
 
     public void Init(Student student)
     {
-        Debug.Log("Profile Details Panel Init!");
+        //Debug.Log("Profile Details Panel Init!");
         _student = student;
 
         _studentImage.sprite = SpriteManager.Instance.GetSprite(_student.VisualData.playerImageResource);
@@ -44,20 +44,76 @@ public class ProfileDetailsPanel : MonoBehaviour
 
         _positionDropdown.value = PositionIntoValue(student.Position);
         _nameText.text = name;
-        _gradeText.text = student.Grade.ToString() + "학년";
+        if(manager.CurrentLanguage == Language.En)
+        {
+            _nameText.alignment = TextAlignmentOptions.Left;
+            _nameText.fontSize = 38;
+        }
+        if (manager.CurrentLanguage == Language.Ja)
+        {
+            _nameText.alignment = TextAlignmentOptions.Left;
+            _nameText.fontSize = 40;
+        }
+        if (manager.CurrentLanguage == Language.Ko)
+        {
+            _nameText.alignment = TextAlignmentOptions.Center;
+            _nameText.fontSize = 54;
+        }
+
+        _gradeText.text = manager.GetString(SetName(student.Grade));
+        manager.ApplyFont(_gradeText);
         _attackText.text = student.Attack.ToString();
+        manager.ApplyFont(_attackText);
         _defenseText.text = student.Defense.ToString();
+        manager.ApplyFont( _defenseText);
         _conditionSlider.value = NormalizeConditionValue(student.Condition);
         manager.ApplyFont(_nameText);
         SetPassiveText(student);
         Refresh();        
     }
 
+    private string SetName(int grade)
+    {
+        string namekey = null;
+        switch(grade)
+        {
+            case 1: namekey =  "UI_Player_1학년"; break;
+            case 2: namekey = "UI_Player_2학년"; break;
+            case 3: namekey = "UI_Player_3학년"; break;
+            default: namekey = "학년 설정 오류"; break;
+        }
+        return namekey;
+    }
+
     private void Refresh()
     {
+        StringManager manager = StringManager.Instance;
         if (_student == null) return;
-        StringManager.Instance.GetString(_student.PersonalityData.personalityName, _personalityText);
-        StringManager.Instance.GetString(_student.TraitData.traitName, _traitText);
+        if (manager.CurrentLanguage == Language.En)
+        {
+            _nameText.alignment = TextAlignmentOptions.Left;
+            _nameText.fontSize = 38;
+        }
+        if (manager.CurrentLanguage == Language.Ja)
+        {
+            _nameText.alignment = TextAlignmentOptions.Left;
+            _nameText.fontSize = 40;
+        }
+        if (manager.CurrentLanguage == Language.Ko)
+        {
+            _nameText.alignment = TextAlignmentOptions.Center;
+            _nameText.fontSize = 54;
+        }
+        manager.GetString(_student.PersonalityData.personalityName, _personalityText);
+        manager.ApplyFont(_personalityText);
+        manager.GetString(_student.TraitData.traitName, _traitText);
+        manager.ApplyFont(_traitText);
+        manager.GetString(SetName(_student.Grade), _gradeText);
+        manager.ApplyFont(_gradeText);
+        manager.GetString(StringManager.Instance.GetString(_student.Name[0]) + StringManager.Instance.GetString(_student.Name[1]) + StringManager.Instance.GetString(_student.Name[2]), _nameText);
+        manager.ApplyFont(_nameText);
+        manager.ApplyFont(_attackText);
+        manager.ApplyFont(_defenseText);
         MakeTriangle();
     }
 

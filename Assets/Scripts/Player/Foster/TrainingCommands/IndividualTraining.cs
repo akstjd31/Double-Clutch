@@ -38,19 +38,19 @@ public class IndividualTraining : ITraining
             GetInjuryOrOverwork(_target);
         }
 
-        int mainBonus = _target.GetStat(_data.mainPotential).GrowthRate + InfraManager.Instance.GetInfraEffectValueByEffectType(infraEffectType.TrainingBonus) + (int)_target.GetFosterPassiveValue(_data.mainPotential);
+        int mainBonus = _target.GetStat(_data.mainPotential).GrowthRate + InfraManager.Instance.GetInfraEffectValueByEffectType(infraEffectType.TrainingBonus) + (int)(_target.GetFosterPassiveValue(_data.mainPotential));
         int mainGrowth = _data.mainGain + (_data.mainGain * mainBonus / 100);
         
         _target.GetStat(_data.mainPotential).GrowAndReturn(mainGrowth);
         _target.AddChangedPotential(_data.mainPotential);
-        if (_data.subPotential != potential.None) //∫Œ ¿·¿Á∑¬¿Ã º≥¡§µ» »∆∑√¿Ã∂Û∏È
+        if (_data.subPotential != potential.None) //Î∂Ä Ïû†Ïû¨Î†•Ïù¥ ÏÑ§Ï†ïÎêú ÌõàÎ†®Ïù¥ÎùºÎ©¥
         {
-            int subBonus = _target.GetStat(_data.subPotential).GrowthRate + InfraManager.Instance.GetInfraEffectValueByEffectType(infraEffectType.TrainingBonus) + (int)_target.GetFosterPassiveValue(_data.subPotential);
+            int subBonus = _target.GetStat(_data.subPotential).GrowthRate + InfraManager.Instance.GetInfraEffectValueByEffectType(infraEffectType.TrainingBonus) + (int)(_target.GetFosterPassiveValue(_data.subPotential));
             int subGrowth = _data.subGain + (_data.subGain * subBonus / 100);
             _target.GetStat(_data.subPotential).GrowAndReturn(subGrowth);
             _target.AddChangedPotential(_data.subPotential);
         }
-
+        _target.SetHasIndividualTraining(true);
         _target.ChangeCondition(-(Random.Range(_data.conditionCostMin, _data.conditionCostMax)));
         _target.OnStatChanged();
         _target.ResetTrainingSchedule();
@@ -61,15 +61,15 @@ public class IndividualTraining : ITraining
         //target.ChangeState(StudentState.OverWorked);
         int rate = UnityEngine.Random.Range(0, 100);
 
-        if (rate < 60) // 60% »Æ∑¸ (0~59)
+        if (rate < 60) // 60% ÌôïÎ•† (0~59)
         {
             target.ChangeState(StudentState.OverWorked);
-            Debug.Log($"{target.Name} «–ª˝¿Ã ∞˙∑Œ ªÛ≈¬∞° µ«æ˙Ω¿¥œ¥Ÿ.");
+            Debug.Log($"{target.Name} ÌïôÏÉùÏù¥ Í≥ºÎ°ú ÏÉÅÌÉúÍ∞Ä ÎêòÏóàÏäµÎãàÎã§.");
         }
-        else // 40% »Æ∑¸ (60~99)
+        else // 40% ÌôïÎ•† (60~99)
         {
             target.ChangeState(StudentState.Injured);
-            Debug.Log($"{target.Name} «–ª˝¿Ã ∫ŒªÛ ªÛ≈¬∞° µ«æ˙Ω¿¥œ¥Ÿ.");
+            Debug.Log($"{target.Name} ÌïôÏÉùÏù¥ Î∂ÄÏÉÅ ÏÉÅÌÉúÍ∞Ä ÎêòÏóàÏäµÎãàÎã§.");
         }
     }
 

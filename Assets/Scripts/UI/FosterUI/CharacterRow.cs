@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using static UnityEngine.GraphicsBuffer;
 
 /// <summary>
 /// 개별 결과창 CharacterRow 프리팹에 할당할 스크립트
@@ -17,26 +18,23 @@ public class CharacterRow : MonoBehaviour
     [SerializeField] TextMeshProUGUI _guardTag2;
     [SerializeField] TextMeshProUGUI _condition;
     [SerializeField] TextMeshProUGUI _state;
-    
+    [SerializeField] RectTransform _attackBox;
+    [SerializeField] RectTransform _defenceBox;
+
+    private Student _target;
+    private void OnEnable()
+    {
+        StringManager.OnLanguageChanged += Refresh;
+    }
+    private void OnDisable()
+    {
+        StringManager.OnLanguageChanged -= Refresh;
+    }
 
     public void Init(Student target)
     {
-        StringManager manager = StringManager.Instance;
-        _name.text = manager.GetString(target.Name[0]) + manager.GetString(target.Name[1]) + manager.GetString(target.Name[2]);
-        
-        _attack.text = target.AttackChange != 0 ? $"+{target.AttackChange}" : "-";
-        _guard.text = target.DefenseChange != 0 ? $"+{target.DefenseChange}" : "-";
-        if (target.ConditionChange > 0)
-        {
-            _condition.text = "+"+target.ConditionChange.ToString();
-        }
-        else
-        {
-            _condition.text = target.ConditionChange.ToString();
-        }
-        _state.text = manager.GetString(GetStateString(target.State));
-        manager.ApplyFont(_condition);
-        SetTag(target);
+        _target = target;
+        Refresh();
     }
 
     private string GetStateString(StudentState state)
@@ -84,19 +82,63 @@ public class CharacterRow : MonoBehaviour
         }
         if (attackTags.Count > 0)
         {
-            _attackTag1.text = StringManager.Instance.GetString(attackTags[0]);            
+            _attackTag1.text = StringManager.Instance.GetString(attackTags[0]);
+            StringManager.Instance.ApplyFont(_attackTag1);
         }
         if (attackTags.Count > 1)
         {
             _attackTag2.text = StringManager.Instance.GetString(attackTags[1]);
+            StringManager.Instance.ApplyFont(_attackTag2);
         }
         if (guardTags.Count > 0)
         {
             _guardTag1.text = StringManager.Instance.GetString(guardTags[0]);
+            StringManager.Instance.ApplyFont(_guardTag1);
         }
         if (guardTags.Count > 1)
         {
             _guardTag2.text = StringManager.Instance.GetString(guardTags[1]);
+            StringManager.Instance.ApplyFont(_guardTag2);
         }        
     }    
+    private void Refresh()
+    {
+        StringManager manager = StringManager.Instance;
+        _name.text = manager.GetString(_target.Name[0]) + manager.GetString(_target.Name[1]) + manager.GetString(_target.Name[2]);
+        if(manager.CurrentLanguage == Language.Ko)
+        {
+            _name.fontSize = 32;
+        }
+        if (manager.CurrentLanguage == Language.En)
+        {
+            _name.fontSize = 24;
+        }
+        if (manager.CurrentLanguage == Language.Ja)
+        {
+            _name.fontSize = 24;
+        }
+
+        manager.ApplyFont(_name);
+
+        _attack.text = _target.AttackChange != 0 ? $"+{_target.AttackChange}" : "-";
+        manager.ApplyFont(_attack);
+
+        _guard.text = _target.DefenseChange != 0 ? $"+{_target.DefenseChange}" : "-";
+        manager.ApplyFont(_guard);
+
+        if (_target.ConditionChange > 0)
+        {
+            _condition.text = "+" + _target.ConditionChange.ToString();
+        }
+        else
+        {
+            _condition.text =_target.ConditionChange.ToString();
+        }
+        _state.text = manager.GetString(GetStateString(_target.State));
+        manager.ApplyFont(_state);
+        manager.ApplyFont(_condition);
+        SetTag(_target);
+        LayoutRebuilder.ForceRebuildLayoutImmediate(_attackBox);
+        LayoutRebuilder.ForceRebuildLayoutImmediate(_defenceBox);
+    }
 }

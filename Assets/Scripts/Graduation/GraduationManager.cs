@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using static UnityEngine.GraphicsBuffer;
+using Game.Constants;
 
 public class GraduationManager : MonoBehaviour
 {
@@ -38,7 +38,9 @@ public class GraduationManager : MonoBehaviour
         if (_myStudents == null)
         {
             Debug.Log("학생 리스트없음");
+            return;
         }
+
         if (GameManager.Instance.SaveData.isGraduationPending)
         {
             // 학년 이미 증가된 상태 - ListCreat() 생략
@@ -59,6 +61,17 @@ public class GraduationManager : MonoBehaviour
         //처음 학생 프로필 띄우기
         _promotionPanel.GetList();
         _promotionPanel.UpdateProfile();
+    }
+
+    private void OnEnable()
+    {
+        PlaySound();
+    }
+
+    private void PlaySound()
+    {
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlaySound(SoundName.BGM_GRADUATION);
     }
 
     private void ListCreat()
@@ -98,7 +111,11 @@ public class GraduationManager : MonoBehaviour
         if (saveData == null) return;
 
         // 누적된 명예 계산
-        gameMgr.SetHonor(saveData.honor + saveData.totalWinHonor);
+        _totalHonor += saveData.totalWinHonor;
+
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlaySoundOneShot(SoundName.SE_FAME);
+            
         gameMgr.ClearTotalWinHonorData();
     }
 
@@ -106,15 +123,14 @@ public class GraduationManager : MonoBehaviour
     {
         if (gameMgr == null) return;
 
-        int totalHonor = 0;
         for (int i = 0; i < _graduationStudentList.Count; i++)
         {
-            totalHonor += _graduationStudentList[i].TotalFame;
+            _totalHonor += _graduationStudentList[i].TotalFame;
             gameMgr.AddGraduationCount(_graduationStudentList[i].VisualId);
         }
 
         // 졸업한 선수의 누적 명예를 다 더해서 실제로 데이터에 갱신시키기
-        gameMgr.SetHonor(gameMgr.SaveData.honor + totalHonor);
+        gameMgr.SetHonor(gameMgr.SaveData.honor + _totalHonor);
         StudentManager.Instance.SaveGame();
 
         if (!_isGraduationSkip)
@@ -145,5 +161,11 @@ public class GraduationManager : MonoBehaviour
 
         CalendarManager.Instance.NextTurn();
         GameManager.Instance.GoToLobby();
+    }
+
+    public void PlayCancelSound()
+    {
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlaySoundOneShot(SoundName.SE_BUTTON_CANCEL);
     }
 }

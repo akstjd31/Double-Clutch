@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using Game.Constants;
 
 public class TotalRankPanel : MonoBehaviour
 {
@@ -47,10 +48,11 @@ public class TotalRankPanel : MonoBehaviour
             {
                 // 번역된 실제 리그 이름으로 텍스트 변경
                 _txtLeagueName.text = StringManager.Instance.GetString(masterData.Value.leagueNameKey);
+                StringManager.Instance.ApplyFont(_txtLeagueName);
             }
         }
 
-        string myTeamId = StudentManager.TEAM_ID;
+        string myTeamId = PrefKeys.PLAYER_TEAM_ID;
 
         // 순위표 생성
         foreach (var standing in league.standings)

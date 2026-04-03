@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Game.Constants;
 
 public class TournamentPairingGenerator : ILeaguePairingGenerator
 {
@@ -26,7 +27,7 @@ public class TournamentPairingGenerator : ILeaguePairingGenerator
             string homeId = aliveTeams[i];
             string awayId = aliveTeams[i + 1];
 
-            if (awayId == LeagueManager.PLAYER_TEAM_ID)
+            if (awayId == PrefKeys.PLAYER_TEAM_ID)
             {
                 string temp = homeId;
                 homeId = awayId;

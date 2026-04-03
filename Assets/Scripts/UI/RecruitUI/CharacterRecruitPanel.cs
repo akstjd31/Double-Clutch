@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Game.Constants;
 
 public class CharacterRecruitPanel : MonoBehaviour
 {
@@ -10,12 +11,30 @@ public class CharacterRecruitPanel : MonoBehaviour
     int _selectCount = 0;
 
     private void OnEnable()
-    {
+    {        
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.SetGraduationPending(false);
+        }
+        PlaySound(SoundName.BGM_SCOUT);
         Init();
+    }
+
+    private void PlaySound(string id)
+    {
+        if (AudioManager.Instance == null) return;
+        AudioManager.Instance.PlaySound(id);
     }
 
     public void Init()
     {
+        if (StudentManager.Instance.MyStudents.Count > StudentManager.Instance.RecruitLimit)
+        {
+            StudentUIManager.Instance.OpenCharacterOutPanel();
+            this.gameObject.SetActive(false);
+            return;
+        }
+
         for (int i = 0; i < characterRecruitBoxList.Length; i++)
         {
             characterRecruitBoxList[i].Init(StudentManager.Instance.MakeRandomStudent());

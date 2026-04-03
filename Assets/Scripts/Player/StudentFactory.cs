@@ -28,16 +28,18 @@ public class StudentFactory : MonoBehaviour
     [SerializeField] Player_PositionDataReader _player_PositionDataReader;
     [Header("Player_PassiveGradeData(패시브 등장 확률 데이터)")]
     [SerializeField] Player_PassiveGradeDataReader _passiveGradeDataReader;
-    [Header("Player_Reputation(최대 잠재력 범위 관련 데이터)")]
+    [Header("Player_Reputation(명예 수치 관련 데이터)")]
     [SerializeField] Player_ReputationDataReader _reputationDataReader;
+    [Header("Player_SynergyDataReader(시너지 데이터)")]
+    [SerializeField] Player_SynergyDataReader _synergyDataReader;
 
-    const float FIRST_GRADE_RATE = 0.6f;
-    const float SECOND_GRADE_RATE = 0.2f;
+    const float FIRST_GRADE_RATE = 0.5f;
+    const float SECOND_GRADE_RATE = 0.3f;
     const float THIRD_GRADE_RATE = 0.2f;
 
-    const float RIVAL_FIRST_GRADE_RATE = 0.34f;
-    const float RIVAL_SECOND_GRADE_RATE = 0.33f;
-    const float RIVAL_THIRD_GRADE_RATE = 0.33f;
+    const float RIVAL_FIRST_GRADE_RATE = 0.3334f;
+    const float RIVAL_SECOND_GRADE_RATE = 0.3333f;
+    const float RIVAL_THIRD_GRADE_RATE = 0.3333f;
 
 
     List<Player_StartingStateData> _startingStates = new List<Player_StartingStateData>();
@@ -421,5 +423,19 @@ public class StudentFactory : MonoBehaviour
         if (_passiveDataReader == null) return null;
 
         return _passiveDataReader.DataList;
+    }
+
+    public List<Player_TraitData> GetTraitDataList()
+    {
+        if (_traitDataReader == null) return null;
+
+        return _traitDataReader.DataList;
+    }
+
+    public List<PlayerSynergyData> GetSynergyDataList()
+    {
+        if (_synergyDataReader == null) return null;
+
+        return _synergyDataReader.DataList;
     }
 }

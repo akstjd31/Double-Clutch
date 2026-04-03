@@ -6,15 +6,14 @@ public class AudioManager : Singleton<AudioManager>
 {
     [SerializeField] ResourceDataReader _reader;
     [SerializeField] AudioMixer _mixer;
-    private AudioSource _audioSource;
+    [SerializeField] private AudioSource _bgmAudioSource;
+    [SerializeField] private AudioSource _sfxAudioSource;
     private Dictionary<string, string> _pathIndex = new Dictionary<string, string>();
     private Dictionary<string, AudioClip> _audioCache = new Dictionary<string, AudioClip>();
 
     protected override void Awake()
     {
         base.Awake();
-
-        _audioSource = this.GetComponent<AudioSource>();
         InitPathTable();
     }
 
@@ -35,7 +34,7 @@ public class AudioManager : Singleton<AudioManager>
             }
         }
 
-        Debug.Log($"AudioManager {_pathIndex.Count}°³ÀÇ ¸®¼Ò½º °æ·Î Init ¿Ï·á.");
+        Debug.Log($"AudioManager {_pathIndex.Count}ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ò½ï¿½ ï¿½ï¿½ï¿½ Init ï¿½Ï·ï¿½.");
     }
 
     public AudioClip GetAudioClip(string resourceId)
@@ -54,27 +53,49 @@ public class AudioManager : Singleton<AudioManager>
             }
         }
 
-        Debug.LogWarning($"[AudioManager] ¸®¼Ò½º¸¦ ·ÎµåÇÒ ¼ö ¾ø½À´Ï´Ù. ID: {resourceId}");
+        Debug.LogWarning($"[AudioManager] ï¿½ï¿½ï¿½Ò½ï¿½ï¿½ï¿½ ï¿½Îµï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½. ID: {resourceId}");
         return null;
     }
 
-    public void PlaySound(AudioClip clip)
+    public void PlaySound(string resourceId)
     {
-        if (_audioSource == null) return;
-        
-        _audioSource.clip = clip;
-        _audioSource.Play();
-        Debug.Log("¿Àµğ¿À Àç»ı!");
+        if (_bgmAudioSource == null) return;
+        if (string.IsNullOrWhiteSpace(resourceId)) return;
+
+        var clip = GetAudioClip(resourceId);
+
+        if (_bgmAudioSource.isPlaying)
+            _bgmAudioSource.Stop();
+
+        _bgmAudioSource.clip = clip;
+        _bgmAudioSource.Play();
+    }
+
+    // í˜„ì¬ ì¬ìƒì¤‘ì¸ í´ë¦½ê³¼ ë™ì¼í•œì§€?
+    public bool IsSameClip(string resourceId)
+    {
+        if (string.IsNullOrWhiteSpace(resourceId)) return false;
+
+        var clip = GetAudioClip(resourceId);
+        return _bgmAudioSource.clip.Equals(clip);
+    }
+
+    public void PlaySoundOneShot(string resourceId)
+    {
+        if (_sfxAudioSource == null) return;
+        if (string.IsNullOrWhiteSpace(resourceId)) return;
+
+        var clip = GetAudioClip(resourceId);
+        _sfxAudioSource.PlayOneShot(clip);
     }
 
     public void StopSound()
     {
-        if (_audioSource == null) return;
-
-        _audioSource.Stop();
+        if (_bgmAudioSource == null) return;
+        _bgmAudioSource.Stop();
     }
 
-    // ¸Ş¸ğ¸® ÃÖÀûÈ­¸¦ À§ÇÑ Ä³½Ã Å¬¸®¾î.    
+    // ï¿½Ş¸ï¿½ ï¿½ï¿½ï¿½ï¿½È­ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Ä³ï¿½ï¿½ Å¬ï¿½ï¿½ï¿½ï¿½.    
     public void ClearCache()
     {
         _audioCache.Clear();
@@ -91,18 +112,18 @@ public class AudioManager : Singleton<AudioManager>
     }
 
 
-    // º¼·ı Á¶Àı
+    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     private void ApplyVolume(string name, float sliderValue)
     {
         float db;
         
-        if (sliderValue <= 0.0001f)// ½½¶óÀÌ´õ°¡ 0ÀÌ°Å³ª ¸Å¿ì ³·À¸¸é ¾Æ¿¹ ÃÖÀúÄ¡(-80)·Î °íÁ¤
+        if (sliderValue <= 0.0001f)// ï¿½ï¿½ï¿½ï¿½ï¿½Ì´ï¿½ï¿½ï¿½ 0ï¿½Ì°Å³ï¿½ ï¿½Å¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Æ¿ï¿½ ï¿½ï¿½ï¿½ï¿½Ä¡(-80)ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         {
             db = -80f;
         }
         else
         {            
-            db = Mathf.Log10(sliderValue) * 20;// 0.0001º¸´Ù Å¬ ¶§¸¸ ·Î±× °è»ê
+            db = Mathf.Log10(sliderValue) * 20;// 0.0001ï¿½ï¿½ï¿½ï¿½ Å¬ ï¿½ï¿½ï¿½ï¿½ ï¿½Î±ï¿½ ï¿½ï¿½ï¿½
         }
         _mixer.SetFloat(name, db);
     }

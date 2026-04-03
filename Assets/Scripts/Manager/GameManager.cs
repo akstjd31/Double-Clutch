@@ -4,37 +4,12 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-
-public static class PrefKeys
-{
-    public const string KEY_FIRST_RUN_DONE = "FIRST_RUN_DONE";          // 튜토리얼 여부 결정
-    public const string MATCH_PREP_UI_INDEX = "MATCH_PREP_UI_INDEX";    // 경기 준비 단계 UI 인덱스
-}
-
-public static class SceneName
-{
-    public const string MAIN = "Test_Main";
-    public const string LOBBY = "Test_Lobby";
-    public const string LOADING = "Test_Loading";
-    public const string EVENT = "Test_Event";
-    public const string GRADUATION = "Test_Graduation";
-}
-
-public static class FilePath
-{
-    public const string PLAYER_PATH = "PlayerSaveData.json";
-    public const string MY_STUDENT_MATCHING_PATH = "MyStudentMatchingSaveData.json";
-    public const string RIVAL_STUDENT_MATCHING_PATH = "RivalStudentMatchingSaveData.json";
-    public const string INFRA_PATH = "InfraSaveData.json";
-    public const string LEAGUE_PATH = "LeagueSaveData.json";
-    public const string GRADUATION_PATH = "GraduationAlbumSaveData.json";
-    
-}
+using Game.Constants;
 
 public class GameManager : Singleton<GameManager>
 {
     public const string CHEAT_CODE = "0123";        // 치트 코드
-    public const int MAX_MONEY = 999999;
+    public const int MAX_MONEY = 999999999;
 
     [Header("Data")]
     [SerializeField] private PlayerSaveData _saveData;
@@ -55,30 +30,11 @@ public class GameManager : Singleton<GameManager>
     {
         base.Awake();
 
-        InitCommandSystem();
+        SaveLoadManager.Instance.TryLoad<PlayerSaveData>(FilePath.PLAYER_PATH, out _saveData);
         InitRegister();
 
         // 로딩화면에서 시작하여 메인으로 넘어가기
         SetNextFlow(SceneName.MAIN, _sm.Get<MainState>());
-    }
-
-    private void InitCommandSystem()
-    {
-        // 임시 저장 경로 (데이터 존재 여부에 따라 처음인지 아닌지를 판별)
-        if (SaveLoadManager.Instance.TryLoad(FilePath.PLAYER_PATH, out _saveData))
-        {
-            PlayerPrefs.SetInt(PrefKeys.KEY_FIRST_RUN_DONE, 1);
-        }
-        else
-        {
-            PlayerPrefs.SetInt(PrefKeys.KEY_FIRST_RUN_DONE, 0);
-        }
-
-        // _ctx = new GameContext(save, SaveLoadManager.Instance, FilePath.PLAYER_PATH);
-
-        // _bus = new CommandBus();
-        // _bus.OnFailed += (_, msg) => Debug.LogWarning($"실패: {msg}");
-        // _bus.OnExecuted += (cmd) => Debug.Log($"성공: {cmd.GetType().Name}");
     }
 
     // 객체 미리 등록해놓기
@@ -102,6 +58,8 @@ public class GameManager : Singleton<GameManager>
         SavePlayerData();
     }
 
+    public bool HasData() => _saveData != null;
+
     private void SavePlayerData() => SaveLoadManager.Instance.Save(FilePath.PLAYER_PATH, _saveData);
 
     private void Start()
@@ -114,7 +72,7 @@ public class GameManager : Singleton<GameManager>
     protected override void OnDestroy()
     {
         base.OnDestroy();
-        
+
         OnDataChanged -= SavePlayerData;
     }
 
@@ -132,13 +90,14 @@ public class GameManager : Singleton<GameManager>
     {
         NextSceneName = sceneName;
         NextStateAfterLoading = nextState;
+
+        Debug.Log($"다음 씬: {NextSceneName}, 다음 상태: {NextStateAfterLoading}");
     }
 
     // LoadingScene에서 호출
-    private void NotifyLoadingDone()
+    public void NotifyLoadingDone()
     {
-        if (NextStateAfterLoading != null)
-            _sm.ChangeState(NextStateAfterLoading);
+        _sm.ChangeState(NextStateAfterLoading);
     }
 
     public void LoadNextScene()
@@ -148,8 +107,8 @@ public class GameManager : Singleton<GameManager>
 
     public void GoToGraduation()
     {
-        SetNextFlow(SceneName.GRADUATION, _sm.Get<GraduationState>());
-
+        var nextState = _sm.Get<GraduationState>();
+        SetNextFlow(SceneName.GRADUATION, nextState);
         _sm.ChangeState<LoadingState>();
     }
 
@@ -159,17 +118,34 @@ public class GameManager : Singleton<GameManager>
 
         _sm.ChangeState<LoadingState>();
     }
+    public void GoToEnding()
+    {
+        SetNextFlow("Event", _sm.Get<LobbyState>());
+
+        _sm.ChangeState<LoadingState>();
+    }
 
     private IEnumerator LoadNextScene_Coroutine()
     {
-        var target = NextSceneName;
+        //var target = NextSceneName;
+        //
+        //var op = SceneManager.LoadSceneAsync(target, LoadSceneMode.Single);
+        //op.allowSceneActivation = true;
+        //
+        //yield return op; // 씬 로드 완료까지 대기
+        //
+        //NotifyLoadingDone(); // 로드 끝난 뒤 상태 전환
 
-        var op = SceneManager.LoadSceneAsync(target, LoadSceneMode.Single);
-        op.allowSceneActivation = true;
+        Debug.Log($"현재 씬: {SceneManager.GetActiveScene().name}, 다음 씬: {NextSceneName}");
+        yield return new WaitUntil(() => SceneManager.GetActiveScene().name == NextSceneName);
 
-        yield return op; // 씬 로드 완료까지 대기
+        NotifyLoadingDone();
+    }
 
-        NotifyLoadingDone(); // 로드 끝난 뒤 상태 전환
+    public void SetTutorialCompleted(int index, bool flag)
+    {
+        _saveData.tutorialCompleted[index] = flag;
+        OnDataChanged?.Invoke();
     }
 
     public void SetCoachName(string name)
@@ -177,7 +153,7 @@ public class GameManager : Singleton<GameManager>
         _saveData.coachName = name;
         OnDataChanged?.Invoke();
     }
-    
+
     public void SetSchoolName(string name)
     {
         _saveData.schoolName = name;
@@ -216,18 +192,28 @@ public class GameManager : Singleton<GameManager>
         OnDataChanged?.Invoke();
     }
 
+    public void ClearLeagueWinData()
+    {
+        _saveData.leagueWinRecord.Clear();
+        OnDataChanged?.Invoke();
+    }
+
     public void SetYear(int year)
     {
         _saveData.year = year;
         OnDataChanged?.Invoke();
     }
-    
-    
+
+    public void SetEnding()
+    {
+        _saveData.hasEnding = true;
+        OnDataChanged?.Invoke();
+    }
     public void ChangeState<T>() where T : class, IState
     {
         _sm.ChangeState<T>();
     }
-    
+
     public void LoadMatchSceneWithData(string sceneName, List<Student> homeRoster, List<Student> awayRoster)
     {
         // 상태 머신에서 MatchSimState를 미리 꺼내서 데이터를 주입
@@ -239,7 +225,7 @@ public class GameManager : Singleton<GameManager>
         _sm.ChangeState<LoadingState>();
     }
 
-    
+
     public int GetGraduationCount(string visualId)//프로필 해금을 위한 졸업생 종족(비주얼) 카운트.
     {
         // 리스트에서 ID가 일치하는 첫 번째 요소를 찾고, 없으면 null 반환

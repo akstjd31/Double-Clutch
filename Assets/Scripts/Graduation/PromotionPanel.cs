@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Game.Constants;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -31,6 +32,17 @@ public class PromotionPanel : MonoBehaviour
 
     private void Start()
     {
+        // 혹시 리스트가 들어오지 않았을 경우를 대비해 갱신
+        GetList();
+
+        //  진급할 학생이 한 명도 없다면 (전원 3학년 졸업)
+        if (_promotionStudentList == null || _promotionStudentList.Count == 0)
+        {
+            Debug.Log("진급 대상자가 없습니다. 진급UI 세팅을 건너뛰고 메인으로 이동합니다.");
+            _graduationManager.NextScene();
+            return; 
+        }
+
         UpdateProfile();
         _passiveBox.GetSkillList(_currentStudent);
     }
@@ -40,6 +52,7 @@ public class PromotionPanel : MonoBehaviour
         if (_needGuideRefresh)
         {
             _guideBoxName.text = _getPromotionName;
+            StringManager.Instance.ApplyFont(_guideBoxName);
             _needGuideRefresh = false;
         }
     }
@@ -74,9 +87,11 @@ public class PromotionPanel : MonoBehaviour
         if (_isSkillChoise == false)
         {
             _getPromotionName = StringManager.Instance.GetString("UI_Promotion_진급팝업");
-
-            _getPromotionName = _getPromotionName.Replace("{N}", name);
+            var keys = TextParser.GetKeys(_getPromotionName);
+            _getPromotionName = _getPromotionName.Replace("{" + keys[0] +"}", name);
+            
             _guideBoxName.text = _getPromotionName;
+            StringManager.Instance.ApplyFont(_guideBoxName);
             _needGuideRefresh = true;
         }
         else if (_isSkillChoise == true)
@@ -85,14 +100,19 @@ public class PromotionPanel : MonoBehaviour
         }
 
         _name.text = name;
+        StringManager.Instance.ApplyFont(_name);
         _image.sprite = SpriteManager.Instance.GetSprite(_currentStudent.VisualData.playerImageResource);
-        _gradeUp.text = $"{_currentStudent.Grade-1}학년 → {_currentStudent.Grade}학년";
+        string gradeText = StringManager.Instance.GetString("UI_Promotion_진급");
+        var key =  TextParser.GetKeys(gradeText);
+        _gradeUp.text = gradeText.Replace("{"+key[0]+"}", (_currentStudent.Grade - 1).ToString()).Replace("{" + key[1] + "}", (_currentStudent.Grade).ToString());
+        StringManager.Instance.ApplyFont(_gradeUp);
 
         for (int i = 0; i < 3; i++)
         {
             if(i < _currentStudent.PassiveId.Count)
             {
-                _passiveNameText[i].text = StringManager.Instance.GetString(_currentStudent.Passive[i].skillName); 
+                _passiveNameText[i].text = StringManager.Instance.GetString(_currentStudent.Passive[i].skillName);
+                StringManager.Instance.ApplyFont(_passiveNameText[i]);
             }
             else
             {
@@ -106,6 +126,7 @@ public class PromotionPanel : MonoBehaviour
 
     public void OnClickNextButton()
     {
+        PlayConfirmSound();
         if (_promotionStudentList.Count == 0)
         {
             Debug.Log("진급 학생 없음");
@@ -133,11 +154,13 @@ public class PromotionPanel : MonoBehaviour
 
     public void OnClickAfterChoice()
     {
+        PlayConfirmSound();
         _afterChoice.SetActive(false);
     }
 
     public void OnClickNextStudent()
     {
+        PlayConfirmSound();
         _afterChoice.SetActive(false);
 
         if (_graduationManager.Turn == _promotionStudentList.Count)
@@ -145,5 +168,11 @@ public class PromotionPanel : MonoBehaviour
             _beforeGuideBox.SetActive(false);
         }
         UpdateProfile();
+    }
+
+    private void PlayConfirmSound()
+    {
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlaySoundOneShot(SoundName.SE_BUTTON_SELECT);
     }
 }

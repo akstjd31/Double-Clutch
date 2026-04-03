@@ -13,9 +13,6 @@ public class TutorialState : IState
 
     public void Enter()
     {
-        // 튜토리얼 시작
-        MarkFirstRunDone();
-        _gm.SetNextFlow(SceneName.LOBBY, _sm.Get<LobbyState>());
     }
 
     public void Exit()
@@ -23,12 +20,6 @@ public class TutorialState : IState
         // 끝
     }
 
-    // 튜토리얼 끝날 때쯤에 실행될 메서드 (이 플레이어는 튜토리얼이 필요없음)
-    public void MarkFirstRunDone()
-    {
-        PlayerPrefs.SetInt(PrefKeys.KEY_FIRST_RUN_DONE, 1);
-        PlayerPrefs.Save();
-    }
 
     public void Update() { }
 }

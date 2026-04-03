@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Game.Constants;
 /// <summary>
 /// ????: ???? ???? ?? ????
 /// </summary>
@@ -8,13 +9,11 @@ using UnityEngine;
 
 public class StudentManager : Singleton<StudentManager> 
 {
-    private const string SAVE_FILE = "StudentSave.json";
 
     int _idCount = 0; //???? ???? ?? ?��??? ???? id ?????(????/?��? ???)
     int _recruitLimit = 5; //???? ???? ????
     public int RecruitLimit => GetRecruitLimit();
     public bool IsStable => GetRecruitLimit() == _myStudents.Count;
-    public const string TEAM_ID = "Player_Team";
     // public static StudentManager Instance { get; private set; }
     [SerializeField] StudentFactory _studentFactory; //???? ?????? ????
     [SerializeField] private List<Student> _myStudents = new List<Student>(); //???? ???
@@ -56,7 +55,7 @@ public class StudentManager : Singleton<StudentManager>
     }
     public void SetCurrentTeam(List<Student> players)
     {
-        _currentTeam = new Team(TEAM_ID, true);
+        _currentTeam = new Team(PrefKeys.PLAYER_TEAM_ID, true);
         for (int i = 0; i < players.Count; i++)
         {
             _currentTeam.SetMember(i, players[i]);
@@ -122,12 +121,12 @@ public class StudentManager : Singleton<StudentManager>
 
         // 2. ??????? ???? ????????.
         if (SaveLoadManager.Instance != null)
-            SaveLoadManager.Instance.Save(SAVE_FILE, saveData);
+            SaveLoadManager.Instance.Save(FilePath.STUDENT_PATH, saveData);
     }
 
     public void LoadGame()
     {
-        if (SaveLoadManager.Instance.TryLoad<StudentSaveData>(SAVE_FILE, out var data))
+        if (SaveLoadManager.Instance.TryLoad<StudentSaveData>(FilePath.STUDENT_PATH, out var data))
         {
             // 1. ???? ????
             _idCount = data.lastIdCount;

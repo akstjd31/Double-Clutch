@@ -1,12 +1,13 @@
 using System.Collections.Generic;
+using Game.Constants;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using static UnityEngine.GraphicsBuffer;
 
 /// <summary>
-/// �κ� ȭ���� ���� UI Ȱ��ȭ ���¸� �����ϴ� �� �̱��� �Ŵ���
-/// Ȱ��ȭ�� ���ÿ� Init ȣ��� �л� ���� ���� �ʿ�
+/// ?κ? ????? ???? UI ???? ???¸? ??????? ?? ????? ?????
+/// ?????? ????? Init ???? ?л? ???? ???? ???
 /// </summary>
 public class StudentUIManager : MonoBehaviour
 {
@@ -22,7 +23,7 @@ public class StudentUIManager : MonoBehaviour
     [SerializeField] TeamTrainingCommandPopUp _teamTrainingCommandPopUp;
 
     [SerializeField] ConditionWarningPopUp _conditionWarningPopUp;
-    [SerializeField] StateWarningPopUp_Individual _stateWarningPopUp_Individual;
+    [SerializeField] GameObject _stateWarningPopUp_Individual;
     //[SerializeField] GameObject _stateWarningPopUp_Team;    
     [SerializeField] WeeklyTrainingReportPopUp _weeklyTrainingReportPopUp;
     [SerializeField] TrainingStartConfirmPopUp _trainingStartConfirmPopUp;
@@ -56,13 +57,14 @@ public class StudentUIManager : MonoBehaviour
             OpenRecruitPanel();
     }
 
-    public void OnCharacterBoxClick(CharacterBox box) //ĳ���� �ڽ� ��ư ��Ŭ������ ȣ��
+    public void OnCharacterBoxClick(CharacterBox box) //ĳ???? ??? ??? ????????? ???
     {
+        PlayConfirmSound();
         _profileDetailsPanel.gameObject.SetActive(true);
         _profileDetailsPanel.Init(box.Target);        
     }
 
-    public void OnPassiveBoxMouseOverStart(Player_PassiveData? data) //�нú� ������ �ڽ��� OnPointerEnter���� ȣ��
+    public void OnPassiveBoxMouseOverStart(Player_PassiveData? data) //?н?? ?????? ????? OnPointerEnter???? ???
     {        
         if (!data.HasValue)
         {
@@ -78,23 +80,23 @@ public class StudentUIManager : MonoBehaviour
         _passiveExplainBox.Init(data.Value);
     }
 
-    public void OnPassiveBoxMouseOverEnd() //�нú� ������ �ڽ� OnPointerExit���� ȣ��
+    public void OnPassiveBoxMouseOverEnd() //?н?? ?????? ??? OnPointerExit???? ???
     {
         _passiveExplainBox.gameObject.SetActive(false);        
     }
 
-    public void OnTrainingButtonClick() //�κ� ȭ���� ������ư ��Ŭ������ ȣ��
+    public void OnTrainingButtonClick() //?κ? ????? ??????? ????????? ???
     {
-        // �׽�Ʈ�� ���� �ӽ� �ּ�
+        // ?????? ???? ??? ???
         _trainingPanel.gameObject.SetActive(true);
 
         FosterManager.Instance.UpdateScheduleState();
 
-        // �ӽ÷� ���� ��ġ(MatchPrep)�� �ٷ� �Ѿ�� ����
+        // ??÷? ???? ???(MatchPrep)?? ??? ????? ????
         // GameManager.Instance.ChangeState<MatchPrepState>();
     }
 
-    public void OnTrainingCharacterBoxClick(Student target) //�÷��̾� �ڽ� ��Ŭ������ ȣ��
+    public void OnTrainingCharacterBoxClick(Student target) //?÷???? ??? ????????? ???
     {
         _individualTrainingCommandPopUp.gameObject.SetActive(true);
         _individualTrainingCommandPopUp.Init(target);
@@ -102,6 +104,7 @@ public class StudentUIManager : MonoBehaviour
 
     public void OnTrainingBoxClick()
     {
+        PlayConfirmSound();
         _individualTrainingCommandPopUp.gameObject.SetActive(false);
         _teamTrainingCommandPopUp.gameObject.SetActive(false);
     }
@@ -111,18 +114,19 @@ public class StudentUIManager : MonoBehaviour
         _trainingPanel.RefreshAllBoxesState();
     }
 
-    public void OnTeamTrainingButtonClick() //�ܼ� Ȱ��ȭ�� �ν����� ����� �ص� OK
+    public void OnTeamTrainingButtonClick() //??? ?????? ?ν????? ????? ??? OK
     {
+        PlayConfirmSound();
         _teamTrainingCommandPopUp.gameObject.SetActive(true);
     }
 
-    public void OpenStateWarningPopUp_Individual(Student target) //�Ƿ�, �λ� �������� �Ʒ� �Ҵ�� �˾� ȣ���(���� �Ʒ� ����)
+    public void OpenStateWarningPopUp_Individual(Student target) //???, ?λ? ???????? ??? ???? ??? ????(???? ??? ????)
     {
         _stateWarningPopUp_Individual.gameObject.SetActive(true);
-        _stateWarningPopUp_Individual.Init(target);
+        //_stateWarningPopUp_Individual.Init(target);
     }
 
-    //public void OpenStateWarningPopUp_Team()//�Ƿ�, �λ� �������� �Ʒ� �Ҵ�� �˾� ȣ���(�� �Ʒ� ����)
+    //public void OpenStateWarningPopUp_Team()//???, ?λ? ???????? ??? ???? ??? ????(?? ??? ????)
     //{
     //    _stateWarningPopUp_Team.gameObject.SetActive(true);
     //}
@@ -135,6 +139,7 @@ public class StudentUIManager : MonoBehaviour
 
     public void OpenConditionWarningPopUp(List<Student> targets, int cost)
     {
+        PlayWarningSound();
         _conditionWarningPopUp.gameObject.SetActive(true);
         _conditionWarningPopUp.Init(targets, cost);
     }    
@@ -147,21 +152,24 @@ public class StudentUIManager : MonoBehaviour
 
     public void OpenCostWarningPopUp()
     {
+        PlayWarningSound();
         _costWarningPopUp.SetActive(true);
     }
 
     public void OnConfirmButtonClick()
     {
+        PlayConfirmSound();
         FosterManager.Instance.StartFoster();
     }
 
     public void OpenWeeklyTrainingReportPopUp(List<Student> students)
     {
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlaySoundOneShot(SoundName.SE_REPORT);
+            
         _weeklyTrainingReportPopUp.gameObject.SetActive(true);
         _weeklyTrainingReportPopUp.Init(students);
     }
-
-
 
     public void OpenRecruitPanel() //영입 시작하려면 이거 호출!
     {
@@ -189,12 +197,14 @@ public class StudentUIManager : MonoBehaviour
 
     public void OpenOutWarningPopUp(int number)
     {
+        PlayWarningSound();
         _outWarningPopUp.gameObject.SetActive(true);
         _outWarningPopUp.Init(number);
     }
 
     public void OpenCantOutWarningPopUp()
     {
+        PlayWarningSound();
         _cantOutWarningPopUp.gameObject.SetActive(true);        
     }
     public void OpenOutConfirmPopUp(int number)
@@ -228,5 +238,15 @@ public class StudentUIManager : MonoBehaviour
         _passiveProfileBox.gameObject.SetActive(false);
     }
 
+    private void PlayWarningSound()
+    {
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlaySoundOneShot(SoundName.UI_WARNING_01);
+    }
 
+    private void PlayConfirmSound()
+    {
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlaySoundOneShot(SoundName.SE_BUTTON_SELECT);
+    }
 }

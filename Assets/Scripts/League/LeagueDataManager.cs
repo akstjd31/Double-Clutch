@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Game.Constants;
 
 /// <summary>
 /// 리그 관련 마스터 데이터 조회 / 참가 팀 선정 / 리그 저장 데이터 생성 담당
@@ -181,7 +182,7 @@ public class LeagueDataManager : Singleton<LeagueDataManager>
         var ruleData = rule.Value;
 
         var priorityTeamIds = new List<string>();
-        string playerTeamId = LeagueManager.PLAYER_TEAM_ID;
+        string playerTeamId = PrefKeys.PLAYER_TEAM_ID;
 
         int seed = ruleData.weekId;
         var selector = new LeagueTeamSelector(seed);
@@ -203,6 +204,11 @@ public class LeagueDataManager : Singleton<LeagueDataManager>
     {
         if (string.IsNullOrEmpty(leagueId)) return null;
         if (rule == null) return null;
+
+        if (LeagueRecordManager.Instance != null)
+        {
+            LeagueRecordManager.Instance.ClearLeagueRecords();
+        }
 
         var masterData = GetMasterDataById(leagueId);
         if (masterData == null)
@@ -484,6 +490,10 @@ public LeagueSaveData LoadLeague()
     /// </summary>
     public LeagueSaveData CreateAndSaveLeagueWithPrevTeams(string newLeagueId)
     {
+        if (LeagueRecordManager.Instance != null)
+        {
+            LeagueRecordManager.Instance.ClearLeagueRecords();
+        }
         // 직전 리그 데이터 불러오기
         var prevLeague = LoadLeague();
         if (prevLeague == null || prevLeague.teams == null || prevLeague.teams.Count == 0)
@@ -530,4 +540,5 @@ public LeagueSaveData LoadLeague()
     }
     public LeagueFactory GetFactory() => _leagueFactory;
 
+    public int GetEndingRequireNumber() => _leagueFactory.GetMasterDataList().Count;
 }

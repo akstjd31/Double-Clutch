@@ -27,11 +27,12 @@ public class TrainingBox : MonoBehaviour
         StringManager.OnLanguageChanged -= Refresh;
     }
 
-    public void Init(ITraining command)
+    public void Init(ITraining command, TrainingPanel trainingPanel)
     {
         _command = command;
 
         _button.onClick.RemoveAllListeners();
+        _button.onClick.AddListener(() => trainingPanel.OnClickBackAndHomeButtonSetActive(true));
         _button.onClick.AddListener(command.IsTeam() ? (() => FosterManager.Instance.ReserveTeamTraining(_command)) : () => FosterManager.Instance.ReserveIndividualTraining(_command));
         _button.onClick.AddListener(() => StudentUIManager.Instance.OnTrainingBoxClick());
 
@@ -45,7 +46,19 @@ public class TrainingBox : MonoBehaviour
         if (_command == null) return;
         StringManager.Instance.GetString(_command.GetNameKey(), _trainingName);
         StringManager.Instance.GetString(_command.GetDescKey(), _trainingDesc);
-        StringManager.Instance.GetString(_command.GetCost().ToString() + "G", _trainingcost);
+        StringManager.Instance.GetString(_command.GetCost().ToString("N0") + "G", _trainingcost);
+        if(StringManager.Instance.CurrentLanguage == Language.Ko)
+        {
+            _trainingName.fontSize = 48;
+        }
+        if (StringManager.Instance.CurrentLanguage == Language.En)
+        {
+            _trainingName.fontSize = 40;
+        }
+        if (StringManager.Instance.CurrentLanguage == Language.Ja)
+        {
+            _trainingName.fontSize = 40;
+        }
     }
 
     public void SetStudent(Student target)

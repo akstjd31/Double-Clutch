@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using Game.Constants;
 
 public class MatchSimState : IState
 {
@@ -36,7 +37,7 @@ public class MatchSimState : IState
             return;
         }
 
-        string myTeamId = StudentManager.TEAM_ID;
+        string myTeamId = PrefKeys.PLAYER_TEAM_ID;
         string opponentTeamId = "Team_DOM_01"; // 리그 데이터가 없을 때를 대비한 기본값
 
         var currentLeague = LeagueManager.Instance.CurrentLeague;
@@ -98,6 +99,9 @@ public class MatchSimState : IState
         {
             int currentMatchId = GameManager.Instance.SaveData.weekId;
             LeagueRecordManager.Instance.SaveMatchRecord(currentMatchId, _state, _engine.FullMatchLogs);
+
+            if (AudioManager.Instance != null)
+                AudioManager.Instance.PlaySoundOneShot(SoundName.SE_MATCH_END);
 
             _gm.StartCoroutine(CoGoToResult());
         };

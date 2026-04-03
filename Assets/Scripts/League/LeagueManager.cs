@@ -1,13 +1,13 @@
 using System;
 using UnityEngine;
 using System.Collections.Generic;
+using Game.Constants;
 
 /// <summary>
 /// 실제 리그 진행 처리
 /// </summary>
 public class LeagueManager : Singleton<LeagueManager>
 {
-    public const string PLAYER_TEAM_ID = "Player_Team";                // 플레이어 팀임을 구분짓는 스트링 키
     private LeagueDataManager _leagueDataMgr;
     private ILeagueRankingCalculator _rankingCalculator;            // 순위 계산
     private ILeaguePairingGenerator _swissPairingGenerator;         // 스위스
@@ -84,7 +84,7 @@ public class LeagueManager : Singleton<LeagueManager>
         if (records == null) return null;
         foreach (var record in records)
         {
-            if (record.homeTeamId.Equals(PLAYER_TEAM_ID))
+            if (record.homeTeamId.Equals(PrefKeys.PLAYER_TEAM_ID))
                 return record.awayTeamId;
         }
 
@@ -132,7 +132,7 @@ public class LeagueManager : Singleton<LeagueManager>
             loserEntry.isEliminated = true;
         }
 
-        if (loserTeamId == PLAYER_TEAM_ID)
+        if (loserTeamId == PrefKeys.PLAYER_TEAM_ID)
         {
             _currentLeague.isPlayerEliminated = true;
         }
@@ -246,14 +246,14 @@ public class LeagueManager : Singleton<LeagueManager>
         foreach (var standing in _currentLeague.standings)
         {
             // 플레이어의 순위와 비교
-            if (standing.teamId.Equals(PLAYER_TEAM_ID))
+            if (standing.teamId.Equals(PrefKeys.PLAYER_TEAM_ID))
             {
                 // 순위에 들었는지 확인
-                return masterData.Value.outConditionValue >= standing.rank;
+                return standing.rank > masterData.Value.outConditionValue;
             }
         }
 
-        return false;
+        return true;
     }
     
     private void SaveCurrentLeague()

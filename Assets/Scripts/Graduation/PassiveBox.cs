@@ -1,3 +1,4 @@
+using NUnit.Framework;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -8,6 +9,7 @@ public class PassiveBox : MonoBehaviour
     [SerializeField] private GraduationManager _graduationManager;
 
     [SerializeField] private TextMeshProUGUI[] _skillName = new TextMeshProUGUI[3];
+    [SerializeField] private Image[] _skillGradeImage = new Image[3];
     [SerializeField] private Image[] _skillImage = new Image[3];
     [SerializeField] private TextMeshProUGUI[] _skillDetail = new TextMeshProUGUI[3];
     [SerializeField] private Button[] _buttons = new Button[3];
@@ -44,15 +46,26 @@ public class PassiveBox : MonoBehaviour
 
     private void LateUpdate()
     {
-        if(_needGuideRefresh)
+        if (_needGuideRefresh)
         {
             for (int i = 0; i < _selectSkillList.Count; i++)
             {
                 _skillDetail[i].text = _detailText[i];
+                StringManager.Instance.ApplyFont(_skillDetail[i]);
             }
             _needGuideRefresh = false;
         }
-        
+
+    }
+
+    private void OnEnable()
+    {
+        StringManager.OnLanguageChanged += RefreshUI;
+    }
+
+    private void OnDisable()
+    {
+        StringManager.OnLanguageChanged -= RefreshUI;
     }
 
     //private void OnEnable()
@@ -81,6 +94,7 @@ public class PassiveBox : MonoBehaviour
             {
                 _skillName[i].text = "";
                 _skillDetail[i].text = "";
+                _skillGradeImage[i].sprite = null;
                 _skillImage[i].sprite = null;
                 _buttons[i].interactable = false;
                 _buttons[i].targetGraphic.color = _buttons[i].colors.disabledColor;
@@ -99,10 +113,22 @@ public class PassiveBox : MonoBehaviour
             for (int i = 0; i < _selectSkillList.Count; i++)
             {
                 _skillName[i].text = StringManager.Instance.GetString(_selectSkillList[i].skillName);
+                StringManager.Instance.ApplyFont(_skillName[i]);
+
+                string passiveframeResourceId = null;
+                foreach (var dataList in _passiveGradeDataReader.DataList)
+                {
+                    if (dataList.gradeId.Equals(_selectSkillList[i].grade))
+                        passiveframeResourceId = dataList.passiveFrameResource;
+                }
+
+                if (passiveframeResourceId != null)
+                    _skillGradeImage[i].sprite = SpriteManager.Instance.GetSprite(passiveframeResourceId);
+
                 _skillImage[i].sprite = SpriteManager.Instance.GetSprite(_selectSkillList[i].passiveResource);
 
                 _detailText[i] = StringManager.Instance.GetString(_selectSkillList[i].passiveDesc);
-                _detailText[i] = _detailText[i].Replace("{effectValue}", _selectSkillList[i].effectValue.ToString());
+                _detailText[i] = _detailText[i].Replace("{effectValue}", GetValueText(_selectSkillList[i]));
             }
             _needGuideRefresh = true;
         }
@@ -120,7 +146,7 @@ public class PassiveBox : MonoBehaviour
                 if (!gradePool.ContainsKey(passive.grade))
                 {
                     gradePool[passive.grade] = new List<Player_PassiveData>();
-                }                    
+                }
                 gradePool[passive.grade].Add(passive);
             }
 
@@ -132,7 +158,7 @@ public class PassiveBox : MonoBehaviour
                     ButtonInit();
                     return;
                 }
-                int weightedRandom = GetWeightedRandomGrade();                
+                int weightedRandom = GetWeightedRandomGrade();
 
                 Player_PassiveData selectedSkill;
 
@@ -148,22 +174,41 @@ public class PassiveBox : MonoBehaviour
                     selectedSkill = _passiveDataList[randomN];
                 }
 
-                if(i > _skillName.Length)
+                if (i > _skillName.Length)
                 {
                     continue;
                 }
 
-                _skillName[i].text = StringManager.Instance.GetString(selectedSkill.skillName);                    
-                _skillDetail[i].text = StringManager.Instance.GetString(selectedSkill.passiveDesc);
+                _skillName[i].text = StringManager.Instance.GetString(selectedSkill.skillName);
+                StringManager.Instance.ApplyFont(_skillName[i]);
+
+                _detailText[i] = StringManager.Instance.GetString(selectedSkill.passiveDesc);
+                _detailText[i] = _detailText[i].Replace("{effectValue}", GetValueText(selectedSkill));
+
+                _skillDetail[i].text = _detailText[i];
+                StringManager.Instance.ApplyFont(_skillDetail[i]);
+
                 _skillImage[i].sprite = SpriteManager.Instance.GetSprite(selectedSkill.passiveResource);
+
+                string passiveframeResourceId = null;
+                foreach (var dataList in _passiveGradeDataReader.DataList)
+                {
+                    if (dataList.gradeId.Equals(selectedSkill.grade))
+                        passiveframeResourceId = dataList.passiveFrameResource;
+                }
+
+                if (passiveframeResourceId != null)
+                    _skillGradeImage[i].sprite = SpriteManager.Instance.GetSprite(passiveframeResourceId);
 
                 _selectSkillList.Add(selectedSkill);
                 Debug.Log($"{selectedSkill}추가");
-
+                effectType currentType = selectedSkill.effectType;
+                _passiveDataList.RemoveAll(p => p.effectType == currentType);
+                
                 _passiveDataList.Remove(selectedSkill);
-                if (gradePool.ContainsKey(selectedSkill.grade))
+                foreach (var key in gradePool.Keys)
                 {
-                    gradePool[selectedSkill.grade].Remove(selectedSkill);
+                    gradePool[key].RemoveAll(p => p.effectType == currentType);
                 }
             }
             _selectSkillSave[_graduationManager.PromotionStudentList[_graduationManager.Turn]] = new List<Player_PassiveData>(_selectSkillList);
@@ -197,7 +242,9 @@ public class PassiveBox : MonoBehaviour
             if (button == _buttons[i])
             {
                 _buttons[i].interactable = true;
-                _buttons[i].GetComponent<Image>().color = new Color(1f,1f,1f);
+                _buttons[i].GetComponent<Image>().color = new Color(1f, 1f, 1f);
+                _skillName[i].color = new Color(1f, 1f, 1f);
+                _skillGradeImage[i].color = new Color(1f, 1f, 1f);
                 _skillImage[i].color = new Color(1f, 1f, 1f);
                 _outlines[i].enabled = true;
 
@@ -209,6 +256,8 @@ public class PassiveBox : MonoBehaviour
             else
             {
                 _buttons[i].GetComponent<Image>().color = new Color(0.4f, 0.4f, 0.4f);
+                _skillName[i].color = new Color(0.4f, 0.4f, 0.4f);
+                _skillGradeImage[i].color = new Color(0.4f, 0.4f, 0.4f);
                 _skillImage[i].color = new Color(0.4f, 0.4f, 0.4f);
                 _outlines[i].enabled = false;
 
@@ -218,5 +267,58 @@ public class PassiveBox : MonoBehaviour
 
         _graduationManager.PromotionPanel.IsSkillChoise = true;
         Debug.Log($"스킬 선택 상태{_graduationManager.PromotionPanel.IsSkillChoise}");
+    }
+
+    private void RefreshUI()
+    {
+        if (_selectSkillSave.TryGetValue(_graduationManager.PromotionStudentList[_graduationManager.Turn], out var list))
+        {
+            _selectSkillList = new List<Player_PassiveData>(list);
+            for (int i = 0; i < _selectSkillList.Count; i++)
+            {
+                _skillName[i].text = StringManager.Instance.GetString(_selectSkillList[i].skillName);
+                StringManager.Instance.ApplyFont(_skillName[i]);
+                _skillImage[i].sprite = SpriteManager.Instance.GetSprite(_selectSkillList[i].passiveResource);
+
+                _detailText[i] = StringManager.Instance.GetString(_selectSkillList[i].passiveDesc);
+                _detailText[i] = _detailText[i].Replace("{effectValue}", GetValueText(_selectSkillList[i]));
+            }
+            _needGuideRefresh = true;
+        }
+    }
+
+    private string GetValueText(Player_PassiveData? data)
+    {
+        string valueString = string.Empty;
+        switch (data.Value.effectType)
+        {
+            case effectType.None:
+                break;
+            case effectType.Rate2pt:
+            case effectType.Rate3pt:
+            case effectType.RateBlock:
+            case effectType.RatePass:
+            case effectType.RateSteal:
+            case effectType.RateRebound:
+
+            //case effectType.Growth2pt:
+            //case effectType.Growth3pt:
+            //case effectType.GrowthBlock:
+            //case effectType.GrowthPass:
+            //case effectType.GrowthRebound:
+            //case effectType.GrowthSteal:
+
+            case effectType.MonthGoldUp:
+            case effectType.MatchGoldUp:
+            case effectType.ReputationUp:
+                valueString = (data.Value.effectValue * 100).ToString();
+                break;
+
+            default:
+                valueString = (data.Value.effectValue).ToString();
+                break;
+        }
+
+        return valueString;
     }
 }

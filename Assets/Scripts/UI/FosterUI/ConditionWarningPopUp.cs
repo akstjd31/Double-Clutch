@@ -14,6 +14,20 @@ public class ConditionWarningPopUp : MonoBehaviour
     GenericObjectPool<Problem> _problemPool;
     List<Problem> _problemList = new List<Problem>();
 
+    private int _costvalue;
+    private void OnEnable()
+    {
+        StringManager.OnLanguageChanged += Refresh;
+    }
+    private void OnDisable()
+    {
+        StringManager.OnLanguageChanged -= Refresh;
+    }
+    private void Refresh()
+    {
+        SetCostText(_costvalue);
+    }
+
     private void Awake()
     {
         _problemPool = new GenericObjectPool<Problem>(_problemPrefab, _warningListParent);
@@ -63,7 +77,9 @@ public class ConditionWarningPopUp : MonoBehaviour
 
     private void SetCostText(int cost)
     {
-        _cost.text = $"비용 : {cost}G";
+        _costvalue = cost;
+        _cost.text = StringManager.Instance.GetFormattedString("UI_Popup_비용", cost);
+        StringManager.Instance.ApplyFont(_cost);
     }
 
     private void CreateWarning(string name)

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Game.Constants;
 
 public class CharacterManagePanel : MonoBehaviour
 {
@@ -22,24 +23,36 @@ public class CharacterManagePanel : MonoBehaviour
     private void OnEnable()
     {
         RefreshPlayerList();
+        PlaySound(SoundName.BGM_PLAYER_01);
+    }
+
+    private void OnDisable()
+    {
+        PlaySound(SoundName.BGM_LOBBY_01);
+    }
+
+    private void PlaySound(string id)
+    {
+        if (AudioManager.Instance == null) return;
+        AudioManager.Instance.PlaySound(id);
     }
 
     public void RefreshPlayerList()
     {
-        foreach (var box in _boxList) //±âÁ¸¿¡ »ç¿ëÇÏ´ø ¹Ú½ºµéÀ» Ç®·Î ¹İ³³
+        foreach (var box in _boxList) //ê¸°ì¡´ì— ì‚¬ìš©í•˜ë˜ ë°•ìŠ¤ë“¤ì„ í’€ë¡œ ë°˜ë‚©
         {
             _characterBoxPool.Release(box);
         }
         _boxList.Clear();
 
-        var students = StudentManager.Instance.MyStudents;// º¸À¯ÇÑ ¼±¼ö ¼ö¸¸Å­ Ç®¿¡¼­ °¡Á®¿Í¼­ »ı¼º (Ç®¿¡ ¾øÀ¸¸é ³»Àå ¿ÀºêÁ§Æ® Ç®ÀÌ ÀÚµ¿ »ı¼º)
+        var students = StudentManager.Instance.MyStudents;// ë³´ìœ í•œ ì„ ìˆ˜ ìˆ˜ë§Œí¼ í’€ì—ì„œ ê°€ì ¸ì™€ì„œ ìƒì„± (í’€ì— ì—†ìœ¼ë©´ ë‚´ì¥ ì˜¤ë¸Œì íŠ¸ í’€ì´ ìë™ ìƒì„±)
         for (int i = 0; i < students.Count; i++)
         {
-            CharacterBox newBox = _characterBoxPool.Get(); //¹Ú½º Ã¤¿ì±â
+            CharacterBox newBox = _characterBoxPool.Get(); //ë°•ìŠ¤ ì±„ìš°ê¸°
+            newBox.transform.SetAsLastSibling(); //ìˆœì„œ ê³ ì •
+            newBox.Init(students[i]); //ë°•ìŠ¤ì— ì„ ìˆ˜ ì •ë³´ ì£¼ì…
 
-            newBox.Init(students[i]); //¹Ú½º¿¡ ¼±¼ö Á¤º¸ ÁÖÀÔ
-
-            var btn = newBox.GetSelectButton(); // µÚ·Î°¡±â ¹öÆ° ¼³Á¤
+            var btn = newBox.GetSelectButton(); // ë’¤ë¡œê°€ê¸° ë²„íŠ¼ ì„¤ì •
             btn.onClick.RemoveAllListeners();
             btn.onClick.AddListener(() => { _backButtonObj.SetActive(false); });
             btn.onClick.AddListener(() => StudentUIManager.Instance.OnCharacterBoxClick(newBox));
@@ -66,33 +79,33 @@ public class CharacterManagePanel : MonoBehaviour
 
     private void MoveSelection(int direction)
     {
-        if (_boxList.Count <= 1) return; // ¹Ú½º°¡ ÇÏ³ª ÀÌÇÏ¸é ¿òÁ÷ÀÏ ÇÊ¿ä ¾øÀ½
+        if (_boxList.Count <= 1) return; // ë°•ìŠ¤ê°€ í•˜ë‚˜ ì´í•˜ë©´ ì›€ì§ì¼ í•„ìš” ì—†ìŒ
 
-        // 1. ÇöÀç ¹Ú½ºÀÇ ÀÎµ¦½º Ã£±â
+        // 1. í˜„ì¬ ë°•ìŠ¤ì˜ ì¸ë±ìŠ¤ ì°¾ê¸°
         int currentIndex = _boxList.IndexOf(_currentActiveBox);
 
-        // 2. ´ÙÀ½ ÀÎµ¦½º °è»ê (¸®½ºÆ® ¹üÀ§¸¦ ¹ş¾î³ªÁö ¾Ê°Ô ¼øÈ¯ Ã³¸®)
+        // 2. ë‹¤ìŒ ì¸ë±ìŠ¤ ê³„ì‚° (ë¦¬ìŠ¤íŠ¸ ë²”ìœ„ë¥¼ ë²—ì–´ë‚˜ì§€ ì•Šê²Œ ìˆœí™˜ ì²˜ë¦¬)
         int nextIndex = currentIndex + direction;
 
         if (nextIndex >= _boxList.Count)
         {
-            nextIndex = 0; // ¸¶Áö¸·¿¡¼­ ´ÙÀ½ ´©¸£¸é Ã³À½À¸·Î
+            nextIndex = 0; // ë§ˆì§€ë§‰ì—ì„œ ë‹¤ìŒ ëˆ„ë¥´ë©´ ì²˜ìŒìœ¼ë¡œ
         }
         if (nextIndex < 0)
         {
-            nextIndex = _boxList.Count - 1; // Ã³À½¿¡¼­ ÀÌÀü ´©¸£¸é ¸¶Áö¸·À¸·Î
+            nextIndex = _boxList.Count - 1; // ì²˜ìŒì—ì„œ ì´ì „ ëˆ„ë¥´ë©´ ë§ˆì§€ë§‰ìœ¼ë¡œ
         }
 
-        // 3. ´ë»ó ¹Ú½º °¡Á®¿À±â
+        // 3. ëŒ€ìƒ ë°•ìŠ¤ ê°€ì ¸ì˜¤ê¸°
         CharacterBox targetBox = _boxList[nextIndex];
 
-        // 4. Å¬¸¯ÇßÀ» ¶§¿Í µ¿ÀÏÇÑ ·ÎÁ÷ ½ÇÇà
+        // 4. í´ë¦­í–ˆì„ ë•Œì™€ ë™ì¼í•œ ë¡œì§ ì‹¤í–‰
         ExecuteBoxClick(targetBox);
     }
     private void ExecuteBoxClick(CharacterBox box)
     {
-        // OnCharacterBoxClickÀÇ ·ÎÁ÷À» ±×´ë·Î ¼öÇà
-        _backButtonObj.SetActive(false); // Áú¹®ÇÏ½Å ÄÚµåÀÇ ¸®½º³Ê ·ÎÁ÷ ¹İ¿µ
+        // OnCharacterBoxClickì˜ ë¡œì§ì„ ê·¸ëŒ€ë¡œ ìˆ˜í–‰
+        _backButtonObj.SetActive(false); // ì§ˆë¬¸í•˜ì‹  ì½”ë“œì˜ ë¦¬ìŠ¤ë„ˆ ë¡œì§ ë°˜ì˜
         StudentUIManager.Instance.OnCharacterBoxClick(box);
         ChangeCurrentActiveBox(box);
     }

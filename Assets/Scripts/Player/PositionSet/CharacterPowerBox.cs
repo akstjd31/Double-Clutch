@@ -20,6 +20,16 @@ public class CharacterPowerBox : MonoBehaviour
     public int Attack => _attack;
     public int Defense => _defense;
 
+    private void OnEnable()
+    {
+        StringManager.OnLanguageChanged += SetUI;
+    }
+
+    private void OnDisable()
+    {
+        StringManager.OnLanguageChanged -= SetUI;
+    }
+
     public void Init(Student target)
     {
         _player = target; // 실제 매칭 시 정보 전달을 위한 플레이어 세팅
@@ -35,8 +45,10 @@ public class CharacterPowerBox : MonoBehaviour
         StringManager manager = StringManager.Instance;
         string name = manager.GetString(_player.Name[0]) + manager.GetString(_player.Name[1]) + manager.GetString(_player.Name[2]);
         _characterName.text = name;
-        _characterPosition.text = _player.Position.ToString();
+        _characterPosition.text = _player.MatchPosition.ToString();
         _characterAttack.text = _player.Attack.ToString();
         _characterDefense.text = _player.Defense.ToString();
+
+        manager.ApplyFont(_characterName);
     }
 }

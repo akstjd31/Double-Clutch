@@ -52,6 +52,11 @@ public class EventSelector : MonoBehaviour
                 continue;
             }
 
+            if (_myStudents[i].HasIndividualTraining == false)
+            {
+                continue;
+            }
+
             Debug.Log($"쿨타임/우선순위검사");
             //딕셔너리>학생>이벤트리스트 개수만큼 체크
             events = MaxPriorityNumber(list);

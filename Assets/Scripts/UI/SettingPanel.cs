@@ -1,4 +1,5 @@
 using DG.Tweening.Core.Easing;
+using Game.Constants;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -29,6 +30,7 @@ public class SettingPanel : MonoBehaviour
     [Header("기타 버튼")]
     [SerializeField] Button _userPolicyButton;
     [SerializeField] Button _privacyPolicyButton;
+    [SerializeField] Button _makerList;
 
     private void Start()
     {
@@ -54,6 +56,7 @@ public class SettingPanel : MonoBehaviour
 
         _userPolicyButton.onClick.RemoveAllListeners();
         _privacyPolicyButton.onClick.RemoveAllListeners();
+        _makerList.onClick.RemoveAllListeners();
 
         //------------------------------------------------------------
         // 구독 연결
@@ -80,30 +83,30 @@ public class SettingPanel : MonoBehaviour
 
         _userPolicyButton.onClick.AddListener(OpenUserPolicy);
         _privacyPolicyButton.onClick.AddListener(OpenPrivacyPolicy);
-
-
-        //------------------------------------------------------------
-        // 초기값 세팅
-        //------------------------------------------------------------        
-
-        if (manager.SettingData == null)
-        {
-            _fps60.isOn = true;
-            _masterVolSlider.value = 0.8f;
-            _bgmVolSlider.value = 0.8f;
-            _sfxVolSlider.value = 0.8f;
-
-            _masterMuteToggle.isOn = false;
-            _bgmMuteToggle.isOn = false;
-            _sfxMuteToggle.isOn = false;
-            _viberationToggle.isOn = true;
-            return;
-        }        
+        _makerList.onClick.AddListener(OpenMakerList);
     }
 
     private void OnEnable()
     {
-        RefreshUI();
+        if (SettingManager.Instance.SettingData == null)
+        {
+            _fps60.SetIsOnWithoutNotify(true);
+            _masterVolSlider.SetValueWithoutNotify(0.8f);
+            _bgmVolSlider.SetValueWithoutNotify(0.8f);
+            _sfxVolSlider.SetValueWithoutNotify(0.8f);
+
+            _korean.SetIsOnWithoutNotify(true);
+
+            _masterMuteToggle.SetIsOnWithoutNotify(false);
+            _bgmMuteToggle.SetIsOnWithoutNotify(false);
+            _sfxMuteToggle.SetIsOnWithoutNotify(false);
+            _viberationToggle.SetIsOnWithoutNotify(true);
+            return;
+        }
+        else
+        {
+            RefreshUI();
+        }            
     }
 
     public void RefreshUI()
@@ -112,9 +115,7 @@ public class SettingPanel : MonoBehaviour
         if (manager == null || manager.SettingData == null) return;
 
         var data = manager.SettingData;
-
-        // ★ 핵심: SetValueWithoutNotify를 써야 '값 변경 이벤트'가 발생해서 
-        // 로직이 꼬이는 걸 방지할 수 있습니다.
+        
 
         // 볼륨 슬라이더 동기화
         _masterVolSlider.SetValueWithoutNotify(data.masterVol);
@@ -139,43 +140,63 @@ public class SettingPanel : MonoBehaviour
 
     private void OnFPS30Changed(bool isOn)
     {
+        PlayConfirmSound();
         if (isOn) SettingManager.Instance.SetFPS(30);
     }
     private void OnFPS60Changed(bool isOn)
     {
+        PlayConfirmSound();
         if (isOn) SettingManager.Instance.SetFPS(60);
     }
 
     private void OnKoreanToggleChanged(bool isOn)
     {
+        PlayConfirmSound();
         if (isOn) StringManager.Instance.SetLanguage(Language.Ko);
     }
 
     private void OnEnglishToggleChanged(bool isOn)
     {
+        PlayConfirmSound();
         if (isOn) StringManager.Instance.SetLanguage(Language.En);
     }
 
     private void OnJapanToggleChanged(bool isOn)
     {
+        PlayConfirmSound();
         if (isOn) StringManager.Instance.SetLanguage(Language.Ja);
     }
 
     private void OpenPrivacyPolicy()
     {
+        PlayConfirmSound();
         SettingManager.Instance.OpenPrivacyPolicy();
     }
 
     private void OpenUserPolicy()
     {
+        PlayConfirmSound();
         SettingManager.Instance.OpenUserPolicy();
     }
 
+    private void OpenMakerList()
+    {
+        PlayConfirmSound();
+        SettingManager.Instance.OpenMakerList();
+    }
 
 
     public void OnQuitSetting()
     {
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlaySoundOneShot(SoundName.SE_BUTTON_CANCEL);
+
         SettingManager.Instance.OnQuitSetting();
     }
 
+    private void PlayConfirmSound()
+    {
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlaySoundOneShot(SoundName.SE_BUTTON_SELECT);
+    }
 }

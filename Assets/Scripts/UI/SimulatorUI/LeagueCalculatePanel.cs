@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System;
 using TMPro;
+using Game.Constants;
 
 public class LeagueCalculatePanel : MonoBehaviour
 {
@@ -11,6 +12,8 @@ public class LeagueCalculatePanel : MonoBehaviour
     // 대진표 확인 버튼과 대진표 패널 연결
     [SerializeField] private Button _btnShowBracket;
     [SerializeField] private SwissBoardPanel _swissBoardPanel;
+
+    [SerializeField] private TournamentBoardPanel _tournamentBoardPanel;
 
     [Header("결산 텍스트 UI")]
     [SerializeField] private TextMeshProUGUI _txtLeagueName;     // 리그 이름
@@ -34,6 +37,14 @@ public class LeagueCalculatePanel : MonoBehaviour
 
     private Action _onConfirmAction;
 
+    private void OnEnable()
+    {
+        StringManager.OnLanguageChanged += UpdateCalculateData;
+    }
+    private void OnDisable()
+    {
+        StringManager.OnLanguageChanged -= UpdateCalculateData;
+    }
     public void Init(int currentRound, Action onConfirm)
     {
         _onConfirmAction = onConfirm;
@@ -42,6 +53,8 @@ public class LeagueCalculatePanel : MonoBehaviour
         _btnConfirm.onClick.RemoveAllListeners();
         _btnConfirm.onClick.AddListener(() =>
         {
+            PlayConfirmSound();
+
             gameObject.SetActive(false);
             _onConfirmAction?.Invoke();
         });
@@ -49,7 +62,11 @@ public class LeagueCalculatePanel : MonoBehaviour
         if (_btnTotalRank != null)
         {
             _btnTotalRank.onClick.RemoveAllListeners();
-            _btnTotalRank.onClick.AddListener(() => _totalRankPanel.OpenPanel());
+            _btnTotalRank.onClick.AddListener(() =>
+            {
+                PlayConfirmSound();
+                _totalRankPanel.OpenPanel();
+            });
         }
         // 대회 대진표 버튼 클릭 이벤트
         if (_btnShowBracket != null)
@@ -57,7 +74,25 @@ public class LeagueCalculatePanel : MonoBehaviour
             _btnShowBracket.onClick.RemoveAllListeners();
             _btnShowBracket.onClick.AddListener(() =>
             {
-                if (_swissBoardPanel != null) _swissBoardPanel.OpenPanel();
+                PlayConfirmSound();
+                // 현재 진행 중인(또는 방금 끝난) 리그 데이터를 가져옴
+                var currentLeague = LeagueManager.Instance.CurrentLeague;
+
+                if (currentLeague != null)
+                {
+                    // 리그 타입이 토너먼트일 경우
+                    if (currentLeague.leagueType == "Tournament")
+                    {
+                        if (_tournamentBoardPanel != null)
+                            _tournamentBoardPanel.OpenPanel();
+                    }
+                    // 리그 타입이 스위스일 경우
+                    else
+                    {
+                        if (_swissBoardPanel != null)
+                            _swissBoardPanel.OpenPanel();
+                    }
+                }
             });
         }
         // 데이터 계산 및 텍스트 적용
@@ -86,9 +121,10 @@ public class LeagueCalculatePanel : MonoBehaviour
             string titleFormat = StringManager.Instance.GetString("Str_League_Calc_Title");
             if (titleFormat == "Str_League_Calc_Title")
             {
-                titleFormat = "{0} 리그 결산";
+                titleFormat = "{0}"+" "+StringManager.Instance.GetString("UI_Simulator_리그결산");
             }
             _txtLeagueName.text = string.Format(titleFormat, leagueName);
+            StringManager.Instance.ApplyFont(_txtLeagueName);
         }
 
         // 우승팀 텍스트 출력
@@ -98,10 +134,11 @@ public class LeagueCalculatePanel : MonoBehaviour
         if (_txtWinnerTeamName != null)
         {
             _txtWinnerTeamName.text = winnerName;
+            StringManager.Instance.ApplyFont(_txtWinnerTeamName);
         }
 
         // 우리 팀 순위
-        string myTeamId = StudentManager.TEAM_ID;
+        string myTeamId = PrefKeys.PLAYER_TEAM_ID;
         var myStanding = league.standings.Find(s => s.teamId == myTeamId);
         string myTeamName = GameManager.Instance.SaveData.schoolName;
         int myRank = myStanding != null ? myStanding.rank : 99;
@@ -113,9 +150,10 @@ public class LeagueCalculatePanel : MonoBehaviour
             if (rankFormat == "Str_League_MyRank")
             {
                 // {0} = 팀명, {1} = 순위
-                rankFormat = "{0} 순위 :\n{1} 위";
+                rankFormat = "{0} "+StringManager.Instance.GetString("UI_Matchlog_그냥순위") +":"+"{1} "+StringManager.Instance.GetString("UI_Simulator_위");
             }
             _txtMyTeamRank.text = string.Format(rankFormat, myTeamName, myRank);
+            StringManager.Instance.ApplyFont(_txtMyTeamRank);
         }
 
         // 보상 금액 계산
@@ -145,15 +183,15 @@ public class LeagueCalculatePanel : MonoBehaviour
             // UI 텍스트 적용 (오른쪽 값 영역에 "+ 000G" 형태로 출력)
             if (_txtMatchReward != null) _txtMatchReward.text = $"+ {matchReward:N0}G";
             if (_txtInfraBonus != null) _txtInfraBonus.text = $"+ {infraBonus:N0}G";
-            if (_txtSubtotalReward != null) _txtSubtotalReward.text = $"+ {subtotal:N0}G";
+            if (_txtSubtotalReward != null) _txtSubtotalReward.text = $"{subtotal:N0}G";
             if (_txtLeagueWinReward != null) _txtLeagueWinReward.text = $"+ {leagueWinReward:N0}G";
-            if (_txtTotalReward != null) _txtTotalReward.text = $"+ {totalReward:N0}G";
+            if (_txtTotalReward != null) _txtTotalReward.text = $"{totalReward:N0}G";
         }
     }
     // 팀 ID를 이름으로 변환
     private string GetTeamName(string teamId)
     {
-        if (teamId == StudentManager.TEAM_ID)
+        if (teamId == PrefKeys.PLAYER_TEAM_ID)
             return GameManager.Instance.SaveData.schoolName;
 
         var rivalData = LeagueDataManager.Instance.GetRivalMasterDataById(teamId);
@@ -192,5 +230,11 @@ public class LeagueCalculatePanel : MonoBehaviour
                 _logHistoryPanel.OpenPanel(clickedRound);
             });
         }
+    }
+
+    private void PlayConfirmSound()
+    {
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlaySoundOneShot(SoundName.SE_BUTTON_SELECT);
     }
 }

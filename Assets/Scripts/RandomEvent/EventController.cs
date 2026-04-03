@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-
+using Game.Constants;
 using UnityEngine;
 using static UnityEngine.Rendering.DebugUI;
 
@@ -13,6 +13,7 @@ public class EventController : MonoBehaviour
     [SerializeField] private EventUI _eventUI;
     [SerializeField] private EventString _eventString;
     [SerializeField] private EventSelector _eventSelector;
+    [SerializeField] private GameObject _settingPanel;
 
     private EventManager _eventManager;
 
@@ -96,6 +97,7 @@ public class EventController : MonoBehaviour
             _eventPanel.SetActive(false);
             return;
         }
+        _settingPanel.SetActive(false);
         //큐 순서대로 이벤트 진행
         //이벤트 아이디 가져오기
         _eventId = _eventSelector.ScreenplayIdList.Dequeue();
@@ -199,6 +201,9 @@ public class EventController : MonoBehaviour
         //대본 순서대로 화면에 출력
         if (_screenPlayDic.ContainsKey(_nextId))
         {
+            if (AudioManager.Instance != null)
+                AudioManager.Instance.PlaySoundOneShot(SoundName.SE_TEXT_SCROLL);
+
             switch (_screenPlayDic[_nextId].textType)
             {
                 case textType.Choice:
@@ -224,7 +229,7 @@ public class EventController : MonoBehaviour
                 case textType.End:
                     {
                         //텍스트는 출력, 버튼 누르면 결과 팝업 떠야 함.
-                        script = _eventString.KoScreenPlay[_screenPlayDic[_nextId].textKey];
+                        script = _stringTable[_screenPlayDic[_nextId].textKey];
                         _eventUI.UpdateText(_currentSpeakerName, script, direction, true, _visualId);
 
                         //캐릭터 능력치 변동 적용
@@ -326,6 +331,7 @@ public class EventController : MonoBehaviour
         //학생 있으면 다음 학생 진행
         Debug.Log($"패널 닫기");
         _eventPanel.SetActive(false);
+        _settingPanel.SetActive(true);
 
         if (_eventSelector.ScreenplayIdList.Count > 0)
         { 

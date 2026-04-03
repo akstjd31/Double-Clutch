@@ -15,7 +15,7 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
     private void Awake()
     {
         if (_rootCanvas == null)
-            _rootCanvas = GameObject.FindAnyObjectByType<Canvas>();
+            _rootCanvas = GameObject.Find("Canvas").GetComponent<Canvas>();
 
         _rect = GetComponent<RectTransform>();
         _canvasGroup = GetComponent<CanvasGroup>();

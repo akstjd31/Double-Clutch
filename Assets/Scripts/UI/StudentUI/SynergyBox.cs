@@ -22,5 +22,8 @@ public class SynergyBox : MonoBehaviour
 
         _synergyName.text = stringManager.GetString(synergyData.synergyName);
         _synergyDesc.text = stringManager.GetString(synergyData.synergyDesc).Replace("{effectValue}", synergyData.effectValue.ToString());
+
+        stringManager.ApplyFont(_synergyName);
+        stringManager.ApplyFont(_synergyDesc);
     }
 }

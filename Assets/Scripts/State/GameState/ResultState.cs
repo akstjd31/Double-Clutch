@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Rendering;
+using Game.Constants;
 
 public class ResultState : IState
 {
@@ -29,7 +29,7 @@ public class ResultState : IState
         }
         int currentMatchId = 1; // 기본값 (리그가 진행 중이 아닐 경우 대비)
         var currentLeague = LeagueManager.Instance.CurrentLeague;
-        string myTeamId = StudentManager.TEAM_ID;
+        string myTeamId = PrefKeys.PLAYER_TEAM_ID;
 
         // 리그 마스터 및 보상 데이터 보관용 변수
         League_MasterData? masterData = null;
@@ -194,18 +194,31 @@ public class ResultState : IState
         {
             // 순위표에서 내 팀 찾기
             var myStanding = currentLeague.standings.Find(s => s.teamId == myTeamId);
+            string soundNm = "";
 
             // 내가 1등(우승)이라면
             if (myStanding != null && myStanding.rank == 1)
             {
+                soundNm = SoundName.SE_MATCH_WIN;
+
                 // 우승 상금을 최종 획득 골드에 합산
                 finalRewardAmount += rewardData.Value.rewardGoldWin;
 
                 // 리그 우승 명성치 누적
                 _gm.SetTotalWinHonor(_gm.SaveData.totalWinHonor + rewardFameWin);
 
+                if (AudioManager.Instance != null)
+                    AudioManager.Instance.PlaySoundOneShot(SoundName.SE_FAME);
+
                 Debug.Log($"[리그 우승!] 상금 {rewardData.Value.rewardGoldWin}G 및 명성 {rewardData.Value.rewardFameWin} 획득!");
             }
+            else
+                soundNm = SoundName.SE_CROWD_BOO;
+
+            if (AudioManager.Instance != null)
+                AudioManager.Instance.PlaySoundOneShot(soundNm);
+            
+            _gm.SaveData.leagueWinRecord.Add(new LeagueWinRecord(currentLeague.leagueId, myStanding.rank == 1));
         }
 
         // 지원금 획득 (GameManager 안에서 Save까지 자동 진행됨)
@@ -237,7 +250,7 @@ public class ResultState : IState
                     bool isTournamentEndForMe = currentLeague.isFinished || currentLeague.isPlayerEliminated;
 
                     // 상태에 따른 버튼 텍스트와 다음 액션 정의
-                    string btnText = isTournamentEndForMe ? "결산 확인" : "경기 준비";
+                    string btnText = isTournamentEndForMe ? StringManager.Instance.GetString("UI_Matchlog_결산확인") : StringManager.Instance.GetString("UI_Matchlog_경기준비");
                     Action nextAction = () =>
                     {
                         if (isTournamentEndForMe)
@@ -279,10 +292,11 @@ public class ResultState : IState
         if (LeagueManager.Instance.CurrentLeague != null && LeagueManager.Instance.CurrentLeague.isFinished)
         {
             ApplyLeagueEndConditionDrop(LeagueManager.Instance.CurrentLeague.currentRoundIndex + 1);
-            if (LeagueRecordManager.Instance != null)
-            {
-                LeagueRecordManager.Instance.ClearLeagueRecords();
-            }
+            // 저장 타이밍으로 인한 버그로 생각되는 부분이 있어 주석 처리
+            //if (LeagueRecordManager.Instance != null)
+            //{
+            //    LeagueRecordManager.Instance.ClearLeagueRecords();
+            //}
         }
         MatchState matchState = UnityEngine.Object.FindFirstObjectByType<MatchState>();
         if (matchState != null && matchState.HomeTeam != null)

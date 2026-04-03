@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using Game.Constants;
 
 public class MainState : IState, IUIActionHandler
 {
@@ -30,6 +31,10 @@ public class MainState : IState, IUIActionHandler
                 // _gm.Execute() 커맨드 수행
                 NextStep<LobbyState>(SceneName.LOBBY);
                 break;
+            
+            // case UIAction.Tutorial:
+            //     NextStep<TutorialState>(SceneName.TUTORIAL);
+            //     break;
 
             case UIAction.Main_Quit:
 #if UNITY_EDITOR

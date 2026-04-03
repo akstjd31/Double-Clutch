@@ -1,14 +1,15 @@
 using TinyJSON;
 using UnityEngine;
+using Game.Constants;
 
 public class SettingManager : Singleton<SettingManager>
 {
     [SerializeField] SettingSaveData _settingData;
-    const string SAVE_FILE = "SettingSave.json";
 
     [Header("외부 링크")]
     [SerializeField] private string _privacyPolicy = "https://sites.google.com/view/doubleclutch-policy/개인정보-처리방침";
     [SerializeField] private string _userPolicy = "https://sites.google.com/view/doubleclutch-policy/이용약관-및-환불정책";
+    [SerializeField] private string _makerList = "https://sites.google.com/view/doubleclutch-policy/제작진-명단";
 
     public SettingSaveData SettingData => _settingData;
     private void Start()
@@ -16,6 +17,7 @@ public class SettingManager : Singleton<SettingManager>
         LoadSetting();
         ApplyFPS();
         ApplyVolum();
+        StringManager.Instance.SetLanguage(_settingData.language);
     }
 
     // 진동 기능은 여기서 호출
@@ -93,6 +95,13 @@ public class SettingManager : Singleton<SettingManager>
         }
     }
 
+    public void OpenMakerList()
+    {
+        if (!string.IsNullOrEmpty(_makerList))
+        {
+            Application.OpenURL(_makerList);
+        }
+    }
     public void OnQuitSetting() //설정 창 닫을 때 호출
     {
         SaveSetting();
@@ -121,14 +130,14 @@ public class SettingManager : Singleton<SettingManager>
     {
         if (SaveLoadManager.Instance != null)
         {
-            SaveLoadManager.Instance.Save(SAVE_FILE, _settingData);
+            SaveLoadManager.Instance.Save(FilePath.SETTING_PATH, _settingData);
             Debug.Log("설정 데이터 저장 완료");
         }
     }
 
     public void LoadSetting()
     {
-        if (SaveLoadManager.Instance.TryLoad(SAVE_FILE, out SettingSaveData data)) //저장된 데이터 로드
+        if (SaveLoadManager.Instance.TryLoad(FilePath.SETTING_PATH, out SettingSaveData data)) //저장된 데이터 로드
         {
             _settingData = data;
             Debug.Log("설정 데이터 로드 완료");
@@ -137,11 +146,25 @@ public class SettingManager : Singleton<SettingManager>
         {
             _settingData = new SettingSaveData();
             SetFPS(60);
-            ToggleVibration(false);
+            ToggleVibration(true);
         }
 
         ApplyFPS();
         ApplyVolum();
+    }
+
+    private void OnApplicationPause(bool pauseStatus)
+    {
+        if (pauseStatus)
+        {
+            OnQuitSetting();
+        }
+    }
+
+    protected override void OnApplicationQuit()
+    {
+        base.OnApplicationQuit();
+        OnQuitSetting();
     }
 
     #endregion
