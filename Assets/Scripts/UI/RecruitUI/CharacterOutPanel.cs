@@ -72,12 +72,12 @@ public class CharacterOutPanel : MonoBehaviour
             //추가 방출 알림 팝업 호출
             StudentUIManager.Instance.OpenOutWarningPopUp(totalCount - StudentManager.Instance.RecruitLimit);
         }
-        else if (totalCount < StudentManager.Instance.RecruitLimit)
+        else if (totalCount < StudentManager.BasicRecruitLimit)
         {
             //방출 불가 알림 팝업 호출
             StudentUIManager.Instance.OpenCantOutWarningPopUp();
         }
-        else //최대보유치와 방출 후 학생 수가 딱 맞아야 방출 확인 팝업 호출
+        else //최대보유치와 기본보유치(5) 사잇값일 때만 방출 확인창 호출
         {
             StudentUIManager.Instance.OpenOutConfirmPopUp(_selectCount);
         }

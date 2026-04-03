@@ -1,4 +1,4 @@
-﻿using GoogleSheetsToUnity;
+using GoogleSheetsToUnity;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -20,7 +20,9 @@ public class String_TableDataReader : DataReaderBase
             string val = list[i].value;
 
             if (string.IsNullOrWhiteSpace(val) || val == "-")
-                val = "";
+                val = "  ";
+
+            val = val.Replace("*", " ");
 
             switch (col)
             {

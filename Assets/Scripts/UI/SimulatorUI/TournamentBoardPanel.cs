@@ -188,28 +188,16 @@ public class TournamentBoardPanel : MonoBehaviour
                 int nodeIndex1 = matchIndexInRound * 2;
                 int nodeIndex2 = matchIndexInRound * 2 + 1;
 
-                if (nodeIndex1 < targetNodes.Count)
+                foreach (var n in targetNodes)
                 {
-                    var n = targetNodes[nodeIndex1];
                     if (n.TeamId == match.homeTeamId || n.TeamId == match.awayTeamId)
                     {
                         bool isWinner = n.TeamId == winnerId;
                         bool isEliminated = n.TeamId == loserId;
-                        // Init 호출: isEliminated로 박스 밝기 조절, isWinner로 선 색상 조절
                         n.Init(n.TeamId, match.roundIndex, false, isEliminated, isWinner, match.roundIndex > 0, scoreString);
                     }
                 }
 
-                if (nodeIndex2 < targetNodes.Count)
-                {
-                    var n = targetNodes[nodeIndex2];
-                    if (n.TeamId == match.homeTeamId || n.TeamId == match.awayTeamId)
-                    {
-                        bool isWinner = n.TeamId == winnerId;
-                        bool isEliminated = n.TeamId == loserId;
-                        n.Init(n.TeamId, match.roundIndex, false, isEliminated, isWinner, match.roundIndex > 0, scoreString);
-                    }
-                }
             }
             // 승리한 팀을 다음 라운드 노드로 올림
             // 박스는 밝게 유지(isEliminated=false)하고, 선 색상은 white로 초기화합니다.

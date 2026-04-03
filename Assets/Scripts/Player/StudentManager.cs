@@ -11,15 +11,19 @@ public class StudentManager : Singleton<StudentManager>
 {
 
     int _idCount = 0; //???? ???? ?? ?��??? ???? id ?????(????/?��? ???)
+    public const int BasicRecruitLimit = 5;
     int _recruitLimit = 5; //???? ???? ????
     public int RecruitLimit => GetRecruitLimit();
     public bool IsStable => GetRecruitLimit() == _myStudents.Count;
-    // public static StudentManager Instance { get; private set; }
+    
     [SerializeField] StudentFactory _studentFactory; //???? ?????? ????
     [SerializeField] private List<Student> _myStudents = new List<Student>(); //???? ???
     [SerializeField] Team _currentTeam;
     public List<Student> MyStudents => _myStudents;
     public Team CurrentTeam => _currentTeam;
+
+    [SerializeField] private List<Student> _recruitCandidates = new List<Student>();
+    public List<Student> RecruitCandidates => _recruitCandidates;
     public int GetRecruitLimit()
     {
         return _recruitLimit + InfraManager.Instance.GetInfraEffectValueByEffectType(infraEffectType.AddRoster);
@@ -117,7 +121,7 @@ public class StudentManager : Singleton<StudentManager>
     public void SaveGame()
     {
         // 1. ?????? ??????? ??? ??????.
-        StudentSaveData saveData = new StudentSaveData(_idCount, _myStudents, _currentTeam);
+        StudentSaveData saveData = new StudentSaveData(_idCount, _myStudents, _currentTeam, _recruitCandidates);
 
         // 2. ??????? ???? ????????.
         if (SaveLoadManager.Instance != null)
@@ -133,6 +137,8 @@ public class StudentManager : Singleton<StudentManager>
             _myStudents = data.studentList;
             _currentTeam = data.currentTeam;
 
+            _recruitCandidates = data.recruitCandidates ?? new List<Student>();
+
             // 2. ???? ???? ?��?? ?��????? ScriptableObject(SO) ?????? ????????!
             // ?????? ??? ??? DB?? ????? ??? Init ????? ????.
             foreach (var student in _myStudents)
@@ -140,6 +146,10 @@ public class StudentManager : Singleton<StudentManager>
                 _studentFactory.InitStudent(student);
             }
 
+            foreach (var candidate in _recruitCandidates)
+            {
+                _studentFactory.JustInitStudent(candidate);
+            }
             Debug.Log("���� �ε� �Ϸ�!");
             // UI ???? ???? ??? ???
         }
@@ -151,6 +161,16 @@ public class StudentManager : Singleton<StudentManager>
         {
             student.OnInfraUpdated();
         }
+    }
+    public void SetRecruitCandidates(List<Student> candidates)
+    {
+        _recruitCandidates = candidates;
+        SaveGame(); // 후보가 세팅되면 바로 저장해서 리세마라 방지
+    }
+
+    public void ClearRecruitCandidates()
+    {
+        _recruitCandidates.Clear();
     }
 
     protected override void OnApplicationQuit()
