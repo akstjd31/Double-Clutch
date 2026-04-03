@@ -45,7 +45,7 @@ public class MatchReplayer : MonoBehaviour
     private Coroutine _replayCoroutine;
     private int _currentLogIndex = 0;
     private bool _isSkipping = false;
-
+    private bool _isCurrentLogScoreAdded = false;
     // 이전 로그의 남은 시간을 추적하기 위한 변수
     private float _previousRemainTime = 600f; // 1쿼터 시작 시간 기준
 
@@ -284,6 +284,7 @@ public class MatchReplayer : MonoBehaviour
 
         for (_currentLogIndex = 0; _currentLogIndex < _logs.Count; _currentLogIndex++)
         {
+            _isCurrentLogScoreAdded = false;
             var log = _logs[_currentLogIndex];
             float speed = Mathf.Max(1.0f, PlaybackSpeed);
 
@@ -387,6 +388,8 @@ public class MatchReplayer : MonoBehaviour
                 if (log.TeamId == 0) _matchState.HomeTeam.AddScore(log.ScoreAdded);
                 else _matchState.AwayTeam.AddScore(log.ScoreAdded);
 
+                _isCurrentLogScoreAdded = true;
+
                 if (_uiManager != null)
                 {
                     _uiManager.UpdateScoreBoard(_matchState);
@@ -429,6 +432,8 @@ public class MatchReplayer : MonoBehaviour
             _replayCoroutine = null;
         }
         DOTween.Kill("MatchReplay");
+
+        int startIndex = _isCurrentLogScoreAdded ? _currentLogIndex + 1 : _currentLogIndex;
         // 남은 로그들을 순식간에 돌리면서 점수만 한방에 합산
         for (int i = _currentLogIndex; i < _logs.Count; i++)
         {
