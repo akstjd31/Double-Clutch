@@ -36,6 +36,11 @@ public class TrainingCharacterBox : MonoBehaviour
         StringManager.OnLanguageChanged -= SetStudentState;
     }
 
+    public void RefreshPositionMark()
+    {
+        _positionImage.sprite = SpriteManager.Instance.GetPositionSprite(_student.Position);
+    }
+
     public void Init(Student student)
     {
         _student = student;
@@ -43,7 +48,7 @@ public class TrainingCharacterBox : MonoBehaviour
         SpriteManager spriteManager = SpriteManager.Instance;
         _studentImage.sprite = spriteManager.GetSprite(_student.VisualData.portraitResource);
         _positionImage.sprite = spriteManager.GetPositionSprite(_student.Position);
-        _positionImage.sprite = SpriteManager.Instance.GetSprite(_student.TraitData.traitResource);
+        _traitImage.sprite = SpriteManager.Instance.GetSprite(_student.TraitData.traitResource);
 
 
         StringManager manager = StringManager.Instance;
@@ -78,11 +83,35 @@ public class TrainingCharacterBox : MonoBehaviour
 
             if (_student.CurrentTraining is IndividualTraining || _student.CurrentTraining is TeamTraining)
             {
+                if (StringManager.Instance.CurrentLanguage == Language.Ko)
+                {
+                    _stateText.fontSize = 32;
+                }
+                if (StringManager.Instance.CurrentLanguage == Language.En)
+                {
+                    _stateText.fontSize = 32;
+                }
+                if (StringManager.Instance.CurrentLanguage == Language.Ja)
+                {
+                    _stateText.fontSize = 24;
+                }
                 _stateText.color = _trainingColor;
                 manager.ApplyFont(_stateText);
             }
             else
             {
+                if (StringManager.Instance.CurrentLanguage == Language.Ko)
+                {
+                    _stateText.fontSize = 32;
+                }
+                if (StringManager.Instance.CurrentLanguage == Language.En)
+                {
+                    _stateText.fontSize = 32;
+                }
+                if (StringManager.Instance.CurrentLanguage == Language.Ja)
+                {
+                    _stateText.fontSize = 24;
+                }
                 _stateText.color= _restColor;
                 manager.ApplyFont(_stateText);
             }

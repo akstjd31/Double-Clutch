@@ -194,18 +194,29 @@ public class ResultState : IState
         {
             // 순위표에서 내 팀 찾기
             var myStanding = currentLeague.standings.Find(s => s.teamId == myTeamId);
+            string soundNm = "";
 
             // 내가 1등(우승)이라면
             if (myStanding != null && myStanding.rank == 1)
             {
+                soundNm = SoundName.SE_MATCH_WIN;
+
                 // 우승 상금을 최종 획득 골드에 합산
                 finalRewardAmount += rewardData.Value.rewardGoldWin;
 
                 // 리그 우승 명성치 누적
                 _gm.SetTotalWinHonor(_gm.SaveData.totalWinHonor + rewardFameWin);
 
+                if (AudioManager.Instance != null)
+                    AudioManager.Instance.PlaySoundOneShot(SoundName.SE_FAME);
+
                 Debug.Log($"[리그 우승!] 상금 {rewardData.Value.rewardGoldWin}G 및 명성 {rewardData.Value.rewardFameWin} 획득!");
             }
+            else
+                soundNm = SoundName.SE_CROWD_BOO;
+
+            if (AudioManager.Instance != null)
+                AudioManager.Instance.PlaySoundOneShot(soundNm);
             
             _gm.SaveData.leagueWinRecord.Add(new LeagueWinRecord(currentLeague.leagueId, myStanding.rank == 1));
         }
@@ -281,10 +292,11 @@ public class ResultState : IState
         if (LeagueManager.Instance.CurrentLeague != null && LeagueManager.Instance.CurrentLeague.isFinished)
         {
             ApplyLeagueEndConditionDrop(LeagueManager.Instance.CurrentLeague.currentRoundIndex + 1);
-            if (LeagueRecordManager.Instance != null)
-            {
-                LeagueRecordManager.Instance.ClearLeagueRecords();
-            }
+            // 저장 타이밍으로 인한 버그로 생각되는 부분이 있어 주석 처리
+            //if (LeagueRecordManager.Instance != null)
+            //{
+            //    LeagueRecordManager.Instance.ClearLeagueRecords();
+            //}
         }
         MatchState matchState = UnityEngine.Object.FindFirstObjectByType<MatchState>();
         if (matchState != null && matchState.HomeTeam != null)

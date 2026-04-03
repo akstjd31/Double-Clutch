@@ -32,8 +32,16 @@ public class SwissMatchRow : MonoBehaviour
         // 팀명 및 볼드 처리
         if (_txtTeamName != null)
         {
-            _txtTeamName.text = GetTeamName(teamId);
-            StringManager.Instance.ApplyFont(_txtTeamName);
+            if (isPlayerTeam) 
+            {
+                _txtTeamName.text = GetTeamName(teamId)+"\n"+StringManager.Instance.GetString("UI_Start_고등학교");
+                StringManager.Instance.ApplyFont(_txtTeamName);
+            }
+            else
+            {
+                _txtTeamName.text = GetTeamName(teamId);
+                StringManager.Instance.ApplyFont(_txtTeamName);
+            }
         }
 
         // 플레이어 팀 폰트 강조

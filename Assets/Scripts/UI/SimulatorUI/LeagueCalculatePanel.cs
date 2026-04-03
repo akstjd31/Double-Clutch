@@ -13,6 +13,8 @@ public class LeagueCalculatePanel : MonoBehaviour
     [SerializeField] private Button _btnShowBracket;
     [SerializeField] private SwissBoardPanel _swissBoardPanel;
 
+    [SerializeField] private TournamentBoardPanel _tournamentBoardPanel;
+
     [Header("결산 텍스트 UI")]
     [SerializeField] private TextMeshProUGUI _txtLeagueName;     // 리그 이름
     [SerializeField] private TextMeshProUGUI _txtWinnerTeamName; // (예: XX 고등학교)
@@ -35,6 +37,14 @@ public class LeagueCalculatePanel : MonoBehaviour
 
     private Action _onConfirmAction;
 
+    private void OnEnable()
+    {
+        StringManager.OnLanguageChanged += UpdateCalculateData;
+    }
+    private void OnDisable()
+    {
+        StringManager.OnLanguageChanged -= UpdateCalculateData;
+    }
     public void Init(int currentRound, Action onConfirm)
     {
         _onConfirmAction = onConfirm;
@@ -43,6 +53,8 @@ public class LeagueCalculatePanel : MonoBehaviour
         _btnConfirm.onClick.RemoveAllListeners();
         _btnConfirm.onClick.AddListener(() =>
         {
+            PlayConfirmSound();
+
             gameObject.SetActive(false);
             _onConfirmAction?.Invoke();
         });
@@ -50,7 +62,11 @@ public class LeagueCalculatePanel : MonoBehaviour
         if (_btnTotalRank != null)
         {
             _btnTotalRank.onClick.RemoveAllListeners();
-            _btnTotalRank.onClick.AddListener(() => _totalRankPanel.OpenPanel());
+            _btnTotalRank.onClick.AddListener(() =>
+            {
+                PlayConfirmSound();
+                _totalRankPanel.OpenPanel();
+            });
         }
         // 대회 대진표 버튼 클릭 이벤트
         if (_btnShowBracket != null)
@@ -58,7 +74,25 @@ public class LeagueCalculatePanel : MonoBehaviour
             _btnShowBracket.onClick.RemoveAllListeners();
             _btnShowBracket.onClick.AddListener(() =>
             {
-                if (_swissBoardPanel != null) _swissBoardPanel.OpenPanel();
+                PlayConfirmSound();
+                // 현재 진행 중인(또는 방금 끝난) 리그 데이터를 가져옴
+                var currentLeague = LeagueManager.Instance.CurrentLeague;
+
+                if (currentLeague != null)
+                {
+                    // 리그 타입이 토너먼트일 경우
+                    if (currentLeague.leagueType == "Tournament")
+                    {
+                        if (_tournamentBoardPanel != null)
+                            _tournamentBoardPanel.OpenPanel();
+                    }
+                    // 리그 타입이 스위스일 경우
+                    else
+                    {
+                        if (_swissBoardPanel != null)
+                            _swissBoardPanel.OpenPanel();
+                    }
+                }
             });
         }
         // 데이터 계산 및 텍스트 적용
@@ -100,6 +134,7 @@ public class LeagueCalculatePanel : MonoBehaviour
         if (_txtWinnerTeamName != null)
         {
             _txtWinnerTeamName.text = winnerName;
+            StringManager.Instance.ApplyFont(_txtWinnerTeamName);
         }
 
         // 우리 팀 순위
@@ -195,5 +230,11 @@ public class LeagueCalculatePanel : MonoBehaviour
                 _logHistoryPanel.OpenPanel(clickedRound);
             });
         }
+    }
+
+    private void PlayConfirmSound()
+    {
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlaySoundOneShot(SoundName.SE_BUTTON_SELECT);
     }
 }

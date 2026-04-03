@@ -389,6 +389,7 @@ public class MatchEngine : MonoBehaviour
         TeamTactics defendTactics = MatchDataProxy.Instance.GetTactics(defendTeam.TeamColorId);
 
         int action = MatchCalculator.DecideAction(_ballHolder, distToHoop, attackTactics, attackTeam, defendTeam, passInterceptDist, _simTime);
+
         Debug.Log($"<color=cyan>[턴 진행]</color> 시간:{_simTime:F1} | 볼홀더:{MakeName(_ballHolder.PlayerName)} | 선택행동:{action} (0:슛, 1:패스, 2:드리블)");
         float timeCost = UnityEngine.Random.Range(1f, 5f);
         _simTime -= timeCost;
@@ -479,7 +480,7 @@ public class MatchEngine : MonoBehaviour
         log.PlayerName = MakeName(shooter.PlayerName);
         log.EventType = eventCode;
         log.IsSuccess = success;
-        log.ScoreAdded = config != null ? config.scAdd : (success ? score : 0);
+        log.ScoreAdded = success ? score : 0;
 
         // 슛 결과 텍스트 (시간 + 내용)
         log.BallPos = shooter.LogicPosition;
@@ -644,7 +645,7 @@ public class MatchEngine : MonoBehaviour
 
         if (bestReceiver == null) return;
 
-        MatchPlayer interceptor;
+        MatchPlayer interceptor = null;
         bool success = MatchCalculator.CalculatePassSuccess(passer, bestReceiver, attackTeam, defendTeam, attackTactics, defendTactics, passInterceptDist, out interceptor);
 
         // 로그 기록 전 공 소유자 갱신
@@ -658,7 +659,16 @@ public class MatchEngine : MonoBehaviour
         else
         {
             _ballHolder = interceptor;
-            RecordLog("Steal", interceptor);
+            // 공격팀이 우리 팀(Home)일 때 뺏겼다면 -> PassFail
+            if (attackTeam.Side == TeamSide.Home)
+            {
+                RecordLog("PassFail", passer, interceptor);
+            }
+            // 공격팀이 적군(Away)일 때 우리가 뺏었다면 -> 스틸 성공
+            else
+            {
+                RecordLog("Steal", interceptor, passer);
+            }
             SwitchPossession(false);
         }
     }
@@ -753,12 +763,24 @@ public class MatchEngine : MonoBehaviour
             log.CutInType = "";
             log.SfxType = "";
         }
-
-        // 패스일 경우 actor를 멈추게 하고, 그 외엔 _ballHolder를 멈추게 함
-        MatchPlayer playerToStandStill = (actor != null) ? actor : _ballHolder;
+        List<MatchPlayer> stopPlayers = new List<MatchPlayer>();
+        if (eventCode == "PassSucc")
+        {
+            if (actor != null) stopPlayers.Add(actor); // 패스 성공: 패서 1명만 정지
+        }
+        else if (eventCode == "Steal" || eventCode == "PassFail")
+        {
+            // 스틸/턴오버: 패스한 사람(actor)과 스틸한 사람(target) 2명 모두 정지
+            if (actor != null) stopPlayers.Add(actor);
+            if (target != null) stopPlayers.Add(target);
+        }
+        else
+        {
+            if (_ballHolder != null) stopPlayers.Add(_ballHolder); // 그 외(슛, 드리블): 볼홀더 정지
+        }
 
         // 선수들을 먼저 이동시킵니다.
-        SavePositionsToLog(log, playerToStandStill);
+        SavePositionsToLog(log, stopPlayers.ToArray());
 
         // 선수들이 다 이동한 '이후'에 공의 위치를 갱신합니다.
         // 패스 성공 시, 공은 패스받는 target의 '이동이 끝난 새로운 위치'로 갑니다.
@@ -793,10 +815,10 @@ public class MatchEngine : MonoBehaviour
     }
 
     // 10명의 선수를 살짝 이동시키고 좌표를 배열에 담는 함수
-    private void SavePositionsToLog(MatchLogData log, MatchPlayer playerToStandStill)
+    private void SavePositionsToLog(MatchLogData log, params MatchPlayer[] excludedPlayers)
     {
-        MoveOffBallPlayers(_homeTeam, playerToStandStill);
-        MoveOffBallPlayers(_awayTeam, playerToStandStill);
+        MoveOffBallPlayers(_homeTeam, excludedPlayers);
+        MoveOffBallPlayers(_awayTeam, excludedPlayers);
 
         for (int i = 0; i < 5; i++)
         {
@@ -812,14 +834,22 @@ public class MatchEngine : MonoBehaviour
             player.LogicPosition = defensePos;
         }
     }
-    private void MoveOffBallPlayers(MatchTeam team, MatchPlayer playerToStandStill)
+    private void MoveOffBallPlayers(MatchTeam team, params MatchPlayer[] excludedPlayers)
     {
         if (_isTransitionTurn) return;
         bool isAttacking = (team.Side == _currentPossession);
 
         foreach (var p in team.Roster)
         {
-            if (p == playerToStandStill) continue;
+            bool isExcluded = false;
+            if (excludedPlayers != null)
+            {
+                foreach (var ex in excludedPlayers)
+                {
+                    if (p == ex) { isExcluded = true; break; }
+                }
+            }
+            if (isExcluded) continue;
 
             Vector2 targetPos = GetPreferredPosition(p, isAttacking, team.Side);
 
@@ -840,7 +870,7 @@ public class MatchEngine : MonoBehaviour
         }
     }
 
-    private Vector2 GetPreferredPosition(MatchPlayer player, bool isAttacking, TeamSide side)
+    private Vector2 GetPreferredPosition(MatchPlayer player, bool isAttacking, TeamSide side, bool isInitialSetup = false)
     {
         float x = 0.5f;
         float y = 0.5f;
@@ -867,11 +897,60 @@ public class MatchEngine : MonoBehaviour
             {
                 var preset = _positionPresetReader.DataList[targetIndex];
 
-                bool isFirstZone = UnityEngine.Random.value > 0.5f;
-                float minX = isFirstZone ? preset.offenseXMin : preset.offenseXMin2;
-                float maxX = isFirstZone ? preset.offenseXMax : preset.offenseXMax2;
+                // 좌우 구분이 없는 포지션 (PG, PF, C 등 -> Min과 Min2 값이 동일한 경우)
+                if (Mathf.Approximately(preset.offenseXMin, preset.offenseXMin2) && Mathf.Approximately(preset.offenseXMax, preset.offenseXMax2))
+                {
+                    x = UnityEngine.Random.Range(preset.offenseXMin, preset.offenseXMax);
+                }
+                // 처음 포지션을 잡을 때 (공수 교대 직후 등)
+                else if (isInitialSetup)
+                {
+                    bool isFirstZone = UnityEngine.Random.value > 0.5f;
+                    float minX = isFirstZone ? preset.offenseXMin : preset.offenseXMin2;
+                    float maxX = isFirstZone ? preset.offenseXMax : preset.offenseXMax2;
+                    x = UnityEngine.Random.Range(minX, maxX);
+                }
+                // 경기 중 오프볼 이동할 때 -> P_LtoC, P_CtoC 확률 적용 (SG, SF)
+                else
+                {
+                    float centerMin = preset.offenseXMax;
+                    float centerMax = preset.offenseXMin2;
+                    float currentX = player.LogicPosition.x;
 
-                x = UnityEngine.Random.Range(minX, maxX);
+                    // 현재 구역 판별 (0: Left, 1: Center, 2: Right)
+                    int currentZone = 1;
+                    if (currentX <= centerMin) currentZone = 0;
+                    else if (currentX >= centerMax) currentZone = 2;
+
+                    int targetZone = currentZone;
+
+                    float a = preset.P_LtoC;
+                    float b = preset.P_CtoC;
+                    float rand = UnityEngine.Random.value;
+
+                    if (currentZone == 0) // 현재 왼쪽
+                    {
+                        if (rand < a) targetZone = 1; // Center로 이동
+                    }
+                    else if (currentZone == 2) // 현재 오른쪽
+                    {
+                        if (rand < a) targetZone = 1; // Center로 이동
+                    }
+                    else // 현재 중앙 (Center)
+                    {
+                        if (rand > b) // Center에 머물지 않고 이동한다면
+                        {
+                            // 반반 확률로 왼쪽 또는 오른쪽으로 이동!
+                            targetZone = (UnityEngine.Random.value > 0.5f) ? 0 : 2;
+                        }
+                    }
+
+                    // 결정된 타겟 구역 안에서 랜덤 좌표 픽
+                    if (targetZone == 0) x = UnityEngine.Random.Range(preset.offenseXMin, preset.offenseXMax);
+                    else if (targetZone == 2) x = UnityEngine.Random.Range(preset.offenseXMin2, preset.offenseXMax2);
+                    else x = UnityEngine.Random.Range(centerMin, centerMax);
+                }
+
                 y = UnityEngine.Random.Range(preset.offenseYMin, preset.offenseYMax);
                 isDataFound = true;
             }

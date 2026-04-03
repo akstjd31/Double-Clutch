@@ -1,8 +1,9 @@
+using System.Collections;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.EventSystems;
-using System.Collections;
+using UnityEngine.UI;
+using static UnityEngine.GraphicsBuffer;
 
 public class CharacterRecruitBox : MonoBehaviour
     //IPointerDownHandler, IPointerUpHandler
@@ -25,7 +26,27 @@ public class CharacterRecruitBox : MonoBehaviour
     private Coroutine _longPressRoutine;
     private float _pressTime = 2.0f;
 
+    private void OnEnable()
+    {
+        StringManager.OnLanguageChanged += Refresh;
+    }
 
+    private void OnDisable()
+    {
+        StringManager.OnLanguageChanged += Refresh;
+    }
+
+    private void Refresh()
+    {
+        SetText();
+        switch (_student.Grade)
+        {
+            case 1: _gradeText.text = StringManager.Instance.GetString("UI_Player_1학년"); break;
+            case 2: _gradeText.text = StringManager.Instance.GetString("UI_Player_2학년"); break;
+            case 3: _gradeText.text = StringManager.Instance.GetString("UI_Player_3학년"); break;
+        }
+        StringManager.Instance.ApplyFont(_gradeText);
+    }
     private void Start()
     {
         _toggleButton.onValueChanged.AddListener(ChangeToggleState);
@@ -62,8 +83,11 @@ public class CharacterRecruitBox : MonoBehaviour
 
         _positionText.text = _student.Position.ToString();        
         _nameText.text = name;
+        manager.ApplyFont(_nameText);
         _attackText.text = manager.GetString("UI_Player_공격력")+ " : " + _student.Attack.ToString();
-        _defenseText.text = manager.GetString("UI_Player_수비력") + " : " + _student.Defense.ToString();        
+        manager.ApplyFont(_attackText);
+        _defenseText.text = manager.GetString("UI_Player_수비력") + " : " + _student.Defense.ToString();    
+        manager.ApplyFont(_defenseText);
     }
 
     private void ChangeToggleState(bool isOn)

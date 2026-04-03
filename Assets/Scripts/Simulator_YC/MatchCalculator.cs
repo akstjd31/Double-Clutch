@@ -140,7 +140,7 @@ public static class MatchCalculator
         LastBlockPressure = blockStat * (1f / (nearestEnemyDist + penBlock));
 
         float scoreShoot = (shootStat * wShoot * wShotBase)
-                         + (100f / (distToHoop + 1f))
+                         + (50f / (distToHoop + 1f))
                          - (blockStat * (1f / (nearestEnemyDist + penBlock)) * wBlockBase);
 
 
@@ -248,7 +248,7 @@ public static class MatchCalculator
 
         // 기획서 원본 공식이 그대로 보이는 행동 결정 디버그 로그!
         Debug.Log($"<color=#FFFF00>[행동 결정 디버그]</color> {playerName} (골대거리:{distToHoop:F2}, 수비거리:{nearestEnemyDist:F2})\n" +
-                  $"▶ 슛 공식: ({shootStat:F1}*{wShoot:F1}*{wShotBase}) + (100/({distToHoop:F2}+1)) - ({blockStat:F1}*(1/({nearestEnemyDist:F2}+{penBlock}))*{wBlockBase}) = {scoreShoot:F2}\n" +
+                  $"▶ 슛 공식: ({shootStat:F1}*{wShoot:F1}*{wShotBase}) + (50/({distToHoop:F2}+1)) - ({blockStat:F1}*(1/({nearestEnemyDist:F2}+{penBlock}))*{wBlockBase}) = {scoreShoot:F2}\n" +
                   $"▶ 드리블 공식: ({dribblerPassStat:F1}*{tactics.bonusDribble:F1}*{wDribBase}) + ({nearestEnemyDist:F2}*{wDribbleBonus}) + ({distToHoop:F2}*{wDistBonus}) - ({enemySteal:F1}*(1/({nearestEnemyDist:F2}+{penSteal}))*{wStealBase}) = {scoreDribble:F2}\n" +
                   $"▶ 패스 점수: 최고 효율 대상 탐색 결과 = {scorePass:F2}\n" +
                   $"▶ 발동된 판단 시너지: {(string.IsNullOrEmpty(activeSynergyLog) ? "없음" : activeSynergyLog)}\n" +

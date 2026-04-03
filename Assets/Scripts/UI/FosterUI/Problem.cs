@@ -10,9 +10,23 @@ public class Problem : MonoBehaviour
 {    
     [SerializeField] TextMeshProUGUI _warning1;
     [SerializeField] TextMeshProUGUI _warning2;
-
+    private string _name;
+    private StudentState _studentState;
+    private void OnEnable()
+    {
+        StringManager.OnLanguageChanged += Refresh;
+    }
+    private void OnDisable()
+    {
+        StringManager.OnLanguageChanged -=Refresh;
+    }
+    private void Refresh()
+    {
+        Init(_name);
+    }
     public void Init(string name) //개인훈련용
     {
+        _name = name;
         StringManager manager = StringManager.Instance;
         _warning1.text = name +  " ("+ manager.GetString("UI_Development_컨디션")+" : 0"+")";
         _warning2.text = manager.GetString("UI_Development_컨디션부족");
@@ -22,6 +36,8 @@ public class Problem : MonoBehaviour
 
     public void Init(string name, StudentState state) //팀훈련용
     {
+        _name = name;
+        _studentState = state;
         StringManager manager = StringManager.Instance;
         string stateWord = manager.GetString(GetStateString(state));
 

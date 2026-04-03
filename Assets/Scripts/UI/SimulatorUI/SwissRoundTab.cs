@@ -56,7 +56,6 @@ public class SwissRoundTab : MonoBehaviour
     {
         if (isSelected)
         {
-            _bgImage.color = new Color(1f, 0.9f, 0.2f, 1f); // 노란색 강조
             _txtRound.fontStyle = FontStyles.Bold;
 
             // 탭을 눌렀으므로 레드도트 지우기 및 저장
@@ -72,7 +71,6 @@ public class SwissRoundTab : MonoBehaviour
             // 선택되지 않은 접근 가능한 탭의 기본 색상
             if (_tabButton.interactable)
             {
-                _bgImage.color = Color.white;
                 _txtRound.fontStyle = FontStyles.Normal;
             }
         }

@@ -1,13 +1,29 @@
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class RecruitConfirmPopUp : MonoBehaviour
 {
     [SerializeField] TextMeshProUGUI _confirmText;
 
-
+    private int _number;
+    private void OnEnable()
+    {
+        StringManager.OnLanguageChanged += Refresh;
+    }
+    private void OnDisable()
+    {
+        StringManager.OnLanguageChanged += Refresh;
+    }
+    private void Refresh()
+    {
+        _confirmText.text = StringManager.Instance.GetFormattedString("UI_Recruit_ì˜ì…íŒì—…", _number);
+        StringManager.Instance.ApplyFont(_confirmText);
+    }
     public void Init(int number)
     {
-        _confirmText.text = $"¼±¼ö¸¦ {number} ¸í ¿µÀÔÇÏ½Ã°Ú½À´Ï±î?";
+        _number = number;
+        _confirmText.text = StringManager.Instance.GetFormattedString("UI_Recruit_ì˜ì…íŒì—…",number);
+        StringManager.Instance.ApplyFont(_confirmText);
     }
 }

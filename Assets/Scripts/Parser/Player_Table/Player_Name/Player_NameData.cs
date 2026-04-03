@@ -2,7 +2,7 @@ using System;
 
 public enum nation
 {
-    None, Kr, Jp, Us, Ch, It, Fr, Sp
+    None, Kr, Jp, Us, Cn, It, Fr, Es
 }
 
 public enum namePart

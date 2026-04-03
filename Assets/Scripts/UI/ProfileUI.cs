@@ -31,6 +31,7 @@ public class ProfileUI : MonoBehaviour
     [SerializeField] private Button _confirmSchoolButton;
     [SerializeField] private Button _cancelSchoolButton;
     [SerializeField] private TextMeshProUGUI _schoolWarningText;
+    [SerializeField] private TextMeshProUGUI _schoolInputFieldText;
 
     [Header("감독 수정 팝업")]
     [SerializeField] private GameObject _coachModifyPanel;
@@ -38,6 +39,7 @@ public class ProfileUI : MonoBehaviour
     [SerializeField] private Button _confirmCoachButton;
     [SerializeField] private Button _cancelCoachButton;
     [SerializeField] private TextMeshProUGUI _coachWarningText;
+    [SerializeField] private TextMeshProUGUI _coachInputFieldText;
 
     [Header("아이콘 설정 및 해금")]
     [SerializeField] private LobbyProfileIcon _LobbyProfileIcon;
@@ -81,6 +83,10 @@ public class ProfileUI : MonoBehaviour
 
         if (_profileBoxImage != null)
             _profileBoxImage.sprite = SpriteManager.Instance.GetSprite(_profileDataReader.DataList[0].playerImage);
+        _schoolInputFieldText.text = StringManager.Instance.GetString("UI_Start_학교이름");
+        StringManager.Instance.ApplyFont(_schoolInputFieldText);
+        _coachInputFieldText.text = StringManager.Instance.GetString("UI_Start_감독이름");
+        StringManager.Instance.ApplyFont( _coachInputFieldText);
     }
 
     private void OnEnable()
@@ -208,8 +214,8 @@ public class ProfileUI : MonoBehaviour
 
     public void OnClickConfirmButton()
     {
-        if (AudioManager.Instance == null) return;
-        AudioManager.Instance.PlaySoundOneShot(SoundName.SE_BUTTON_SELECT);
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlaySoundOneShot(SoundName.SE_BUTTON_SELECT);
 
         var gm = GameManager.Instance;
 
@@ -221,7 +227,7 @@ public class ProfileUI : MonoBehaviour
                 schoolName = _schoolNameField.text,
                 coachName = _playerNameField.text,
                 weekId = 8,
-                year = 0,
+                year = 1,
                 tutorialCompleted = new bool[TutorialManager.Instance.GetChapterArrayLength()]
             };
 
@@ -296,34 +302,36 @@ public class ProfileUI : MonoBehaviour
     {
         string t = null;
         if (string.IsNullOrWhiteSpace(inputText))
-            t = "공백인 필드가 존재합니다!";
+            t = StringManager.Instance.GetString("Str_UI_공백");
 
         else if (!IsValidNameLength(inputText))
-            t = $"이름 길이가 올바르지 않습니다.\n" +
-                $"아래 기준을 확인해주세요.\n" +
-                $"• 한글: {KOREAN_NAME_MIN} ~ {KOREAN_NAME_MAX}자\n" +
-                $"• 영어: {ENGLISH_NAME_MIN} ~ {ENGLISH_NAME_MAX}자\n" +
-                $"• 일본어: {JAPANESE_NAME_MIN} ~ {JAPANESE_NAME_MAX}자";
+            t = StringManager.Instance.GetFormattedString("Str_UI_기준설명", KOREAN_NAME_MIN, KOREAN_NAME_MAX, ENGLISH_NAME_MIN, ENGLISH_NAME_MAX, JAPANESE_NAME_MIN, JAPANESE_NAME_MAX);
 
         else if (CheckBadWord(inputText))
-            t = "비속어가 포함되어 있습니다!";
+            t = StringManager.Instance.GetString("Str_UI_비속어");
         
         if (t != null)
         {
+            if (AudioManager.Instance != null)
+                AudioManager.Instance.PlaySoundOneShot(SoundName.UI_WARNING_01);
+
             if (GameManager.Instance.SaveData == null)
             {
                 _warningTextObj.SetActive(true);
+
                 targetWarningText.text = t;
+                StringManager.Instance.ApplyFont(targetWarningText);
             }
             else
             {
                 if (_warningCoroutine == null)
+                {
                     _warningCoroutine = StartCoroutine(PrintWarningTextPopup(targetWarningText, t));
+                    StringManager.Instance.ApplyFont(targetWarningText);
+                }
             }
-            
             return false;
         }
-
         return true;
     }
 
@@ -385,11 +393,15 @@ public class ProfileUI : MonoBehaviour
             {
                 icon.OnOffOutLine(false);
                 icon.GetButton().interactable = false;
+                icon.GetButton().onClick.RemoveAllListeners();
             }
 
             _activeIcons.Add(icon);
         }
-
+        _schoolInputFieldText.text = StringManager.Instance.GetString("UI_Start_학교이름");
+        StringManager.Instance.ApplyFont(_schoolInputFieldText);
+        _coachInputFieldText.text = StringManager.Instance.GetString("UI_Start_감독이름");
+        StringManager.Instance.ApplyFont(_coachInputFieldText);
         UpdatePageButtons();
     }
 

@@ -1,3 +1,4 @@
+using Game.Constants;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -20,10 +21,21 @@ public class CharacterOutPanel : MonoBehaviour
     }
 
     public void Init()
-    {
+    {        
         RefreshBoxList();
 
         _outConfirmButton.onClick.AddListener(ConfirmOut);
+    }
+
+    private void OnDisable()
+    {
+        PlaySound(SoundName.BGM_LOBBY_01);
+    }
+
+    private void PlaySound(string id)
+    {
+        if (AudioManager.Instance == null) return;
+        AudioManager.Instance.PlaySound(id);
     }
 
     public void RefreshBoxList()
@@ -60,17 +72,17 @@ public class CharacterOutPanel : MonoBehaviour
             //추가 방출 알림 팝업 호출
             StudentUIManager.Instance.OpenOutWarningPopUp(totalCount - StudentManager.Instance.RecruitLimit);
         }
-        else if (totalCount < StudentManager.Instance.RecruitLimit)
+        else if (totalCount < StudentManager.BasicRecruitLimit)
         {
             //방출 불가 알림 팝업 호출
             StudentUIManager.Instance.OpenCantOutWarningPopUp();
         }
-        else //최대보유치와 방출 후 학생 수가 딱 맞아야 방출 확인 팝업 호출
+        else //최대보유치와 기본보유치(5) 사잇값일 때만 방출 확인창 호출
         {
             StudentUIManager.Instance.OpenOutConfirmPopUp(_selectCount);
         }
 
-    }
+    }    
 
     // 버튼 클릭 시 방출
     public void OnConfirmOutButtonClick()

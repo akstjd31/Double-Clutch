@@ -2,6 +2,7 @@
 using UnityEngine.UI;
 using TMPro;
 using System.Collections.Generic;
+using Game.Constants;
 
 public class PassiveSkillSelectPanel : MonoBehaviour
 {
@@ -21,6 +22,9 @@ public class PassiveSkillSelectPanel : MonoBehaviour
     }
     public void OnClickOKButton()
     {
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlaySoundOneShot(SoundName.SE_BUTTON_SELECT);
+
         Student student = null;
 
         for (int i = 0; i < _graduationManager.MyStudents.Count; i++)

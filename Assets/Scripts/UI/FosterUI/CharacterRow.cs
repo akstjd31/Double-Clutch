@@ -18,6 +18,8 @@ public class CharacterRow : MonoBehaviour
     [SerializeField] TextMeshProUGUI _guardTag2;
     [SerializeField] TextMeshProUGUI _condition;
     [SerializeField] TextMeshProUGUI _state;
+    [SerializeField] RectTransform _attackBox;
+    [SerializeField] RectTransform _defenceBox;
 
     private Student _target;
     private void OnEnable()
@@ -46,6 +48,10 @@ public class CharacterRow : MonoBehaviour
     {
         if (target.ChangedPotentials.Count == 0)
         {
+            _attackTag1.text = string.Empty;
+            _attackTag2.text = string.Empty;
+            _guardTag1.text = string.Empty;
+            _guardTag2.text = string.Empty;
             return;
         }
             
@@ -103,6 +109,19 @@ public class CharacterRow : MonoBehaviour
     {
         StringManager manager = StringManager.Instance;
         _name.text = manager.GetString(_target.Name[0]) + manager.GetString(_target.Name[1]) + manager.GetString(_target.Name[2]);
+        if(manager.CurrentLanguage == Language.Ko)
+        {
+            _name.fontSize = 32;
+        }
+        if (manager.CurrentLanguage == Language.En)
+        {
+            _name.fontSize = 24;
+        }
+        if (manager.CurrentLanguage == Language.Ja)
+        {
+            _name.fontSize = 24;
+        }
+
         manager.ApplyFont(_name);
 
         _attack.text = _target.AttackChange != 0 ? $"+{_target.AttackChange}" : "-";
@@ -123,5 +142,7 @@ public class CharacterRow : MonoBehaviour
         manager.ApplyFont(_state);
         manager.ApplyFont(_condition);
         SetTag(_target);
+        LayoutRebuilder.ForceRebuildLayoutImmediate(_attackBox);
+        LayoutRebuilder.ForceRebuildLayoutImmediate(_defenceBox);
     }
 }

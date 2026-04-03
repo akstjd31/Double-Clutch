@@ -11,14 +11,13 @@ public class CharacterRecruitPanel : MonoBehaviour
     int _selectCount = 0;
 
     private void OnEnable()
-    {
-        Init();
+    {        
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.SetGraduationPending(false);
+        }
         PlaySound(SoundName.BGM_SCOUT);
-    }
-
-    private void OnDisable()
-    {
-        PlaySound(SoundName.BGM_LOBBY_01);
+        Init();
     }
 
     private void PlaySound(string id)
@@ -29,11 +28,40 @@ public class CharacterRecruitPanel : MonoBehaviour
 
     public void Init()
     {
-        for (int i = 0; i < characterRecruitBoxList.Length; i++)
+        if (StudentManager.Instance.MyStudents.Count > StudentManager.Instance.RecruitLimit)
         {
-            characterRecruitBoxList[i].Init(StudentManager.Instance.MakeRandomStudent());
+            StudentUIManager.Instance.OpenCharacterOutPanel();
+            this.gameObject.SetActive(false);
+            return;
         }
 
+        var savedCandidates = StudentManager.Instance.RecruitCandidates;
+
+        if (savedCandidates != null && savedCandidates.Count == characterRecruitBoxList.Length)
+        {
+            for (int i = 0; i < characterRecruitBoxList.Length; i++)
+            {
+                characterRecruitBoxList[i].Init(savedCandidates[i]);
+            }
+            Debug.Log("기존 영입 후보 목록을 불러왔습니다.");
+        }
+
+        else
+        {
+            List<Student> newCandidates = new List<Student>();
+
+            for (int i = 0; i < characterRecruitBoxList.Length; i++)
+            {
+                Student newStudent = StudentManager.Instance.MakeRandomStudent();
+                newCandidates.Add(newStudent);
+                characterRecruitBoxList[i].Init(newStudent);
+            }
+
+            // 뽑은 5명을 매니저에 넘겨서 '바로 저장'
+            StudentManager.Instance.SetRecruitCandidates(newCandidates);
+            Debug.Log("새로운 영입 후보를 생성하고 저장했습니다.");
+        }
+        _recruitConfirmButton.onClick.RemoveAllListeners();
         _recruitConfirmButton.onClick.AddListener(ConfirmRecruit);
     }
 
@@ -68,6 +96,7 @@ public class CharacterRecruitPanel : MonoBehaviour
         {
             StudentManager.Instance.RecruitNewStudent(student);//일단 모두 영입
         }
+        StudentManager.Instance.ClearRecruitCandidates();
         StudentManager.Instance.SaveGame();
         if (!StudentManager.Instance.IsStable)
         {

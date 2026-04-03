@@ -17,8 +17,8 @@ public class LobbyState : IState
 
         // if (CalendarManager.Instance.CheckEventDay())
         //     _gm.GoToGraduation();
-        if (GameManager.Instance.SaveData.isGraduationPending)
-            _gm.GoToGraduation();
+        // if (GameManager.Instance.SaveData.isGraduationPending)
+        //     _gm.GoToGraduation();
     }
 
     public void Exit()

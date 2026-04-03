@@ -1,4 +1,5 @@
 using DG.Tweening.Core.Easing;
+using Game.Constants;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -29,6 +30,7 @@ public class SettingPanel : MonoBehaviour
     [Header("기타 버튼")]
     [SerializeField] Button _userPolicyButton;
     [SerializeField] Button _privacyPolicyButton;
+    [SerializeField] Button _makerList;
 
     private void Start()
     {
@@ -54,6 +56,7 @@ public class SettingPanel : MonoBehaviour
 
         _userPolicyButton.onClick.RemoveAllListeners();
         _privacyPolicyButton.onClick.RemoveAllListeners();
+        _makerList.onClick.RemoveAllListeners();
 
         //------------------------------------------------------------
         // 구독 연결
@@ -80,6 +83,7 @@ public class SettingPanel : MonoBehaviour
 
         _userPolicyButton.onClick.AddListener(OpenUserPolicy);
         _privacyPolicyButton.onClick.AddListener(OpenPrivacyPolicy);
+        _makerList.onClick.AddListener(OpenMakerList);
     }
 
     private void OnEnable()
@@ -136,43 +140,63 @@ public class SettingPanel : MonoBehaviour
 
     private void OnFPS30Changed(bool isOn)
     {
+        PlayConfirmSound();
         if (isOn) SettingManager.Instance.SetFPS(30);
     }
     private void OnFPS60Changed(bool isOn)
     {
+        PlayConfirmSound();
         if (isOn) SettingManager.Instance.SetFPS(60);
     }
 
     private void OnKoreanToggleChanged(bool isOn)
     {
+        PlayConfirmSound();
         if (isOn) StringManager.Instance.SetLanguage(Language.Ko);
     }
 
     private void OnEnglishToggleChanged(bool isOn)
     {
+        PlayConfirmSound();
         if (isOn) StringManager.Instance.SetLanguage(Language.En);
     }
 
     private void OnJapanToggleChanged(bool isOn)
     {
+        PlayConfirmSound();
         if (isOn) StringManager.Instance.SetLanguage(Language.Ja);
     }
 
     private void OpenPrivacyPolicy()
     {
+        PlayConfirmSound();
         SettingManager.Instance.OpenPrivacyPolicy();
     }
 
     private void OpenUserPolicy()
     {
+        PlayConfirmSound();
         SettingManager.Instance.OpenUserPolicy();
     }
 
+    private void OpenMakerList()
+    {
+        PlayConfirmSound();
+        SettingManager.Instance.OpenMakerList();
+    }
 
 
     public void OnQuitSetting()
     {
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlaySoundOneShot(SoundName.SE_BUTTON_CANCEL);
+
         SettingManager.Instance.OnQuitSetting();
     }
 
+    private void PlayConfirmSound()
+    {
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlaySoundOneShot(SoundName.SE_BUTTON_SELECT);
+    }
 }

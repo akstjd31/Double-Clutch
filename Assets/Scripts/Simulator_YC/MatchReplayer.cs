@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
 using System.Reflection;
+using Game.Constants;
 
 public class MatchReplayer : MonoBehaviour
 {
@@ -322,10 +323,22 @@ public class MatchReplayer : MonoBehaviour
 
 
 
-            if (!string.IsNullOrEmpty(log.SfxType) && _audioSource != null)
+            System.Action playSoundAction = () =>
             {
-                if (log.SfxType == "CHEER" && _sfxCheer != null) _audioSource.PlayOneShot(_sfxCheer);
-                else if (log.SfxType == "CLAP" && _sfxClap != null) _audioSource.PlayOneShot(_sfxClap);
+                if (log.SfxType == "CHEER" && _audioSource != null && _sfxCheer != null)
+                    _audioSource.PlayOneShot(_sfxCheer);
+                else if (log.SfxType == "CLAP" && _audioSource != null && _sfxClap != null)
+                    _audioSource.PlayOneShot(_sfxClap);
+                else if (AudioManager.Instance != null)
+                    AudioManager.Instance.PlaySoundOneShot(log.SfxType);
+            };
+
+            bool isShoot = IsShootEvent(log.EventType);
+
+            // 패스, 스틸, 드리블 등은 행동 시작과 동시에 즉시 사운드 재생
+            if (!isShoot && !string.IsNullOrEmpty(log.SfxType))
+            {
+                playSoundAction();
             }
 
             MoveAllCircles(_matchState.HomeTeam, log.HomePositions, finalDuration);
@@ -347,7 +360,7 @@ public class MatchReplayer : MonoBehaviour
                 }
                 else
                 {
-                    if (log.EventType == "PassSucc" || log.EventType == "Steal")
+                    if (log.EventType == "PassSucc" || log.EventType == "Steal" || log.EventType == "PassFail")
                     {
                         ballRT.DOAnchorPos(targetUIPos, finalDuration * 0.6f)
                               .SetDelay(finalDuration * 0.4f)  // 선수가 0.4초 동안 먼저 달려가게 둡니다.
@@ -363,6 +376,11 @@ public class MatchReplayer : MonoBehaviour
             }
 
             yield return new WaitForSeconds(finalDuration);
+
+            if (isShoot && !string.IsNullOrEmpty(log.SfxType))
+            {
+                playSoundAction();
+            }
 
             if (IsGoalEvent(log.EventType))
             {

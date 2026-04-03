@@ -1,4 +1,5 @@
 using DG.Tweening;
+using Game.Constants;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -137,7 +138,8 @@ public class MatchUIManager : MonoBehaviour
         _textAwayScore.text = state.AwayTeam.Score.ToString();
 
         //  팀 이름
-        _textHomeName.text = state.HomeTeam.TeamName;
+        _textHomeName.text = state.HomeTeam.TeamName+"\n"+StringManager.Instance.GetString("UI_Start_고등학교");
+        StringManager.Instance.ApplyFont(_textHomeName);
         _textAwayName.text = StringManager.Instance.GetString(state.AwayTeam.TeamName);
         StringManager.Instance.ApplyFont(_textAwayName);
     }
@@ -239,6 +241,9 @@ public class MatchUIManager : MonoBehaviour
 
     private IEnumerator CoPlayCutInAnim(float speed)
     {
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlaySoundOneShot(SoundName.SE_CUTIN);
+
         _cutInPanel.SetActive(true);
         _cutInPanel.transform.localScale = Vector3.zero;
 
@@ -318,6 +323,9 @@ public class MatchUIManager : MonoBehaviour
     }
     public void StartHalftimeEvent(string scriptId)
     {
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlaySoundOneShot(SoundName.SE_EVENT_TRIGGER);
+
         _currentScriptId = scriptId;
         _currentLineId = 1; // 스크립트의 첫 번째 줄(currentId = 1)부터 시작
         IsEventFinished = false;
@@ -445,6 +453,8 @@ public class MatchUIManager : MonoBehaviour
             _btnNext.onClick.RemoveAllListeners();
             _btnNext.onClick.AddListener(() =>
             {
+                PlayConfirmSound();
+
                 if (lineData.nextId == 0) ShowScriptLine(lineData.currentId + 1);
                 else ShowScriptLine(lineData.nextId);
             });
@@ -482,11 +492,11 @@ public class MatchUIManager : MonoBehaviour
         text = text.Replace("{Quarter}", state.CurrentQuarter.ToString());
 
         // 출전 중인 유저(Home) 팀 선수의 이름으로 치환
-        if (text.Contains("{PG}")) text = text.Replace("{PG}", MakeName(state.HomeTeam.GetPlayerByPosition(Position.PG)?.PlayerName) ?? "가드");
-        if (text.Contains("{SG}")) text = text.Replace("{SG}", MakeName(state.HomeTeam.GetPlayerByPosition(Position.SG)?.PlayerName) ?? "가드");
-        if (text.Contains("{SF}")) text = text.Replace("{SF}", MakeName(state.HomeTeam.GetPlayerByPosition(Position.SF)?.PlayerName) ?? "포워드");
-        if (text.Contains("{PF}")) text = text.Replace("{PF}", MakeName(state.HomeTeam.GetPlayerByPosition(Position.PF)?.PlayerName) ?? "포워드");
-        if (text.Contains("{C}")) text = text.Replace("{C}", MakeName(state.HomeTeam.GetPlayerByPosition(Position.C)?.PlayerName) ?? "센터");
+        if (text.Contains("{PG}")) text = text.Replace("{PG}", MakeName(FindMyStudentByPosition(Position.PG)?.Name) ?? "가드");
+        if (text.Contains("{SG}")) text = text.Replace("{SG}", MakeName(FindMyStudentByPosition(Position.SG)?.Name) ?? "가드");
+        if (text.Contains("{SF}")) text = text.Replace("{SF}", MakeName(FindMyStudentByPosition(Position.SF)?.Name) ?? "포워드");
+        if (text.Contains("{PF}")) text = text.Replace("{PF}", MakeName(FindMyStudentByPosition(Position.PF)?.Name) ?? "포워드");
+        if (text.Contains("{C}")) text = text.Replace("{C}", MakeName(FindMyStudentByPosition(Position.C)?.Name) ?? "센터");
 
         return text;
     }
@@ -494,23 +504,21 @@ public class MatchUIManager : MonoBehaviour
     private string ReplaceImageVariables(string key)
     {
         if (string.IsNullOrEmpty(key)) return key;
-
-        var currentMembers = StudentManager.Instance.CurrentTeam.Members;
+        
         string[] tags = { "PG", "SG", "SF", "PF", "C" };
         Position[] positions = { Position.PG, Position.SG, Position.SF, Position.PF, Position.C };
-
+        string imageKey = null;
         for (int i = 0; i < tags.Length; i++)
         {
             if (key.Contains(tags[i]))
-            {
-                // Find 대신 FirstOrDefault를 사용 (배열, 리스트 모두 대응 가능)
-                var student = currentMembers.FirstOrDefault(s => s.MatchPosition == positions[i]);
+            {                
+                var student = FindMyStudentByPosition(positions[i]);
 
-                string visualId = (student != null) ? student.VisualData.playerImageResource : "";
-                key = key.Replace(tags[i], visualId);
+                string visualId = (student != null) ? student.VisualData.playerImageResource : "";                
+                imageKey = visualId;
             }
         }
-        return key;
+        return imageKey;
     }
 
     // 테이블의 문자열 키를 기반으로 UI 이미지를 켜고 끄는 헬퍼 함수
@@ -530,6 +538,10 @@ public class MatchUIManager : MonoBehaviour
             {
                 _imgStandingLeft.gameObject.SetActive(true);
                 _imgStandingLeft.sprite = SpriteManager.Instance.GetSprite(ReplaceImageVariables(lineData.standingLeft));
+                if (_imgStandingLeft.sprite == null)
+                {
+                    _imgStandingLeft.gameObject.SetActive(false);
+                }
                 _imgStandingLeft.color = (lineData.speakDirection == "Left") ? Color.white : Color.gray;
             }
         }
@@ -545,6 +557,12 @@ public class MatchUIManager : MonoBehaviour
             {
                 _imgStandingMiddle.gameObject.SetActive(true);
                  _imgStandingMiddle.sprite = SpriteManager.Instance.GetSprite(ReplaceImageVariables(lineData.standingMiddle));
+
+                if (_imgStandingMiddle.sprite == null)
+                {
+                    _imgStandingMiddle.gameObject.SetActive(false);
+                }
+
                 // 중앙(Center/Middle) 화자일 때 밝게, 아니면 어둡게
                 _imgStandingMiddle.color = (lineData.speakDirection == "Center" || lineData.speakDirection == "Middle") ? Color.white : Color.gray;
             }
@@ -561,6 +579,10 @@ public class MatchUIManager : MonoBehaviour
             {
                 _imgStandingRight.gameObject.SetActive(true);
                  _imgStandingRight.sprite = SpriteManager.Instance.GetSprite(ReplaceImageVariables(lineData.standingRight));
+                if (_imgStandingRight.sprite == null)
+                {
+                    _imgStandingRight.gameObject.SetActive(false);
+                }
                 _imgStandingRight.color = (lineData.speakDirection == "Right") ? Color.white : Color.gray;
             }
         }
@@ -619,10 +641,13 @@ public class MatchUIManager : MonoBehaviour
 
         btn.gameObject.SetActive(true);
         txt.text = StringManager.Instance.GetString(choiceTextKey);
+        StringManager.Instance.ApplyFont(txt);
 
         btn.onClick.RemoveAllListeners();
         btn.onClick.AddListener(() =>
         {
+            PlayConfirmSound();
+
             // 선택지에 따른 효과를 즉시 적용
             MatchState matchState = UnityEngine.Object.FindFirstObjectByType<MatchState>();
             matchState.ApplyHalfTimeEffectDirectly(stat, statChange, pos, posChange);
@@ -647,6 +672,8 @@ public class MatchUIManager : MonoBehaviour
             Debug.LogWarning("[MatchUIManager] MatchReplayer가 연결되지 않았습니다.");
             return;
         }
+
+        PlayConfirmSound();
 
         // 다음 배속 단계로 넘어감 (마지막 단계면 다시 0번 인덱스로)
         _currentSpeedIndex++;
@@ -692,16 +719,21 @@ public class MatchUIManager : MonoBehaviour
     // 버튼의 OnClick에 연결할 스킵 버튼 전용 함수
     public void OnClickSkipButton()
     {
+        PlayConfirmSound();
+
         if (_replayer != null)
         {
             _replayer.SkipReplay();
         }
     }
+
     // [게임메뉴] 버튼을 눌렀을 때 호출할 함수
     public void OnClickGameMenuButton()
     {
         if (_settingPanel != null)
         {
+            PlayConfirmSound();
+
             _settingPanel.SetActive(true);
 
             // 세팅 창이 켜졌을 때 게임을 일시정지
@@ -725,6 +757,9 @@ public class MatchUIManager : MonoBehaviour
     {
         if (_quarterEndPanel != null)
         {
+            if (AudioManager.Instance != null)
+                AudioManager.Instance.PlaySoundOneShot(SoundName.SE_GOAL);
+
             _quarterEndPanel.SetActive(true);
             IsQuarterEndConfirmed = false; // 플래그 초기화
         }
@@ -738,6 +773,7 @@ public class MatchUIManager : MonoBehaviour
     // [확인] 버튼을 눌렀을 때 호출될 함수
     public void OnClickQuarterEndConfirm()
     {
+        PlayConfirmSound();
         IsQuarterEndConfirmed = true; // 확인 완료 플래그 켜기
 
         if (_quarterEndPanel != null)
@@ -745,9 +781,11 @@ public class MatchUIManager : MonoBehaviour
             _quarterEndPanel.SetActive(false); // 팝업 닫기
         }
     }
+
     // 버튼 클릭 함수
     public void OnClickResultConfirmButton()
     {
+        PlayConfirmSound();
         // 메인 결과 패널 닫기
         if (_resultPanel != null)
         {
@@ -771,6 +809,7 @@ public class MatchUIManager : MonoBehaviour
             _leagueCalculatePanel.Init(round, onConfirm);
         }
     }
+
     // ResultState에서 대진표를 부를 때 사용
     public void ShowSwissBoardPanel(Action onActionClick = null, string actionText = null)
     {
@@ -806,5 +845,24 @@ public class MatchUIManager : MonoBehaviour
         StringManager manager = StringManager.Instance;
         string name = manager.GetString(nameKey[0]) + manager.GetString(nameKey[1]) + manager.GetString(nameKey[2]);
         return name;
+    }
+
+    private void PlayConfirmSound()
+    {
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlaySoundOneShot(SoundName.SE_BUTTON_SELECT);
+    }
+
+    private Student FindMyStudentByPosition(Position pos)
+    {
+        var members = StudentManager.Instance.CurrentTeam.Members;
+        for (int i = 0; i < members.Length; i++)
+        {
+            if (members[i] != null && members[i].MatchPosition == pos)
+            {
+                return members[i];
+            }
+        }
+        return null;
     }
 }

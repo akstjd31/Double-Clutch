@@ -127,6 +127,7 @@ public class FosterManager : MonoBehaviour
         foreach (var student in StudentManager.Instance.MyStudents)
         {
             student.PrepareStatChange();
+            student.SetHasIndividualTraining(false);
         }
         if (_teamSchedule != null)
         {
@@ -153,6 +154,13 @@ public class FosterManager : MonoBehaviour
         StudentUIManager.Instance.OpenWeeklyTrainingReportPopUp(StudentManager.Instance.MyStudents);
     }
     
+    public void ResetChanges()
+    {
+        foreach (var student in StudentManager.Instance.MyStudents)
+        {
+            student.ChangedPotentials.Clear();
+        }
+    }
 
     public void ReserveIndividualTraining(ITraining command)
     {

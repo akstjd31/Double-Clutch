@@ -34,7 +34,7 @@ public class MatchDataProxy : MonoBehaviour
 
     [Header("Balance Settings")]
     [SerializeField] private int W_Shot_Base = 1;     // 101: 슛 기본 가중치
-    [SerializeField] private int W_Pass_Base = 1;     // 102: 패스 기본 가중치
+    [SerializeField] private float W_Pass_Base = 1;     // 102: 패스 기본 가중치
     [SerializeField] private int W_Dribble_Base = 1;  // 103: 드리블 기본 가중치
     [SerializeField] private float Pen_Dist_Hoop = 0.5f; // 104: 골대 거리 페널티 계수
     [SerializeField] private float Pen_Def_Block = 1f;   // 105: 수비 블록 페널티 계수
@@ -69,7 +69,7 @@ public class MatchDataProxy : MonoBehaviour
             switch (data.weightId)
             {
                 case "W_Shot_Base": W_Shot_Base = (int)data.value; break;
-                case "W_Pass_Base": W_Pass_Base = (int)data.value; break;
+                case "W_Pass_Base": W_Pass_Base = data.value; break;
                 case "W_Dribble_Base": W_Dribble_Base = (int)data.value; break;
                 case "Pen_Dist_Hoop": Pen_Dist_Hoop = data.value; break;
                 case "Pen_Def_Block": Pen_Def_Block = data.value; break;

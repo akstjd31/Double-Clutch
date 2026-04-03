@@ -89,8 +89,9 @@ public class InfraUpgradeUI : MonoBehaviour
         StringManager.Instance.GetString(_infra.nameKey, _nameText);
 
         _levelText.text = "LV"+_infra.currentLevel.ToString();
-        _costText.text = _controller.GetCostByNextLevel().ToString();
-
+        StringManager.Instance.ApplyFont(_levelText);
+        _costText.text = _controller.GetCostByNextLevel() == -1 ? "MAX" : _controller.GetCostByNextLevel().ToString("N0");
+        StringManager.Instance.ApplyFont(_costText);
         string originDesc = StringManager.Instance.GetString(_infra.descKey);
         var keys = TextParser.GetKeys(originDesc);
         if (keys != null && keys.Count > 0)
@@ -123,7 +124,6 @@ public class InfraUpgradeUI : MonoBehaviour
             _reconfirmUI.Init(_controller);
         }
         else
-
         {
             _warningUI.gameObject.SetActive(true);
             _warningUI.Init(_controller);

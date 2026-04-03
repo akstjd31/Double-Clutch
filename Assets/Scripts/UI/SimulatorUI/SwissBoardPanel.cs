@@ -18,6 +18,7 @@ public class SwissBoardPanel : MonoBehaviour
     private List<SwissRoundTab> _tabs = new List<SwissRoundTab>();
 
     [Header("Match List UI")]
+    [SerializeField] private ScrollRect _scrollRect;
     [SerializeField] private Transform _matchContainer;
     [SerializeField] private SwissMatchRow _matchRowPrefab;
 
@@ -29,6 +30,18 @@ public class SwissBoardPanel : MonoBehaviour
     private Action _customAction;
     private string _customActionText;
 
+    private void OnEnable()
+    {
+        StringManager.OnLanguageChanged += Refresh;
+    }
+    private void OnDisable()
+    {
+        StringManager.OnLanguageChanged -= Refresh;
+    }
+    private void Refresh()
+    {
+        OpenPanel();
+    }
     public void OpenPanel(Action onActionClick = null, string actionText = null)
     {
         gameObject.SetActive(true);
@@ -156,6 +169,11 @@ public class SwissBoardPanel : MonoBehaviour
         foreach (string teamId in orderedTeamIds)
         {
             CreateRankingRow(teamId, roundIndex, historyRankMap);
+        }
+        Canvas.ForceUpdateCanvases();
+        if (_scrollRect != null)
+        {
+            _scrollRect.verticalNormalizedPosition = 1f; // 스크롤바 위치를 1(맨 위)로 강제 고정
         }
     }
 
@@ -308,6 +326,9 @@ public class SwissBoardPanel : MonoBehaviour
             _btnAction.interactable = true;
             _btnAction.onClick.AddListener(() =>
             {
+                if (AudioManager.Instance != null)
+                    AudioManager.Instance.PlaySoundOneShot(SoundName.SE_BUTTON_SELECT);
+
                 gameObject.SetActive(false);
                 if (_customAction != null) _customAction.Invoke();
             });
@@ -320,6 +341,9 @@ public class SwissBoardPanel : MonoBehaviour
             _btnAction.interactable = true;
             _btnAction.onClick.AddListener(() =>
             {
+                if (AudioManager.Instance != null)
+                    AudioManager.Instance.PlaySoundOneShot(SoundName.SE_BUTTON_SELECT);
+                    
                 gameObject.SetActive(false);
                 if (_customAction != null)
                 {

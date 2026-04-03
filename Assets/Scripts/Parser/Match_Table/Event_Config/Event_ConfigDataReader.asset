@@ -20,19 +20,19 @@ MonoBehaviour:
   - logEventCode: GameStart
     textTemplate: Str_Match_Log_0001
     scAdd: 0
-    soundResourceId: Sound_Cheer
+    soundResourceId: SE_MatchStart
     cutInResourceId: 
     videoResourceId: 
   - logEventCode: QuarterEnd
     textTemplate: Str_Match_Log_0002
     scAdd: 0
-    soundResourceId: Sound_Clap
+    soundResourceId: SE_Clap
     cutInResourceId: 
     videoResourceId: 
   - logEventCode: GameEnd
     textTemplate: Str_Match_Log_0003
     scAdd: 0
-    soundResourceId: Sound_Clap
+    soundResourceId: SE_MatchEnd
     cutInResourceId: 
     videoResourceId: Video_Match_End
   - logEventCode: Dribble
@@ -50,60 +50,60 @@ MonoBehaviour:
   - logEventCode: Shoot2ptSucc
     textTemplate: Str_Match_Log_0006
     scAdd: 2
-    soundResourceId: Sound_Cheer
+    soundResourceId: SE_Goal
     cutInResourceId: 
     videoResourceId: 
   - logEventCode: Shoot3ptSucc
     textTemplate: Str_Match_Log_0007
     scAdd: 3
-    soundResourceId: Sound_Cheer
+    soundResourceId: SE_Goal
     cutInResourceId: playerCutInResourceId01
     videoResourceId: 
   - logEventCode: DunkSucc
     textTemplate: Str_Match_Log_0008
     scAdd: 2
-    soundResourceId: Sound_Cheer
+    soundResourceId: SE_Goal
     cutInResourceId: playerCutInResourceId02
     videoResourceId: 
   - logEventCode: BuzzerBeater
     textTemplate: Str_Match_Log_0009
     scAdd: 2
-    soundResourceId: Sound_Cheer
+    soundResourceId: SE_CutIn
     cutInResourceId: playerCutInResourceId03
     videoResourceId: 
   - logEventCode: Shoot2ptFail
     textTemplate: Str_Match_Log_0010
     scAdd: 0
-    soundResourceId: 
+    soundResourceId: SE_CrowdBoo
     cutInResourceId: 
     videoResourceId: 
   - logEventCode: Shoot3ptFail
     textTemplate: Str_Match_Log_0011
     scAdd: 0
-    soundResourceId: 
+    soundResourceId: SE_CrowdBoo
     cutInResourceId: 
     videoResourceId: 
-  - logEventCode: Block
+  - logEventCode: PassFail
     textTemplate: Str_Match_Log_0012
     scAdd: 0
-    soundResourceId: Sound_Clap
+    soundResourceId: SE_Clap
     cutInResourceId: 
     videoResourceId: 
   - logEventCode: Steal
     textTemplate: Str_Match_Log_0013
     scAdd: 0
-    soundResourceId: Sound_Clap
+    soundResourceId: SE_Clap
     cutInResourceId: 
     videoResourceId: 
   - logEventCode: Rebound
     textTemplate: Str_Match_Log_0014
     scAdd: 0
-    soundResourceId: Sound_Clap
+    soundResourceId: 
     cutInResourceId: 
     videoResourceId: 
   - logEventCode: Drive
     textTemplate: Str_Match_Log_0015
     scAdd: 0
-    soundResourceId: Sound_Clap
+    soundResourceId: SE_Clap
     cutInResourceId: 
     videoResourceId: 

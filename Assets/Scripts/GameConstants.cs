@@ -50,6 +50,8 @@ public static class SoundName
     public const string BGM_MATCHPLAY = "BGM_MatchPlay";
     public const string BGM_GRADUATION = "BGM_Graduation";
     public const string BGM_SCOUT = "BGM_Scout";
+    public const string BGM_ENDING = "BGM_Ending";
+    public const string BGM_ENDING_INTRO = "BGM_EndingIntro";
 
     // ===== SE =====
     public const string SE_BUTTON_SELECT = "SE_Button_Select";
@@ -73,11 +75,11 @@ public static class SoundName
     public const string SE_INFRA_01 = "SE_Infra_01";
     public const string SE_PLAYER_04 = "SE_Player_04";
     public const string SE_PLAYER_03 = "SE_Player_03";
-    public const string SE_WARNING_01 = "UI_Warning_01";
     public const string SE_PLAYER_01 = "SE_Player_01";
     public const string SE_DEVELOP_02 = "SE_Develop_02";
 
     // ===== UI =====
+    public const string UI_WARNING_01 = "UI_Warning_01";
     public const string UI_PROFILE_01 = "UI_Profile_01";
     public const string UI_DEVELOP_03 = "UI_Develop_03";
     public const string UI_DEVELOP_01 = "UI_Develop_01";
