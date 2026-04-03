@@ -88,10 +88,6 @@ public class CalendarManager : Singleton<CalendarManager>
                 gm.GoToEnding();
                 return;
             }
-
-            // 엔딩이 아니면 즉시 다음 주차로 한 번 더 진행
-            AdvanceToNextWeek(gm);
-            currentWeekId = gm.SaveData.weekId;
         }
 
         // 주차별 특수 처리
@@ -101,7 +97,7 @@ public class CalendarManager : Singleton<CalendarManager>
     /// <summary>
     /// 실제 주차를 1회 진행시키는 함수
     /// </summary>
-    private void AdvanceToNextWeek(GameManager gm)
+    public void AdvanceToNextWeek(GameManager gm)
     {
         if (gm == null || gm.SaveData == null) return;
 
@@ -441,8 +437,10 @@ public class CalendarManager : Singleton<CalendarManager>
             return true;
         }
 
-        IsEndPhase = true;
-        NextTurn();
+        // 엔딩이 아니면 1월 1주차 팝업 출력
+        var sOutChecker = GameObject.FindAnyObjectByType<SeasonOutChecker>();
+        sOutChecker.SetPopupActivate(true);
+
         return true;
     }
 }
