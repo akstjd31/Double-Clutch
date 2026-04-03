@@ -61,7 +61,7 @@ public class GraduationListPanel : MonoBehaviour
             script.clickData = _graduationStudentList[i];
             script.graduationUI = _characterProfileDetail;
             name.text = manager.GetString(_graduationStudentList[i].Name[0]) + manager.GetString(_graduationStudentList[i].Name[1]) + manager.GetString(_graduationStudentList[i].Name[2]);
-            honor.text = _graduationStudentList[i].TotalFame.ToString();
+            honor.text = _graduationStudentList[i].TotalFame == 0 ? "" : _graduationStudentList[i].TotalFame.ToString();
 
             manager.ApplyFont(name);                        
         }
