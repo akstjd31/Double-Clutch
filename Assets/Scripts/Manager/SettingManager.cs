@@ -153,6 +153,20 @@ public class SettingManager : Singleton<SettingManager>
         ApplyVolum();
     }
 
+    private void OnApplicationPause(bool pauseStatus)
+    {
+        if (pauseStatus)
+        {
+            OnQuitSetting();
+        }
+    }
+
+    protected override void OnApplicationQuit()
+    {
+        base.OnApplicationQuit();
+        OnQuitSetting();
+    }
+
     #endregion
 
 }

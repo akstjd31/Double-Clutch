@@ -14,13 +14,13 @@ public class InfraWarningUI : MonoBehaviour
     {
         int needCost = iController.GetCostByNextLevel() - GameManager.Instance.SaveData.money;
         _needCost = needCost;
-        _needCostText.text = StringManager.Instance.GetString("UI_Infra_지원금부족2").Replace("{N}", needCost.ToString());
+        _needCostText.text = StringManager.Instance.GetString("UI_Infra_지원금부족2").Replace("{N}", needCost.ToString("N0"));
         StringManager.Instance.ApplyFont(_needCostText);
     }
 
     private void Refresh()
     {
-        _needCostText.text = StringManager.Instance.GetString("UI_Infra_지원금부족2").Replace("{N}", _needCost.ToString());
+        _needCostText.text = StringManager.Instance.GetString("UI_Infra_지원금부족2").Replace("{N}", _needCost.ToString("N0"));
         StringManager.Instance.ApplyFont(_needCostText);
     }
 

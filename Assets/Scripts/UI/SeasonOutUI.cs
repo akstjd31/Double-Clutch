@@ -1,6 +1,7 @@
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using Game.Constants;
 
 public class SeasonOutUI : MonoBehaviour
 {
@@ -24,6 +25,10 @@ public class SeasonOutUI : MonoBehaviour
     public void OnClickConfirmButton()
     {
         if (CalendarManager.Instance == null) return;
+
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlaySoundOneShot(SoundName.SE_BUTTON_SELECT);
+        
 
         CalendarManager.Instance.NextTurn();
         this.gameObject.SetActive(false);
