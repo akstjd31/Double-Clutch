@@ -1,6 +1,4 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
 using System.Collections.Generic;
 using Game.Constants;
 
@@ -14,61 +12,123 @@ public class PassiveSkillSelectPanel : MonoBehaviour
     [SerializeField] private GameObject _afterGuideBox;
     [SerializeField] private GameObject _warningBox;
 
-    //private List<Student> _promotionStudentList;
+    private PromotionProgressSaveData _progressSaveData;
 
     private void Start()
     {
-        //_promotionStudentList = _graduationManager.PromotionStudentList;
+        LoadPromotionProgress();
     }
+
     public void OnClickOKButton()
+    {
+        PlayConfirmSound();
+
+        if (_graduationManager == null ||
+            _graduationManager.PromotionStudentList == null ||
+            _graduationManager.MyStudents == null)
+            return;
+
+        if (_graduationManager.Turn < 0 ||
+            _graduationManager.Turn >= _graduationManager.PromotionStudentList.Count)
+            return;
+
+        if (_graduationManager.PromotionPanel.IsSkillChoise == false)
+        {
+            _warningBox.SetActive(true);
+            return;
+        }
+
+        int currentStudentId = _graduationManager.PromotionStudentList[_graduationManager.Turn];
+        Student student = FindStudentById(currentStudentId);
+
+        if (student == null)
+        {
+            Debug.LogWarning($"Student not found. studentId = {currentStudentId}");
+            return;
+        }
+
+        if (_passiveBox.SelectSkill == null)
+        {
+            Debug.LogWarning("선택된 스킬이 없습니다.");
+            _warningBox.SetActive(true);
+            return;
+        }
+
+        gameObject.SetActive(false);
+
+        // 선택한 스킬 추가
+        student.SetPassive(_passiveBox.SelectSkill.Value);
+
+        // 현재 학생 프로필 반영
+        _graduationManager.PromotionPanel.UpdateProfile();
+
+        // 다음 학생으로 진행
+        _graduationManager.Turn++;
+        SavePromotionProgress();
+
+        if (_graduationManager.Turn < _graduationManager.PromotionStudentList.Count)
+        {
+            int nextStudentId = _graduationManager.PromotionStudentList[_graduationManager.Turn];
+            Student nextStudent = FindStudentById(nextStudentId);
+
+            if (nextStudent != null)
+            {
+                Debug.Log($"다음 순서: {nextStudent.Name} 학생");
+            }
+
+            _afterGuideBox.SetActive(true);
+        }
+        else
+        {
+            // 진급 대상 전부 완료
+            ClearPromotionProgress();
+            _afterGuideBox.SetActive(true);
+        }
+
+        _graduationManager.PromotionPanel.IsSkillChoise = false;
+    }
+
+    private Student FindStudentById(int studentId)
+    {
+        for (int i = 0; i < _graduationManager.MyStudents.Count; i++)
+        {
+            if (_graduationManager.MyStudents[i].StudentId == studentId)
+                return _graduationManager.MyStudents[i];
+        }
+
+        return null;
+    }
+
+    private void PlayConfirmSound()
     {
         if (AudioManager.Instance != null)
             AudioManager.Instance.PlaySoundOneShot(SoundName.SE_BUTTON_SELECT);
+    }
 
-        Student student = null;
-
-        for (int i = 0; i < _graduationManager.MyStudents.Count; i++)
+    private void LoadPromotionProgress()
+    {
+        if (!SaveLoadManager.Instance.TryLoad(FilePath.PROMOTION_PROGRESS_SAVE_PATH, out _progressSaveData) || _progressSaveData == null)
         {
-            if (_graduationManager.MyStudents[i].StudentId ==
-                _graduationManager.PromotionStudentList[_graduationManager.Turn])
-            {
-                student = _graduationManager.MyStudents[i];
-                break;
-            }
+            _progressSaveData = new PromotionProgressSaveData();
         }
+    }
 
-        if (_graduationManager.PromotionPanel.IsSkillChoise == true)
-        {
-            gameObject.SetActive(false);
+    private void SavePromotionProgress()
+    {
+        if (_progressSaveData == null)
+            _progressSaveData = new PromotionProgressSaveData();
 
-            //선택한 스킬 추가
-            student.SetPassive(_passiveBox.SelectSkill);
-            _graduationManager.PromotionPanel.UpdateProfile();
+        _progressSaveData.currentTurn = _graduationManager.Turn;
+        _progressSaveData.isPromotionFinished =
+            _graduationManager.PromotionStudentList != null &&
+            _graduationManager.Turn >= _graduationManager.PromotionStudentList.Count;
 
-            _graduationManager.Turn++;
+        SaveLoadManager.Instance.Save(FilePath.PROMOTION_PROGRESS_SAVE_PATH, _progressSaveData);
+    }
 
-            if (_graduationManager.Turn < _graduationManager.PromotionStudentList.Count)
-            {
-                var NextstudentID = _graduationManager.PromotionStudentList[_graduationManager.Turn];
-
-                for (int i = 0; i < _graduationManager.MyStudents.Count; i++)
-                {
-                    if (NextstudentID == _graduationManager.MyStudents[i].StudentId)
-                    {
-                        Student _currentStudent = _graduationManager.MyStudents[i];
-                        Debug.Log($"순서: {_currentStudent.Name} 학생");
-                    }
-                }
-            }
-
-            //_guideBox.SetActive(false);
-            _afterGuideBox.SetActive(true);
-            _graduationManager.PromotionPanel.IsSkillChoise = false;
-        }
-        //스킬 선택 안됐으면 팝업
-        else if(_graduationManager.PromotionPanel.IsSkillChoise == false)
-        {
-            _warningBox.SetActive(true);
-        }
+    private void ClearPromotionProgress()
+    {
+        _progressSaveData = new PromotionProgressSaveData();
+        SaveLoadManager.Instance.Save(FilePath.PROMOTION_PROGRESS_SAVE_PATH, _progressSaveData);
     }
 }

@@ -154,7 +154,7 @@ public class GraduationManager : MonoBehaviour
         }
             _isGraduationSkip = false;
         GameManager.Instance.SetGraduationPending(false);
-        _passiveBox.SelectSkillSave.Clear();
+        _passiveBox.ClearSavedSkill();
 
         //초기화 하기 전에 명예의전당에 전달
         _graduationStudentList.Clear();

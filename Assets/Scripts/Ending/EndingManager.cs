@@ -18,11 +18,14 @@ public class EndingManager : MonoBehaviour
     [SerializeField] float _fadeTime = 0.5f;
     [Header("엔딩 크레딧 소요 시간")]
     [SerializeField] float _rollSpeed = 15f;
+    [Header("스크롤 올라간 뒤 AndYou 이미지 송출까지의 시간")]
+    [SerializeField] float _beforeAndYouTime = 1f;
     [Header("AndYou 이미지 송출 시간")]
     [SerializeField] float _andYouTime = 3f;
     
     public float FadeTime => _fadeTime;
     public float RollSpeed => _rollSpeed;
+    public float BeforeAndYouTime => _beforeAndYouTime;
     public float AndYouTime => _andYouTime;
 
     public static EndingManager Instance;
@@ -82,7 +85,10 @@ public class EndingManager : MonoBehaviour
         if (_endingScriptDataReader.DataList[_currentIndex].scriptType == 1)
         {
             _currentIndex = -1;
-            PlayEndingRoll();
+            _uiController.FadeOut();
+            DG.Tweening.DOVirtual.DelayedCall(_fadeTime, () => { PlayEndingRoll(); });
+
+            
             return;
         }
         _currentIndex++;        
