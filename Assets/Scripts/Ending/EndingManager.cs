@@ -82,7 +82,10 @@ public class EndingManager : MonoBehaviour
         if (_endingScriptDataReader.DataList[_currentIndex].scriptType == 1)
         {
             _currentIndex = -1;
-            PlayEndingRoll();
+            _uiController.FadeOut();
+            DG.Tweening.DOVirtual.DelayedCall(_fadeTime, () => { PlayEndingRoll(); });
+
+            
             return;
         }
         _currentIndex++;        

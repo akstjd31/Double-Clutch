@@ -91,17 +91,14 @@ public class EndingRollController : MonoBehaviour
         
         float startY = -viewHeight;
 
-        float targetY = contentHeight + viewHeight * 2f;
+        float targetY = contentHeight + viewHeight;
 
         _rowParent.anchoredPosition = new Vector2(0, startY);
 
         // 트윈 실행
         _rollTween = _rowParent.DOAnchorPosY(targetY, duration)
             .SetEase(Ease.Linear)
-            .OnComplete(() => {                
-                // 여운을 주기 위해 1초 뒤에 로비로 이동
-                DOVirtual.DelayedCall(1.0f, () => EndingManager.Instance.PlayAndYou());
-            });
+            .OnComplete(() => { EndingManager.Instance.PlayAndYou(); });
     }
 
     // 배속 기능 예시 (화면 누르고 있을 때 호출)
