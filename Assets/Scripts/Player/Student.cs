@@ -118,6 +118,11 @@ public class Student
         }
     }
 
+    public float GetMonthGoldPassiveValue()
+    {
+        return FindPassiveValue(effectType.MonthGoldUp);
+    }
+
     public float GetRatePassiveValue(potential pot)
     {
         switch (pot)
