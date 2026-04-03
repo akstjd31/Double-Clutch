@@ -21,14 +21,14 @@ public class InfraReconfirmUI : MonoBehaviour
     }
     private void Refresh()
     {
-        prompt.text = StringManager.Instance.GetFormattedString("UI_Infra_강화확인", _cost == -1 ? "MAX" : _cost);
+        prompt.text = StringManager.Instance.GetFormattedString("UI_Infra_강화확인", _cost == -1 ? "MAX" : _cost.ToString("N0"));
         StringManager.Instance.ApplyFont(prompt);
     }
     public void Init(InfraController iController)
     {
         _cost = iController.GetCostByNextLevel();
 
-        prompt.text = StringManager.Instance.GetFormattedString("UI_Infra_강화확인", _cost == -1 ? "MAX" : _cost);
+        prompt.text = StringManager.Instance.GetFormattedString("UI_Infra_강화확인", _cost == -1 ? "MAX" : _cost.ToString("N0"));
         StringManager.Instance.ApplyFont(prompt);
 
         if (_okButton == null) return;

@@ -90,7 +90,7 @@ public class InfraUpgradeUI : MonoBehaviour
 
         _levelText.text = "LV"+_infra.currentLevel.ToString();
         StringManager.Instance.ApplyFont(_levelText);
-        _costText.text = _controller.GetCostByNextLevel() == -1 ? "MAX" : _controller.GetCostByNextLevel().ToString();
+        _costText.text = _controller.GetCostByNextLevel() == -1 ? "MAX" : _controller.GetCostByNextLevel().ToString("N0");
         StringManager.Instance.ApplyFont(_costText);
         string originDesc = StringManager.Instance.GetString(_infra.descKey);
         var keys = TextParser.GetKeys(originDesc);
