@@ -311,7 +311,7 @@ public class PassiveBox : MonoBehaviour
             case effectType.MonthGoldUp:
             case effectType.MatchGoldUp:
             case effectType.ReputationUp:
-                valueString = (data.Value.effectValue * 100).ToString() + "%";
+                valueString = (data.Value.effectValue * 100).ToString();
                 break;
 
             default:
