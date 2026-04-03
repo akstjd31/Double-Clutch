@@ -28,7 +28,8 @@ public class Team_Rest : ITraining
 
     public int GetCost()
     {
-        return _data.restCost * (1 - InfraManager.Instance.GetInfraEffectValueByEffectType(infraEffectType.RestCostDiscount) / 100);
+        int discountRate = InfraManager.Instance.GetInfraEffectValueByEffectType(infraEffectType.RestCostDiscount);
+        return _data.restCost * (100 - discountRate) / 100;        
     }
 
     public bool IsTeam()
@@ -36,21 +37,21 @@ public class Team_Rest : ITraining
         return true;
     }
 
-    public void StartAction() //°ú·Î, ºÎ»ó °³³ä È®ÀÎ ÈÄ ÀçÁ¤ºñ ¿ä¸Á
+    public void StartAction() //ê³¼ë¡œ, ë¶€ìƒ ê°œë… í™•ì¸ í›„ ìž¬ì •ë¹„ ìš”ë§
     {
         _targets.Clear();
         _targets.AddRange(StudentManager.Instance.MyStudents);
         foreach (var target in _targets)
         {
             _target = target;
-            _target.ChangeCondition(_data.conditionRecovery); //ÄÁµð¼Ç È¸º¹·®¸¸Å­ ÄÁµð¼Ç ¼öÄ¡ È¸º¹
+            _target.ChangeCondition(_data.conditionRecovery); //ì»¨ë””ì…˜ íšŒë³µëŸ‰ë§Œí¼ ì»¨ë””ì…˜ ìˆ˜ì¹˜ íšŒë³µ
 
             switch (this._target.State)
             {
-                case StudentState.None: //°Ç°­ »óÅÂ¸é ¹«½Ã
-                case StudentState.Injured: // ºÎ»ó »óÅÂ´Â ÆÀ ÈÞ½ÄÀ¸·Î Ä¡·á ºÒ°¡
+                case StudentState.None: //ê±´ê°• ìƒíƒœë©´ ë¬´ì‹œ
+                case StudentState.Injured: // ë¶€ìƒ ìƒíƒœëŠ” íŒ€ íœ´ì‹ìœ¼ë¡œ ì¹˜ë£Œ ë¶ˆê°€
                     break;
-                case StudentState.OverWorked: //°ú·Î »óÅÂ¸é È®·ü¿¡ µû¶ó Ä¡·á
+                case StudentState.OverWorked: //ê³¼ë¡œ ìƒíƒœë©´ í™•ë¥ ì— ë”°ë¼ ì¹˜ë£Œ
                     if (_target.CureCount >= 2)
                     {
                         _target.ChangeState(StudentState.None);                        
