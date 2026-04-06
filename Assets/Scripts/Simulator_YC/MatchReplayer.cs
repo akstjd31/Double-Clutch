@@ -239,22 +239,24 @@ public class MatchReplayer : MonoBehaviour
     // 동그라미 스프라이트 생성 함수
     private Sprite CreateCircleSprite()
     {
+        int size = 256;
         // 유니티 기본 원형 스프라이트 사용
-        Texture2D tex = new Texture2D(64, 64);
-        Vector2 center = new Vector2(32, 32);
-        float radius = 30f;
+        Texture2D tex = new Texture2D(size, size, TextureFormat.RGBA32, false);
+        Vector2 center = new Vector2(size / 2f, size / 2f);
+        float radius = (size / 2f) - 2f;
 
-        for (int y = 0; y < 64; y++)
+        for (int y = 0; y < size; y++)
         {
-            for (int x = 0; x < 64; x++)
+            for (int x = 0; x < size; x++)
             {
                 float dist = Vector2.Distance(new Vector2(x, y), center);
-                tex.SetPixel(x, y, dist <= radius ? Color.white : Color.clear);
+                float alpha = Mathf.Clamp01(radius - dist + 1f);
+                tex.SetPixel(x, y, new Color(1f, 1f, 1f, alpha));
             }
         }
         tex.Apply();
 
-        return Sprite.Create(tex, new Rect(0, 0, 64, 64), new Vector2(0.5f, 0.5f));
+        return Sprite.Create(tex, new Rect(0, 0, size, size), new Vector2(0.5f, 0.5f));
     }
 
     private Vector2 LogicToUIPos(Vector2 logicPos)
