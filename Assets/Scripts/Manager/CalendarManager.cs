@@ -84,6 +84,7 @@ public class CalendarManager : Singleton<CalendarManager>
         // weekId == 1 : 엔딩 조건 확인
         if (currentWeekId == 1)
         {
+            RefillCondition();
             if (CanGoEnding())
             {
                 gm.GoToEnding();
@@ -147,13 +148,24 @@ public class CalendarManager : Singleton<CalendarManager>
             }
         }
     }
+    /// <summary>
+    /// 3월 1주차에 모든 학생의 컨디션을 풀로 회복
+    /// </summary>
+    private void RefillCondition()
+    {
+        if (StudentManager.Instance == null) return;
+        foreach (var student in StudentManager.Instance.MyStudents)
+        {
+            student.SetCondition(100);
+        }        
+    }
 
     /// <summary>
     /// 주차별 특수 이벤트 처리
     /// </summary>
     private void HandleSpecialWeekEvent(int weekId, GameManager gm)
     {
-        if (gm == null || gm.SaveData == null) return;
+        if (gm == null || gm.SaveData == null) return;        
 
         if (weekId == 8)
         {
