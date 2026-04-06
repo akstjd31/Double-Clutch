@@ -172,8 +172,6 @@ public class PromotionPanel : MonoBehaviour
     {
         PlayConfirmSound();
         _afterChoice.SetActive(false);
-
-        _graduationManager.Turn++;
         SavePromotionProgress();
 
         if (_graduationManager.Turn >= _promotionStudentList.Count)
