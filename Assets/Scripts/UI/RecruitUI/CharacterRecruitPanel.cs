@@ -80,11 +80,11 @@ public class CharacterRecruitPanel : MonoBehaviour
 
         int totalCount = StudentManager.Instance.MyStudents.Count + _selectCount;
 
-        if (totalCount < StudentManager.Instance.RecruitLimit) //영입 후 선수 수(현재 선수 + 선택한 영입 후보)가 최대 선수 보유치에 못미칠 것으로 예상되면 추가영입 경고 팝업 호출
+        if (totalCount < StudentManager.BasicRecruitLimit) //영입 후 선수 수(현재 선수 + 선택한 영입 후보)가 기본 최대 선수치(5명)에 못미치면 추가 영입 경고 팝업 호출
         {
-            StudentUIManager.Instance.OpenRecruitWarningPopUp(StudentManager.Instance.RecruitLimit - totalCount);
+            StudentUIManager.Instance.OpenRecruitWarningPopUp(StudentManager.BasicRecruitLimit - totalCount);
         }
-        else //영입 후 선수(현재 선수 + 선택한 영입 후보)가 최대 보유치 이상이면 영입 확인 팝업 호출
+        else//영입 후 선수(현재 선수 + 선택한 영입 후보)가 기본 보유치(5명) 이상이면 영입 확인 팝업 호출
         {
             StudentUIManager.Instance.OpenRecruitConfirmPopUp(_selectCount);
         }
@@ -98,7 +98,7 @@ public class CharacterRecruitPanel : MonoBehaviour
         }
         StudentManager.Instance.ClearRecruitCandidates();
         StudentManager.Instance.SaveGame();
-        if (!StudentManager.Instance.IsStable)
+        if (StudentManager.Instance.MyStudents.Count > StudentManager.Instance.RecruitLimit)
         {
             //방출 창 팝업 호출
             StudentUIManager.Instance.OpenCharacterOutPanel();
