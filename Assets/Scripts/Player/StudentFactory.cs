@@ -310,8 +310,7 @@ public class StudentFactory : MonoBehaviour
         List<Player_PassiveData> selectedPassives = new List<Player_PassiveData>();
         Dictionary<int, List<Player_PassiveData>> localGradePool = new Dictionary<int, List<Player_PassiveData>>();
         List<Player_PassiveData> availableAll = student.GetAvailablePassives(_passiveDataReader.DataList);
-
-        // 등급별로 분류 (이 부분은 유지)
+        
         foreach (var p in availableAll)
         {
             if (!localGradePool.ContainsKey(p.grade))
@@ -343,9 +342,20 @@ public class StudentFactory : MonoBehaviour
         return selectedPassives;
     }
     private void RemoveFromLocalPools(Player_PassiveData data, Dictionary<int, List<Player_PassiveData>> pool, List<Player_PassiveData> all)
-    {
-        all.Remove(data);
-        if (pool.ContainsKey(data.grade)) pool[data.grade].Remove(data);
+    {        
+        var toRemove = all.Where(p => p.effectType == data.effectType).ToList();
+
+        foreach (var item in toRemove)
+        {
+            
+            all.Remove(item);
+
+            
+            if (pool.ContainsKey(item.grade))
+            {
+                pool[item.grade].Remove(item);
+            }
+        }
     }
 
     private int GetWeightedRandomPassiveGrade(List<Player_PassiveGradeData> gradeDataList)
