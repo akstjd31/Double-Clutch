@@ -46,12 +46,13 @@ public class CharacterRow : MonoBehaviour
 
     private void SetTag(Student target)
     {
+        _attackTag1.text = string.Empty;
+        _attackTag2.text = string.Empty;
+        _guardTag1.text = string.Empty;
+        _guardTag2.text = string.Empty;
+
         if (target.ChangedPotentials.Count == 0)
-        {
-            _attackTag1.text = string.Empty;
-            _attackTag2.text = string.Empty;
-            _guardTag1.text = string.Empty;
-            _guardTag2.text = string.Empty;
+        {            
             return;
         }
             
@@ -133,6 +134,10 @@ public class CharacterRow : MonoBehaviour
         if (_target.ConditionChange > 0)
         {
             _condition.text = "+" + _target.ConditionChange.ToString();
+        }
+        else if (_target.ConditionChange == 0)
+        {
+            _condition.text = "-";
         }
         else
         {

@@ -30,6 +30,7 @@ public class WeeklyTrainingReportPopUp : MonoBehaviour
         for (int i = 0; i < students.Count; i++)
         {
             CharacterRow newRow = _characterRowPool.Get(); //박스 채우기            
+            newRow.transform.SetAsLastSibling();
             newRow.Init(students[i]); //박스에 선수 정보 주입            
 
             _characterRowList.Add(newRow);
