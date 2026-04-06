@@ -14,7 +14,10 @@ public class TrainingPanel : MonoBehaviour
     [SerializeField] private GameObject _backButton;
     [SerializeField] private GameObject _homeButton;
     [SerializeField] TrainingCharacterBox _trainingCharacterBoxPrefab;
-    [SerializeField] Transform _trainingCharacterBoxParent;    
+    [SerializeField] Transform _trainingCharacterBoxParent;
+
+    [Header("패널이 켜지면 비활성화해야 하는 버튼 목록")]
+    [SerializeField] Button[] _unavailableButtons;
 
     GenericObjectPool<TrainingCharacterBox> _trainingBoxPool; //Ʈ���̴� �ڽ� ������Ʈ Ǯ
 
@@ -27,6 +30,11 @@ public class TrainingPanel : MonoBehaviour
 
     private void OnEnable()
     {
+        foreach(var button in _unavailableButtons)
+        {
+            button.interactable = false;
+        }
+        
         RefreshPlayerList();
         PlaySound(SoundName.BGM_DEVELOP_01);
     }
@@ -39,6 +47,10 @@ public class TrainingPanel : MonoBehaviour
 
     private void OnDisable()
     {
+        foreach (var button in _unavailableButtons)
+        {
+            button.interactable = true;
+        }
         if (_boxList == null) return;
         PlaySound(SoundName.BGM_LOBBY_01);
     }
