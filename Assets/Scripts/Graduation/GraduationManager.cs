@@ -151,6 +151,7 @@ public class GraduationManager : MonoBehaviour
         {
             //선수 방출
             StudentManager.Instance.ReleaseStudent(_graduationStudentList[i]);
+            EventManager.Instance.DeleteEvent(_graduationStudentList[i]);
         }
             _isGraduationSkip = false;
         GameManager.Instance.SetGraduationPending(false);

@@ -36,6 +36,7 @@ public class RandomEvent
     //주차 지날때마다 모든 이벤트의 쿨다운값이 감소되어야 함.
     public void Cooldown()
     {
+        Debug.Log($"[Cooldown 전] {_eventId} / current:{_currentCooldownTurn} / ready:{_isReady}");
         _currentCooldownTurn--;
 
         //쿨다운값이 0이되면 카운트 다운 초기화 및 stop
@@ -45,6 +46,7 @@ public class RandomEvent
             Debug.Log($"쿨다운 값 감소 : {_currentCooldownTurn}");
             _isReady = true;
         }
+        Debug.Log($"[Cooldown 후] {_eventId} / current:{_currentCooldownTurn} / ready:{_isReady}");
     }
 
     public void WaitingMode()

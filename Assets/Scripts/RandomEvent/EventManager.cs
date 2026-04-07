@@ -14,7 +14,11 @@ public class EventManager : Singleton<EventManager>
     #endregion
     [SerializeField] private List<Student> _myStudents;
 
-    [SerializeField] private List<RandomEvent> _randomEvents;
+    [SerializeField] private List<RandomEvent> _randomEvents0;
+    [SerializeField] private List<RandomEvent> _randomEvents1;
+    [SerializeField] private List<RandomEvent> _randomEvents2;
+    [SerializeField] private List<RandomEvent> _randomEvents3;
+    [SerializeField] private List<RandomEvent> _randomEvents4;
 
     //1. 선수별 이벤트 후보 저장 딕셔너리 : 선수ID, 이벤트 - 이벤트 쿨타임 관리 해야 함.
     private Dictionary<int, List<RandomEvent>> _candidateDictionary = new();
@@ -40,6 +44,11 @@ public class EventManager : Singleton<EventManager>
     public void CharacterEvent()
     {
         _myStudents = StudentManager.Instance.MyStudents;
+        _randomEvents0.Clear();
+        _randomEvents1.Clear();
+        _randomEvents2.Clear();
+        _randomEvents3.Clear();
+        _randomEvents4.Clear();
 
 
         var data = _dataModelReader.DataList;
@@ -50,37 +59,82 @@ public class EventManager : Singleton<EventManager>
         {
             var studentID = _myStudents[i].StudentId;
 
-            //등록되지 않은 ID면 새로 딕셔너리에 등록
-            if (_candidateDictionary.ContainsKey(studentID) == false)
+            if (!_candidateDictionary.TryGetValue(studentID, out var list))
             {
-                _candidateDictionary.Add(studentID, new List<RandomEvent>());
+                list = new List<RandomEvent>();
+                _candidateDictionary[studentID] = list;
             }
 
-            //모든 이벤트 수만큼 검사
             for (int j = 0; j < data.Count; j++)
             {
-                //스텟 검사
-                if (_myStudents[i].GetCurrentStat(data[j].mainPotentialType) >= data[j].requiredPotentialValue)
-                {
-                    //이벤트 id랑 쿨타임 저장
-                    _candidateDictionary[studentID].Add(new RandomEvent(data[j].eventId, data[j].potentialPercent, data[j].cooldownTurn, data[j].eventPriority));
-                }
+                if (_myStudents[i].GetCurrentStat(data[j].mainPotentialType) < data[j].requiredPotentialValue)
+                    continue;
+
+                if (list.Exists(e => e.EventId == data[j].eventId))
+                    continue;
+
+                list.Add(new RandomEvent(
+                    data[j].eventId,
+                    data[j].potentialPercent,
+                    data[j].cooldownTurn,
+                    data[j].eventPriority
+                ));
             }
-            //Debug.Log($"------[1차 후보]------");
-            //foreach (var n in _candidateDictionary[studentID])
-            //{
-            //    Debug.Log($"{i} - {n.EventId}");
-            //}
-            //Debug.Log($"----------------------");
+        
+        //등록되지 않은 ID면 새로 딕셔너리에 등록
+        //if (_candidateDictionary.ContainsKey(studentID) == false)
+        //{
+        //    _candidateDictionary.Add(studentID, new List<RandomEvent>());
+        //}
 
-        }
-        _debugList_candidateDictionary = new List<int>(_candidateDictionary.Keys);
+        ////모든 이벤트 수만큼 검사
+        //for (int j = 0; j < data.Count; j++)
+        //{
+        //    //스텟 검사
+        //    if (_myStudents[i].GetCurrentStat(data[j].mainPotentialType) >= data[j].requiredPotentialValue)
+        //    {
+        //        var list = _candidateDictionary[studentID];
+        //        if (list.Exists(e => e.EventId == data[j].eventId))
+        //            continue;
+        //        //이벤트 id랑 쿨타임 저장
+        //        _candidateDictionary[studentID].Add(new RandomEvent(data[j].eventId, data[j].potentialPercent, data[j].cooldownTurn, data[j].eventPriority));
+        //    }
+        //}
+        //Debug.Log($"------[1차 후보]------");
+        //foreach (var n in _candidateDictionary[studentID])
+        //{
+        //    Debug.Log($"{i} - {n.EventId}");
+        //}
+        //Debug.Log($"----------------------");
 
-        foreach(var p in _candidateDictionary)
-        {
-            int studentId = p.Key;
-            _randomEvents.AddRange(p.Value);
+            _debugList_candidateDictionary = new List<int>(_candidateDictionary.Keys);
+
+            var list0 = _candidateDictionary[studentID];
+
+            switch (i)
+            {
+                case 0:                    
+                    _randomEvents0.AddRange(list0);
+                    break;
+                case 1:
+                    _randomEvents1.AddRange(list0);
+                    break;
+                case 2:
+                    _randomEvents2.AddRange(list0);
+                    break;
+                case 3:
+                    _randomEvents3.AddRange(list0);
+                    break;
+                case 4:
+                    _randomEvents4.AddRange(list0);
+                    break;
+            }
         }
+    }
+
+    public void DeleteEvent(Student student)
+    {
+        _candidateDictionary.Remove(student.StudentId);
     }
 
     public void CreateList()
@@ -139,6 +193,8 @@ public class EventManager : Singleton<EventManager>
                 //쿨다운 값 감소
                 Debug.Log($"{studentID}번 학생 {_candidateDictionary[studentID][j].EventId} 주차 감소");
                 _candidateDictionary[studentID][j].Cooldown();
+
+                Debug.Log($"Cooldown 호출: {studentID} / {_candidateDictionary[studentID][j].EventId}");
             }
         }
 

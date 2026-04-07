@@ -284,24 +284,28 @@ public class EventController : MonoBehaviour
 
         if (resultDic.TryGetValue(selectedResultId, out var value))
         {
+            bool found = false;
+
             for (int i = 0; i < value.Count; i++)
             {
                 Debug.Log($"{CurrentStudent(_currentStudentNum).PersonalityData.personality} == {value[i].matchPersonalityId}");
                 //코어성격타입 조건 체크
                 if (CurrentStudent(_currentStudentNum).PersonalityData.personality == value[i].matchPersonalityId)
                 {
-                    //다음 아이디 가져오기
                     _nextId = value[i].nextId;
                     _selectedResultData = value[i];
                     Debug.Log($"resultScriptKey : {_selectedResultData.resultScriptKey}");
+
+                    found = true;
                     break;
                 }
-                else
-                {
-                    Debug.Log($"{selectedResultId}");
-                    Debug.Log($"해당 성격을 가진 이벤트 없음");
-                    Debug.Log($"선수 번호가 맞지 않음");
-                }
+            }
+
+            if (!found)
+            {
+                Debug.Log($"{selectedResultId}");
+                Debug.Log("해당 성격을 가진 이벤트 없음");
+                Debug.Log("선수 번호가 맞지 않음");
             }
 
             Debug.Log($"다음 대사 ID : {_nextId}");
@@ -394,8 +398,6 @@ public class EventController : MonoBehaviour
         Debug.Log($"학생 ID : {CurrentStudent(_currentStudentNum).StudentId}" +
             $"상태 {beforeState} > {CurrentStudent(_currentStudentNum).State.ToString()}");
 
-
-
         //선수 스탯 변동치 초기화
         CurrentStudent(_currentStudentNum).PrepareStatChange();
 
@@ -405,7 +407,6 @@ public class EventController : MonoBehaviour
 
         Debug.Log($"학생 ID : {CurrentStudent(_currentStudentNum).StudentId}" +
             $"컨디션 {beforeCondi} > {CurrentStudent(_currentStudentNum).Condition}");
-
 
 
         //능력치 변경
@@ -419,23 +420,29 @@ public class EventController : MonoBehaviour
 
         CurrentStudent(_currentStudentNum).OnStatChanged();
 
-        CurrentStudent(_currentStudentNum).OnStatChanged();
-
         //현재 학생의 이벤트 리스트를 가져오기
         List<RandomEvent> studentEventList = _eventManager.CandidateDictionary[CurrentStudent(_currentStudentNum).StudentId];
 
+        Debug.Log($"<color=cyan>이벤트 리스트 개수</color> : {studentEventList.Count}");
         for (int i = 0; i < studentEventList.Count; i++)
         {
-
             string evnetNumber = $"{studentEventList[i].EventId}_{CurrentStudent(_currentStudentNum).PersonalityData.core.ToString()}";
 
             Debug.Log($"{_eventId}에서 {studentEventList[i].EventId} 검색");
-            Debug.Log($"{evnetNumber == _eventId}");
+            Debug.Log($"<color=red>이벤트 아이디 검색</color> : {evnetNumber} == {_eventId} ({evnetNumber == _eventId})");
+
+            if (studentEventList[i].IsReady == false)
+            {
+                continue;
+            }
 
             //진행했던 이벤트 아이디를 찾아 쿨다운모드로 변경
             if (evnetNumber == _eventId)
             {
+                Debug.Log($"[Waiting 전] {studentEventList[i].EventId} / current:{studentEventList[i].CooldownTurn} / ready:{studentEventList[i].IsReady}");
+
                 studentEventList[i].WaitingMode();
+                Debug.Log($"[Waiting 후] {studentEventList[i].EventId} / current:{studentEventList[i].CooldownTurn} / ready:{studentEventList[i].IsReady}");
                 return;
             }
         }

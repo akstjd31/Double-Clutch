@@ -93,6 +93,7 @@ public class EventSelector : MonoBehaviour
         {
             int num = data[i].EventPriority;
 
+            Debug.Log("이벤트 실행 상태 : " + data[i].IsReady);
             //쿨다운 타이머 true인 이벤트만 통과
             if (data[i].IsReady == false)
             {
