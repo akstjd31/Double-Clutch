@@ -7,6 +7,24 @@ public class SeasonOutUI : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI _text;
     [SerializeField] private Button _button;
+    [SerializeField] private Button[] _unavailableButtons;
+
+    private void OnEnable()
+    {
+        foreach (var button in _unavailableButtons)
+        {
+            button.interactable = false;
+        }
+    }
+
+    private void OnDisable()
+    {
+        foreach (var button in _unavailableButtons)
+        {
+            button.interactable = true;
+        }
+    }
+
     public void Init()
     {
         if (_text == null) return;
