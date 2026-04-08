@@ -5712,6 +5712,10 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
       value: UnityEngine.GameObject, UnityEngine
       objectReference: {fileID: 0}
+    - target: {fileID: 6649920472981234306, guid: 5ce4c69bd680cc44bbca60d07e110ab5, type: 3}
+      propertyPath: _fightingPower
+      value: 
+      objectReference: {fileID: 1162403730}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -5722,6 +5726,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 1906565702337482574, guid: 5ce4c69bd680cc44bbca60d07e110ab5, type: 3}
   m_PrefabInstance: {fileID: 479899110}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &479899112 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6649920472981234306, guid: 5ce4c69bd680cc44bbca60d07e110ab5, type: 3}
+  m_PrefabInstance: {fileID: 479899110}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb1f8d1ad49e1cc4daa95d9e9df49914, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CharacterList
 --- !u!1 &490313017
 GameObject:
   m_ObjectHideFlags: 0
@@ -10577,7 +10592,7 @@ PrefabInstance:
     - target: {fileID: 5902203008585888105, guid: aa48f6a3d21bae24198c54376c84a335, type: 3}
       propertyPath: _characterList
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 479899112}
     - target: {fileID: 6050410367576599849, guid: aa48f6a3d21bae24198c54376c84a335, type: 3}
       propertyPath: m_AnchorMax.y
       value: 1
@@ -11622,6 +11637,17 @@ PrefabInstance:
       addedObject: {fileID: 1175627094}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: aa48f6a3d21bae24198c54376c84a335, type: 3}
+--- !u!114 &1162403730 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5902203008585888105, guid: aa48f6a3d21bae24198c54376c84a335, type: 3}
+  m_PrefabInstance: {fileID: 1162403729}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1c4272b2b498c7543bb93f391aadc1c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FightingPower
 --- !u!224 &1162403731 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 7615694642417351464, guid: aa48f6a3d21bae24198c54376c84a335, type: 3}
