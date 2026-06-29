@@ -1,7 +1,9 @@
 # 🏀 Double Clutch
 
 <a href="https://youtu.be/mO2eYQ_3N3c">
-    <img ... />
+    <img width="326" height="508"
+         alt="image"
+         src="https://github.com/user-attachments/assets/dbabbe84-98c5-496a-893a-13d17f7f3477" />
 </a>
 
 > 📺 이미지를 클릭하면 플레이 영상을 확인할 수 있습니다.
