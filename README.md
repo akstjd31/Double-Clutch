@@ -1,13 +1,14 @@
 # 🏀 Double Clutch
 
 <a href="https://youtu.be/mO2eYQ_3N3c">
-    <img width="326" height="508"
-         alt="image"
-         src="https://github.com/user-attachments/assets/dbabbe84-98c5-496a-893a-13d17f7f3477" />
+    <img ... />
 </a>
 
 > 📺 이미지를 클릭하면 플레이 영상을 확인할 수 있습니다.
 
+> 🚀 Google Play에서 실제 출시된 프로젝트입니다.
+
+> 📱 https://play.google.com/store/apps/details?id=com.doubleclutch.high5manager&hl=ko
 
 > 기획 파트와 협업하여 제작한 캐주얼 농구 육성 시뮬레이션 게임
 
